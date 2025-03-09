@@ -4,12 +4,14 @@ import image1 from "../assets/image1.jpg"
 import image2 from "../assets/image2.jpg"
 import image3 from "../assets/image3.jpg"
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { lazy,Suspense } from "react";
-const LoginForm = lazy(()=>import("../components/AuthForms/LoginForm"))
-const SignupForm= lazy(()=>import("../components/AuthForms/SignupForm"))
-const ForgotPasswordForm =lazy(()=>import("../components/AuthForms/ForgotPasswordForm"))
-const OtpVerification =lazy(()=>import("../components/AuthForms/OtpVerification"))
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
+const LoginForm = lazy(()=>import("../../components/AuthForms/LoginForm"))
+const SignupForm= lazy(()=>import("../../components/AuthForms/SignupForm"))
+const ForgotPasswordForm =lazy(()=>import("../../components/AuthForms/ForgotPasswordForm"))
+const OtpVerification =lazy(()=>import("../../components/AuthForms/OtpVerification"))
 
 
 
@@ -46,6 +48,16 @@ const Login = () => {
     }
   }, [])
 
+  
+  const naviagte = useNavigate()
+  const user = useSelector((state: RootState) => state.auth.user)
+  useEffect(() => {
+    if (user) {
+      naviagte("/")
+    } else {
+      naviagte("/login")
+    }
+  }, [naviagte, user])
 
 
 

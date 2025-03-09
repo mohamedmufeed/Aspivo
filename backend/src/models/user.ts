@@ -22,6 +22,11 @@ const userSchema = new Schema({
         type:Boolean,
         default:false
     },
+    
+    profileImage:{
+        type:String,
+        default:''
+    },
     otp:{
         type:String
     },

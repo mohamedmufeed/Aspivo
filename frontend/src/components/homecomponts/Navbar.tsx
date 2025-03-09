@@ -1,8 +1,24 @@
 import { useState } from "react";
 import { CiMenuFries } from "react-icons/ci";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../../redux/store/store";
+import profileImage from "../../assets/person_1.jpg"
+import ProfileDropdown from "./ProfileDropdown";
+import profileAvathar from "../../assets/user.png"
+
+
 
 
 const Navbar = () => {
+    const naviagte = useNavigate()
+    const [dropdown , setDropDown]=useState(false)
+
+    const user = useSelector((state: RootState) => state.auth.user)
+
+    const handeleLogginBtn = () =>  naviagte("/login")
+      
+    
     const navItems = [
         "Home",
         "About",
@@ -20,7 +36,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
-            <div className="bg-[#F6F6F6] p-4 flex justify-between items-center" style={{ fontFamily: "DM Sans, sans-serif" }}>
+            <div className="bg-[#F6F6F6] p-4 flex justify-between  items-center" style={{ fontFamily: "DM Sans, sans-serif" }}>
 
                 <div className="text-[30px] ps-8 font-bold flex items-center font-[Montserrat]">
                     <span className="w-9 h-10 md:w-9 md:h-10 bg-orange-600 text-white rounded-lg font-extrabold flex items-center justify-center mr-1">A</span>
@@ -43,10 +59,18 @@ const Navbar = () => {
                             <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M18 34.28A2.67 2.67 0 0 0 20.58 32h-5.26A2.67 2.67 0 0 0 18 34.28" />
                         </svg>
                     </div>
-                    <button className="bg-orange-600 text-white rounded-md font-bold w-[120px] h-11 hover:bg-orange-700 transition-all">
-                        Login
-                    </button>
+                    {user ?<div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={()=> dropdown ? setDropDown(false):setDropDown(true)}>
+                         <img className="w-12 h-12  p-1  bg-white rounded-full" src={user?.profileImage?user.profileImage:profileAvathar}  alt="" />
+                      
+                    </div> :
+                      <button onClick={handeleLogginBtn} className="bg-orange-600 text-white rounded-md font-bold w-[120px] h-11 hover:bg-orange-700 transition-all">
+                      Login
+                  </button>
+                     }
+
+                 {dropdown?<ProfileDropdown/>:""}
                 </div>
+
                 <button className="block md:hidden text-orange-600 text-3xl" onClick={() => isOpen ? setIsOpen(false) : setIsOpen(true)}>
                     <CiMenuFries />
                 </button>
@@ -66,7 +90,7 @@ const Navbar = () => {
                             <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M18 34.28A2.67 2.67 0 0 0 20.58 32h-5.26A2.67 2.67 0 0 0 18 34.28" />
                         </svg>
                     </div>
-                    <button className="bg-orange-600 text-white rounded-md font-bold px-6 py-2 hover:bg-orange-500 transition-all">
+                    <button onClick={handeleLogginBtn} className="bg-orange-600 text-white rounded-md font-bold px-6 py-2 hover:bg-orange-500 transition-all">
                         Login
                     </button>
                 </div>

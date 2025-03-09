@@ -15,16 +15,17 @@ export const signup = async (data: {
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      if (error?.response?.status) {
-        console.error("Signup Error:", error?.response?.data);
-      }
+      console.error("Login Error:", error?.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
+    throw new Error("Something went wrong. Please try again.");
   }
 };
 
 export const login = async (data: { email: string; password: string }) => {
   try {
     const response = await axios.post(`${USER_API}/login`, data);
+    console.log("hello")
     const token = response.data.token;
 
     if (!response.data.isAdmin) {
@@ -34,13 +35,15 @@ export const login = async (data: { email: string; password: string }) => {
     }
     return response.data;
   } catch (error) {
+
     if (error instanceof AxiosError) {
-      if (error?.response?.status) {
-        console.error("Login Error:", error?.response?.data);
-      }
+      console.error("Login Error:", error?.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
+    throw new Error("Something went wrong. Please try again.");
   }
-};
+  }
+
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
   try {
@@ -50,12 +53,14 @@ export const verifyOtp = async (data: { email: string; otp: string }) => {
 
 
   } catch (error) {
+
     if (error instanceof AxiosError) {
-      if (error?.response?.status) {
-        console.error("Otp verification :", error?.response?.data);
-      }
+      console.error("Otp verification :", error?.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
-    return null; 
+
+    throw new Error("Something went wrong. Please try again.");
+   
   }
 
 
@@ -67,12 +72,14 @@ export const resendotp= async (data:{email:string})=>{
       const response = await axios.post(`${USER_API}/resend-otp`,data)
       return response.data
     } catch (error) {
+
       if (error instanceof AxiosError) {
-        if (error?.response?.status) {
-          console.error("Otp verification :", error?.response?.data);
-        }
+        console.error("Otp verification :", error?.response?.data);
+        throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
       }
-      return null
+  
+      throw new Error("Something went wrong. Please try again.");
+  
     }
 }
 
@@ -83,12 +90,13 @@ export const resendotp= async (data:{email:string})=>{
     return response.data
     
   } catch (error) {
+
     if (error instanceof AxiosError) {
-      if (error?.response?.status) {
-        console.error("Otp verification :", error?.response?.data);
-      }
+      console.error("Forgot password :", error?.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
-    return null
+
+    throw new Error("Something went wrong. Please try again.");
   }
  }
 
@@ -99,7 +107,7 @@ export const resendotp= async (data:{email:string})=>{
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error?.response?.status) {
-        console.error("Otp verification :", error?.response?.data);
+        console.error("Reset password :", error?.response?.data);
       }
     }
     return null

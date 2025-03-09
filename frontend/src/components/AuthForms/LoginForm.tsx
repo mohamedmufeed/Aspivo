@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { RootState,AppDispatch } from "../../redux/store/store";
+import { RootState, AppDispatch } from "../../redux/store/store";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { login as loginApi } from "../../services/auth";
@@ -10,54 +10,67 @@ import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("")
-  const [emailError,setEmailError]=useState("")
+  const [emailError, setEmailError] = useState("")
   const [password, setPassword] = useState<string>("")
-  const [passwordError,setPasswordError]=useState("")
-  const [error ,setError]=useState("")
-  const dispatch=useDispatch<AppDispatch>()
-  const navigate=useNavigate()
-  
-  const user= useSelector((state:RootState)=>state.auth.user)
+  const [passwordError, setPasswordError] = useState("")
+  const [error, setError] = useState("")
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
 
-  const handeleSubmit = async(e:React.FormEvent) => {
-   e.preventDefault()
-   setEmailError("")
-   setPasswordError("")
-   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-   if (!email || !emailRegex.test(email)) {
-       setEmailError("Please enter a valid email address. *");
-       return;
-   }
-   if (!password || password.length < 4) {
-       setPasswordError('Password must be at least 6 characters *');
-       return;
-   }
+  const user = useSelector((state: RootState) => state.auth.user)
+
+  const handeleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setEmailError("")
+    setPasswordError("")
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!email || !emailRegex.test(email)) {
+      setEmailError("Please enter a valid email address. *");
+      return;
+    }
+    if (!password || password.length < 4) {
+      setPasswordError('Password must be at least 6 characters *');
+      return;
+    }
 
 
-   try {
-    const data= await loginApi({email,password})
-    dispatch(login(data))
-    navigate("/")
-  
-   } catch (error) {
-    setError("Invalid username and password")
-   }
+    try {
+      const data = await loginApi({ email, password })
+      if (data) {
+        dispatch(login(data))
+        navigate("/")
+      }
+
+    } catch (error) {
+      console.log("the errorr",error)
+      
+       if(error instanceof Error){
+        setError(error.message)
+       }else{
+        setError("Invalid username and password")
+       }
+
+    }
   }
   return (
+    
     <div className="  bg-[#F6F6F6] flex flex-col justify-center font-[Montserrat] h-full p-8">
+  
       <h1 className="text-3xl font-bold text-gray-800 mb-2 mt-10">Welcome Back</h1>
       <p className="text-gray-500 mb-6">Welcome Back ! Please enter your details</p>
-      <p>{error}</p>
+      
       <form action="" onSubmit={handeleSubmit} >
-
+  {    error ?<p className="text-red-600 font-light text-sm ">{error}</p>:""}
         <div className="w-full flex flex-col space-y-3 ">
           <label htmlFor="email" className="text-gray-700 font-medium">Email</label>
-          {emailError?  <p className="text-red-600 font-light text-sm ">{emailError}</p>:""}
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} name="email" id="email" className="w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500" placeholder="Enter your email" />
+          {emailError ? <p className="text-red-600 font-light text-sm  ">{emailError}</p> : ""}
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} name="email" id="email" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${emailError ? "border-red-500" : ""}`} placeholder="Enter your email" />
 
           <label htmlFor="password" className="text-gray-700 font-medium">Password</label>
-        {passwordError?  <p className="text-red-600 font-light text-sm ">{passwordError}</p>:""}
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} name="password" className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter your password" />
+          {passwordError ? <p className="text-red-600 font-light text-sm ">{passwordError}</p> : ""}
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} name="password" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${passwordError ? "border-red-500" : ""}`} placeholder="Enter your password" />
 
           <p className="text-right font-medium text-black text-sm cursor-pointer hover:underline mt-2" > <Link to={"/forgot-password"}> Forgot Password ?</Link></p>
         </div>

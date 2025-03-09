@@ -3,29 +3,40 @@ import { AuthService } from "../../services/authService.js";
 import { promises } from "dns";
 const authService = new AuthService();
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response):Promise<any> => {
   try {
     const { userName, email, password } = req.body;
   
     const user = await authService.regitser(userName, email, password);
-    res.status(201).json(user);
+    return res.status(201).json(user);
   } catch (error) {
-    res.status(400).json({ message: error });
+     if(typeof error === "object" && error !==null && "status" in error && "message" in error){
+      return res.status((error as any).status).json({ message: (error as any).message });
+     }
+     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) :Promise<any> => {
   try {
     const { email, password } = req.body;
     const { user, token } = await authService.login(email, password);
-    res.json({ user, token });
+    return res.json({ user, token });
   } catch (error) {
-    res.status(400).json({ message: error });
+    if (typeof error === "object" && error !== null && "status" in error && "message" in error) {
+      return res.status((error as any).status).json({ message: (error as any).message });
+    }
+
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-};
+    
+
+ 
+  };
 
 
- export const verifyOtp= async(req:Request,res:Response)=>{
+
+ export const verifyOtp= async(req:Request,res:Response):Promise<any>=>{
   try {
     const {email,otp}=req.body
     const user= await authService.verifyotp(email,otp)
@@ -34,9 +45,16 @@ export const login = async (req: Request, res: Response) => {
       user:user
     });
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : "OTP verification failed" });
+    if (typeof error === "object" && error !== null && "status" in error && "message" in error) {
+      return res.status((error as any).status).json({ message: (error as any).message });
+    }
+
+    return res.status(500).json({ message: "Internal Server Error" });
   }
  }
+
+
+
  export const resendOtp = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email } = req.body;
@@ -56,7 +74,11 @@ export  const forgotPassword = async (req:Request ,res:Response):Promise<any>=>{
       return res.status(200).json({message: "forgot password otp send sucsessfully"})
 
   } catch (error) {
-    return res.status(400).json({ error: error instanceof Error ? error.message : "OTP  forgot password failed" });
+    if (typeof error === "object" && error !== null && "status" in error && "message" in error) {
+      return res.status((error as any).status).json({ message: (error as any).message });
+    }
+
+    return res.status(500).json({ message: "Internal Server Error" });
   }
  }
 

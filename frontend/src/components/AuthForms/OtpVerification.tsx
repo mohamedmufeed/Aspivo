@@ -15,6 +15,7 @@ const OtpVerification = () => {
     const email = location.state?.email || ""
     const [error, setError] = useState("")
     const [otp, setOtp] = useState<string>("")
+
     const [timer, setTimer] = useState(60)
     const [resendbtn, setResendbtn] = useState(false)
 
@@ -55,9 +56,13 @@ const OtpVerification = () => {
         setResendbtn(false)
         setError("")
         try {
-       const response = await resendotp({ email })
+            const response = await resendotp({ email })
         } catch (error) {
-            setError(" Error in resending  Otp")
+            if (error instanceof Error) {
+                setError(error.message)
+            } else {
+                setError("OTP varification failed")
+            }
         }
     }
 
@@ -68,7 +73,7 @@ const OtpVerification = () => {
             <p className="flex justify-center text-orange-500">{timer > 0 ? `OTP expires in ${timer}s` : "OTP expired!"}</p>
 
             <form action="" onSubmit={handleOtp}  >
-            {error?  <p className="text-red-600 font-light text-sm ">{error}</p>:""}
+                {error ? <p className="text-red-600 font-light text-sm ">{error}</p> : ""}
                 <div className="w-full flex flex-col space-y-3 ">
                     <label htmlFor="otp" className="text-gray-700 font-medium">Otp</label>
                     <input type="text" onChange={(e) => setOtp(e.target.value)} name="otp" id="otp" className="w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500" placeholder="Enter your OTP" disabled={timer === 0} />
