@@ -3,7 +3,6 @@ import { CiMenuFries } from "react-icons/ci";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux/store/store";
-import profileImage from "../../assets/person_1.jpg"
 import ProfileDropdown from "./ProfileDropdown";
 import profileAvathar from "../../assets/user.png"
 
@@ -36,7 +35,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
-            <div className="bg-[#F6F6F6] p-4 flex justify-between  items-center" style={{ fontFamily: "DM Sans, sans-serif" }}>
+            <div className="bg-[#F6F6F6] p-4 flex justify-between   items-center" style={{ fontFamily: "DM Sans, sans-serif" }}>
 
                 <div className="text-[30px] ps-8 font-bold flex items-center font-[Montserrat]">
                     <span className="w-9 h-10 md:w-9 md:h-10 bg-orange-600 text-white rounded-lg font-extrabold flex items-center justify-center mr-1">A</span>

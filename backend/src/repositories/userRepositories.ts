@@ -1,6 +1,6 @@
 import User from "../models/user.js";
 import generateToken from "../utils/jwt.js";
-
+import mongoose from "mongoose";
 
 
 export class AuthRepostry {
@@ -16,4 +16,7 @@ export class AuthRepostry {
   async findByEmail(email: string) {
     return await User.findOne({ email });
   }
+   async findById(id:string){
+    return await User.findById( new mongoose.Types.ObjectId(id))
+   }
 }

@@ -1,17 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
- interface Usertype{
-  user:{userName:string, profileImage: string }|null;
-  email:string|null;
-  isAdmin:boolean;
-  token:string|null
- }
+interface Usertype {
+  user: { _id: string; userName: string; profileImage: string } | null;
+  email: string | null;
+  isAdmin: boolean;
+  token: string | null;
+}
+
 
 const authSlice = createSlice({
   name: "auth",
   initialState:<Usertype> { user: null, email: null, isAdmin: false, token: null },
   reducers: {
     login: (state, action) => {
-      state.user = { userName: action.payload.userName ,  profileImage: action.payload.profileImage } ;
+      state.user = {
+        _id:action.payload._id,
+         userName: action.payload.userName ,
+           profileImage: action.payload.profileImage ,
+          } ;
       state.email = action.payload.email;
       state.isAdmin = action.payload.isAdmin;
       state.token = action.payload.token; 

@@ -9,8 +9,42 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
+import EditProileModal from "../../components/modals/EditProfileModal";
+import EditAboutModal from "../../components/modals/EditAboutModal";
+import {  useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
+import { getProfile } from "../../services/profile";
 
 const Profile = () => {
+    const [editModalOpen, setEditModal] = useState(false)
+    const [editAboutOpen, setAboutModal] = useState(false)
+    const [profileData, setProfileData] = useState<any>(null);
+    const user= useSelector((state:RootState)=>state.auth.user)
+    if (!user) {
+        console.error("User data is null!");
+        return null;
+    }
+  const userId=user._id
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfile(userId);
+        setProfileData(response.user.user);
+      console.log(response.user.user)
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+  
+    fetchProfile(); 
+  }, [userId]); 
+  
+  if (!profileData) {
+    return <p>Loading profile...</p>; 
+  }
+
     return (
         <>
             <Navbar />
@@ -21,68 +55,81 @@ const Profile = () => {
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
                 <div className="p-7 px-8">
-                    <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg relative">
-                        <div>
-                            <img
-                                src={bannerImage}
-                                alt="Banner"
-                                className="w-full h-40 object-cover rounded-t-lg"
-                            />
-                        </div>
 
-                        <div className="absolute top-24 left-8 w-32 h-32 rounded-full border-4 border-white shadow-md">
-                            <img
-                                className="w-full h-full rounded-full object-cover"
-                                src={profileImage}
-                                alt="Profile"
-                            />
-                        </div>
 
-                        <div className="mt-16 p-3 px-10 flex justify-between  items-center">
+                    <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg ">
+
+                        <div className="relative">
+
+
                             <div className="">
-                                <h1 className="font-bold text-2xl">John Doe</h1>
-                                <p className="font-medium text-gray-700">Google</p>
-                                <p className="text-gray-700 space-y-3.5">
-                                    Malappuram, Vellanchery
-                                </p>
+                                <img
+                                    src={bannerImage}
+                                    alt="Banner"
+                                    className="w-full h-40 object-cover rounded-t-lg"
+                                />
                             </div>
 
-                            <div className="flex flex-col   items-end">
-                                <div className=" absolute  right-8  bottom-43 flex  gap-5">
-                                    <GoPencil className="font-extralight cursor-pointer w-6 h-6" />
-                                    <EllipsisVertical className="cursor-pointer" />
+                            <div className=" absolute bottom-35 left-8   w-32 h-32 rounded-full border-4 border-white shadow-md">
+                                <img
+                                    className="w-full h-full  rounded-full object-cover"
+                                    src={profileImage}
+                                    alt="Profile"
+                                />
+                            </div>
+
+                            <div className="mt-16 p-3 px-10 flex justify-between  items-center">
+                                <div className="">
+                                    <div className="flex space-x-1">       <h1 className="font-bold text-2xl">{profileData.firstName}</h1>
+                                    <h1 className="font-bold text-2xl">{profileData.lastName}</h1>
+                                    </div>
+                             
+                                    <p className="font-medium text-gray-700">{profileData.position}</p>
+                                    <p className="text-gray-700 space-y-3.5">
+                                 {profileData.location}
+                                    </p>
                                 </div>
 
-                                <div className=" mb-5 flex items-center space-x-4 ">
-                                    <img
-                                        src={profileImage}
-                                        className="w-12 h-12 rounded-full object-coverl border-white border-2"
-                                        alt=""
-                                    />
-                                    <h1 className="text-lg font-semibold text-gray-800">
-                                        Google
-                                    </h1>
-                                </div>
+                                <div className="flex flex-col   items-end">
+                                    <div className=" absolute  right-8  bottom-43 flex  gap-5">
+                                        <GoPencil className="font-extralight cursor-pointer w-6 h-6" onClick={() => setEditModal(true)} />
+                                        <EllipsisVertical className="cursor-pointer" />
+                                    </div>
 
-                                <div className="mb-5 flex space-x-3 ">
-                                    {["HTML", "CSS", "JavaScript"].map((skill, index) => (
-                                        <span
-                                            key={index}
-                                            className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
-                                        >
-                                            {skill}
-                                        </span>
-                                    ))}
+                                    <div className=" mb-5 flex items-center space-x-4 ">
+                                        <img
+                                            src={profileImage}
+                                            className="w-12 h-12 rounded-full object-coverl border-white border-2"
+                                            alt=""
+                                        />
+                                        <h1 className="text-lg font-semibold text-gray-800">
+                                        {profileData.position}
+                                        </h1>
+                                    </div>
+
+                                    <div className="mb-5 flex space-x-3 ">
+                                        {["HTML", "CSS", "JavaScript"].map((skill, index) => (
+                                            <span
+                                                key={index}
+                                                className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {editModalOpen && <EditProileModal userId={userId} isOpen={editModalOpen} onClose={() => setEditModal(false)} />}
+
                     {/* aboutSection */}
 
                     <div className="bg-white  shadow-gray-100 shadow-lg w-full rounded-lg  p-5 mt-5">
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">About</h1>
-                            <GoPencil className="font-extralight cursor-pointer w-6 h-6" />
+                            <GoPencil className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAboutModal(true)} />
                         </div>
                         <div className=" font-light px-8 mt-3 p-3">
                             <p className="">
@@ -96,6 +143,7 @@ const Profile = () => {
                             </p>
                         </div>
                     </div>
+                    {editAboutOpen && <EditAboutModal userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
                     {/* resueme section */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
@@ -192,7 +240,7 @@ const Profile = () => {
                     {/* skills */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
-                    <div className="flex justify-between px-8">
+                        <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Skills</h1>
                             <div className=" flex space-x-5 ">
                                 <GoPlus className="font-extralight cursor-pointer w-6 h-6" />
@@ -201,18 +249,19 @@ const Profile = () => {
 
                         </div>
                         <div className="mb-5 mt-9 ml-10 flex space-x-3 ">
-                                    {["HTML", "CSS", "JavaScript"].map((skill, index) => (
-                                        <span
-                                            key={index}
-                                            className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
-                                        >
-                                            {skill}
-                                        </span>
-                                    ))}
-                                </div>
+                            {["HTML", "CSS", "JavaScript"].map((skill, index) => (
+                                <span
+                                    key={index}
+                                    className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
+                                >
+                                    {skill}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
+
         </>
     );
 };

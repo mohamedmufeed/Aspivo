@@ -4,14 +4,17 @@ import generateToken from "../utils/jwt.js";
 import crypto from "crypto";
 import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp.js";
 import { error } from "console";
+import { ProfileTypes } from "../types/userTypes.js";
+import { use } from "passport";
+import cloudinary from "../config/cloudinaryConfig.js";
+
 
 const authRepostry = new AuthRepostry();
 export class AuthService {
-
   async regitser(userName: string, email: string, password: string) {
     const existUser = await authRepostry.findByEmail(email);
     if (existUser) {
-      throw { status:404 ,message:"User alredy exists"}
+      throw { status: 404, message: "User alredy exists" };
     }
 
     const hashePassword = await bcrypt.hash(password, 10);
@@ -40,14 +43,16 @@ export class AuthService {
     }
 
     if (!user.verified) {
-      throw { status: 403, message: "Email not verified. Please verify your OTP." };
+      throw {
+        status: 403,
+        message: "Email not verified. Please verify your OTP.",
+      };
     }
     const isMatch = await bcrypt.compare(password, user.password);
-   
-    if (!isMatch){
-      throw { status: 401, message: "Invalid credentials" };
-    } 
 
+    if (!isMatch) {
+      throw { status: 401, message: "Invalid credentials" };
+    }
 
     const token = generateToken(user.id, user.isAdmin);
     return { user, token };
@@ -65,15 +70,14 @@ export class AuthService {
     if (!user.otpExpires || !(user.otpExpires instanceof Date)) {
       throw { status: 400, message: "OTP expiration time is invalid" };
     }
-    
+
     if (user.otp !== hashedOtp) {
       throw { status: 401, message: "Invalid OTP" };
     }
-    
+
     if (new Date() > new Date(user.otpExpires)) {
       throw { status: 403, message: "OTP has expired" };
     }
-    
 
     user.verified = true;
     user.otp = undefined;
@@ -86,7 +90,7 @@ export class AuthService {
 
   async resendOtp(email: string) {
     const user = await authRepostry.findByEmail(email);
-   if (!user) {
+    if (!user) {
       throw { status: 404, message: "User does not exist" };
     }
 
@@ -108,7 +112,7 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = await authRepostry.findByEmail(email);
-   if (!user) {
+    if (!user) {
       throw { status: 404, message: "User does not exist" };
     }
 
@@ -121,17 +125,19 @@ export class AuthService {
 
     await user.save();
     await sendOtpEmail(email, otp);
-    return { user,message:" Email send suncessfully for Forgot password"}
+    return { user, message: " Email send suncessfully for Forgot password" };
   }
-  
 
-  async  resetPassword(email:string,newPassword:string){
-    const user= await authRepostry.findByEmail(email)
-    if(!user) throw new Error ('User not foud')
-  
-      const hashePassword = await bcrypt.hash(newPassword,10)
-      user.password=hashePassword
-      await user.save()
-      return {user, message:" Password reset sucesess"}
+  async resetPassword(email: string, newPassword: string) {
+    const user = await authRepostry.findByEmail(email);
+    if (!user) throw new Error("User not foud");
+
+    const hashePassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashePassword;
+    await user.save();
+    return { user, message: " Password reset sucesess" };
   }
+
+
+
 }
