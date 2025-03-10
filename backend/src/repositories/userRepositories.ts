@@ -19,4 +19,5 @@ export class AuthRepostry {
    async findById(id:string){
     return await User.findById( new mongoose.Types.ObjectId(id))
    }
+    
 }

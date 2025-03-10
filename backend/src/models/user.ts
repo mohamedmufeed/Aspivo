@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import { title } from "process";
+import { start } from "repl";
 
 const userSchema = new Schema(
   {
@@ -8,8 +10,14 @@ const userSchema = new Schema(
     },
     firstName: { type: String, required: false },
 
-    lastName: { type: String, required: false },
-    phoneNumber: { type: String, required: false },
+    lastName: {
+      type: String,
+      required: false,
+    },
+    phoneNumber: {
+      type: String,
+      required: false,
+    },
     email: {
       type: String,
       required: true,
@@ -34,6 +42,44 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    experiences: [
+      {
+        title: {
+          type: String,
+          required: false,
+        },
+        company: {
+          type: String,
+          required: false,
+        },
+        startDate: {
+          type: Date, 
+          required: false,
+        },
+        endDate: {
+          type: Date, 
+          required: false,
+        },
+        employmentType: { 
+          type: String,
+          enum: ["Full time", "Part time", "Remote", "Intern", "Contract"],
+          required: false,
+        },
+        location: {
+          type: String,
+          required: false,
+        },
+        description: {
+          type: String,
+          required: false,
+        },
+        currentlyWorking: { 
+          type: Boolean,
+          required: false,
+        },
+      },
+    ],
+    
     profileImage: {
       type: String,
       default: "https://yourcdn.com/default-avatar.png",

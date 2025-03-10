@@ -14,12 +14,14 @@ import { getProfile } from "../../services/profile";
 import { useLocation } from "react-router-dom";
 import Resume from "../../components/ProfileComponets/Resume";
 import AddExperience from "../../components/modals/AddExperience";
+import EditExperience from "../../components/modals/EditExperience";
 
 const Profile = () => {
 const location=useLocation()
     const [editModalOpen, setEditModal] = useState(false)
     const [editAboutOpen, setAboutModal] = useState(false)
     const [addExperience, setAddExperience]=useState(false)
+    const [editExperience,setEditExperience]=useState(false)
     const [profileData, setProfileData] = useState<any>(null);
     const user= useSelector((state:RootState)=>state.auth.user)
     if (!user) {
@@ -150,27 +152,31 @@ const location=useLocation()
                             <h1 className="font-medium text-2xl">Experience</h1>
                             <div className=" flex space-x-5 ">
                                 <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddExperience(true)} />
-                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
+                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditExperience(true)} />
                             </div>
 
                         </div>
 
-
-                        <div className="flex items-center space-x-4 p-4 mt-3">
+                        {profileData.experiences?.length > 0 && (                     
+                            <div className="flex items-center space-x-4 p-4 mt-3">
 
                             <FcGoogle className="w-10 h-10" />
 
 
                             <div>
-                                <h2 className="font-semibold text-lg">Software Engineer</h2>
-                                <h3 className="text-md text-gray-700">Google</h3>
+                                <h2 className="font-semibold text-lg">{profileData.experiences[0].title}</h2>
+                                <h3 className="text-md text-gray-700">{profileData.experiences[0].company}</h3>
                                 <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
                                 <p className="text-gray-500 text-sm">Bangalore, India • Onsite</p>
                             </div>
                         </div>
+                        )}
                     </div>
 
                     {addExperience && <AddExperience setProfileData={setProfileData} userId={userId} isOpen={addExperience} onClose={() => setAddExperience(false)} />}
+
+                    {editExperience && profileData.experiences?.length > 0 && (
+                    <EditExperience setProfileData={setProfileData}  userId={userId}  experienceId={profileData.experiences[0].id} isOpen={editExperience}  onClose={() => setEditExperience(false)}  />)}
                     {/* educationm */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">

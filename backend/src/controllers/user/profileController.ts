@@ -3,6 +3,7 @@ import { AuthService } from "../../services/authService.js";
 import { ProfileSerive } from "../../services/profileService.js";
 import cloudinary from "../../config/cloudinaryConfig.js";
 import { json } from "stream/consumers";
+import { promises } from "dns";
 
 const profileService = new ProfileSerive();
 
@@ -10,7 +11,6 @@ export const editProfile = async (
   req: Request,
   res: Response
 ): Promise<any> => {
-
   try {
     console.log("REQ BODY:", req.body);
     console.log("REQ FILE:", req.file);
@@ -21,11 +21,11 @@ export const editProfile = async (
     let profileImage = "";
 
     if (req.file) {
-      console.log("hrllo njna  ivade in")
+      console.log("hrllo njna  ivade in");
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: "profile_image",
       });
-      console.log(result.secure_url)
+      console.log(result.secure_url);
       profileImage = result.secure_url;
     }
 
@@ -69,8 +69,9 @@ export const editAbout = async (req: Request, res: Response): Promise<any> => {
     const userId = req.params.id;
     const { about } = req.body;
     const user = await profileService.editAbout(userId, about);
-    return res.status(200).json({ user, message: "User About edited successfully" });
-
+    return res
+      .status(200)
+      .json({ user, message: "User About edited successfully" });
   } catch (error) {
     return res.status(500).json({
       error:
@@ -79,16 +80,43 @@ export const editAbout = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-
- export const uploadResume = async (req:Request,res:Response):Promise<any>=>{
+export const uploadResume = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
-    console.log(req.file)
-   if (req.file) {
-    console.log("file is done")
-   }
-    
-return  res.status(200).json({message:"Resueme is good"})
+    console.log(req.file);
+    if (req.file) {
+      console.log("file is done");
+    }
+
+    return res.status(200).json({ message: "Resueme is good" });
   } catch (error) {
-    return res.status(500).json({message:"Error in uplaoding resume"})
+    return res.status(500).json({ message: "Error in uplaoding resume" });
+  }
+};
+
+export const addExprience = async (req: Request, res: Response):Promise<any> => {
+  try {
+    const userId=req.params.id
+    const {title,company,description,employmentType,endDate, location, startDate, currentlyWorking} = req.body
+    const data={title,company,description,employmentType,endDate, location, startDate, currentlyWorking}
+   const user=await profileService.addExperience(userId,data)
+   return  res.status(200).json({user,message:"User Experience added sucessfully"})
+  } catch (error) {
+    return res.status(500).json({ message: "Error  adding experince" });
+  }
+};
+
+ export const editExperince= async (req:Request,res:Response):Promise<any>=>{
+  try {
+    const userId=req.params.id
+    const {title,company,description,employmentType,endDate, location, startDate,experienceId, currentlyWorking} = req.body
+    const data={title,company,description,employmentType,endDate, location, startDate, currentlyWorking}
+    const user = await profileService.editExperience(userId,data,experienceId)
+    return res.status(200).json({user,message:"User experince edited sucssessfully"})
+    
+  } catch (error) {
+    return res.status(500).json({ message: "Error  editing experince" });
   }
  }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { editProfile } from "../../services/profile";
-import { Divide } from "lucide-react";
+
+
 
 
 interface EditProfileModalProps {
@@ -53,12 +54,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
             if (profileImage) {
                 formData.append("profileImage", profileImage);
             }
-            console.log("FormData contents:");
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
-            
-            
+          
+
             const response = await editProfile(userId, formData);
             console.log("Profile updated successfully:", response);
             onClose();
@@ -88,7 +85,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                                 <input 
                                     type="file" 
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                                     name="profileImage" onChange={handleImageChange} 
+                                      name="profileImage" onChange={handleImageChange} 
                                 />
                                 <span className="text-sm text-gray-600">Upload</span>
                             </div>
@@ -103,7 +100,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col">
                                     <label htmlFor="firstName">First Name</label>
-                                    <input type="text" id="firstName" name="firstName" value={profile.firstName} onChange={handleChange} className="border p-2 w-full rounded-lg" required />
+                                    <input type="text" id="firstName"  name="firstName" value={profile.firstName} onChange={handleChange} className="border p-2 w-full rounded-lg" required />
                                 </div>
                                 <div className="flex flex-col">
                                     <label htmlFor="lastName">Last Name</label>

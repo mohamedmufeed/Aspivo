@@ -1,9 +1,9 @@
-import { use, useState } from "react";
-import profileImage from "../../assets/person_1.jpg";
+
 import { UserCircle, Settings, Briefcase, LogOut } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import profileAvathar from "../../assets/user.png"
+import { Link } from "react-router-dom";
 
 const ProfileDropdown = () => {
 
@@ -30,8 +30,10 @@ const ProfileDropdown = () => {
             
                     <div className="p-2">
                         <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100">
-                            <UserCircle size={20} />
-                            <span>Profile</span>
+                        <UserCircle size={20} />
+                            <Link to={"/profile"}>    
+                            <span>Profile</span></Link>
+                        
                         </button>
                         <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100">
                             <Settings size={20} />

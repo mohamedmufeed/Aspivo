@@ -1,5 +1,7 @@
+import { use } from "passport";
 import { AuthRepostry } from "../repositories/userRepositories.js";
 import { ProfileTypes } from "../types/userTypes";
+import { Experience } from "../types/userTypes";
 
 const authRepostry = new AuthRepostry();
 
@@ -32,8 +34,58 @@ export class ProfileSerive {
     const user = await authRepostry.findById(id);
     if (!user) throw new Error("User not found");
     user.about = about || user.about;
-     await user.save()
+    await user.save();
 
     return { user, message: "User about edit sucsess fully" };
+  }
+
+  async addExperience(id: string, data: Experience) {
+    const user = await authRepostry.findById(id);
+    if (!user) throw new Error("User not found");
+  
+    const { title, company, description, employmentType, endDate, location, startDate, currentlyWorking } = data;
+  
+    user.experiences.push({
+      title,
+      company,
+      description,
+      employmentType,
+      endDate: endDate ? new Date(endDate) : null, 
+      startDate: new Date(startDate), 
+      location,
+      currentlyWorking,
+    });
+  
+    await user.save();
+    return { user, message: "User experience added successfully" };
+  }
+  
+
+  async editExperience(id: string, data: Experience, experienceId: string) {
+    const user = await authRepostry.findById(id);
+    if (!user) throw new Error("User not found");
+    const {
+      title,
+      company,
+      description,
+      employmentType,
+      endDate,
+      location,
+      startDate,
+    } = data;
+    const experience = user.experiences.id(experienceId);
+    if (!experience) throw new Error("Experince not found");
+
+    if(title)experience.title=title
+    if(company)experience.company=company
+    if(description)experience.description=description
+    if(employmentType)experience.employmentType=employmentType
+    if(endDate)experience.endDate=endDate
+    if(location)experience.location=location
+    if(startDate)experience.startDate=startDate
+
+     await user.save()
+
+     return {user ,message:" Experice edited sucssefully"}
   }
 }
