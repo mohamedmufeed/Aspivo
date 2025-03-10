@@ -1,8 +1,8 @@
 
 import { register ,login, verifyOtp, resendOtp, forgotPassword, resetPassword } from "../controllers/user/authController.js";
-import { editProfile, getProfile } from "../controllers/user/profileController.js";
+import { editAbout, editProfile, getProfile , uploadResume} from "../controllers/user/profileController.js";
 import express  from "express";
-import { upload } from "../config/multer.js";
+import {  Imageupload , resumeUplaod } from "../config/multer.js";
 
 const router= express.Router()
 router.post("/signup",register)
@@ -11,8 +11,10 @@ router.post("/otp-verification",verifyOtp)
 router.post("/resend-otp",resendOtp)
 router.post("/forgot-password",forgotPassword)
 router.post("/reset-password",resetPassword)
-router.put("/edit-profile/:id", upload.single("profileImage"), editProfile);
+router.put("/edit-profile/:id", Imageupload.single("profileImage"), editProfile);
 router.get("/profile/:id",getProfile)
+router.put("/edit-about/:id",editAbout)
+router.post("/upload-resuem/:id",resumeUplaod.single("resume"),uploadResume)
 
 
 export default router

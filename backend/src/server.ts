@@ -7,10 +7,12 @@ dotenv.config()
 connectDb()
 
 const app=express()
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 app.use("/api/user",userRoutes)
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
+
 const PORT=process.env.PORTNUMBER||5001;
 app.listen(PORT,()=>{
 console.log("server is running at 5000")

@@ -2,11 +2,7 @@ import Navbar from "../../components/homecomponts/Navbar";
 import bannerImage from "../../assets/Rectangle 38.png";
 import profileImage from "../../assets/person_1.jpg";
 import { EllipsisVertical } from "lucide-react";
-import { CiStickyNote } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
-import { BsDownload } from "react-icons/bs";
-import { AiOutlineDelete } from "react-icons/ai";
-import { IoCloudUploadOutline } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
 import EditProileModal from "../../components/modals/EditProfileModal";
@@ -15,10 +11,15 @@ import {  useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";
+import { useLocation } from "react-router-dom";
+import Resume from "../../components/ProfileComponets/Resume";
+import AddExperience from "../../components/modals/AddExperience";
 
 const Profile = () => {
+const location=useLocation()
     const [editModalOpen, setEditModal] = useState(false)
     const [editAboutOpen, setAboutModal] = useState(false)
+    const [addExperience, setAddExperience]=useState(false)
     const [profileData, setProfileData] = useState<any>(null);
     const user= useSelector((state:RootState)=>state.auth.user)
     if (!user) {
@@ -39,7 +40,7 @@ const Profile = () => {
     };
   
     fetchProfile(); 
-  }, [userId]); 
+  }, [userId,location]); 
   
   if (!profileData) {
     return <p>Loading profile...</p>; 
@@ -133,54 +134,14 @@ const Profile = () => {
                         </div>
                         <div className=" font-light px-8 mt-3 p-3">
                             <p className="">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam,
-                                dolores cum incidunt vero magnam repellat beatae accusamus nemo
-                                ipsum optio mollitia eius omnis soluta nisi ex. Assumenda nemo
-                                dolores pariatur. Lorem ipsum dolor, sit amet consectetur
-                                adipisicing elit. Esse voluptatem ducimus a quis dolor autem
-                                rem! Culpa tempora odio illum quia deleniti reiciendis suscipit
-                                fuga iure optio, consequuntur, eum voluptatibus.
+                              {profileData.about}
                             </p>
                         </div>
                     </div>
-                    {editAboutOpen && <EditAboutModal userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
+                    {editAboutOpen && <EditAboutModal setProfileData={setProfileData} userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
                     {/* resueme section */}
 
-                    <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
-                        <div className="flex justify-between px-8">
-                            <h1 className="font-medium text-2xl">Resume</h1>
-                        </div>
-
-                        <div className="flex mx-auto w-3/4 bg-white h-[60px] items-center shadow-gray-200 shadow-lg rounded-md justify-between px-6 mt-4">
-                            <div className="flex items-center space-x-4">
-                                <CiStickyNote className="w-6 h-6 text-gray-600" />
-                                <p className="text-gray-700">Johndaniel_resume.pdf</p>
-                            </div>
-                            <div className="flex space-x-6">
-                                <BsDownload className="w-6 h-6 text-gray-600 cursor-pointer hover:text-gray-800" />
-                                <AiOutlineDelete className="w-6 h-6  text-gray-600 cursor-pointer hover:text-gray-800" />
-                            </div>
-                        </div>
-
-                        <div className="w-5/6 mx-auto mt-5 p-6 flex flex-col items-center justify-center rounded-lg outline-1.5 px-6 outline-dashed">
-                            <IoCloudUploadOutline className="w-8 h-8 text-gray-900 mb-2" />
-                            <h2 className="font-bold text-md text-gray-700 text-center">
-                                Drag and Drop file here or{" "}
-                                <span className="text-orange-600 cursor-pointer">
-                                    Choose File
-                                </span>
-                            </h2>
-                            <p className="mt-2 text-sm text-gray-500">
-                                Supported Formats: PDF, JPEG
-                            </p>
-                        </div>
-
-                        <div className="flex justify-center mt-6">
-                            <button className="font-semibold px-6 py-3 rounded-lg text-white bg-orange-600 hover:bg-orange-700 transition-all">
-                                Save Changes
-                            </button>
-                        </div>
-                    </div>
+                      <Resume/>
 
                     {/* exprience section */}
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
@@ -188,7 +149,7 @@ const Profile = () => {
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Experience</h1>
                             <div className=" flex space-x-5 ">
-                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" />
+                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddExperience(true)} />
                                 <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
                             </div>
 
@@ -209,7 +170,7 @@ const Profile = () => {
                         </div>
                     </div>
 
-
+                    {addExperience && <AddExperience setProfileData={setProfileData} userId={userId} isOpen={addExperience} onClose={() => setAddExperience(false)} />}
                     {/* educationm */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">

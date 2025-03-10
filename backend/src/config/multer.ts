@@ -1,6 +1,6 @@
-import cloudinary from "./cloudinaryConfig.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
+import cloudinary from "./cloudinaryConfig.js";
 
 const storage = new CloudinaryStorage({
   cloudinary,
@@ -13,9 +13,18 @@ const storage = new CloudinaryStorage({
   },
 });
 
-
-const upload = multer({
-  storage: storage
+const resumeStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "resumes",
+      resource_type: "auto",
+      format: file.mimetype.split("/")[1],
+    };
+  },
 });
 
-export {upload}
+const Imageupload = multer({ storage });
+const resumeUplaod = multer({ storage: resumeStorage }); 
+
+export { Imageupload, resumeUplaod };

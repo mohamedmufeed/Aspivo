@@ -26,6 +26,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    about: {
+      type: String,
+      required: false,
+    },
     verified: {
       type: Boolean,
       default: false,

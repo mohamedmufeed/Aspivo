@@ -78,7 +78,7 @@ export const resendOtp = async (req: Request, res: Response): Promise<any> => {
     return res.status(200).json({ message: "OTP Resent successfully" });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .json({
         error: error instanceof Error ? error.message : "OTP resend failed",
       });
@@ -122,7 +122,7 @@ export const resetPassword = async (
     return res.status(200).json({ message: " Password reset sucsess fully" });
   } catch (error) {
     return res
-      .status(400)
+      .status(500)
       .json({
         error:
           error instanceof Error ? error.message : " password  reset failed",

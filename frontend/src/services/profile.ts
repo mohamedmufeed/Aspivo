@@ -32,5 +32,22 @@ try {
       
           throw new Error("Something went wrong. Please try again.");
     }
-
  }
+
+
+ export const editAbout = async(userId:string,data:string)=>{
+    try {
+        const response =await axios.put(`${USER_API}/edit-about/${userId}`,{about:data})
+        console.log(response.data)
+        return response.data
+
+      
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.error("Get  profile :", error?.response?.data);
+            throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
+          }
+      
+          throw new Error("Something went wrong. Please try again.");
+    }
+} 

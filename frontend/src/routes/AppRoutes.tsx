@@ -3,7 +3,8 @@ import { lazy,Suspense } from "react"
 const Login= lazy(()=>import("../pages/user/Login"))
 const Home =lazy(()=>import("../pages/user/Home"))
 const Profile= lazy(()=>import("../pages/user/Profile"))
-const UserRoutes = () => {
+const AdminDashboard= lazy(()=>import("../pages/admin/AdminDashboard"))
+const AppRoutes = () => {
   return (
     <Router>
       <Suspense fallback={<div>Loding</div>}> 
@@ -15,10 +16,11 @@ const UserRoutes = () => {
         <Route path="/forgot-password" element={<Login />} />
         <Route path="/otp-verification" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin-dashhboard" element={<AdminDashboard />} />
       </Routes>
       </Suspense>
     </Router>
   )
 }
 
-export default UserRoutes
+export default AppRoutes
