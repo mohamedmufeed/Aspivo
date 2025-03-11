@@ -15,6 +15,7 @@ import { useLocation } from "react-router-dom";
 import Resume from "../../components/ProfileComponets/Resume";
 import AddExperience from "../../components/modals/AddExperience";
 import EditExperience from "../../components/modals/EditExperience";
+import AddEducation from "../../components/modals/AddEducation";
 
 const Profile = () => {
 const location=useLocation()

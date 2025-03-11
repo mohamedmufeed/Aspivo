@@ -36,15 +36,15 @@ const HeroSection = () => {
     },
   ];
 
-  const naviagte = useNavigate()
+  const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.auth.user)
+  console.log(user)
   useEffect(() => {
     if (user) {
-      naviagte("/")
-    } else {
-      naviagte("/login")
+      navigate("/");
     }
-  }, [naviagte, user])
+  }, [navigate, user]); 
+  
 
 
   return (

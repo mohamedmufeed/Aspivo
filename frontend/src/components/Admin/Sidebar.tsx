@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const menuItems = [
-    { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/dashboard" },
-    { icon: <FaUsers className="w-6 h-6" />, label: "Users", path: "/users" },
+    { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/admin-dashboard" },
+    { icon: <FaUsers className="w-6 h-6" />, label: "Users", path: "/admin-users" },
     { icon: <IoGitPullRequestSharp className="w-6 h-6" />, label: "Requests", path: "/requests" },
     { icon: <RiHotelLine className="w-6 h-6" />, label: "Companies", path: "/companies" },
     { icon: <MdOutlineAttachMoney className="w-6 h-6" />, label: "Subscription", path: "/subscription" },

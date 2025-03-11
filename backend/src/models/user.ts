@@ -84,6 +84,11 @@ const userSchema = new Schema(
       type: String,
       default: "https://yourcdn.com/default-avatar.png",
     },
+    isBlocked:{
+      type:Boolean,
+      default:false
+
+    },
     otp: { type: String },
     otpExpires: { type: Date },
   },

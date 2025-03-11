@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDb from "./config/db.js";
 import cors from "cors"
 import userRoutes from "./routes/userRoutes.js"
+import adminRoutes from "./routes/adminRoutes.js"
 dotenv.config()
 connectDb()
 
@@ -11,6 +12,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 app.use("/api/user",userRoutes)
+app.use("/api/admin",adminRoutes)
 
 
 

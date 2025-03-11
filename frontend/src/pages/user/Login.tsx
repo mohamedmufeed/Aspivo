@@ -1,8 +1,8 @@
 
 import { motion } from "framer-motion"
-import image1 from "../assets/image1.jpg"
-import image2 from "../assets/image2.jpg"
-import image3 from "../assets/image3.jpg"
+import image1 from "../../assets/image1.jpg"
+import image2 from "../../assets/image2.jpg"
+import image3 from "../../assets/image3.jpg"
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { lazy,Suspense } from "react";
@@ -54,9 +54,7 @@ const Login = () => {
   useEffect(() => {
     if (user) {
       naviagte("/")
-    } else {
-      naviagte("/login")
-    }
+    } 
   }, [naviagte, user])
 
 

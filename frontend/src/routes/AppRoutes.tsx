@@ -4,6 +4,7 @@ const Login= lazy(()=>import("../pages/user/Login"))
 const Home =lazy(()=>import("../pages/user/Home"))
 const Profile= lazy(()=>import("../pages/user/Profile"))
 const AdminDashboard= lazy(()=>import("../pages/admin/AdminDashboard"))
+const UserManageMent=lazy(()=>import("../pages/admin/UserManageMent"))
 const AppRoutes = () => {
   return (
     <Router>
@@ -16,7 +17,8 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<Login />} />
         <Route path="/otp-verification" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/admin-dashhboard" element={<AdminDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-users" element={<UserManageMent />} />
       </Routes>
       </Suspense>
     </Router>

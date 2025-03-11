@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { RootState, AppDispatch } from "../../redux/store/store";
 import { useDispatch } from "react-redux";
@@ -18,7 +18,7 @@ const LoginForm = () => {
   const navigate = useNavigate()
 
   const user = useSelector((state: RootState) => state.auth.user)
-
+  
   const handeleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -38,31 +38,38 @@ const LoginForm = () => {
 
     try {
       const data = await loginApi({ email, password })
-      if (data) {
-        dispatch(login(data))
+      console.log("the data",data.user)
+      dispatch(login(data))
+
+      if (data.user.isAdmin===true) {
+        console.log("good")
+        navigate("/admin-dashboard")
+        
+      } else {
         navigate("/")
       }
+   
 
     } catch (error) {
-      console.log("the errorr",error)
-      
-       if(error instanceof Error){
+      console.log("the errorr", error)
+
+      if (error instanceof Error) {
         setError(error.message)
-       }else{
+      } else {
         setError("Invalid username and password")
-       }
+      }
 
     }
   }
   return (
-    
+
     <div className="  bg-[#F6F6F6] flex flex-col justify-center font-[Montserrat] h-full p-8">
-  
+
       <h1 className="text-3xl font-bold text-gray-800 mb-2 mt-10">Welcome Back</h1>
       <p className="text-gray-500 mb-6">Welcome Back ! Please enter your details</p>
-      
+
       <form action="" onSubmit={handeleSubmit} >
-  {    error ?<p className="text-red-600 font-light text-sm ">{error}</p>:""}
+        {error ? <p className="text-red-600 font-light text-sm ">{error}</p> : ""}
         <div className="w-full flex flex-col space-y-3 ">
           <label htmlFor="email" className="text-gray-700 font-medium">Email</label>
           {emailError ? <p className="text-red-600 font-light text-sm  ">{emailError}</p> : ""}

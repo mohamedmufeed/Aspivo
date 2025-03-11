@@ -3,13 +3,23 @@ import { UserCircle, Settings, Briefcase, LogOut } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import profileAvathar from "../../assets/user.png"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/slice/authSlice";
+
 
 const ProfileDropdown = () => {
 
+    const dispatch= useDispatch()
+    const navigate=useNavigate()
     const user= useSelector((state:RootState)=>state.auth.user)
 
     console.log(user)
+    const handleLogout = () => {
+          dispatch(logout());
+          navigate("/login");
+      };
+      
 
     return (
         <> 
@@ -43,7 +53,7 @@ const ProfileDropdown = () => {
                             <Briefcase size={20} />
                             <span>My Jobs</span>
                         </button>
-                        <button className="flex items-center space-x-4 w-full p-2 rounded text-red-500 hover:bg-gray-100">
+                        <button className="flex items-center space-x-4 w-full p-2 rounded text-red-500 hover:bg-gray-100" onClick={handleLogout}>
                             <LogOut size={20} />
                             <span>Logout</span>
                         </button>

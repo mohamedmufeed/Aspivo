@@ -114,3 +114,16 @@ export const resendotp= async (data:{email:string})=>{
   }
 
   }
+
+   export const logout = async()=>{
+    try {
+      localStorage.removeItem("UserToken");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error?.response?.status) {
+          console.error("Logout user :", error?.response?.data);
+        }
+      }
+      return null
+    }
+   }

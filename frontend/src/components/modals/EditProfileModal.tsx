@@ -100,17 +100,17 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col">
                                     <label htmlFor="firstName">First Name</label>
-                                    <input type="text" id="firstName"  name="firstName" value={profile.firstName} onChange={handleChange} className="border p-2 w-full rounded-lg" required />
+                                    <input type="text" id="firstName"  name="firstName" value={profile.firstName} onChange={handleChange} className="border p-2 w-full rounded-lg"  />
                                 </div>
                                 <div className="flex flex-col">
                                     <label htmlFor="lastName">Last Name</label>
-                                    <input type="text" id="lastName" name="lastName" value={profile.lastName} onChange={handleChange} className="border p-2 w-full rounded-lg" required />
+                                    <input type="text" id="lastName" name="lastName" value={profile.lastName} onChange={handleChange} className="border p-2 w-full rounded-lg"  />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="flex flex-col">
                                     <label htmlFor="phone">Phone Number</label>
-                                    <input type="text" id="phone" name="phone" value={profile.phone} onChange={handleChange} className="border p-2 w-full rounded-lg" required />
+                                    <input type="text" id="phone" name="phone" value={profile.phone} onChange={handleChange} className="border p-2 w-full rounded-lg"  />
                                 </div>
                                 <div className="flex flex-col">
                                     <label htmlFor="position">Current Position</label>

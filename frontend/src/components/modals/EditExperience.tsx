@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { addExprience, editExperience } from "../../services/profile";
+import { editExperience } from "../../services/profile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 
@@ -13,6 +13,7 @@ interface EditProfileModalProps {
     experienceId: string
 }
 export interface Experience {
+    _id?:string;
     title: string;
     employmentType: string;
     company: string;
@@ -27,10 +28,10 @@ export interface Experience {
 const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId, experienceId }) => {
     const [checked, setChecked] = useState(false);
     const user = useSelector((stae: RootState) => stae.auth.user)
-    console.log("User from Redux:", user);
-    console.log("User experiences from Redux:", user?.experiences);
+    const experiences = user?.experiences
+    console.log(experiences)
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<Experience>({
         title: "",
         employmentType: "",
         company: "",
@@ -38,8 +39,30 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
         endDate: "",
         location: "",
         description: "",
-        experienceId: "",
+        currentlyWorking: false,
     });
+
+    useEffect(() => {
+        if (isOpen && experienceId && experiences && experiences.length > 0) {
+            const existingExperience = experiences.find((exp) => exp._id === experienceId);
+            if (existingExperience) {
+                setFormData((prevState) => ({
+                    ...prevState,
+                    title: existingExperience.title || "",
+                    employmentType: existingExperience.employmentType || "",
+                    company: existingExperience.company || "",
+                    startDate: existingExperience.startDate || "",
+                    endDate: existingExperience.endDate || "",
+                    location: existingExperience.location || "",
+                    description: existingExperience.description || "",
+                    experienceId: experienceId,
+                }));
+                setChecked(existingExperience.currentlyWorking || false);
+            }
+        }
+    }, [isOpen, experienceId, experiences]);
+
+
 
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -72,24 +95,25 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
         try {
             const experienceData: Experience = {
                 ...formData,
+                _id:experienceId,
                 currentlyWorking: checked
             };
 
+      
             const response = await editExperience(userId, experienceData)
+            console.log("Response from API:", response);
             if (response) {
-                console.log("response is there", response)
+                setProfileData((prev: any) => ({
+                    ...prev,
+                    experiences: prev.experiences.map((exp: Experience) =>
+                        exp._id === experienceId ? experienceData : exp
+                    ),
+                }));
+                onClose();
             } else {
-                console.log("no repsoense")
+                console.log("No response received");
             }
 
-
-            setProfileData((prev: any) => ({
-                ...prev,
-                experiences: [...(prev.experiences || []), experienceData]
-            }));
-
-
-            onClose();
 
         } catch (error) {
             console.log("Error in the adding ", error)
