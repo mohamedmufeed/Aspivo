@@ -38,15 +38,12 @@ const LoginForm = () => {
 
     try {
       const data = await loginApi({ email, password })
-      console.log("the data",data.user)
-      dispatch(login(data))
-
-      if (data.user.isAdmin===true) {
-        console.log("good")
-        navigate("/admin-dashboard")
-        
+      dispatch(login(data.user))
+      if (data.user && data.user.isAdmin === true) {
+        console.log("ggod")
+        navigate("/admin-dashboard");
       } else {
-        navigate("/")
+        navigate("/hello");
       }
    
 

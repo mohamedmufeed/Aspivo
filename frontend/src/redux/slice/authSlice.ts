@@ -47,8 +47,7 @@ const authSlice = createSlice({
         state.user.experiences = [...(state.user.experiences || []), action.payload]; 
       }
     },
-    
- 
+  
     editExperience:(state,action)=>{
       if(state.user){
         state.user.experiences=state.user.experiences.map((exp)=>

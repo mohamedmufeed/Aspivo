@@ -14,10 +14,11 @@ export class AuthRepostry {
   }
 
   async findByEmail(email: string) {
-    return await User.findOne({ email });
+    return await User.findOne({ email ,isBlocked:false});
   }
-   async findById(id:string){
-    return await User.findById( new mongoose.Types.ObjectId(id))
-   }
+  async findById(id: string) {
+    return await User.findById(new mongoose.Types.ObjectId(id));
+}
+
     
 }

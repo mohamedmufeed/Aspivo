@@ -1,6 +1,6 @@
 
 import { register ,login, verifyOtp, resendOtp, forgotPassword, resetPassword } from "../controllers/user/authController.js";
-import { addExprience, editAbout, editExperince, editProfile, getProfile , uploadResume} from "../controllers/user/profileController.js";
+import { addEducation, addExprience, editAbout, editExperince, editProfile, getProfile , uploadResume} from "../controllers/user/profileController.js";
 import express  from "express";
 import {  Imageupload , resumeUplaod } from "../config/multer.js";
 
@@ -17,6 +17,7 @@ router.put("/edit-about/:id",editAbout)
 router.post("/upload-resuem/:id",resumeUplaod.single("resume"),uploadResume)
 router.post("/add-experience/:id",addExprience)
 router.put("/edit-experience/:id",editExperince)
+router.post("/add-education/:id",addEducation)
 
 
 export default router

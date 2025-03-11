@@ -2,6 +2,7 @@ import { use } from "passport";
 import { AuthRepostry } from "../repositories/userRepositories.js";
 import { ProfileTypes } from "../types/userTypes";
 import { Experience } from "../types/userTypes";
+import { Education } from "../types/userTypes";
 
 const authRepostry = new AuthRepostry();
 
@@ -42,27 +43,36 @@ export class ProfileSerive {
   async addExperience(id: string, data: Experience) {
     const user = await authRepostry.findById(id);
     if (!user) throw new Error("User not found");
-  
-    const { title, company, description, employmentType, endDate, location, startDate, currentlyWorking } = data;
-  
+
+    const {
+      title,
+      company,
+      description,
+      employmentType,
+      endDate,
+      location,
+      startDate,
+      currentlyWorking,
+    } = data;
+
     user.experiences.push({
       title,
       company,
       description,
       employmentType,
-      endDate: endDate ? new Date(endDate) : null, 
-      startDate: new Date(startDate), 
+      endDate: endDate ? new Date(endDate) : null,
+      startDate: new Date(startDate),
       location,
       currentlyWorking,
     });
-  
+
     await user.save();
     return { user, message: "User experience added successfully" };
   }
-  
 
   async editExperience(id: string, data: Experience, experienceId: string) {
     const user = await authRepostry.findById(id);
+    console.log("the before ", user);
     if (!user) throw new Error("User not found");
     const {
       title,
@@ -76,16 +86,34 @@ export class ProfileSerive {
     const experience = user.experiences.id(experienceId);
     if (!experience) throw new Error("Experince not found");
 
-    if(title)experience.title=title
-    if(company)experience.company=company
-    if(description)experience.description=description
-    if(employmentType)experience.employmentType=employmentType
-    if(endDate)experience.endDate=endDate
-    if(location)experience.location=location
-    if(startDate)experience.startDate=startDate
+    if (title) experience.title = title;
+    if (company) experience.company = company;
+    if (description) experience.description = description;
+    if (employmentType) experience.employmentType = employmentType;
+    if (endDate) experience.endDate = endDate;
+    if (location) experience.location = location;
+    if (startDate) experience.startDate = startDate;
 
-     await user.save()
+    user.markModified("experiences");
+    await user.save();
+    console.log("After saving: ", JSON.stringify(user, null, 2));
 
-     return {user ,message:" Experice edited sucssefully"}
+    return { user, message: " Experice edited sucssefully" };
+  }
+
+  async addEducation(id: string, data: Education) {
+    const user = await authRepostry.findById(id);
+    if (!user) throw new Error("User not found");
+    const { degree, endDate, fieldOfStudy, grade, school, startDate } = data;
+    user.education.push({
+      degree,
+      endDate,
+      fieldOfStudy,
+      grade,
+      school,
+      startDate,
+    });
+    await user.save();
+    return { user, message: "user education addedd sucses fully" };
   }
 }

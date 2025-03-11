@@ -53,14 +53,14 @@ const userSchema = new Schema(
           required: false,
         },
         startDate: {
-          type: Date, 
+          type: Date,
           required: false,
         },
         endDate: {
-          type: Date, 
+          type: Date,
           required: false,
         },
-        employmentType: { 
+        employmentType: {
           type: String,
           enum: ["Full time", "Part time", "Remote", "Intern", "Contract"],
           required: false,
@@ -73,21 +73,51 @@ const userSchema = new Schema(
           type: String,
           required: false,
         },
-        currentlyWorking: { 
+        currentlyWorking: {
           type: Boolean,
           required: false,
         },
       },
     ],
-    
+    education: [
+      {
+        school: {
+          type: String,
+          required: false,
+        },
+        degree: {
+          type: String,
+          required: false,
+        },
+        fieldOfStudy: {
+          type: String,
+          required: false,
+        },
+        startDate: {
+          type: Date,
+          required: false,
+        },
+        endDate: {
+          type: Date,
+          required: false,
+        },
+        grade: {
+          type: String,
+          required: false,
+        },
+      },
+    ],
+    skills: {
+      type: [String], 
+      required: false,
+    },
     profileImage: {
       type: String,
       default: "https://yourcdn.com/default-avatar.png",
     },
-    isBlocked:{
-      type:Boolean,
-      default:false
-
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
     otp: { type: String },
     otpExpires: { type: Date },

@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchUsers } from "../../services/adminService";
 import { useLocation } from "react-router-dom";
 import { blockUser } from "../../services/adminService";
+import  profileAvathar from "../../assets/user.png"
 type User = {
   _id: string;
   userName: string;
@@ -113,7 +114,7 @@ const UserManageMent = () => {
   >
     <div className="flex justify-center">
       <img
-        src={user.profileImage || "/default-profile.png"} 
+        src={user.profileImage ?user.profileImage: profileAvathar} 
         alt="Profile"
         className="w-10 h-10 rounded-full"
       />

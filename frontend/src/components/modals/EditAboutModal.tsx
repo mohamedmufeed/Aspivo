@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { editAbout } from "../../services/profile";
+import { editAboutSchema } from "../../validation/zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 interface EditProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
     userId: string;
     setProfileData:(prev:any)=>void
 }
-interface UserProfile {
-    firstName: string;
-    lastName: string;
-    position: string;
-    location: string;
-    about?: string;
-}
+
+ interface  FormData{
+    about:string
+ }
 
 const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId }) => {
     useEffect(() => {
@@ -25,14 +26,16 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
 
     const [about, setAbout] = useState<string>("")
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+        resolver: zodResolver(editAboutSchema),
+    });
+
+    const onSubmit = async (data:FormData) => {
+        
         try {
-            const response= await editAbout(userId,about)
-            setProfileData((prev: UserProfile) => ({
-                ...prev,
-                about: about
-            }));
+            const response= await editAbout(userId,data.about)
+            console.log("the response is ",response)
+            setProfileData(response.user.user)
             
             onClose()
         } catch (error) {
@@ -53,7 +56,7 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                         <VscClose onClick={onClose} className="cursor-pointer w-8 h-8" />
                     </div>
                     <hr className="mt-2" />
-                    <form action="#" onSubmit={handleSubmit}>
+                    <form action="#" onSubmit={handleSubmit(onSubmit)}>
 
 
 
@@ -62,9 +65,10 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
 
                             <div className="flex flex-col">
                                 <p className="mt-3 text-md text-gray-600">You can write about your years of experience, industry, or skills. People also talk about their achievements or previous job experiences.</p>
+                                {errors.about && <p className="text-red-500 text-sm mt-1">{errors.about.message}</p>}
                                 <label htmlFor="about" className="block text-sm/6 font-medium text-gray-900"></label>
                                 <div className="mt-2">
-                                    <textarea name="about" id="about" value={about} rows={3} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-orange-400 sm:text-sm/6" onChange={(e) => setAbout(e.target.value)}></textarea>
+                                    <textarea    {...register("about")}  name="about" id="about" value={about} rows={3} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-orange-400 sm:text-sm/6" onChange={(e) => setAbout(e.target.value)}></textarea>
                                 </div>
 
                             </div>

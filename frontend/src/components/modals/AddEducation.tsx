@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { useDispatch } from "react-redux";
+
+import { addEducation } from "../../services/profile";
+import { educationSchema } from "../../validation/zod";
+
+
 
 
 
@@ -10,29 +14,28 @@ interface EditProfileModalProps {
     userId: string;
     setProfileData: (prev: any) => void;
 }
- export interface Education {
+export interface Education {
     school: string;
-    degree:string;
-    filedofstudy: string;
+    degree: string;
+    fieldOfStudy: string;
     startDate: string;
-    endDate: string; 
+    endDate: string;
     grade: string;
-  }
-  
+}
+
 
 const AddEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId }) => {
+const [errors,setErrors]=useState<Record<string,string>>({})
 
-    const dispatch = useDispatch();
-   
     const [formData, setFormData] = useState({
         school: "",
         degree: "",
-        filedofstudy: "",
+        fieldOfStudy: "",
         startDate: "",
         endDate: "",
         grade: ""
     });
- 
+
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
         return () => {
@@ -43,39 +46,60 @@ const AddEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen,
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        let formattedValue = value;
+        if (name === "startDate" || name === "endDate") {
+            formattedValue = new Date(value).toISOString().split("T")[0];
+        }
+        setFormData((prev) => ({ ...prev, [name]: formattedValue }));
     };
-  
 
-  
 
- 
+    const validateForm =(data:Education)=>{
+        const  result= educationSchema.safeParse(data)
+        if(!result.success){
+            const formattedErrors:Record<string,string>={};
+            result.error.errors.forEach((err)=>{
+                if(err.path){
+                    formattedErrors[err.path[0]]=err.message
+                }
+            })
+
+          setErrors(formattedErrors)
+        }else{
+            setErrors({})
+        }
+    }
+
+
+
     const handleSubmit = async (e: React.FormEvent) => {
-        console.log("clicked")
+ 
         e.preventDefault();
 
-
+        const result=educationSchema.safeParse(formData);
+        if(!result.success){
+            validateForm(formData)
+            return
+        }
         try {
             const experienceData: Education = {
-                ...formData, 
-            
+                ...formData,
+
             };
-          
-             if(true){
-          
-               setProfileData((prev: any) => ({
-                ...prev,
-                experiences: [...(prev.experiences || []), experienceData] 
-            }));
+            const response = await addEducation(userId,formData)
+            if (response) {
 
-            onClose();
-             }
+                setProfileData((prev: any) => ({
+                    ...prev,
+                    experiences: [...(prev.experiences || []), experienceData]
+                }));
 
-    
+                onClose();
+            }
         } catch (error) {
-            console.log("Error in the adding ",error)
+            console.log("Error in the adding ", error)
         }
-       
+
     };
 
     if (!isOpen) return null;
@@ -96,103 +120,109 @@ const AddEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen,
                         <VscClose onClick={onClose} className="cursor-pointer w-8 h-8" />
                     </div>
                     <hr className="mt-2" />
-                     <div className="px-7 space-y-10 max-h-[70vh] overflow-y-auto"> 
-                    <form onSubmit={handleSubmit} >
-                        <div className="flex mt-6 flex-col">
-                            <div className="mt-5">
-                                <label className="text-gray-600">School*</label>
-                                <input 
-                                    type="text" 
-                                    name="school" 
-                                    value={formData.school} 
-                                    onChange={handleChange} 
-                                    className="border p-2 w-full rounded-lg focus:outline-orange-400" 
-                                    placeholder="Ex: Retail Sales Manager" 
-                                    required 
-                                />
-                            </div>
-
-                            <div className="mt-5">
-                                <label className="text-gray-600">Degree*</label>
-                                <input 
-                                    type="text" 
-                                    name="degree" 
-                                    value={formData.degree} 
-                                    onChange={handleChange} 
-                                    className="border p-2 w-full rounded-lg focus:outline-orange-400" 
-                                    placeholder="Please Select" 
-                                    required 
-                                />
-                            </div>
-
-                            <div className="mt-5">
-                                <label className="text-gray-600">Filed of study*</label>
-                                <input 
-                                    type="text" 
-                                    name="filedofstudy" 
-                                    value={formData.filedofstudy} 
-                                    onChange={handleChange} 
-                                    className="border p-2 w-full rounded-lg focus:outline-orange-400" 
-                                    placeholder="Ex: Microsoft" 
-                                    required 
-                                />
-                            </div>
-
-                        
-
-                            <div className="grid grid-cols-2 mt-5 gap-4">
-                                <div className="flex flex-col">
-                                    <label className="text-gray-600">Start date*</label>
-                                    <input 
-                                        type="text" 
-                                        name="startDate" 
-                                        value={formData.startDate} 
-                                        onChange={handleChange} 
-                                        className="border p-2 w-full rounded-lg focus:outline-orange-400" 
-                                        placeholder="YYYY-MM-DD" 
-                                        required 
+                    <div className="px-7 space-y-10 max-h-[70vh] overflow-y-auto">
+                        <form onSubmit={handleSubmit} >
+                            <div className="flex mt-6 flex-col">
+                                <div className="mt-5">
+                                    <label className="text-gray-600">School*</label>
+                                    {errors.school && <p className="text-red-500">{errors.school}</p>}
+                                    <input
+                                        type="text"
+                                        name="school"
+                                        value={formData.school}
+                                        onChange={handleChange}
+                                        className="border p-2 w-full rounded-lg focus:outline-orange-400"
+                                        placeholder="Ex: Oxford"
+                                        required
                                     />
                                 </div>
-                           
+
+                                <div className="mt-5">
+                                    <label className="text-gray-600">Degree*</label>
+                                    {errors.degree && <p className="text-red-500">{errors.degree}</p>}
+                                    <input
+                                        type="text"
+                                        name="degree"
+                                        value={formData.degree}
+                                        onChange={handleChange}
+                                        className="border p-2 w-full rounded-lg focus:outline-orange-400"
+                                        placeholder="Bachelor of engineering"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mt-5">
+                                    <label className="text-gray-600">Filed of study*</label>
+                                    {errors.fieldOfStudy && <p className="text-red-500">{errors.fieldOfStudy}</p>}
+                                    <input
+                                        type="text"
+                                        name="fieldOfStudy"
+                                        value={formData.fieldOfStudy}
+                                        onChange={handleChange}
+                                        className="border p-2 w-full rounded-lg focus:outline-orange-400"
+                                        placeholder="Ex: mathematics, biology"
+                                        required
+                                    />
+                                </div>
+
+
+
+                                <div className="grid grid-cols-2 mt-5 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-gray-600">End date*</label>
-                                        <input 
-                                            type="text" 
-                                            name="endDate" 
-                                            value={formData.endDate} 
-                                            onChange={handleChange} 
-                                            className="border p-2 w-full rounded-lg focus:outline-orange-400" 
-                                            placeholder="YYYY-MM-DD" 
-                                            required 
+                                        <label className="text-gray-600">Start date*</label>
+                                        {errors.startDate && <p className="text-red-500">{errors.startDate}</p>}
+                                        <input
+                                            type="date"
+                                            name="startDate"
+                                            value={formData.startDate}
+                                            onChange={handleChange}
+                                            className="border p-2 w-full rounded-lg focus:outline-orange-400"
+                                            placeholder="YYYY-MM-DD"
+                                            required
                                         />
                                     </div>
-                           
+
+                                    <div className="flex flex-col">
+                                        <label className="text-gray-600">End date*</label>
+                                        {errors.endDate && <p className="text-red-500">{errors.endDate}</p>}
+                                        <input
+                                            type="date"
+                                            name="endDate"
+                                            value={formData.endDate}
+                                            onChange={handleChange}
+                                            className="border p-2 w-full rounded-lg focus:outline-orange-400"
+                                            placeholder="YYYY-MM-DD"
+                                            required
+                                        />
+                                    </div>
+
+                                </div>
+
+                                <div className="mt-5">
+                                    <label className="text-gray-600">Grade*</label>
+                                    {errors.grade && <p className="text-red-500">{errors.grade}</p>}
+                                    <input
+                                        type="text"
+                                        name="grade"
+                                        value={formData.grade}
+                                        onChange={handleChange}
+                                        className="border p-2 w-full rounded-lg focus:outline-orange-400"
+                                        placeholder="%"
+                                        required
+                                    />
+                                </div>
+
+
                             </div>
 
-                            <div className="mt-5">
-                                <label className="text-gray-600">Grade*</label>
-                                <input 
-                                    type="text" 
-                                    name="grade" 
-                                    value={formData.grade} 
-                                    onChange={handleChange} 
-                                    className="border p-2 w-full rounded-lg focus:outline-orange-400" 
-                                    placeholder="Please Select" 
-                                    required 
-                                />
+                            <hr className="mt-9" />
+                            <div className="flex justify-end p-6">
+                                <button type="submit" className="p-3 px-5 bg-orange-600 rounded-lg text-white font-bold">
+                                    Save Changes
+                                </button>
                             </div>
-
-                        
-                        </div>
-                   
-                    <hr className="mt-9" />
-                        <div className="flex justify-end p-6">
-                            <button type="submit" className="p-3 px-5 bg-orange-600 rounded-lg text-white font-bold">
-                                Save Changes
-                            </button>
-                        </div>
                         </form>
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>

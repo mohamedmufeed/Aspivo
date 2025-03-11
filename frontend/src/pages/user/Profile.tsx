@@ -7,47 +7,50 @@ import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
 import EditProileModal from "../../components/modals/EditProfileModal";
 import EditAboutModal from "../../components/modals/EditAboutModal";
-import {  useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";
 import { useLocation } from "react-router-dom";
 import Resume from "../../components/ProfileComponets/Resume";
-import AddExperience from "../../components/modals/AddExperience";
+import AddExperience, { Experience } from "../../components/modals/AddExperience";
 import EditExperience from "../../components/modals/EditExperience";
-import AddEducation from "../../components/modals/AddEducation";
+import AddEducation, { Education } from "../../components/modals/AddEducation";
 
 const Profile = () => {
-const location=useLocation()
+    const location = useLocation()
     const [editModalOpen, setEditModal] = useState(false)
     const [editAboutOpen, setAboutModal] = useState(false)
-    const [addExperience, setAddExperience]=useState(false)
-    const [editExperience,setEditExperience]=useState(false)
+    const [addExperience, setAddExperience] = useState(false)
+    const [editExperience, setEditExperience] = useState(false)
+    const [addEducation, setAddEducation] = useState(false)
     const [profileData, setProfileData] = useState<any>(null);
-    const user= useSelector((state:RootState)=>state.auth.user)
+    const user = useSelector((state: RootState) => state.auth.user)
+
     if (!user) {
         console.error("User data is null!");
         return null;
     }
-  const userId=user._id
+    const userId = user._id
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await getProfile(userId);
-        setProfileData(response.user.user);
-      console.log(response.user.user)
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-  
-    fetchProfile(); 
-  }, [userId,location]); 
-  
-  if (!profileData) {
-    return <p>Loading profile...</p>; 
-  }
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await getProfile(userId);
+                setProfileData(response.user.user);
+                console.log(response.user.user)
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            }
+        };
+
+        fetchProfile();
+    }, [userId, location]);
+
+    if (!profileData) {
+        return <p>Loading profile...</p>;
+    }
 
     return (
         <>
@@ -84,13 +87,19 @@ const location=useLocation()
 
                             <div className="mt-16 p-3 px-10 flex justify-between  items-center">
                                 <div className="">
-                                    <div className="flex space-x-1">       <h1 className="font-bold text-2xl">{profileData.firstName}</h1>
-                                    <h1 className="font-bold text-2xl">{profileData.lastName}</h1>
-                                    </div>
-                             
+                                    {profileData ? (
+                                        <div className="flex space-x-1">
+                                            <h1 className="font-bold text-2xl">{profileData.firstName}</h1>
+                                            <h1 className="font-bold text-2xl">{profileData.lastName}</h1>
+                                        </div>
+                                    ) : (
+                                        <h1 className="font-bold text-2xl">{profileData?.userName}</h1>
+                                    )}
+
+
                                     <p className="font-medium text-gray-700">{profileData.position}</p>
                                     <p className="text-gray-700 space-y-3.5">
-                                 {profileData.location}
+                                        {profileData.location}
                                     </p>
                                 </div>
 
@@ -107,7 +116,7 @@ const location=useLocation()
                                             alt=""
                                         />
                                         <h1 className="text-lg font-semibold text-gray-800">
-                                        {profileData.position}
+                                            {profileData.position}
                                         </h1>
                                     </div>
 
@@ -126,7 +135,7 @@ const location=useLocation()
                             </div>
                         </div>
                     </div>
-                    {editModalOpen && <EditProileModal userId={userId} isOpen={editModalOpen} onClose={() => setEditModal(false)} />}
+                    {editModalOpen && <EditProileModal setProfileData={setProfileData} userId={userId} isOpen={editModalOpen} onClose={() => setEditModal(false)} />}
 
                     {/* aboutSection */}
 
@@ -137,14 +146,14 @@ const location=useLocation()
                         </div>
                         <div className=" font-light px-8 mt-3 p-3">
                             <p className="">
-                              {profileData.about}
+                                {profileData.about}
                             </p>
                         </div>
                     </div>
                     {editAboutOpen && <EditAboutModal setProfileData={setProfileData} userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
                     {/* resueme section */}
 
-                      <Resume/>
+                    <Resume />
 
                     {/* exprience section */}
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
@@ -158,26 +167,26 @@ const location=useLocation()
 
                         </div>
 
-                        {profileData.experiences?.length > 0 && (                     
-                            <div className="flex items-center space-x-4 p-4 mt-3">
+                        {profileData.experiences.map((experience: Experience, index: number) => (
+                            <div key={index} className="flex items-center space-x-4 p-4 mt-3">
+                                <FcGoogle className="w-10 h-10" />
 
-                            <FcGoogle className="w-10 h-10" />
-
-
-                            <div>
-                                <h2 className="font-semibold text-lg">{profileData.experiences[0].title}</h2>
-                                <h3 className="text-md text-gray-700">{profileData.experiences[0].company}</h3>
-                                <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
-                                <p className="text-gray-500 text-sm">Bangalore, India • Onsite</p>
+                                <div>
+                                    <h2 className="font-semibold text-lg">{experience.title}</h2>
+                                    <h3 className="text-md text-gray-700">{experience.company}</h3>
+                                    <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
+                                    <p className="text-gray-500 text-sm">{experience.location}</p>
+                                </div>
                             </div>
-                        </div>
-                        )}
+                        ))}
+
+
                     </div>
 
                     {addExperience && <AddExperience setProfileData={setProfileData} userId={userId} isOpen={addExperience} onClose={() => setAddExperience(false)} />}
 
                     {editExperience && profileData.experiences?.length > 0 && (
-                    <EditExperience setProfileData={setProfileData}  userId={userId}  experienceId={profileData.experiences[0].id} isOpen={editExperience}  onClose={() => setEditExperience(false)}  />)}
+                        <EditExperience setProfileData={setProfileData} userId={userId} experienceId={profileData.experiences[0].id} isOpen={editExperience} onClose={() => setEditExperience(false)} />)}
                     {/* educationm */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
@@ -185,25 +194,29 @@ const location=useLocation()
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Education</h1>
                             <div className=" flex space-x-5 ">
-                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" />
+                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddEducation(true)} />
                                 <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
                             </div>
 
                         </div>
 
+                        {profileData.education.map((education:Education, index:number) => (
+                            <div key={index} className="flex items-center space-x-4 p-4 mt-3">
 
-                        <div className="flex items-center space-x-4 p-4 mt-3">
-
-                            <FcGoogle className="w-10 h-10" />
+                                <FcGoogle className="w-10 h-10" />
 
 
-                            <div>
-                                <h2 className="font-semibold text-lg">Oxford University</h2>
-                                <h3 className="text-md text-gray-700">Master of Computer Applications - MCA , Computer Science </h3>
-                                <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                <div>
+                                    <h2 className="font-semibold text-lg">{education.school}</h2>
+                                    <h3 className="text-md text-gray-700">{education.degree} ,{education.fieldOfStudy}</h3>
+                                    <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                </div>
                             </div>
-                        </div>
+                        ))}
+
+
                     </div>
+                    {addEducation && <AddEducation setProfileData={setProfileData} userId={userId} isOpen={addEducation} onClose={() => setAddEducation(false)} />}
 
                     {/* skills */}
 

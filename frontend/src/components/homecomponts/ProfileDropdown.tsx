@@ -13,8 +13,8 @@ const ProfileDropdown = () => {
     const dispatch= useDispatch()
     const navigate=useNavigate()
     const user= useSelector((state:RootState)=>state.auth.user)
-
     console.log(user)
+    
     const handleLogout = () => {
           dispatch(logout());
           navigate("/login");
@@ -31,7 +31,7 @@ const ProfileDropdown = () => {
                             <img className="w-12 h-12 p-1 bg-white rounded-full" src={user?.profileImage?user.profileImage:profileAvathar} alt="User" />
                         </div>
                         <div>
-                            <h1 className="font-bold text-lg">{user? user.userName:""}</h1>
+                            <h1 className="font-bold text-black text-lg">{user? user.userName:""}</h1>
                             <p className="text-gray-500 text-sm">Google</p>
                         </div>
                     </div>

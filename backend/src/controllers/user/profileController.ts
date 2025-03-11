@@ -42,7 +42,7 @@ export const editProfile = async (
     console.log(updatedProfile);
     return res
       .status(200)
-      .json({ message: "User Profile updated scusessfully" });
+      .json({ message: "User Profile updated scusessfully",updatedProfile });
   } catch (error) {
     return res.status(500).json({
       error:
@@ -110,13 +110,30 @@ export const addExprience = async (req: Request, res: Response):Promise<any> => 
 
  export const editExperince= async (req:Request,res:Response):Promise<any>=>{
   try {
+   
     const userId=req.params.id
+
     const {title,company,description,employmentType,endDate, location, startDate,experienceId, currentlyWorking} = req.body
     const data={title,company,description,employmentType,endDate, location, startDate, currentlyWorking}
+
+
     const user = await profileService.editExperience(userId,data,experienceId)
+    console.log(user," after  update")
     return res.status(200).json({user,message:"User experince edited sucssessfully"})
     
   } catch (error) {
     return res.status(500).json({ message: "Error  editing experince" });
   }
  }
+
+  export const addEducation = async(req:Request,res:Response):Promise<any>=>{
+    try {
+      const userId=req.params.id
+      const {school,degree, fieldOfStudy,startDate,endDate,grade}=req.body
+      const data={school,degree, fieldOfStudy,startDate,endDate,grade}
+      const response= await profileService.addEducation(userId,data)
+     res.status(200).json({response})
+    } catch (error) {
+       res.status(500).json({message:"error adding education"})
+    }
+  }
