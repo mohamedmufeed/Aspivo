@@ -23,24 +23,21 @@ const authSlice = createSlice({
   initialState:<Usertype> { user: null, email: null, isAdmin: false, token: null },
   reducers: {
     login: (state, action) => {
-      console.log("the play load ks ",action.payload)
       state.user = {
         _id:action.payload._id,
          userName: action.payload.userName ,
-           profileImage: action.payload.profileImage ,
-           experiences: action.payload.experiences || [],
+          profileImage: action.payload.profileImage ,
+          experiences: action.payload.experiences || [],
           } ;
       state.email = action.payload.email;
       state.isAdmin = action.payload.isAdmin;
       state.token = action.payload.token; 
-      localStorage.setItem("token", action.payload.token); 
     },
     logout: (state) => {
       state.user = null;
       state.email = null;
       state.isAdmin = false;
       state.token = null;
-      localStorage.removeItem("token"); 
     },
     addExperience: (state, action) => {
       if (state.user) {

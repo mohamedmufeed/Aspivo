@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { editAbout } from "../../services/profile";
+import { editAbout, getProfile } from "../../services/profile";
 import { editAboutSchema } from "../../validation/zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,9 +26,31 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
 
     const [about, setAbout] = useState<string>("")
 
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors } ,setValue} = useForm<FormData>({
         resolver: zodResolver(editAboutSchema),
+        defaultValues:{
+            about:" "
+        }
     });
+
+     useEffect(() => {
+        const fetchUserProfile = async () => {
+          try {
+           const response = await getProfile(userId);
+            const userData = response.user.user;
+    
+             console.log("Fetched User Data:", userData);
+              setValue("about", userData.about || "");
+          
+          } catch (error) {
+            console.error("Failed to fetch user profile", error);
+          }
+        };
+      
+        if (isOpen && userId) {
+          fetchUserProfile();
+        }
+      }, [isOpen, userId, setValue]);
 
     const onSubmit = async (data:FormData) => {
         

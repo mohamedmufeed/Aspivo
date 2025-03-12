@@ -2,14 +2,22 @@ import { Request, Response } from "express";
 import { AuthService } from "../../services/authService.js";
 import { promises } from "dns";
 import { json } from "stream/consumers";
-import cloudinary from "../../config/cloudinaryConfig.js";
+
 const authService = new AuthService();
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
     const { userName, email, password } = req.body;
 
-    const user = await authService.regitser(userName, email, password);
+    const {user,token }= await authService.regitser(userName, email, password);
+    
+    res.cookie("access_token",token,{
+      httpOnly:true,
+      secure:false,
+      sameSite:"strict",
+      maxAge:3600000
+     })
+
     return res.status(201).json(user);
   } catch (error) {
     if (
@@ -30,7 +38,15 @@ export const login = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password } = req.body;
     const { user, token } = await authService.login(email, password);
-    return res.json({ user, token });
+
+    res.cookie("access_token",token,{
+     httpOnly:true,
+     secure:false,
+     sameSite:"strict",
+     maxAge:3600000
+    })
+
+    return res.json({ user });
   } catch (error) {
     if (
       typeof error === "object" &&

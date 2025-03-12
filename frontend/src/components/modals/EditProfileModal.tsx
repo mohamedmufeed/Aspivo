@@ -5,12 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VscClose } from "react-icons/vsc";
 import { editProfileSchema } from "../../validation/zod";
-import { editProfile } from "../../services/profile";
+import { editProfile, getProfile } from "../../services/profile";
+import axios from "axios";
 
 interface EditProfileForm {
   firstName: string;
   lastName: string;
-  phone: string;
+  phoneNumber: string;
   position: string;
   location: string;
 }
@@ -19,11 +20,15 @@ interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
-  setProfileData:(data:any)=>void
+  setProfileData: (data: any) => void
 }
 
-const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, userId ,setProfileData}) => {
+const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, userId, setProfileData }) => {
+
   const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [imageErorr, setImageErorr] = useState("")
+
 
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<EditProfileForm>({
@@ -31,38 +36,95 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
     defaultValues: {
       firstName: "",
       lastName: "",
-      phone: "",
+      phoneNumber: "",
       position: "",
       location: "",
     },
   });
 
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+       const response = await getProfile(userId);
+        const userData = response.user.user;
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+         console.log("Fetched User Data:", userData);
+        setValue("firstName", userData.firstName || "");
+        setValue("lastName", userData.lastName || "");
+        setValue("phoneNumber", userData.phoneNumber || "");
+        setValue("position", userData.position || "");
+        setValue("location", userData.location || "");
+      } catch (error) {
+        console.error("Failed to fetch user profile", error);
+      }
+    };
+  
+    if (isOpen && userId) {
+      fetchUserProfile();
+    }
+  }, [isOpen, userId, setValue]);
+  
+  
+  
+
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setProfileImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setProfileImage(file);
+  
+    
+      const uploadedImageUrl = await uploadToCloudinary(file);
+      console.log(uploadedImageUrl);
+      if (uploadedImageUrl) {
+        setImageUrl(uploadedImageUrl);
+      }
     }
   };
-
+  
+  const uploadToCloudinary = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Aspivo");
+  
+    try {
+      const { data } = await axios.post(
+        `https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`,
+        formData
+      );
+      console.log("Image uploaded successfully:", data.secure_url);
+      return data.secure_url; 
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setImageErorr("Failed to upload image");
+      return null;
+    }
+  };
+  
   const onSubmit = async (data: EditProfileForm) => {
     try {
       const formData = new FormData();
+  
+    
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
       });
-
+  
       if (profileImage) {
         formData.append("profileImage", profileImage);
       }
-
-      const response = await editProfile(userId, formData);
-      console.log("Profile updated successfully:", response);
-      setProfileData(response.updatedProfile.user)
+  
+      const response = await editProfile(userId, formData); 
+  
+      console.log("Profile updated successfully:", response.updatedProfile.user);
+      setProfileData(response.updatedProfile.user);
       onClose();
     } catch (error) {
       console.error("Profile update error:", error);
     }
   };
+  
+  
 
   if (!isOpen) return null;
 
@@ -98,7 +160,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
                   <label htmlFor="firstName">First Name</label>
-                  <input type="text" id="firstName" {...register("firstName")} className="border p-2 w-full rounded-lg" />
+                  <input   type="text" id="firstName" {...register("firstName")} className="border p-2 w-full rounded-lg" />
                   {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
                 </div>
                 <div className="flex flex-col">
@@ -109,9 +171,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
-                  <label htmlFor="phone">Phone Number</label>
-                  <input type="text" id="phone" {...register("phone")} className="border p-2 w-full rounded-lg" />
-                  {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
+                  <label htmlFor="phoneNumber">Phone Number</label>
+                  <input   type="text" id="phoneNumber"  {...register("phoneNumber")} className="border p-2 w-full rounded-lg" />
+                  {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber.message}</p>}
                 </div>
                 <div className="flex flex-col">
                   <label htmlFor="position">Current Position</label>

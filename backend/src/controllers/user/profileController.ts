@@ -12,37 +12,24 @@ export const editProfile = async (
   res: Response
 ): Promise<any> => {
   try {
-    console.log("REQ BODY:", req.body);
-    console.log("REQ FILE:", req.file);
     const userId = req.params.id;
-    const { firstName, lastName, phoneNumber, currentPostion, location } =
+    const { firstName, lastName, phoneNumber, position, location } =
       req.body;
-
-    let profileImage = "";
-
-    if (req.file) {
-      console.log("hrllo njna  ivade in");
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "profile_image",
-      });
-      console.log(result.secure_url);
-      profileImage = result.secure_url;
-    }
-
+    const path = req.file?.path;
     const data = {
-      profileImage,
+      profileImage: path || "",
       firstName,
       lastName,
       phoneNumber,
-      currentPostion,
+      position,
       location,
     };
 
     const updatedProfile = await profileService.editProfile(userId, data);
-    console.log(updatedProfile);
+
     return res
       .status(200)
-      .json({ message: "User Profile updated scusessfully",updatedProfile });
+      .json({ message: "User Profile updated scusessfully", updatedProfile });
   } catch (error) {
     return res.status(500).json({
       error:
@@ -96,44 +83,110 @@ export const uploadResume = async (
   }
 };
 
-export const addExprience = async (req: Request, res: Response):Promise<any> => {
+export const addExprience = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
-    const userId=req.params.id
-    const {title,company,description,employmentType,endDate, location, startDate, currentlyWorking} = req.body
-    const data={title,company,description,employmentType,endDate, location, startDate, currentlyWorking}
-   const user=await profileService.addExperience(userId,data)
-   return  res.status(200).json({user,message:"User Experience added sucessfully"})
+    const userId = req.params.id;
+    const {
+      title,
+      company,
+      description,
+      employmentType,
+      endDate,
+      location,
+      startDate,
+      currentlyWorking,
+    } = req.body;
+    const data = {
+      title,
+      company,
+      description,
+      employmentType,
+      endDate,
+      location,
+      startDate,
+      currentlyWorking,
+    };
+    const user = await profileService.addExperience(userId, data);
+    return res
+      .status(200)
+      .json({ user, message: "User Experience added sucessfully" });
   } catch (error) {
     return res.status(500).json({ message: "Error  adding experince" });
   }
 };
 
- export const editExperince= async (req:Request,res:Response):Promise<any>=>{
+export const editExperince = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-   
-    const userId=req.params.id
+    const userId = req.params.id;
 
-    const {title,company,description,employmentType,endDate, location, startDate,experienceId, currentlyWorking} = req.body
-    const data={title,company,description,employmentType,endDate, location, startDate, currentlyWorking}
+    const {
+      title,
+      company,
+      description,
+      employmentType,
+      endDate,
+      location,
+      startDate,
+      experienceId,
+      currentlyWorking,
+    } = req.body;
 
+    const data = {
+      title,
+      company,
+      description,
+      employmentType,
+      endDate,
+      location,
+      startDate,
+      currentlyWorking,
+    };
+    console.log(data)
 
-    const user = await profileService.editExperience(userId,data,experienceId)
-    console.log(user," after  update")
-    return res.status(200).json({user,message:"User experince edited sucssessfully"})
-    
+    const user = await profileService.editExperience(
+      userId,
+      data,
+      experienceId
+    );
+
+    res
+      .status(200)
+      .json({ user, message: "User experince edited sucssessfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error  editing experince" });
+    res.status(500).json({ message: "Error  editing experince" });
   }
- }
+};
 
-  export const addEducation = async(req:Request,res:Response):Promise<any>=>{
-    try {
-      const userId=req.params.id
-      const {school,degree, fieldOfStudy,startDate,endDate,grade}=req.body
-      const data={school,degree, fieldOfStudy,startDate,endDate,grade}
-      const response= await profileService.addEducation(userId,data)
-     res.status(200).json({response})
-    } catch (error) {
-       res.status(500).json({message:"error adding education"})
-    }
+export const addEducation = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const { school, degree, fieldOfStudy, startDate, endDate, grade } =
+      req.body;
+    const data = { school, degree, fieldOfStudy, startDate, endDate, grade };
+    const response = await profileService.addEducation(userId, data);
+    res.status(200).json({ response });
+  } catch (error) {
+    res.status(500).json({ message: "error adding education" });
   }
+};
+
+export const addSkill = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const { skills } = req.body;
+
+    const response = await profileService.addSkill(userId, skills);
+    res.status(200).json({ response });
+  } catch (error) {
+    res.status(500).json({ message: "error adding skill" });
+  }
+};

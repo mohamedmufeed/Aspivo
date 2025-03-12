@@ -3,6 +3,9 @@ import { VscClose } from "react-icons/vsc";
 import { editExperience } from "../../services/profile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
+import { data } from "react-router-dom";
+import { Education } from "./AddEducation";
+import { experinceSchema } from "../../validation/zod";
 
 
 interface EditProfileModalProps {
@@ -13,7 +16,7 @@ interface EditProfileModalProps {
     experienceId: string
 }
 export interface Experience {
-    _id?:string;
+    experienceId?:string;
     title: string;
     employmentType: string;
     company: string;
@@ -29,8 +32,9 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
     const [checked, setChecked] = useState(false);
     const user = useSelector((stae: RootState) => stae.auth.user)
     const experiences = user?.experiences
-    console.log(experiences)
 
+const [errors,setErrors]=useState<Record<string,string>>({})
+    const firstExperienceId = experiences?.[0]?._id;
     const [formData, setFormData] = useState<Experience>({
         title: "",
         employmentType: "",
@@ -41,29 +45,6 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
         description: "",
         currentlyWorking: false,
     });
-
-    useEffect(() => {
-        if (isOpen && experienceId && experiences && experiences.length > 0) {
-            const existingExperience = experiences.find((exp) => exp._id === experienceId);
-            if (existingExperience) {
-                setFormData((prevState) => ({
-                    ...prevState,
-                    title: existingExperience.title || "",
-                    employmentType: existingExperience.employmentType || "",
-                    company: existingExperience.company || "",
-                    startDate: existingExperience.startDate || "",
-                    endDate: existingExperience.endDate || "",
-                    location: existingExperience.location || "",
-                    description: existingExperience.description || "",
-                    experienceId: experienceId,
-                }));
-                setChecked(existingExperience.currentlyWorking || false);
-            }
-        }
-    }, [isOpen, experienceId, experiences]);
-
-
-
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
         return () => {
@@ -71,12 +52,38 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
         };
     }, [isOpen]);
 
+  
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
+
+   
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement| HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        let formattedValue = value;
+        if (name === "startDate" || name === "endDate") {
+            formattedValue = new Date(value).toISOString().split("T")[0];
+        }
+        setFormData((prev) => ({ ...prev, [name]: formattedValue }));
     };
 
+
+       const validateForm = (data: Experience) => {
+             const result = experinceSchema.safeParse(data)
+             if (!result.success) {
+                 const formattedErrors: Record<string, string> = {};
+                 result.error.errors.forEach((err) => {
+                     if (err.path) {
+                         formattedErrors[err.path[0]] = err.message
+                     }
+                 })
+                 setErrors(formattedErrors)
+             }else{
+                 setErrors({});
+             }
+     
+         }
 
 
     const handleCheckboxChange = () => {
@@ -91,11 +98,16 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const result= experinceSchema.safeParse(formData)
+        if(!result.success){
+            validateForm(formData)
+            return
+        }
 
         try {
             const experienceData: Experience = {
                 ...formData,
-                _id:experienceId,
+                experienceId:firstExperienceId,
                 currentlyWorking: checked
             };
 
@@ -106,7 +118,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                 setProfileData((prev: any) => ({
                     ...prev,
                     experiences: prev.experiences.map((exp: Experience) =>
-                        exp._id === experienceId ? experienceData : exp
+                        exp.experienceId === experienceId ? experienceData : exp
                     ),
                 }));
                 onClose();
@@ -144,6 +156,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                             <div className="flex mt-6 flex-col">
                                 <div className="mt-5">
                                     <label className="text-gray-600">Title*</label>
+                                    {errors.title && <p className="text-red-500">{errors.title}</p>}
                                     <input
                                         type="text"
                                         name="title"
@@ -157,19 +170,26 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
 
                                 <div className="mt-5">
                                     <label className="text-gray-600">Employment type*</label>
-                                    <input
-                                        type="text"
+                                    {errors.employmentType && <p className="text-red-500">{errors.employmentType}</p>}
+                                    <select
                                         name="employmentType"
                                         value={formData.employmentType}
                                         onChange={handleChange}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        placeholder="Please Select"
                                         required
-                                    />
+                                    >
+                                        <option value="">Select Employment Type</option>
+                                        <option value="Full time">Full-time</option>
+                                        <option value="Part time">Part-time</option>
+                                        <option value="Remote">Remote</option>
+                                        <option value="Intern">Internship</option>
+                                        <option value="Contract">Contract</option>
+                                    </select>
                                 </div>
 
                                 <div className="mt-5">
                                     <label className="text-gray-600">Company or Organisation*</label>
+                                    {errors.company && <p className="text-red-500">{errors.company}</p>}
                                     <input
                                         type="text"
                                         name="company"
@@ -196,8 +216,9 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                                 <div className="grid grid-cols-2 mt-5 gap-4">
                                     <div className="flex flex-col">
                                         <label className="text-gray-600">Start date*</label>
+                                        {errors.startDate && <p className="text-red-500">{errors.startDate}</p>}
                                         <input
-                                            type="text"
+                                            type="date"
                                             name="startDate"
                                             value={formData.startDate}
                                             onChange={handleChange}
@@ -209,8 +230,9 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                                     {!checked && (
                                         <div className="flex flex-col">
                                             <label className="text-gray-600">End date*</label>
+                                            {errors.endDate && <p className="text-red-500">{errors.endDate}</p>}
                                             <input
-                                                type="text"
+                                                type="date"
                                                 name="endDate"
                                                 value={formData.endDate}
                                                 onChange={handleChange}
@@ -224,19 +246,21 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
 
                                 <div className="mt-5">
                                     <label className="text-gray-600">Location*</label>
+                                    {errors.location && <p className="text-red-500">{errors.location}</p>}
                                     <input
                                         type="text"
                                         name="location"
                                         value={formData.location}
                                         onChange={handleChange}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        placeholder="Please Select"
+                                        placeholder="Location"
                                         required
                                     />
                                 </div>
 
                                 <div className="mt-5">
                                     <label className="block text-gray-900">Description</label>
+                                    {errors.description && <p className="text-red-500">{errors.description}</p>}
                                     <textarea
                                         name="description"
                                         value={formData.description}

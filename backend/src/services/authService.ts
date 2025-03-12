@@ -23,17 +23,16 @@ export class AuthService {
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-
-    const { user } = await authRepostry.register(
+    const { user,token } = await authRepostry.register(
       userName,
       email,
       hashedOtp,
       otpExpires,
-      hashePassword
+      hashePassword,
     );
 
     await sendOtpEmail(email, otp);
-    return { user };
+    return { user,token };
   }
 
   async login(email: string, password: string) {

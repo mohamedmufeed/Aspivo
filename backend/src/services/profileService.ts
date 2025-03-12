@@ -7,18 +7,18 @@ import { Education } from "../types/userTypes";
 const authRepostry = new AuthRepostry();
 
 export class ProfileSerive {
+  
   async editProfile(id: string, data: ProfileTypes) {
     const user = await authRepostry.findById(id);
     if (!user) throw new Error("User not found");
 
-    let profileImage = user.profileImage;
     if (data.profileImage) {
-      profileImage = data.profileImage;
+      user.profileImage = data.profileImage;  
     }
     user.firstName = data.firstName || user.firstName;
     user.lastName = data.lastName || user.lastName;
     user.phoneNumber = data.phoneNumber || user.phoneNumber;
-    user.position = data.currentPostion || user.position;
+    user.position = data.position || user.position;
     user.location = data.location || user.location;
 
     await user.save();
@@ -72,7 +72,6 @@ export class ProfileSerive {
 
   async editExperience(id: string, data: Experience, experienceId: string) {
     const user = await authRepostry.findById(id);
-    console.log("the before ", user);
     if (!user) throw new Error("User not found");
     const {
       title,
@@ -116,4 +115,26 @@ export class ProfileSerive {
     await user.save();
     return { user, message: "user education addedd sucses fully" };
   }
+
+  async addSkill(id: string, skills: string[]) {
+    const user = await authRepostry.findById(id);
+    if (!user) throw new Error("User not found");
+    
+    if (!user.skills) {
+        user.skills = [];
+    }
+  
+    const newSkills = skills.filter(skill => !user.skills.includes(skill));
+
+    if (newSkills.length === 0) {
+        return {status: 400,message:" skills already exist"}
+    }
+
+    user.skills.push(...newSkills);
+
+    await user.save();
+
+    return { user, message: "User skill added successfully" };
+}
+
 }

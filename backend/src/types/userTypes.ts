@@ -5,7 +5,7 @@ profileImage:string;
 firstName:string;
 lastName:string;
 phoneNumber:string;
-currentPostion:string;
+position:string;
 location:string
 
 }

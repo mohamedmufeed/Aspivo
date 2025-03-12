@@ -7,7 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
 import EditProileModal from "../../components/modals/EditProfileModal";
 import EditAboutModal from "../../components/modals/EditAboutModal";
-import { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";
@@ -16,6 +16,8 @@ import Resume from "../../components/ProfileComponets/Resume";
 import AddExperience, { Experience } from "../../components/modals/AddExperience";
 import EditExperience from "../../components/modals/EditExperience";
 import AddEducation, { Education } from "../../components/modals/AddEducation";
+import AddSkill from "../../components/modals/AddSkill";
+import ProfileAvathar from "../../assets/user.png"
 
 const Profile = () => {
     const location = useLocation()
@@ -24,6 +26,7 @@ const Profile = () => {
     const [addExperience, setAddExperience] = useState(false)
     const [editExperience, setEditExperience] = useState(false)
     const [addEducation, setAddEducation] = useState(false)
+    const [addSkill, setAddSkill]=useState(false)
     const [profileData, setProfileData] = useState<any>(null);
     const user = useSelector((state: RootState) => state.auth.user)
 
@@ -39,7 +42,7 @@ const Profile = () => {
             try {
                 const response = await getProfile(userId);
                 setProfileData(response.user.user);
-                console.log(response.user.user)
+                console.log( response.user.user)
             } catch (error) {
                 console.error("Error fetching profile:", error);
             }
@@ -80,7 +83,7 @@ const Profile = () => {
                             <div className=" absolute bottom-35 left-8   w-32 h-32 rounded-full border-4 border-white shadow-md">
                                 <img
                                     className="w-full h-full  rounded-full object-cover"
-                                    src={profileImage}
+                                    src={profileData.profileImage ?profileData.profileImage:ProfileAvathar}
                                     alt="Profile"
                                 />
                             </div>
@@ -180,13 +183,13 @@ const Profile = () => {
                             </div>
                         ))}
 
-
+{editExperience && profileData.experiences?.length > 0 && (
+        <EditExperience setProfileData={setProfileData} userId={userId} experienceId={profileData.experiences[0].id} isOpen={editExperience} onClose={() => setEditExperience(false)} />)}
                     </div>
 
                     {addExperience && <AddExperience setProfileData={setProfileData} userId={userId} isOpen={addExperience} onClose={() => setAddExperience(false)} />}
 
-                    {editExperience && profileData.experiences?.length > 0 && (
-                        <EditExperience setProfileData={setProfileData} userId={userId} experienceId={profileData.experiences[0].id} isOpen={editExperience} onClose={() => setEditExperience(false)} />)}
+                   
                     {/* educationm */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
@@ -224,13 +227,13 @@ const Profile = () => {
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Skills</h1>
                             <div className=" flex space-x-5 ">
-                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" />
+                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddSkill(true)}  />
                                 <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
                             </div>
 
                         </div>
                         <div className="mb-5 mt-9 ml-10 flex space-x-3 ">
-                            {["HTML", "CSS", "JavaScript"].map((skill, index) => (
+                            {profileData.skills.map((skill:string[], index:number) => (
                                 <span
                                     key={index}
                                     className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
@@ -240,6 +243,8 @@ const Profile = () => {
                             ))}
                         </div>
                     </div>
+                    {addSkill && <AddSkill setProfileData={setProfileData} userId={userId} isOpen={addSkill} onClose={() => setAddSkill(false)} />}
+
                 </div>
             </div>
 

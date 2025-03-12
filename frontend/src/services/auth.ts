@@ -7,11 +7,10 @@ export const signup = async (data: {
   password: string;
 }) => {
   try {
-    const response = await axios.post(`${USER_API}/signup`, data);
-    const token = response.data.token;
-    if (token) {
-      localStorage.setItem("UserToken", token);
-    }
+    const response = await axios.post(`${USER_API}/signup`, data,{
+      withCredentials:true
+    });
+   
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -24,15 +23,10 @@ export const signup = async (data: {
 
 export const login = async (data: { email: string; password: string }) => {
   try {
-    const response = await axios.post(`${USER_API}/login`, data);
-    console.log("hello")
-    const token = response.data.token;
-
-    if (!response.data.isAdmin) {
-      localStorage.setItem("UserToken", token);
-    } else {
-      localStorage.setItem("AdminToken", token);
-    }
+    const response = await axios.post(`${USER_API}/login`, data,{
+      withCredentials:true
+    });
+  
     return response.data;
   } catch (error) {
 

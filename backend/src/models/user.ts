@@ -109,11 +109,11 @@ const userSchema = new Schema(
     ],
     skills: {
       type: [String], 
-      required: false,
+     default:[]
     },
     profileImage: {
       type: String,
-      default: "https://yourcdn.com/default-avatar.png",
+      default: " ",
     },
     isBlocked: {
       type: Boolean,
