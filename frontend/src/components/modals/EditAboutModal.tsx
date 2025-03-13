@@ -26,6 +26,7 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
 
     const [about, setAbout] = useState<string>("")
 
+    
     const { register, handleSubmit, formState: { errors } ,setValue} = useForm<FormData>({
         resolver: zodResolver(editAboutSchema),
         defaultValues:{

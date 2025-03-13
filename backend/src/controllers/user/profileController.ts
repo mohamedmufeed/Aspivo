@@ -13,8 +13,7 @@ export const editProfile = async (
 ): Promise<any> => {
   try {
     const userId = req.params.id;
-    const { firstName, lastName, phoneNumber, position, location } =
-      req.body;
+    const { firstName, lastName, phoneNumber, position, location } = req.body;
     const path = req.file?.path;
     const data = {
       profileImage: path || "",
@@ -67,26 +66,10 @@ export const editAbout = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-export const uploadResume = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
-  try {
-    console.log(req.file);
-    if (req.file) {
-      console.log("file is done");
-    }
-
-    return res.status(200).json({ message: "Resueme is good" });
-  } catch (error) {
-    return res.status(500).json({ message: "Error in uplaoding resume" });
-  }
-};
-
 export const addExprience = async (
   req: Request,
   res: Response
-): Promise<any> => {
+): Promise<void> => {
   try {
     const userId = req.params.id;
     const {
@@ -110,11 +93,11 @@ export const addExprience = async (
       currentlyWorking,
     };
     const user = await profileService.addExperience(userId, data);
-    return res
+    res
       .status(200)
       .json({ user, message: "User Experience added sucessfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error  adding experince" });
+    res.status(500).json({ message: "Error  adding experince" });
   }
 };
 
@@ -147,7 +130,7 @@ export const editExperince = async (
       startDate,
       currentlyWorking,
     };
-    console.log(data)
+    console.log(data);
 
     const user = await profileService.editExperience(
       userId,
@@ -179,6 +162,33 @@ export const addEducation = async (
   }
 };
 
+export const editEducation = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const userId = req.params.id;
+  try {
+    const {
+      degree,
+      endDate,
+      fieldOfStudy,
+      grade,
+      school,
+      startDate,
+      educationId,
+    } = req.body;
+    const data = { degree, endDate, fieldOfStudy, grade, school, startDate };
+    const response = await profileService.editEducation(
+      userId,
+      data,
+      educationId
+    );
+    res.status(200).json({ response });
+  } catch (error) {
+    res.status(500).json({ message: `error editing skill :${error}` });
+  }
+};
+
 export const addSkill = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.id;
@@ -188,5 +198,24 @@ export const addSkill = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ response });
   } catch (error) {
     res.status(500).json({ message: "error adding skill" });
+  }
+};
+
+export const uploadResume = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const resumeUrl = Object.keys(req.body)[0];
+
+    if (!resumeUrl || !resumeUrl.startsWith("http")) {
+     res.status(400).json({ message: "Invalid resume URL" });
+    }
+    const response = await profileService.uploadResume(userId, resumeUrl);
+
+    res.json({ response });
+  } catch (error) {
+    res.status(500).json({ message: "Error uplaoding Resume" });
   }
 };

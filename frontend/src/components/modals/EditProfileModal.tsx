@@ -24,7 +24,7 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, userId, setProfileData }) => {
-
+const [loading,setLoading]=useState(false)
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [imageErorr, setImageErorr] = useState("")
@@ -113,11 +113,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
       if (profileImage) {
         formData.append("profileImage", profileImage);
       }
-  
+      setLoading(true)
       const response = await editProfile(userId, formData); 
-  
+  setLoading(false)
       console.log("Profile updated successfully:", response.updatedProfile.user);
       setProfileData(response.updatedProfile.user);
+
       onClose();
     } catch (error) {
       console.error("Profile update error:", error);
@@ -190,7 +191,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
             <hr className="mt-9" />
             <div className="flex justify-end p-6">
               <button type="submit" className="p-3 px-5 bg-orange-600 rounded-lg text-white font-bold">
-                Save Changes
+               {loading?"Saving . . .":"Save Changes"} 
               </button>
             </div>
           </form>

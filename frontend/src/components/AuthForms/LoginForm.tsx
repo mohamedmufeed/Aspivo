@@ -13,6 +13,7 @@ const LoginForm = () => {
   const [emailError, setEmailError] = useState("")
   const [password, setPassword] = useState<string>("")
   const [passwordError, setPasswordError] = useState("")
+  const [loading,setloading]=useState(true)
   const [error, setError] = useState("")
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
@@ -37,8 +38,10 @@ const LoginForm = () => {
 
 
     try {
+
       const data = await loginApi({ email, password })
       dispatch(login(data.user))
+      setloading(false)
       if (data.user && data.user.isAdmin === true) {
         console.log("ggod")
         navigate("/admin-dashboard");
@@ -88,7 +91,7 @@ const LoginForm = () => {
             <span className="font-bold">Google</span>
           </button>
 
-          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">Login</button>
+          <button  type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"> {loading?"Loding":"Login"}</button>
         </div>
       </form>
 

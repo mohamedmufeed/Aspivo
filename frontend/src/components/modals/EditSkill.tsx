@@ -16,7 +16,7 @@ interface EditProfileModalProps {
     setProfileData: (prev: any) => void;
 }
 
-const AddSkill: React.FC<EditProfileModalProps> = ({
+const EditSkill: React.FC<EditProfileModalProps> = ({
     isOpen,
     onClose,
     userId,
@@ -97,7 +97,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
             >
                 <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg ">
                     <div className="flex justify-between mt-2 px-5 p-5">
-                        <h1 className="text-2xl font-medium">Add Skill</h1>
+                        <h1 className="text-2xl font-medium">Edit Skill</h1>
                         <VscClose onClick={onClose} className="cursor-pointer w-8 h-8" />
                     </div>
                     <hr className="mt-2" />
@@ -110,7 +110,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                             {skills.map((skill) => (
                                 <span
                                     key={skill}
-                                    className="px-3 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium flex items-center"
+                                    className="px-3 py-2 w-20 bg-orange-200 text-gray-700 rounded-full text-sm font-medium flex items-center"
                                 >
                                     {skill}
                                     <VscClose
@@ -169,4 +169,4 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     );
 }
 
-export default AddSkill;
+export default EditSkill;

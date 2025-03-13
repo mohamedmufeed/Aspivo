@@ -1,21 +1,19 @@
+
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 
-import { addEducation } from "../../services/profile";
+import { editEducation, getProfile } from "../../services/profile";
 import { educationSchema } from "../../validation/zod";
-
-
-
-
 
 interface EditProfileModalProps {
     isOpen: boolean;
     onClose: () => void;
     userId: string;
     setProfileData: (prev: any) => void;
+    educationId: string
 }
 export interface Education {
-    _id?:string;
+    _id?: string
     school: string;
     degree: string;
     fieldOfStudy: string;
@@ -25,8 +23,8 @@ export interface Education {
 }
 
 
-const AddEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId }) => {
-const [errors,setErrors]=useState<Record<string,string>>({})
+const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId, educationId }) => {
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     const [formData, setFormData] = useState({
         school: "",
@@ -34,7 +32,8 @@ const [errors,setErrors]=useState<Record<string,string>>({})
         fieldOfStudy: "",
         startDate: "",
         endDate: "",
-        grade: ""
+        grade: "",
+        educationId: educationId
     });
 
     useEffect(() => {
@@ -55,48 +54,77 @@ const [errors,setErrors]=useState<Record<string,string>>({})
     };
 
 
-    const validateForm =(data:Education)=>{
-        const  result= educationSchema.safeParse(data)
-        if(!result.success){
-            const formattedErrors:Record<string,string>={};
-            result.error.errors.forEach((err)=>{
-                if(err.path){
-                    formattedErrors[err.path[0]]=err.message
+    const validateForm = (data: Education) => {
+        const result = educationSchema.safeParse(data)
+        if (!result.success) {
+            const formattedErrors: Record<string, string> = {};
+            result.error.errors.forEach((err) => {
+                if (err.path) {
+                    formattedErrors[err.path[0]] = err.message
                 }
             })
 
-          setErrors(formattedErrors)
-        }else{
+            setErrors(formattedErrors)
+        } else {
             setErrors({})
         }
     }
 
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+
+                const response = await getProfile(userId)
+                const user = response.user.user
+                if (user && user.education) {
+                    const education = user.education.find((edu: Education) => edu._id === educationId)
+                    if (education) {
+                        setFormData({
+                            school: education.school,
+                            degree: education.degree,
+                            fieldOfStudy: education.fieldOfStudy,
+                            startDate: education.startDate,
+                            endDate: education.endDate,
+                            grade: education.grade,
+                            educationId: education._id
+                        });
+                    }
+                }
+
+
+
+                console.log(" the resposen", user)
+
+            } catch (error) {
+console.log("Errrpr ",error)
+            }
+        }
+
+        if (isOpen) {
+            fetchUserProfile()
+        }
+    }, [isOpen, userId, educationId])
 
 
     const handleSubmit = async (e: React.FormEvent) => {
- 
+
         e.preventDefault();
 
-        const result=educationSchema.safeParse(formData);
-        if(!result.success){
+        const result = educationSchema.safeParse(formData);
+        if (!result.success) {
             validateForm(formData)
             return
         }
         try {
-            const experienceData: Education = {
-                ...formData,
+            const response = await editEducation(userId, formData)
 
-            };
-            const response = await addEducation(userId,formData)
             if (response) {
-
-                setProfileData((prev: any) => ({
-                    ...prev,
-                    experiences: [...(prev.experiences || []), experienceData]
-                }));
-
-                onClose();
+                console.log(" the response ", response.response.user)
+                setProfileData(response.response.user)
             }
+
+            onClose();
+
         } catch (error) {
             console.log("Error in the adding ", error)
         }
@@ -117,7 +145,7 @@ const [errors,setErrors]=useState<Record<string,string>>({})
             >
                 <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg ">
                     <div className="flex justify-between mt-2 px-5 p-5">
-                        <h1 className="text-2xl font-medium">Add Education</h1>
+                        <h1 className="text-2xl font-medium">Edit Education</h1>
                         <VscClose onClick={onClose} className="cursor-pointer w-8 h-8" />
                     </div>
                     <hr className="mt-2" />
@@ -230,4 +258,4 @@ const [errors,setErrors]=useState<Record<string,string>>({})
     );
 }
 
-export default AddEducation;
+export default EditEducation;

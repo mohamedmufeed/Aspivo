@@ -14,6 +14,7 @@ interface EditProfileModalProps {
     setProfileData: (prev: any) => void;
 }
 export interface Experience {
+    _id?:string;
     title: string;
     employmentType: string;
     company: string;
@@ -59,7 +60,6 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
         }
         setFormData((prev) => {
             const updatedFormData = { ...prev, [name]: formattedValue };
-            // validateForm(updatedFormData);
             return updatedFormData;
         });
     };

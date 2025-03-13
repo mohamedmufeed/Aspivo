@@ -7,7 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
 import EditProileModal from "../../components/modals/EditProfileModal";
 import EditAboutModal from "../../components/modals/EditAboutModal";
-import {  useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";
@@ -18,6 +18,8 @@ import EditExperience from "../../components/modals/EditExperience";
 import AddEducation, { Education } from "../../components/modals/AddEducation";
 import AddSkill from "../../components/modals/AddSkill";
 import ProfileAvathar from "../../assets/user.png"
+import EditEducation from "../../components/modals/EditEducation";
+import EditSkill from "../../components/modals/EditSkill";
 
 const Profile = () => {
     const location = useLocation()
@@ -26,9 +28,14 @@ const Profile = () => {
     const [addExperience, setAddExperience] = useState(false)
     const [editExperience, setEditExperience] = useState(false)
     const [addEducation, setAddEducation] = useState(false)
-    const [addSkill, setAddSkill]=useState(false)
+    const [editEducation, setEditEucation] = useState(false)
+    const [addSkill, setAddSkill] = useState(false)
+    const [editSkill,setEditSkill]=useState(false)
     const [profileData, setProfileData] = useState<any>(null);
+    const [currentExperinceId, setCurrentExperinceId] = useState("")
     const user = useSelector((state: RootState) => state.auth.user)
+    const [currentEducationId, setCurrentEducationId] = useState<string>("");
+
 
     if (!user) {
         console.error("User data is null!");
@@ -37,12 +44,53 @@ const Profile = () => {
     const userId = user._id
 
 
+
+    const handleEducationClick = (id: string) => {
+      
+        setCurrentEducationId(id);
+        setEditEucation(true);
+    }
+
+    const handelExperienceClick = (id: string) => {
+      
+        setCurrentExperinceId(id)
+        setEditExperience(true);
+    }
+
+    const [formData, setFormData] = useState({
+        school: "",
+        degree: "",
+        fieldOfStudy: "",
+        startDate: "",
+        endDate: "",
+        grade: "",
+    });
+
+    useEffect(() => {
+        if (!currentEducationId || !profileData?.education) return;
+
+        const education = profileData.education.find((edu: Education) => edu._id === currentEducationId);
+        if (education) {
+            setFormData({
+                school: education.school || "",
+                degree: education.degree || "",
+                fieldOfStudy: education.fieldOfStudy || "",
+                startDate: education.startDate ? education.startDate.split("T")[0] : "",
+                endDate: education.endDate ? education.endDate.split("T")[0] : "",
+                grade: education.grade || "",
+            });
+        }
+    }, [currentEducationId, profileData]);
+
+
+
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const response = await getProfile(userId);
                 setProfileData(response.user.user);
-                console.log( response.user.user)
+                console.log(response.user.user)
             } catch (error) {
                 console.error("Error fetching profile:", error);
             }
@@ -83,7 +131,7 @@ const Profile = () => {
                             <div className=" absolute bottom-35 left-8   w-32 h-32 rounded-full border-4 border-white shadow-md">
                                 <img
                                     className="w-full h-full  rounded-full object-cover"
-                                    src={profileData.profileImage ?profileData.profileImage:ProfileAvathar}
+                                    src={profileData.profileImage ? profileData.profileImage : ProfileAvathar}
                                     alt="Profile"
                                 />
                             </div>
@@ -124,7 +172,7 @@ const Profile = () => {
                                     </div>
 
                                     <div className="mb-5 flex space-x-3 ">
-                                        {["HTML", "CSS", "JavaScript"].map((skill, index) => (
+                                        {profileData.skills.slice(0,3).map((skill:string, index:number) => (
                                             <span
                                                 key={index}
                                                 className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
@@ -156,69 +204,90 @@ const Profile = () => {
                     {editAboutOpen && <EditAboutModal setProfileData={setProfileData} userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
                     {/* resueme section */}
 
-                    <Resume />
+                    <Resume userId={userId} />
 
                     {/* exprience section */}
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
-
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Experience</h1>
-                            <div className=" flex space-x-5 ">
-                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddExperience(true)} />
-                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditExperience(true)} />
-                            </div>
-
+                            <GoPlus
+                                className="font-extralight cursor-pointer w-6 h-6 text-gray-600 hover:text-gray-900"
+                                onClick={() => setAddExperience(true)}
+                            />
                         </div>
 
                         {profileData.experiences.map((experience: Experience, index: number) => (
-                            <div key={index} className="flex items-center space-x-4 p-4 mt-3">
-                                <FcGoogle className="w-10 h-10" />
+                            <div key={index} className="border-b ml-6 border-gray-100 pb-4 mt-3">
 
-                                <div>
-                                    <h2 className="font-semibold text-lg">{experience.title}</h2>
-                                    <h3 className="text-md text-gray-700">{experience.company}</h3>
-                                    <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
-                                    <p className="text-gray-500 text-sm">{experience.location}</p>
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center space-x-4">
+                                        <FcGoogle className="w-10 h-10" />
+                                        <div>
+                                            <h2 className="font-semibold text-lg">{experience.title}</h2>
+                                            <h3 className="text-md text-gray-700">{experience.company}</h3>
+                                            <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
+                                            <p className="text-gray-500 text-sm">{experience.location}</p>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="flex space-x-3">
+
+                                        <GoPencil
+                                            className="font-extralight cursor-pointer w-5 h-5 text-gray-600 hover:text-gray-900 mr-8"
+                                            onClick={() => handelExperienceClick(experience._id || "")}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         ))}
-
-{editExperience && profileData.experiences?.length > 0 && (
-        <EditExperience setProfileData={setProfileData} userId={userId} experienceId={profileData.experiences[0].id} isOpen={editExperience} onClose={() => setEditExperience(false)} />)}
                     </div>
 
+                    {editExperience && profileData.experiences?.length > 0 && (
+                        <EditExperience setProfileData={setProfileData} userId={userId} experienceId={currentExperinceId} isOpen={editExperience} onClose={() => setEditExperience(false)} />)}
                     {addExperience && <AddExperience setProfileData={setProfileData} userId={userId} isOpen={addExperience} onClose={() => setAddExperience(false)} />}
 
-                   
+
                     {/* educationm */}
 
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
-
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Education</h1>
-                            <div className=" flex space-x-5 ">
-                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddEducation(true)} />
-                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
-                            </div>
-
+                            <GoPlus
+                                className="font-extralight cursor-pointer w-6 h-6 text-gray-600 hover:text-gray-900"
+                                onClick={() => setAddEducation(true)}
+                            />
                         </div>
 
-                        {profileData.education.map((education:Education, index:number) => (
-                            <div key={index} className="flex items-center space-x-4 p-4 mt-3">
 
-                                <FcGoogle className="w-10 h-10" />
+                        {profileData.education.map((education: Education, index: number) => (
+                            <div key={index} className="border-b border-gray-200 pb-4  ml-6 mt-3">
+
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center space-x-4">
+                                        <FcGoogle className="w-10 h-10" />
+                                        <div>
+                                            <h2 className="font-semibold text-lg">{education.school}</h2>
+                                            <h3 className="text-md text-gray-700">{education.degree}, {education.fieldOfStudy}</h3>
+                                            <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                        </div>
+                                    </div>
 
 
-                                <div>
-                                    <h2 className="font-semibold text-lg">{education.school}</h2>
-                                    <h3 className="text-md text-gray-700">{education.degree} ,{education.fieldOfStudy}</h3>
-                                    <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                    <div className="flex space-x-3">
+
+                                        <GoPencil
+                                            className="font-extralight cursor-pointer w-5 h-5 text-gray-600 hover:text-gray-900 mr-8"
+                                            onClick={() => handleEducationClick(education._id || "")}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         ))}
-
-
                     </div>
+
+
+                    {editEducation && <EditEducation educationId={currentEducationId} setProfileData={setProfileData} userId={userId} isOpen={editEducation} onClose={() => setEditEucation(false)} />}
                     {addEducation && <AddEducation setProfileData={setProfileData} userId={userId} isOpen={addEducation} onClose={() => setAddEducation(false)} />}
 
                     {/* skills */}
@@ -227,13 +296,13 @@ const Profile = () => {
                         <div className="flex justify-between px-8">
                             <h1 className="font-medium text-2xl">Skills</h1>
                             <div className=" flex space-x-5 ">
-                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddSkill(true)}  />
-                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
+                                <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddSkill(true)} />
+                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditSkill(true)} />
                             </div>
 
                         </div>
                         <div className="mb-5 mt-9 ml-10 flex space-x-3 ">
-                            {profileData.skills.map((skill:string[], index:number) => (
+                            {profileData.skills.map((skill: string[], index: number) => (
                                 <span
                                     key={index}
                                     className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
@@ -244,6 +313,7 @@ const Profile = () => {
                         </div>
                     </div>
                     {addSkill && <AddSkill setProfileData={setProfileData} userId={userId} isOpen={addSkill} onClose={() => setAddSkill(false)} />}
+                    {editSkill && <EditSkill setProfileData={setProfileData} userId={userId} isOpen={editSkill} onClose={() => setEditSkill(false)} />}
 
                 </div>
             </div>

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { editExperience } from "../../services/profile";
+import { editExperience, getProfile } from "../../services/profile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { data } from "react-router-dom";
-import { Education } from "./AddEducation";
 import { experinceSchema } from "../../validation/zod";
 
 
@@ -16,7 +14,7 @@ interface EditProfileModalProps {
     experienceId: string
 }
 export interface Experience {
-    experienceId?:string;
+    _id?: string;
     title: string;
     employmentType: string;
     company: string;
@@ -30,11 +28,7 @@ export interface Experience {
 
 const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId, experienceId }) => {
     const [checked, setChecked] = useState(false);
-    const user = useSelector((stae: RootState) => stae.auth.user)
-    const experiences = user?.experiences
-
-const [errors,setErrors]=useState<Record<string,string>>({})
-    const firstExperienceId = experiences?.[0]?._id;
+    const [errors, setErrors] = useState<Record<string, string>>({})
     const [formData, setFormData] = useState<Experience>({
         title: "",
         employmentType: "",
@@ -43,6 +37,7 @@ const [errors,setErrors]=useState<Record<string,string>>({})
         endDate: "",
         location: "",
         description: "",
+        _id: experienceId,
         currentlyWorking: false,
     });
     useEffect(() => {
@@ -52,14 +47,8 @@ const [errors,setErrors]=useState<Record<string,string>>({})
         };
     }, [isOpen]);
 
-  
 
-
-
-   
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement| HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         let formattedValue = value;
         if (name === "startDate" || name === "endDate") {
@@ -69,21 +58,56 @@ const [errors,setErrors]=useState<Record<string,string>>({})
     };
 
 
-       const validateForm = (data: Experience) => {
-             const result = experinceSchema.safeParse(data)
-             if (!result.success) {
-                 const formattedErrors: Record<string, string> = {};
-                 result.error.errors.forEach((err) => {
-                     if (err.path) {
-                         formattedErrors[err.path[0]] = err.message
-                     }
-                 })
-                 setErrors(formattedErrors)
-             }else{
-                 setErrors({});
-             }
-     
-         }
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const response = await getProfile(userId);
+                console.log("the  user",response.user.user)
+                const user=response.user.user
+                if (user && user.experiences) {
+                    const experience = user.experiences.find((exp: Experience) => exp._id === experienceId);
+                    console.log("the experince is,",experience)
+                    if (experience) {
+                        setFormData({
+                            title: experience.title,
+                            employmentType: experience.employmentType,
+                            company: experience.company,
+                            startDate: experience.startDate,
+                            endDate: experience.endDate || "",
+                            location: experience.location,
+                            description: experience.description,
+                            _id: experience.experienceId,
+                            currentlyWorking: experience.currentlyWorking || false,
+                        });
+                        setChecked(experience.currentlyWorking || false);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+            }
+        };
+    
+        if (isOpen) {
+            fetchUserProfile();
+        }
+    }, [isOpen, userId, experienceId]);
+    
+
+    const validateForm = (data: Experience) => {
+        const result = experinceSchema.safeParse(data)
+        if (!result.success) {
+            const formattedErrors: Record<string, string> = {};
+            result.error.errors.forEach((err) => {
+                if (err.path) {
+                    formattedErrors[err.path[0]] = err.message
+                }
+            })
+            setErrors(formattedErrors)
+        } else {
+            setErrors({});
+        }
+
+    }
 
 
     const handleCheckboxChange = () => {
@@ -98,8 +122,8 @@ const [errors,setErrors]=useState<Record<string,string>>({})
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result= experinceSchema.safeParse(formData)
-        if(!result.success){
+        const result = experinceSchema.safeParse(formData)
+        if (!result.success) {
             validateForm(formData)
             return
         }
@@ -107,20 +131,14 @@ const [errors,setErrors]=useState<Record<string,string>>({})
         try {
             const experienceData: Experience = {
                 ...formData,
-                experienceId:firstExperienceId,
                 currentlyWorking: checked
             };
 
-      
+
             const response = await editExperience(userId, experienceData)
-            console.log("Response from API:", response);
+
             if (response) {
-                setProfileData((prev: any) => ({
-                    ...prev,
-                    experiences: prev.experiences.map((exp: Experience) =>
-                        exp.experienceId === experienceId ? experienceData : exp
-                    ),
-                }));
+                setProfileData(response.user.user)
                 onClose();
             } else {
                 console.log("No response received");

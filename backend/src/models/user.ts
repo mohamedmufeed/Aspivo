@@ -115,6 +115,10 @@ const userSchema = new Schema(
       type: String,
       default: " ",
     },
+    resume:{
+      type:String,
+      default:""
+    },
     isBlocked: {
       type: Boolean,
       default: false,

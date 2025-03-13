@@ -127,6 +127,24 @@ export const addEducation = async (userId: string, data: Education) => {
     throw new Error("Something went wrong. Please try again.");
   }
 };
+export const editEducation = async(userId:string,data:Education)=>{
+try {
+  const response = await axios.put(`${USER_API}/edit-education/${userId}`,data)
+  return response.data
+
+} catch (error) {
+  if (error instanceof AxiosError) {
+
+    console.error(" Edit education :", error);
+    throw new Error(
+      error.response?.data?.message ||
+        "Something went wrong. Please try again."
+    );
+  }
+
+  throw new Error("Something went wrong. Please try again.");
+}
+}
 
 export const addSkill = async (userId: string, skills: string[]) => {
   try {
@@ -145,3 +163,24 @@ export const addSkill = async (userId: string, skills: string[]) => {
       throw new Error("Something went wrong. Please try again.");       
   }
 };
+
+
+export const uploadResume=async ( userid:string,data:string)=>{
+try {
+  const response= await axios.post(`${USER_API}/upload-resuem/${userid}`,data)
+  return response.data
+  
+} catch (error) {
+  if (error instanceof AxiosError) {
+
+    console.error(" Uplaoding resume:", error);
+    throw new Error(
+      error.response?.data?.message ||
+        "Something went wrong. Please try again."
+    );
+  }
+
+  throw new Error("Something went wrong. Please try again.");       
+}
+
+}
