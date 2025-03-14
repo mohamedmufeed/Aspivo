@@ -204,7 +204,7 @@ const Profile = () => {
                     {editAboutOpen && <EditAboutModal setProfileData={setProfileData} userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
                     {/* resueme section */}
 
-                    <Resume userId={userId} />
+                    <Resume userId={userId}  setProfileData={setProfileData} />
 
                     {/* exprience section */}
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">

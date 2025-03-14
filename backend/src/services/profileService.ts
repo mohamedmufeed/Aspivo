@@ -3,6 +3,7 @@ import { AuthRepostry } from "../repositories/userRepositories.js";
 import { ProfileTypes } from "../types/userTypes";
 import { Experience } from "../types/userTypes";
 import { Education } from "../types/userTypes";
+import cloudinary from "../config/cloudinaryConfig.js";
 
 const authRepostry = new AuthRepostry();
 
@@ -168,4 +169,26 @@ export class ProfileSerive {
   }
     return {user,message:"Resume Uplaoded sucess fully"}
   }
+
+   async deleteResume(id:string){
+    const user=await authRepostry.findById(id)
+    if(!user) throw new Error("User not found")
+      if(user.resume){
+
+        const publicId = user.resume.split("/").pop()?.split(".")[0];
+
+        if (publicId) {
+            try {
+                await cloudinary.uploader.destroy(publicId); 
+            } catch (error) {
+                console.error("Error deleting resume from Cloudinary:", error);
+                throw new Error("Failed to delete resume from Cloudinary");
+            }
+        }
+                user.resume=""
+                await user.save()
+      }
+
+      return {user,message:"User resume deleted sucsess fully"}
+   }
 }

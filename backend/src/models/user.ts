@@ -26,7 +26,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     location: { type: String, required: false },
     position: { type: String, required: false },
@@ -123,6 +123,7 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    googleId:{type:String},
     otp: { type: String },
     otpExpires: { type: Date },
   },

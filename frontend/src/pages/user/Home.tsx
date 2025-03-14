@@ -35,6 +35,8 @@ const HeroSection = () => {
       ,
     },
   ];
+  
+  
 
   const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.auth.user)

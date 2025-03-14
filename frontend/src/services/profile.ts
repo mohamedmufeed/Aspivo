@@ -167,8 +167,10 @@ export const addSkill = async (userId: string, skills: string[]) => {
 
 export const uploadResume=async ( userid:string,data:string)=>{
 try {
-  const response= await axios.post(`${USER_API}/upload-resuem/${userid}`,data)
+  const response= await axios.post(`${USER_API}/upload-resume/${userid}`,data)
+  console.log(" the response data",response.data)
   return response.data
+
   
 } catch (error) {
   if (error instanceof AxiosError) {
@@ -183,4 +185,23 @@ try {
   throw new Error("Something went wrong. Please try again.");       
 }
 
+}
+
+
+export const deleteResume= async(userId:string)=>{
+try {
+  const response = await axios.delete(`${USER_API}/delete-resume/${userId}`)
+return response.data  
+} catch (error) {
+  if (error instanceof AxiosError) {
+
+    console.error(" Uplaoding resume:", error);
+    throw new Error(
+      error.response?.data?.message ||
+        "Something went wrong. Please try again."
+    );
+  }
+
+  throw new Error("Something went wrong. Please try again."); 
+}
 }

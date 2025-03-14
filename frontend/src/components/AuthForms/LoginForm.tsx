@@ -7,6 +7,8 @@ import { login as loginApi } from "../../services/auth";
 import { login } from "../../redux/slice/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { googleLogin } from "../../services/auth";
+import { fetchGoogleUser } from "../../services/auth";
 
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("")
@@ -61,6 +63,8 @@ const LoginForm = () => {
 
     }
   }
+
+
   return (
 
     <div className="  bg-[#F6F6F6] flex flex-col justify-center font-[Montserrat] h-full p-8">
@@ -85,7 +89,7 @@ const LoginForm = () => {
 
         <div className="w-full  flex felx-col md:flex-row justify-center gap-7  sm:gap-4 space-y-4 sm:space-y-0 mt-6">
 
-          <button className=" w-full sm:w-35 h-12 py-3  bg-white border rounded-lg flex items-center justify-center space-x-2">
+          <button type="button" onClick={()=>googleLogin()} className=" w-full sm:w-35 h-12 py-3  bg-white border rounded-lg flex items-center justify-center space-x-2">
             <FcGoogle className="w-7 h-7" />
 
             <span className="font-bold">Google</span>

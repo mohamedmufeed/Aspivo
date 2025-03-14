@@ -1,20 +1,13 @@
 import axios, { AxiosError } from "axios";
-const USER_API = "http://localhost:5001/api/user";
+import api from "./api"; 
 
-export const signup = async (data: {
-  userName: string;
-  email: string;
-  password: string;
-}) => {
+export const signup = async (data: { userName: string; email: string; password: string }) => {
   try {
-    const response = await axios.post(`${USER_API}/signup`, data,{
-      withCredentials:true
-    });
-   
+    const response = await api.post("/signup", data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error("Login Error:", error?.response?.data);
+      console.error("Signup Error:", error.response?.data);
       throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
     throw new Error("Something went wrong. Please try again.");
@@ -23,101 +16,98 @@ export const signup = async (data: {
 
 export const login = async (data: { email: string; password: string }) => {
   try {
-    const response = await axios.post(`${USER_API}/login`, data,{
-      withCredentials:true
-    });
-  
+    const response = await api.post("/login", data);
+
     return response.data;
   } catch (error) {
-
     if (error instanceof AxiosError) {
-      console.error("Login Error:", error?.response?.data);
+      console.error("Login Error:", error.response?.data);
       throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
     throw new Error("Something went wrong. Please try again.");
   }
-  }
-
+};
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
   try {
-    const response = await  axios.post(`${USER_API}/otp-verification`,data);
-    console.log(response)
-    return  response.data
-
-
+    const response = await api.post("/otp-verification", data);
+    return response.data;
   } catch (error) {
-
     if (error instanceof AxiosError) {
-      console.error("Otp verification :", error?.response?.data);
+      console.error("OTP Verification Error:", error.response?.data);
       throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
     }
-
     throw new Error("Something went wrong. Please try again.");
-   
   }
+};
 
+export const resendOtp = async (data: { email: string }) => {
+  try {
+    const response = await api.post("/resend-otp", data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Resend OTP Error:", error.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
+    }
+    throw new Error("Something went wrong. Please try again.");
+  }
+};
 
+export const forgotPassword = async (data: { email: string }) => {
+  try {
+    const response = await api.post("/forgot-password", data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Forgot Password Error:", error.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
+    }
+    throw new Error("Something went wrong. Please try again.");
+  }
+};
+
+export const resetPassword = async (data: { email: string; newPassword: string }) => {
+  try {
+    const response = await api.post("/reset-password", data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Reset Password Error:", error.response?.data);
+      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
+    }
+    throw new Error("Something went wrong. Please try again.");
+  }
+};
+
+export const logout = async () => {
+  try {
+    await api.post("/logout"); 
+
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Logout Error:", error.response?.data);
+    }
+  }
+};
+
+export const googleLogin = () => {
+  console.log("hello clicked ")
+  window.open(`http://localhost:5001/api/user/google`, "_self");
 
 };
 
-export const resendotp= async (data:{email:string})=>{
+
+  export const fetchGoogleUser= async()=>{
     try {
-      const response = await axios.post(`${USER_API}/resend-otp`,data)
+      const response=await axios.get("http://localhost:5001/api/user/google/success",{
+        withCredentials:true
+      })
+      console.log("Google Auth Response:", response); 
       return response.data
     } catch (error) {
-
       if (error instanceof AxiosError) {
-        console.error("Otp verification :", error?.response?.data);
-        throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
-      }
-  
-      throw new Error("Something went wrong. Please try again.");
-  
-    }
-}
-
-
- export const forgotPassword = async (data:{email:string})=>{
-  try {
-    const response = await axios.post(`${USER_API}/forgot-password`,data)
-    return response.data
-    
-  } catch (error) {
-
-    if (error instanceof AxiosError) {
-      console.error("Forgot password :", error?.response?.data);
-      throw new Error(error.response?.data?.message || "Something went wrong. Please try again.");
-    }
-
-    throw new Error("Something went wrong. Please try again.");
-  }
- }
-
-  export const resetPassword = async (data:{email:string,newPassword:string})=>{
-  try {
-    const response= await axios.post(`${USER_API}/reset-password`,data)
-    return response.data
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      if (error?.response?.status) {
-        console.error("Reset password :", error?.response?.data);
+        console.error("Login Error:", error.response?.data);
       }
     }
-    return null
   }
-
-  }
-
-   export const logout = async()=>{
-    try {
-      localStorage.removeItem("UserToken");
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error?.response?.status) {
-          console.error("Logout user :", error?.response?.data);
-        }
-      }
-      return null
-    }
-   }

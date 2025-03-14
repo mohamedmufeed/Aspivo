@@ -208,9 +208,8 @@ export const uploadResume = async (
   try {
     const userId = req.params.id;
     const resumeUrl = Object.keys(req.body)[0];
-
     if (!resumeUrl || !resumeUrl.startsWith("http")) {
-     res.status(400).json({ message: "Invalid resume URL" });
+      res.status(400).json({ message: "Invalid resume URL" });
     }
     const response = await profileService.uploadResume(userId, resumeUrl);
 
@@ -219,3 +218,14 @@ export const uploadResume = async (
     res.status(500).json({ message: "Error uplaoding Resume" });
   }
 };
+
+export const deleteResume= async(req:Request,res:Response)=>{
+try {
+  const userId=req.params.id
+  const response= await profileService.deleteResume(userId)
+  res.status(200).json({response})
+  
+} catch (error) {
+  res.status(500).json({message:"Error deleting resume"})
+}
+}

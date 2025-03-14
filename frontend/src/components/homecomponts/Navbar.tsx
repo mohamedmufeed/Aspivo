@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiMenuFries } from "react-icons/ci";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,9 @@ import { RootState } from "../../redux/store/store";
 import ProfileDropdown from "./ProfileDropdown";
 import profileAvathar from "../../assets/user.png"
 import { Link } from "react-router-dom";
+import { fetchGoogleUser } from "../../services/auth";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/slice/authSlice";
 
 
 
@@ -13,8 +16,29 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
     const naviagte = useNavigate()
     const [dropdown , setDropDown]=useState(false)
+    const dispatch=useDispatch()
 
     const user = useSelector((state: RootState) => state.auth.user)
+
+    useEffect(()=>{
+
+        const handelGoogleUser=async()=>{
+          try {
+            const response=await fetchGoogleUser()
+            console.log("the response from redux",response)
+            if(response){
+              console.log(response.data)
+              dispatch(login(response.data))
+            }else{
+              console.log("eror in fetchi else")
+            }
+            
+          } catch (error) {
+            console.log("error in the fethcing goole user", error)
+          }
+        }
+        handelGoogleUser()
+    },[])
 
     const handeleLogginBtn = () =>  naviagte("/login")
       

@@ -1,13 +1,10 @@
 import { AuthRepostry } from "../repositories/userRepositories.js";
 import bcrypt from "bcryptjs";
-import generateToken from "../utils/jwt.js";
+import {generateToken } from "../utils/jwt.js";
+import { generateRefreshToken } from "../utils/jwt.js";
 import crypto from "crypto";
 import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp.js";
-import { error } from "console";
-import { ProfileTypes } from "../types/userTypes.js";
-import { use } from "passport";
-import cloudinary from "../config/cloudinaryConfig.js";
-
+import jwt, { decode } from "jsonwebtoken";
 
 const authRepostry = new AuthRepostry();
 export class AuthService {
@@ -23,16 +20,16 @@ export class AuthService {
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-    const { user,token } = await authRepostry.register(
+    const { user, token, refreshToken } = await authRepostry.register(
       userName,
       email,
       hashedOtp,
       otpExpires,
-      hashePassword,
+      hashePassword
     );
 
     await sendOtpEmail(email, otp);
-    return { user,token };
+    return { user, token, refreshToken };
   }
 
   async login(email: string, password: string) {
@@ -47,6 +44,12 @@ export class AuthService {
         message: "Email not verified. Please verify your OTP.",
       };
     }
+    if(!user.password){
+      throw{
+        status:403,
+        message:"Password is required for this action."
+      }
+    }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -54,7 +57,8 @@ export class AuthService {
     }
 
     const token = generateToken(user.id, user.isAdmin);
-    return { user, token };
+    const refreshToken = generateRefreshToken(user.id, user.isAdmin);
+    return { user, token, refreshToken };
   }
 
   async verifyotp(email: string, otp: string) {
@@ -137,6 +141,24 @@ export class AuthService {
     return { user, message: " Password reset sucesess" };
   }
 
+  async refreshToken(refreshToken: string) {
+    if (!refreshToken) throw new Error("No refresh token found");
 
+    return new Promise((resolve, reject) => {
+        jwt.verify(
+            refreshToken,
+            process.env.REFRESH_JWT_SECRET as string,
+            (err, decoded: any) => {
+                if (err) {
+                    reject(new Error("Invalid Token"));
+                    return;
+                }
+                const newAcessToken = generateToken(decoded.id, decoded.isAdmin);
+                resolve(newAcessToken);
+            }
+        );
+    });
+
+}
 
 }
