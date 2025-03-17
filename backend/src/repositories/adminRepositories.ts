@@ -17,5 +17,10 @@ async findAllCompany(){
   return await Company.find()
 }
 
+ async findComapny(companyId:string){
+  return await Company.findById(companyId)
+ }
+
+
 }
 

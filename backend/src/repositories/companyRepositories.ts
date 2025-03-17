@@ -20,8 +20,9 @@ export class CompanyRepostries {
   async findByEmail(email: string) {
     return await Company.findOne({ email });
   }
-  async findById(userId:string){
+  async findByUserId(userId:string){
     const userObjectId = new mongoose.Types.ObjectId(userId)
     return await Company.findOne({ userId: userObjectId })
   }
+
 }

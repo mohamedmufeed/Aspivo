@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { googleLogin } from "../../services/auth";
 import { fetchGoogleUser } from "../../services/auth";
-
+import { registerUserSocket } from "../../services/socket";
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("")
   const [emailError, setEmailError] = useState("")
@@ -42,10 +42,11 @@ const LoginForm = () => {
     try {
 
       const data = await loginApi({ email, password })
+
       dispatch(login(data.user))
+      registerUserSocket("user", data.user.id);
       setloading(false)
       if (data.user && data.user.isAdmin === true) {
-        console.log("ggod")
         navigate("/admin-dashboard");
       } else {
         navigate("/hello");
