@@ -1,23 +1,26 @@
-import { IoHomeOutline, IoGitPullRequestSharp, IoSettingsOutline } from "react-icons/io5";
-import { FaUsers } from "react-icons/fa";
+import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import { RiHotelLine } from "react-icons/ri";
-import { MdOutlineAttachMoney } from "react-icons/md";
 import { TbHelp } from "react-icons/tb";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BsChatLeftText } from "react-icons/bs";
+import { HiOutlineUsers } from "react-icons/hi2";
+import { CiViewList } from "react-icons/ci";
+
+
 
 const menuItems = [
-    { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/admin-dashboard" },
-    { icon: <FaUsers className="w-6 h-6" />, label: "Users", path: "/admin-users" },
-    { icon: <IoGitPullRequestSharp className="w-6 h-6" />, label: "Requests", path: "/admin-comapnyrequests" },
-    { icon: <RiHotelLine className="w-6 h-6" />, label: "Companies", path: "/companies" },
-    { icon: <MdOutlineAttachMoney className="w-6 h-6" />, label: "Subscription", path: "/subscription" },
+    { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/company-dashboard" },
+    { icon: <BsChatLeftText className="w-6 h-6" />, label: "Messages", path: "/company-messages" },
+    { icon: <HiOutlineUsers className="w-6 h-6" />, label: " Applicants", path: "/requests" },
+    { icon: <RiHotelLine className="w-6 h-6" />, label: "C Profile", path: "/company-profile" },
+    { icon: <CiViewList className="w-6 h-6" />, label: "Job Listing", path: "/subscription" },
     { divider: true },
     { icon: <IoSettingsOutline className="w-6 h-6" />, label: "Settings", path: "/settings" },
     { icon: <TbHelp className="w-6 h-6" />, label: "Help", path: "/help" },
 ];
 
-const Sidebar = ({setSelected}:{setSelected:(label:string)=>void}) => {
+const CompanySidebar = ({setSelected}:{setSelected:(label:string)=>void}) => {
     const [selected, setLocalSelected] = useState<string | null>("Dashboard");
 const navigate= useNavigate()
     const handleSelect = (label?: string, path?: string) => {
@@ -45,7 +48,7 @@ const navigate= useNavigate()
                         >
                             {selected === item.label && <span className="absolute right-44 top-0 h-full w-2 bg-orange-600 rounded"></span>}
                             {item.icon}
-                            <h4 className="text-lg pl-3">{item.label}</h4>
+                            <h4 className="text-lg pl-3 ">{item.label}</h4>
                         </div>
                     )
                 ))}
@@ -71,4 +74,4 @@ const navigate= useNavigate()
     );
 };
 
-export default Sidebar;
+export default CompanySidebar;

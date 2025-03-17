@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { resendotp, verifyOtp } from "../../services/auth"
+import { resendOtp, verifyOtp } from "../../services/auth"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../redux/store/store"
 import { login } from "../../redux/slice/authSlice"
@@ -35,11 +35,13 @@ const OtpVerification = () => {
         e.preventDefault()
         try {
             const data = await verifyOtp({ email, otp })
-            if (data && data.user.user && data.user.user.verified) {
+            console.log(" the data  from verify otp",data.user.user)
+            if (data.user.user ) {
                 dispatch(login({
-                    userName: data.userName,
-                    email: data.email,
-                    isAdmin: data.isAdmin || false
+                    _id: data.user.user._id,
+                    userName: data.user.user.userName,
+                    email: data.user.user.email,
+                    isAdmin: data.user.user.isAdmin || false
                 }));
                 navigate("/");
 
@@ -56,7 +58,7 @@ const OtpVerification = () => {
         setResendbtn(false)
         setError("")
         try {
-            const response = await resendotp({ email })
+            const response = await resendOtp({ email })
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message)

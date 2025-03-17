@@ -85,6 +85,7 @@ export const verifyOtp = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, otp } = req.body;
     const user = await authService.verifyotp(email, otp);
+    console.log("the user after verify otp ",user)
     res.status(200).json({
       message: "OTP validation success",
       user: user,

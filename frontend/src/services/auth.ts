@@ -1,10 +1,16 @@
 import axios, { AxiosError } from "axios";
+import socket, { registerUserSocket } from "./socket";
+
+
 import api from "./api"; 
+
 
 export const signup = async (data: { userName: string; email: string; password: string }) => {
   try {
     const response = await api.post("/signup", data);
-    return response.data;
+    const user=response.data
+    registerUserSocket("User",user._id)
+    return user
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error("Signup Error:", error.response?.data);
@@ -31,6 +37,7 @@ export const login = async (data: { email: string; password: string }) => {
 export const verifyOtp = async (data: { email: string; otp: string }) => {
   try {
     const response = await api.post("/otp-verification", data);
+    console.log("the from api",response.data)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -111,3 +118,7 @@ export const googleLogin = () => {
       }
     }
   }
+
+
+
+

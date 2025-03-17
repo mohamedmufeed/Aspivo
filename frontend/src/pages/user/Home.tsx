@@ -9,8 +9,10 @@ import Navbar from "../../components/homecomponts/Navbar";
 import JobCollections from "../../components/homecomponts/JobCollections";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react";
 
 const HeroSection = () => {
 
@@ -35,31 +37,54 @@ const HeroSection = () => {
       ,
     },
   ];
-  
-  
+
+
 
   const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.auth.user)
-  console.log(user)
   useEffect(() => {
     if (user) {
       navigate("/");
     }
-  }, [navigate, user]); 
-  
+  }, [navigate, user]);
 
+
+  const comapny = useSelector((state: RootState) => state.companyauth.company)
+  console.log("the company", comapny)
+
+  const heroTextRef = useRef(null);
+  const searchBoxRef = useRef(null);
+  const paragraphRef = useRef(null);
+  const jobbox = useRef(null);
+  const jobContent = useRef(null);
+
+  useGSAP(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline();
+
+      tl.fromTo(heroTextRef.current, { opacity: 0, x: -100 }, { opacity: 1, x: 0, duration: 1 })
+        .fromTo(paragraphRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 }, "-=0.5")
+        .fromTo(searchBoxRef.current, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1 }, "-=0.5")
+        .fromTo(jobbox.current,  { opacity: 0, height:"50px", y: -50 },  { opacity: 1, height:"320px", y: 0, duration: 1, ease: "power1.inOut" },  "-=0.5"  );
+        
+        tl.fromTo( jobContent.current,{ opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.8, ease: "power1.out" }, "-=0.5");
+        
+    });
+
+    return () => ctx.revert(); 
+  }, [])
 
   return (
     <>
-      <Navbar />
+      <Navbar  />
       <section className="flex h-screen  bg-[#F6F6F6]" style={{ fontFamily: "DM Sans, sans-serif" }}>
         {/*content Sction */}
         <div className="mt-5">
-          <h1 className="font-[Montserrat] font-semibold text-7xl  ps-24  mt-36">Find Your <br /> Dream Job Here <br /> In one Place</h1>
-          <p className="ps-24 mt-8   font-extralight " >Explore thousands of job opportunities Find the perfect <br /> role that suits you.</p>
+          <h1    ref={heroTextRef} className="font-[Montserrat] font-semibold text-7xl  ps-24  mt-36">Find Your <br /> Dream Job Here <br /> In one Place</h1>
+          <p  ref={paragraphRef}  className="ps-24 mt-8   font-extralight " >Explore thousands of job opportunities Find the perfect <br /> role that suits you.</p>
 
           {/*serach bar*/}
-          <div className="bg-white w-96  ml-24 mt-8  h-16 rounded-lg shadow-lg">
+          <div   ref={searchBoxRef}  className="bg-white w-96  ml-24 mt-8  h-16 rounded-lg shadow-lg">
             <form className=" " action="">
               <div className="flex ">
                 <label htmlFor="serach" className="text-[#837F7F] whitespace-nowrap   p-5  ml-auto  font-extralight" >Job title or Keyword | Location</label>
@@ -77,7 +102,8 @@ const HeroSection = () => {
             <img className="w-96 h-96" src={bannerImage} alt="banner image" />
           </div>
           {/* jobBox */}
-          <div className="bg-black/5 backdrop-blur-md border absolute -mt-35 ml-40 border-white/30 rounded-2xl shadow-white-lg w-80  ps-4 h-80">
+          <div ref={jobbox} className="bg-black/5 backdrop-blur-md border absolute -mt-35 ml-40 border-white/30 rounded-2xl shadow-white-lg w-80  ps-4 h-80">
+          <div ref={jobContent} className="opacity-0">
             <h1 className="font-bold p-4 text-xl flex">Find Job <IoMdArrowDropdown className="mt-1 " /> </h1>
             <hr />
             <div className="space-y-4 p-3">
@@ -98,6 +124,7 @@ const HeroSection = () => {
               ))}
             </div>
 
+          </div>
           </div>
         </div>
       </section>

@@ -90,7 +90,7 @@ const Profile = () => {
             try {
                 const response = await getProfile(userId);
                 setProfileData(response.user.user);
-                console.log(response.user.user)
+                console.log("hell",response.user.user)
             } catch (error) {
                 console.error("Error fetching profile:", error);
             }

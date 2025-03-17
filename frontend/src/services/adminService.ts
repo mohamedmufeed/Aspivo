@@ -28,3 +28,15 @@ try {
       throw new Error("Something went wrong. Please try again.");
 }
 }
+
+export const getAllCompany=async()=>{
+    try {
+        const response= await axios.get(`${ADMIN_API}/companies`)
+        return response.data
+        
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.error("Fetch company:", error.response?.data);
+          }
+    }
+}
