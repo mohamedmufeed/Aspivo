@@ -2,9 +2,36 @@ import { IoIosSearch } from "react-icons/io"
 import Navbar from "../../components/homecomponts/Navbar.js"
 import { IoChevronBackOutline } from "react-icons/io5"
 import { useNavigate } from "react-router-dom"
-import { FcGoogle } from "react-icons/fc";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store.js";
+import { useEffect, useState } from "react";
+import { getNotifications } from "../../services/notificationService.js";
+
+interface Notification {
+    _id: string;
+    userId: string;
+    message: string;
+    createdAt: string;
+  }
 
 const Notifications = () => {
+    const [notifications,setNotifications]=useState<Notification[]>()
+    const user = useSelector((state: RootState) => state.auth.user)
+    console.log("the suse form the ", user?._id)
+
+    useEffect(() => {
+        const handleNotifications = async () => {
+            try {
+                const response = await getNotifications(user?._id || "")
+                setNotifications(response)
+                console.log("the response from notifications",response)
+            } catch (error) {
+                console.log("the error ", error)
+            }
+        }
+        handleNotifications()
+    }, [])
+
     const navigate = useNavigate()
     return (
         <div>
@@ -26,19 +53,21 @@ const Notifications = () => {
 
                 </div>
 
-
-                <div className="bg-white mx-22 shadow-gray-100 shadow-lg rounded-lg mt-10 flex justify-between">
-                    <div className="flex items-center text-center p-5 pl-10 gap-4 ">
-                        <FcGoogle className="w-10 h-10" />
-                        <div className="pl-10">
-                            <h1 className="text-black text-xl font-semibold"> Google Approved Your Request</h1>
-                            <p className="text-gray-700 text-md font-extralight text-start"> 17 hours ago</p>
-                        </div>
-                    </div>
-                    <div className="flex text-end p-5.5 ">
-                        <button className="bg-orange-600 px-4 rounded-lg text-white font-bold cursor-pointer hover:bg-orange-700">Connect With</button>
-                    </div>
-                </div>
+{  notifications?.map((notification,index)=>(
+    <div key={index} className="bg-white mx-22 shadow-gray-100 shadow-lg rounded-lg mt-10 flex justify-between">
+    <div className="flex items-center text-center p-5 pl-10 gap-4 ">
+        {/* <FcGoogle className="w-10 h-10" /> */}
+        <div className="pl-10">
+            <h1 className="text-black text-xl font-semibold"> {notification.message}</h1>
+            <p className="text-gray-700 text-md font-extralight text-start">    {new Date(notification.createdAt).toLocaleDateString()}</p>
+        </div>
+    </div>
+    <div className="flex text-end p-5.5 ">
+        <button className="bg-orange-600 px-4 rounded-lg text-white font-bold cursor-pointer hover:bg-orange-700">Mark as Read</button>
+    </div>
+</div>
+))}
+                
 
 
             </div>

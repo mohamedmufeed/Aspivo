@@ -7,13 +7,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import profileAvathar from "../../assets/user.png"
 import { getAllCompany } from "../../services/adminService";
 import { ChevronDown } from "lucide-react";
+import { updateCompanyStatus } from "../../services/adminService";
 interface Company {
   _id: string;
   companyName: string;
   email: string;
   status: string;
   createdAt: string;
-  kyc?: string; // Optional if not all companies have KYC
+  kyc?: string; 
 }
 
 const AdminCompanyRequests = () => {
@@ -29,9 +30,7 @@ const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 const handleStatusChange = async (companyId: string, newStatus: string) => {
   try {
 
-    // await updateCompanyStatus(companyId, newStatus); 
-
-    // Update state to reflect the new status
+    await updateCompanyStatus(companyId, newStatus); 
     setComapnyDetail((prevDetails = []) =>
       prevDetails.map((company) =>
         company._id === companyId ? { ...company, status: newStatus } : company

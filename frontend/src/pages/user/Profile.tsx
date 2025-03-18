@@ -7,7 +7,7 @@ import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
 import EditProileModal from "../../components/modals/EditProfileModal";
 import EditAboutModal from "../../components/modals/EditAboutModal";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";

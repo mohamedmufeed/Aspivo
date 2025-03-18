@@ -10,3 +10,16 @@ export const createNotification = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to create notification" });
   }
 };
+
+
+export const getNotifications =async(req:Request,res:Response)=>{
+  try {
+    const userId= req.params.id
+    const notifications= await notificationService.getNotifications(userId)
+    res.status(200).json(notifications)
+    
+  } catch (error) {
+    console.log("notification fetching error")
+    res.status(500).json({message:"Internal server error"})
+  }
+}

@@ -3,7 +3,7 @@ import storage from "redux-persist/lib/storage";
 const typedStorage = storage as unknown as import("redux-persist").Storage;
 export default typedStorage;
 import authreducer from "../slice/authSlice";
-import companyreducer from "../slice/comapnyAuthSlice"
+import companyreducer from "../slice/comapnyAuthSlice";
 import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
 
@@ -14,14 +14,14 @@ const presistConfig = {
 
 const rootReducer = combineReducers({
   auth: authreducer,
-companyauth:companyreducer
+  companyauth: companyreducer,
 });
 
 const presistReducer = persistReducer(presistConfig, rootReducer);
 
 //store
 
- export const store = configureStore({
+export const store = configureStore({
   reducer: presistReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

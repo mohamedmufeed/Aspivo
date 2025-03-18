@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 interface Experience {
-  _id?: string;
+  _id: string;
   title: string;
   employmentType: string;
   company: string;
@@ -24,7 +24,7 @@ const authSlice = createSlice({
   reducers: {
     login: (state, action) => {
       state.user = {
-        _id:action.payload._id,
+         _id:action.payload._id,
          userName: action.payload.userName ,
           profileImage: action.payload.profileImage ,
           experiences: action.payload.experiences || [],

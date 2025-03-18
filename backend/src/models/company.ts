@@ -36,7 +36,7 @@ const companySchema = new Schema(
       ref: "User",
       required: true, 
     },
-    status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
+    status: { type: String, enum: ["Pending", "Approved", "Declined"], default: "Pending" },
     stack: [
       {
         type: String,

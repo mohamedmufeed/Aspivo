@@ -6,7 +6,8 @@ const setupSocket=(server:HttpServer)=>{
     const io= new SocketServer(server,{
         cors:{
             origin:"http://localhost:5173",
-            methods:["GET","POST"]
+            methods:["GET","POST"],
+            credentials: true,
         }
     })
     const userSockets= new Map<string, Map<string,string>>();

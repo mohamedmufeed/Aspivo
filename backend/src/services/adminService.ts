@@ -17,13 +17,13 @@ export class AdminService {
     if (!company) throw new Error("Company not found");
     if (action === "Approved") {
       company.status = action || "Approved";
-    } else if (action === "Rejected") {
-      company.status = action || "Rejected";
+    } else if (action === "Declined") {
+      company.status = action || "Declined";
     } else {
       company.status = "Pending";
     }
     await company.save();
-    const message = `Your company '${company.companyName}' has been approved!`;
+    const message = `Your company '${company.companyName}' has been ${action}!`;
     await notificationService.createNotification(
       company.userId.toString(),
       message
