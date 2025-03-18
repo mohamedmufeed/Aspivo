@@ -59,3 +59,21 @@ export const experinceSchema = z
     endDate: z.string().nonempty("End date is required"),
     grade:z.string().nonempty()
    })
+
+
+
+   export   const jobSchema = z.object({
+    jobTitle: z.string().min(3, "Job title must be at least 3 characters"),
+    category: z.string().nonempty("Category is required"),
+    typesOfEmployment: z.array(z.string()).nonempty("Select at least one employment type"),
+    minimumSalary: z.string().nonempty("Minimum salary is required"),
+    maximumSalary: z.string().nonempty("Maximum salary is required"),
+    startDate: z.string().nonempty("Start date is required"),
+    endDate: z.string().nonempty("End date is required"),
+    slot: z.string().nonempty("At least one slot is required"),
+    requiredSkills: z.array(z.string().min(1, "Skill cannot be empty")),
+    jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
+    qualification: z.string().min(5, "Qualification is required"),
+    jobResponsibilities: z.string().min(5, "Job responsibilities are required"),
+    requirements: z.string().min(5, "Requirements are required"),
+  });

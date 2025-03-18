@@ -12,14 +12,11 @@ const CompanyDashboard = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?._id || "";
-  console.log(" the user fomr dash", user);
   useEffect(() => {
     const handleCompany = async () => {
       try {
         if (!userId) return;
         const response = await fetchCompany(userId);
-        console.log(response.company.company);
-
         if (!response.company.company) {
           navigate("/company-signup");
         }

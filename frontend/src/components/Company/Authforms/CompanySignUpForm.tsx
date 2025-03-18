@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import { signup } from "../../../services/company/auth";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
+import { AppDispatch, RootState } from "../../../redux/store/store";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { login } from "../../../redux/slice/comapnyAuthSlice";
+import { register } from "../../../redux/slice/comapnyAuthSlice";
 
 
 export interface NewUser {
@@ -31,7 +31,7 @@ const CompanySignupForm = () => {
   const [kycError, setKycError] = useState("")
   const [uploading, setUploading] = useState(false)
 
-
+const dispatch=useDispatch<AppDispatch>()
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || "";
 
@@ -93,6 +93,15 @@ const CompanySignupForm = () => {
     try {
       const response = await signup(companyName,email,   kycUrl, userId)
       console.log(response)
+      dispatch(register({
+        company: {
+          _id: response._id,
+          companyName: response.companyName,
+          email: response.email,
+          logo: response.kyc, 
+        },
+        token: response.token
+      }));
       if (response) {
         navigate("/company-dashboard");
     } else {

@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { GoPlus } from "react-icons/go";
+import { postJob } from "../../services/company/compayprofile";
+import { jobSchema } from "../../validation/zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
+
 interface PostModalProps {
     onClose: () => void;
 }
+
 const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
     const jobCategories = [
         "Software Development",
@@ -22,17 +30,65 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
     ];
 
     const [skills, setSkills] = useState<string[]>([""]);
+    
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+    } = useForm({
+        resolver: zodResolver(jobSchema),
+        defaultValues: {
+            jobTitle: "",
+            category: "",
+            typesOfEmployment: [],
+            minimumSalary: "",
+            maximumSalary: "",
+            startDate: "",
+            endDate: "",
+            slot: "",
+            requiredSkills: [""],
+            jobDescription: "",
+            qualification: "",
+            jobResponsibilities: "",
+            requirements: ""
+        }
+    });
 
     const handleSkillChange = (index: number, value: string) => {
         const updatedSkills = [...skills];
         updatedSkills[index] = value;
         setSkills(updatedSkills);
+        setValue("requiredSkills", updatedSkills);
     };
 
     const addSkill = () => {
         setSkills([...skills, ""]);
+        setValue("requiredSkills", [...skills, ""]);
+    };
+    const company= useSelector((state:RootState)=>state.companyauth.company)
+
+
+    const companyId=company?._id||""
+    const onSubmit = async (data: any) => {
+        try {
+     
+            const submitData = {
+                ...data,
+                minimumSalary: Number(data.minimumSalary),
+                maximumSalary: Number(data.maximumSalary),
+                slot: Number(data.slot)
+            };
+          const response= await postJob(companyId,submitData)
+          console.log(response)
+            onClose();
+        } catch (error) {
+            console.error("Error posting job:", error);
+        }
     };
 
+
+    console.log(" the  is the  company",company)
 
 
     return (
@@ -52,22 +108,18 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                     </div>
                     <hr className="mt-2" />
                     <div className="px-7 space-y-10 max-h-[70vh] overflow-y-auto">
-
-                        <form >
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="flex mt-6 flex-col">
-                                <h3 className="font-medium">This information will displayed publicly </h3>
+                                <h3 className="font-medium">This information will be displayed publicly</h3>
+                                
                                 <div className="mt-5">
                                     <label className="text-gray-600">Job title*</label>
-                                    {/* {errors.title && <p className="text-red-500">{errors.title}</p>} */}
                                     <input
-                                        type="text"
-                                        name="title"
-                                        //   value={formData.title}
-                                        //   onChange={handleChange}
+                                        {...register("jobTitle")}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        placeholder="Ex: Software Engineer "
-                                        required
+                                        placeholder="Ex: Software Engineer"
                                     />
+                                    {errors.jobTitle && <p className="text-red-500">{errors.jobTitle.message}</p>}
                                 </div>
 
                                 <div className="mt-5">
@@ -79,124 +131,90 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                             <label key={type} className="flex items-center space-x-2">
                                                 <input
                                                     type="checkbox"
-                                                    className="w-5 h-5 accent-orange-600"
+                                                    {...register("typesOfEmployment")}
                                                     value={type}
+                                                    className="w-5 h-5 accent-orange-600"
                                                 />
                                                 <span>{type}</span>
                                             </label>
                                         ))}
                                     </div>
+                                    {errors.typesOfEmployment && <p className="text-red-500">{errors.typesOfEmployment.message}</p>}
                                 </div>
 
-                                <div className="mt-5 ">
+                                <div className="mt-5">
                                     <label className="text-gray-600">Salary*</label>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="flex flex-col">
                                             <input
-                                                type="text"
-                                                name="company"
-                                                //   value={formData.company}
-                                                //   onChange={handleChange}
+                                                {...register("minimumSalary")}
                                                 className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                                 placeholder="Minimum salary"
-                                                required
                                             />
+                                            {errors.minimumSalary && <p className="text-red-500">{errors.minimumSalary.message}</p>}
                                         </div>
-                                        <div className=" flex flex-col">
+                                        <div className="flex flex-col">
                                             <input
-                                                type="text"
-                                                name="company"
-                                                //   value={formData.company}
-                                                //   onChange={handleChange}
+                                                {...register("maximumSalary")}
                                                 className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                                 placeholder="Maximum salary"
-                                                required
                                             />
+                                            {errors.maximumSalary && <p className="text-red-500">{errors.maximumSalary.message}</p>}
                                         </div>
-
                                     </div>
-                                    {/* {errors.company && <p className="text-red-500">{errors.company}</p>} */}
-
-
                                 </div>
-
-
-
-
 
                                 <div className="mt-5">
                                     <label className="text-gray-600">Category* <span className="text-black">(You can select only one job category)</span></label>
-
                                     <select
-                                        name="category"
+                                        {...register("category")}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        required
                                     >
                                         <option value="">Select Job Category</option>
                                         {jobCategories.map((category) => (
                                             <option key={category} value={category}>{category}</option>
                                         ))}
                                     </select>
+                                    {errors.category && <p className="text-red-500">{errors.category.message}</p>}
                                 </div>
-
-
-
 
                                 <div className="mt-5">
-                                    <label className="text-gray-600">Slots* <span className="text-black">(At least one 1 slot )</span> </label>
-                                    {/* {errors.title && <p className="text-red-500">{errors.title}</p>} */}
+                                    <label className="text-gray-600">Slots* <span className="text-black">(At least one slot)</span></label>
                                     <input
-                                        type="text"
-                                        name="title"
-                                        //   value={formData.title}
-                                        //   onChange={handleChange}
+                                        {...register("slot")}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        placeholder="Ex: 20 "
-                                        required
+                                        placeholder="Ex: 20"
                                     />
+                                    {errors.slot && <p className="text-red-500">{errors.slot.message}</p>}
                                 </div>
-
-
 
                                 <div className="grid grid-cols-2 mt-5 gap-4">
                                     <div className="flex flex-col">
                                         <label className="text-gray-600">Start date*</label>
-                                        {/* {errors.startDate && <p className="text-red-500">{errors.startDate}</p>} */}
                                         <input
                                             type="date"
-                                            name="startDate"
-                                            // value={formData.startDate}
-                                            // onChange={handleChange}
+                                            {...register("startDate")}
                                             className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                            placeholder="YYYY-MM-DD"
-                                            required
                                         />
+                                        {errors.startDate && <p className="text-red-500">{errors.startDate.message}</p>}
                                     </div>
-
                                     <div className="flex flex-col">
                                         <label className="text-gray-600">End date*</label>
-                                        {/* {errors.endDate && <p className="text-red-500">{errors.endDate}</p>} */}
                                         <input
                                             type="date"
-                                            name="endDate"
-                                            // value={formData.endDate}
-                                            // onChange={handleChange}
+                                            {...register("endDate")}
                                             className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                            placeholder="YYYY-MM-DD"
-                                            required
                                         />
+                                        {errors.endDate && <p className="text-red-500">{errors.endDate.message}</p>}
                                     </div>
-
                                 </div>
 
-
-
-                                <div className="mt-5 ">
+                                <div className="mt-5">
                                     <label className="text-gray-600">Required Skills</label>
                                     {skills.map((skill, index) => (
                                         <div key={index} className="flex items-center mt-2">
                                             <input
-                                                type="text"
+                                                {...register(`requiredSkills.${index}`)}
                                                 value={skill}
                                                 onChange={(e) => handleSkillChange(index, e.target.value)}
                                                 className="border p-2 w-full rounded-lg focus:outline-orange-400"
@@ -204,88 +222,73 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                             />
                                             {index === skills.length - 1 && (
                                                 <div className="p-5">
-                                                    <GoPlus className="w-6 h-6 " onClick={addSkill} />
+                                                    <GoPlus className="w-6 h-6" onClick={addSkill} />
                                                 </div>
-
                                             )}
                                         </div>
                                     ))}
+                                    {errors.requiredSkills && <p className="text-red-500">{errors.requiredSkills.message}</p>}
                                 </div>
-
-
 
                                 <div className="mt-5">
                                     <label className="block text-gray-600">Job description</label>
-                                    {/* {errors.description && <p className="text-red-500">{errors.description}</p>} */}
                                     <textarea
-                                    placeholder="Enter job description"
-                                        name="job description"
-                                        //   value={formData.description}
-                                        //   onChange={handleChange}
+                                        {...register("jobDescription")}
+                                        placeholder="Enter job description"
                                         rows={3}
-                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400">
-                                    </textarea>
+                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400"
+                                    />
+                                    {errors.jobDescription && <p className="text-red-500">{errors.jobDescription.message}</p>}
                                 </div>
 
                                 <div className="mt-5">
                                     <label className="block text-gray-600">Qualification</label>
-                                    {/* {errors.description && <p className="text-red-500">{errors.description}</p>} */}
                                     <textarea
-                                    placeholder="Enter the qualification"
-                                        name="qualification"
-                                        //   value={formData.description}
-                                        //   onChange={handleChange}
+                                        {...register("qualification")}
+                                        placeholder="Enter the qualification"
                                         rows={3}
-                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400">
-                                    </textarea>
+                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400"
+                                    />
+                                    {errors.qualification && <p className="text-red-500">{errors.qualification.message}</p>}
                                 </div>
 
                                 <div className="mt-5">
                                     <label className="block text-gray-600">Job responsibilities</label>
-                                    {/* {errors.description && <p className="text-red-500">{errors.description}</p>} */}
                                     <textarea
-                                    placeholder="Enter the job responsibities"
-                                        name="job responsibities"
-                                        //   value={formData.description}
-                                        //   onChange={handleChange}
+                                        {...register("jobResponsibilities")}
+                                        placeholder="Enter the job responsibilities"
                                         rows={3}
-                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400">
-                                    </textarea>
+                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400"
+                                    />
+                                    {errors.jobResponsibilities && <p className="text-red-500">{errors.jobResponsibilities.message}</p>}
                                 </div>
 
                                 <div className="mt-5">
                                     <label className="block text-gray-600">Requirements</label>
-                                    {/* {errors.description && <p className="text-red-500">{errors.description}</p>} */}
                                     <textarea
-
-                                        name="job requirements"
+                                        {...register("requirements")}
                                         placeholder="Enter Job requirements"
-                                        //   value={formData.description}
-                                        //   onChange={handleChange}
                                         rows={3}
-                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400">
-                                    </textarea>
+                                        className="block w-full border p-2 rounded-lg focus:outline-orange-400"
+                                    />
+                                    {errors.requirements && <p className="text-red-500">{errors.requirements.message}</p>}
                                 </div>
-
-
                             </div>
 
-
-                            <div className="  ">
+                            <div>
                                 <hr className="mt-9" />
-                                <div className="flex  justify-end p-6">
+                                <div className="flex justify-end p-6">
                                     <button type="submit" className="p-3 px-5 bg-orange-600 rounded-lg text-white font-bold">
                                         Submit
                                     </button>
                                 </div>
                             </div>
-
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default PostJobModal
+export default PostJobModal;
