@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { fetchGoogleUser } from "../../services/auth";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slice/authSlice";
+import { getNotifications } from "../../services/notificationService";
 
 
 
@@ -17,6 +18,7 @@ const Navbar = () => {
     const naviagte = useNavigate()
     const [dropdown, setDropDown] = useState(false)
     const dispatch = useDispatch<AppDispatch>()
+    const [notifications, setNotifications] = useState<any[]>([]);
 
     useEffect(() => {
 
@@ -27,16 +29,16 @@ const Navbar = () => {
                     console.log(response.data)
                     dispatch(
                         login({
-                          _id: response.data._id,
-                          userName: response.data.userName,
-                          profileImage: response.data.profileImage,
-                          email: response.data.email,
-                          isAdmin: response.data.isAdmin || false,
-                          token: response.data.token, 
-                          experiences: response.data.experiences || [],
+                            _id: response.data._id,
+                            userName: response.data.userName,
+                            profileImage: response.data.profileImage,
+                            email: response.data.email,
+                            isAdmin: response.data.isAdmin || false,
+                            token: response.data.token,
+                            experiences: response.data.experiences || [],
                         })
-                      );
-                      console.log("Dispatched to Redux");
+                    );
+                    console.log("Dispatched to Redux");
                 } else {
                     console.error("Google Auth failed or no data received");
                 }
@@ -48,9 +50,28 @@ const Navbar = () => {
         handelGoogleUser()
     }, [])
 
-
-
     const user = useSelector((state: RootState) => state.auth.user)
+    const userId = user?._id || ""
+
+    useEffect(() => {
+
+        const fetchNotification = async () => {
+            try {
+                const notification = await getNotifications(userId)
+                setNotifications(notification)
+            } catch (error) {
+                console.log("Error inn fetching ", error)
+            }
+        }
+        fetchNotification()
+
+    }, [])
+
+
+const undreadNotification= notifications?.some((notification)=>!notification.isRead)
+
+
+
     const handeleLogginBtn = () => naviagte("/login")
 
     const navItems = [
@@ -93,7 +114,12 @@ const Navbar = () => {
                         ))}
                     </div>
                     <Link to={"/notifications"}>
-                        <div className="cursor-pointer font-medium hover:text-orange-600 ">
+
+                        <div className=" cursor-pointer font-medium hover:text-orange-600 ">
+
+                        {undreadNotification && (
+                <div className="absolute -top-1 -right-1 bg-orange-600 w-3 h-3 rounded-full" />
+              )}
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 36 36">
                                 <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M32.51 27.83A14.4 14.4 0 0 1 30 24.9a12.6 12.6 0 0 1-1.35-4.81v-4.94A10.81 10.81 0 0 0 19.21 4.4V3.11a1.33 1.33 0 1 0-2.67 0v1.31a10.81 10.81 0 0 0-9.33 10.73v4.94a12.6 12.6 0 0 1-1.35 4.81a14.4 14.4 0 0 1-2.47 2.93a1 1 0 0 0-.34.75v1.36a1 1 0 0 0 1 1h27.8a1 1 0 0 0 1-1v-1.36a1 1 0 0 0-.34-.75" />
                                 <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M18 34.28A2.67 2.67 0 0 0 20.58 32h-5.26A2.67 2.67 0 0 0 18 34.28" />

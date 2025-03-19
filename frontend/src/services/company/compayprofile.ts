@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 const COMPANY_URI = "http://localhost:5001/api/company";
-interface JobData {
+ export interface JobData {
   jobTitle: string;
   category: string;
   typesOfEmployment: string[];
@@ -38,3 +38,15 @@ export const postJob = async (companyId: string, data: JobData) => {
       }
   }
 };
+
+
+export const fetchJob=async (companyId:string)=>{
+  try {
+    const response= await axios.get(`${COMPANY_URI}/jobs/${companyId}`)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Job fetching Error", error.response?.data);
+    }
+  }
+}

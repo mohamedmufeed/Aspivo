@@ -55,3 +55,15 @@ export const postJob = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const fetchJob=async(req:Request,res:Response)=>{
+  const companyId=req.params.id
+  try {
+    const respone= await comapanyProfileService.fetchJob(companyId)
+    res.status(200).json(respone)
+    
+  } catch (error) {
+    console.log("Error fetching the jobs",error)
+    res.status(500).json({message:"Internal server error"})
+  }
+}

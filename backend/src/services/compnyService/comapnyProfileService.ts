@@ -10,11 +10,17 @@ export class ComapnayProfileService {
   }
 
   async postJob(data: JobData) {
-    if(!data){
-        throw {message:"data not found"}
+    if (!data) {
+      throw { message: "data not found" };
     }
     const response = await companyRepositories.createJob(data);
 
-    return {response, message:"job created sucsess fully"};
+    return { response, message: "job created sucsess fully" };
+  }
+
+  async fetchJob(comapanyId: string) {
+    const jobs = await companyRepositories.findJobs(comapanyId);
+    if (!jobs) throw new Error("Jobs not found");
+    return { jobs, message: "JOb fetched succsess fully" };
   }
 }

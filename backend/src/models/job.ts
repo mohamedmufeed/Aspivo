@@ -66,6 +66,8 @@ const jobSchema = new Schema({
       ref: "Company",
       required: true,
     },
+  },{
+    timestamps:true
   });
   
 
