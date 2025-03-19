@@ -52,7 +52,6 @@ const Navbar = () => {
 
     const user = useSelector((state: RootState) => state.auth.user)
     const handeleLogginBtn = () => naviagte("/login")
-    console.log("the user after the google login", user)
 
     const navItems = [
         { name: "Home", path: "/" },

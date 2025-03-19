@@ -10,6 +10,11 @@ const ComapnyDashboard=lazy(()=>import("../pages/company/CompanyDashboard"))
 const CompanyProfile=lazy(()=> import("../pages/company/CompanyProfile"))
 const Notifications=lazy(()=>import("../pages/user/Notifications"))
 const AdminCompanyRequests=lazy(()=>import("../pages/admin/AdminCompanyRequests"))
+const CompanyJobListing=lazy(()=>import("../pages/company/CompanyJobListing"))
+const RequestPage= lazy(()=>import("../pages/user/RequestPage"))
+
+
+
 const AppRoutes = () => {
   return (
     <Router>
@@ -23,6 +28,7 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<Login />} />
         <Route path="/otp-verification" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/success" element={<RequestPage />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-users" element={<UserManageMent />} />
@@ -30,6 +36,7 @@ const AppRoutes = () => {
         <Route path="/company-signup" element={<CompanyLogin />} />
         <Route path="/company-dashboard" element={<ComapnyDashboard />} />
         <Route path="/company-profile" element={<CompanyProfile />} />
+        <Route path="/company-jobs" element={<CompanyJobListing />} />
       </Routes>
       </Suspense>
     </Router>

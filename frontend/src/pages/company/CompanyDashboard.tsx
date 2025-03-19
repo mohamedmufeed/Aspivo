@@ -17,8 +17,12 @@ const CompanyDashboard = () => {
       try {
         if (!userId) return;
         const response = await fetchCompany(userId);
+        console.log(response.company.company)
         if (!response.company.company) {
           navigate("/company-signup");
+        }
+        if(response.company.company.status!="Approved"){
+navigate("/success")
         }
       } catch (error) {
         console.error("Error fetching company:", error);

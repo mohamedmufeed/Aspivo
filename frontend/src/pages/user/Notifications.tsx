@@ -5,26 +5,29 @@ import { useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store.js";
 import { useEffect, useState } from "react";
-import { getNotifications } from "../../services/notificationService.js";
+import { getNotifications, updateNotification } from "../../services/notificationService.js";
 
 interface Notification {
     _id: string;
     userId: string;
+    isRead:boolean;
     message: string;
     createdAt: string;
-  }
+}
+
 
 const Notifications = () => {
-    const [notifications,setNotifications]=useState<Notification[]>()
+    const navigate = useNavigate()
+    const [notifications, setNotifications] = useState<Notification[]>()
     const user = useSelector((state: RootState) => state.auth.user)
-    console.log("the suse form the ", user?._id)
+    const userId=user?._id||""
+
 
     useEffect(() => {
         const handleNotifications = async () => {
             try {
-                const response = await getNotifications(user?._id || "")
+                const response = await getNotifications(userId || "")
                 setNotifications(response)
-                console.log("the response from notifications",response)
             } catch (error) {
                 console.log("the error ", error)
             }
@@ -32,7 +35,16 @@ const Notifications = () => {
         handleNotifications()
     }, [])
 
-    const navigate = useNavigate()
+
+    const handeUpdate = async (userId: string, notificationId: string) => {
+        try {
+            const response = await updateNotification(userId, notificationId)
+            setNotifications(response.updatedNotification)
+        } catch (error) {
+            console.log("Error updating notification", error)
+        }
+    }
+
     return (
         <div>
             <Navbar />
@@ -53,21 +65,21 @@ const Notifications = () => {
 
                 </div>
 
-{  notifications?.map((notification,index)=>(
-    <div key={index} className="bg-white mx-22 shadow-gray-100 shadow-lg rounded-lg mt-10 flex justify-between">
-    <div className="flex items-center text-center p-5 pl-10 gap-4 ">
-        {/* <FcGoogle className="w-10 h-10" /> */}
-        <div className="pl-10">
-            <h1 className="text-black text-xl font-semibold"> {notification.message}</h1>
-            <p className="text-gray-700 text-md font-extralight text-start">    {new Date(notification.createdAt).toLocaleDateString()}</p>
-        </div>
-    </div>
-    <div className="flex text-end p-5.5 ">
-        <button className="bg-orange-600 px-4 rounded-lg text-white font-bold cursor-pointer hover:bg-orange-700">Mark as Read</button>
-    </div>
-</div>
-))}
-                
+                {notifications?.map((notification, index) => (
+                    <div key={index} className="bg-white mx-22 shadow-gray-100 shadow-lg rounded-lg mt-10 flex justify-between">
+                        <div className="flex items-center text-center p-5 pl-10 gap-4 ">
+                            {/* <FcGoogle className="w-10 h-10" /> */}
+                            <div className="pl-10">
+                                <h1 className="text-black text-xl font-semibold"> {notification.message}</h1>
+                                <p className="text-gray-700 text-md font-extralight text-start">    {new Date(notification.createdAt).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                        <div className="flex text-end p-5.5 ">
+                            <button className="bg-orange-600 px-4 rounded-lg text-white font-bold cursor-pointer hover:bg-orange-700" onClick={()=>handeUpdate(userId,notification._id)} disabled={notification.isRead}>{notification.isRead ?"Already Read":"Mark as Read"}</button>
+                        </div>
+                    </div>
+                ))}
+
 
 
             </div>

@@ -14,7 +14,7 @@ const menuItems = [
     { icon: <BsChatLeftText className="w-6 h-6" />, label: "Messages", path: "/company-messages" },
     { icon: <HiOutlineUsers className="w-6 h-6" />, label: " Applicants", path: "/requests" },
     { icon: <RiHotelLine className="w-6 h-6" />, label: "C Profile", path: "/company-profile" },
-    { icon: <CiViewList className="w-6 h-6" />, label: "Job Listing", path: "/subscription" },
+    { icon: <CiViewList className="w-6 h-6" />, label: "Job Listing", path: "/company-jobs" },
     { divider: true },
     { icon: <IoSettingsOutline className="w-6 h-6" />, label: "Settings", path: "/settings" },
     { icon: <TbHelp className="w-6 h-6" />, label: "Help", path: "/help" },

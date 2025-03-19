@@ -1,7 +1,7 @@
 
 import { register ,login, verifyOtp, resendOtp, forgotPassword, resetPassword, refreshToken, googleCallBack, getGoogleUser } from "../controllers/user/authController.js";
 import { addEducation, addExprience, addSkill, deleteResume, editAbout, editEducation, editExperince, editProfile, getProfile , uploadResume} from "../controllers/user/profileController.js";
-import { getNotifications } from "../controllers/user/notificationController.js";
+import { getNotifications, isRead } from "../controllers/user/notificationController.js";
 import express  from "express";
 import {  Imageupload , resumeUplaod } from "../config/multer.js";
 import protect from "../middleware/authMiddlwware.js";
@@ -29,6 +29,7 @@ router.get("/google/callback", passport.authenticate("google"), googleCallBack);
 router.get("/google/success", getGoogleUser);
 router.delete("/delete-resume/:id",deleteResume)
 router.get("/notifications/:id",getNotifications)
+router.patch("/markas-read/:id",isRead)
 
 
 export default router

@@ -1,14 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface INotification extends Document {
-  userId: mongoose.Types.ObjectId; // Ensure it's an ObjectId
+ export interface INotification extends Document {
+  userId: mongoose.Types.ObjectId; 
   message: string;
+  isRead:boolean;
   createdAt: Date;
 }
 
 const NotificationSchema = new Schema<INotification>({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Fix here
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, 
   message: { type: String, required: true },
+  isRead:{type:Boolean,default:false},
   createdAt: { type: Date, default: Date.now },
 });
 
