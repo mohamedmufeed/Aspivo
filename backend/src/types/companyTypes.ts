@@ -13,6 +13,6 @@ export interface JobData {
     slot: number;
     requirements: string;
     jobDescription: string;
-    company: string;
+    company?: string;
   }
   

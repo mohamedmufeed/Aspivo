@@ -70,7 +70,11 @@ export const experinceSchema = z
     maximumSalary: z.string().nonempty("Maximum salary is required"),
     startDate: z.string().nonempty("Start date is required"),
     endDate: z.string().nonempty("End date is required"),
-    slot: z.string().nonempty("At least one slot is required"),
+    slot: z
+    .string()
+    .nonempty("Slot is required") 
+    .refine((val) => /^\d+$/.test(val), { message: "Slot must be a number" }) 
+    .refine((val) => parseInt(val, 10) >= 0, { message: "Slot cannot be negative" }),
     requiredSkills: z.array(z.string().min(1, "Skill cannot be empty")),
     jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
     qualification: z.string().min(5, "Qualification is required"),

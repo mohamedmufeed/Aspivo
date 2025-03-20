@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Company from "../models/company.js";
 import { JobData } from "../types/companyTypes.js";
 import Job from "../models/job.js";
+import { runInThisContext } from "vm";
 export class CompanyRepostries {
   async register(
     companyName: string,
@@ -70,5 +71,12 @@ export class CompanyRepostries {
   }
   async findJobs(comapanyId: string) {
     return await Job.find({ company: comapanyId }).sort({createdAt:-1});
+  }
+  async findJob(jobId:string){
+  return await Job.findById(jobId)
+  }
+
+  async deleteJob(jobId:string){
+    return await Job.findByIdAndDelete(jobId)
   }
 }

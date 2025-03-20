@@ -15,7 +15,6 @@ export const fetchCompany = async (req: Request, res: Response) => {
 
 export const postJob = async (req: Request, res: Response) => {
   try {
-   
     const company = req.params.id;
     const {
       jobTitle,
@@ -56,14 +55,69 @@ export const postJob = async (req: Request, res: Response) => {
   }
 };
 
-export const fetchJob=async(req:Request,res:Response)=>{
-  const companyId=req.params.id
+export const fetchJob = async (req: Request, res: Response) => {
+  const companyId = req.params.id;
   try {
-    const respone= await comapanyProfileService.fetchJob(companyId)
-    res.status(200).json(respone)
+    const respone = await comapanyProfileService.fetchJob(companyId);
+    res.status(200).json(respone);
+  } catch (error) {
+    console.log("Error fetching the jobs", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const editJob = async (req: Request, res: Response) => {
+  try {
+    const jobId = req.params.id;
+    const {
+      jobTitle,
+      category,
+      typesOfEmployment,
+      maximumSalary,
+      minimumSalary,
+      qualification,
+      requiredSkills,
+      jobResponsibilities,
+      startDate,
+      endDate,
+      slot,
+      requirements,
+      jobDescription,
+    } = req.body;
+
+    const data = {
+      jobTitle,
+      category,
+      typesOfEmployment,
+      maximumSalary,
+      minimumSalary,
+      qualification,
+      requiredSkills,
+      jobResponsibilities,
+      startDate,
+      endDate,
+      slot,
+      requirements,
+      jobDescription,
+    };
+    const respone = await comapanyProfileService.editJob(jobId, data);
+    res.status(200).json(respone);
+  } catch (error) {
+    console.log("Error editng job", error)
+    res.status(500).json({message:"Internal server error"})
+  }
+};
+
+
+
+export const deleteJob= async(req:Request,res:Response)=>{
+  try {
+     const jobId= req.params.id
+     const respone= await comapanyProfileService.deleteJob(jobId)
+     res.status(200).json(respone)
     
   } catch (error) {
-    console.log("Error fetching the jobs",error)
+    console.log("Error on deleting error",error)
     res.status(500).json({message:"Internal server error"})
   }
 }

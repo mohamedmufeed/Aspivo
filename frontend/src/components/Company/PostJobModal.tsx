@@ -79,6 +79,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                 maximumSalary: Number(data.maximumSalary),
                 slot: Number(data.slot)
             };
+            window.location.reload()
           const response= await postJob(companyId,submitData)
           console.log(response)
             onClose();

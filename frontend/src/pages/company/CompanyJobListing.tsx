@@ -6,33 +6,39 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { fetchJob } from "../../services/company/compayprofile";
 import { JobData } from "../../services/company/compayprofile";
+import JobListDropDown from "../../components/Company/Dropdown/JobListDropDown";
 const CompanyJobListing = () => {
-  const [selected, setSelected] = useState("Job Listing")
-  const [heading, setHeading] = useState("All Jobs")
-  const company = useSelector((state: RootState) => state.companyauth.company)
-  const companyId = company?._id || ""
-
+  const [selected, setSelected] = useState("Job Listing");
+  const [heading, setHeading] = useState("All Jobs");
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); 
+  const company = useSelector((state: RootState) => state.companyauth.company);
+  const companyId = company?._id || "";
   const [jobs, setJobs] = useState<JobData[] | undefined>(undefined);
 
   useEffect(() => {
-    const handlefetchJob = async () => {
+    const handleFetchJob = async () => {
       try {
-        const response = await fetchJob(companyId)
-        console.log("the job response", response.jobs)
-        setJobs(response.jobs)
+        const response = await fetchJob(companyId);
+        console.log("the job response", response.jobs);
+        setJobs(response.jobs);
       } catch (error) {
-        console.log("Error imn fetching Jobs", error)
+        console.log("Error in fetching Jobs", error); 
       }
-    }
-    handlefetchJob()
-  }, [])
+    };
+    handleFetchJob();
+  }, [companyId]);
 
+  const toggleDropdown = (jobId: string) => {
+    setOpenDropdownId(openDropdownId === jobId ? null : jobId); 
+  };
 
   return (
     <div className="flex">
       <CompanySidebar setSelected={setSelected} />
-      <div className="bg-[#F6F6F6] w-full  overflow-x-hidden relative"
-        style={{ fontFamily: "DM Sans, sans-serif" }}>
+      <div
+        className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
+        style={{ fontFamily: "DM Sans, sans-serif" }}
+      >
         <ComapanyHeader heading={heading} />
         <div>
           <div className="w-full p-5">
@@ -50,11 +56,11 @@ const CompanyJobListing = () => {
             {jobs ? (
               jobs.map((job, index) => (
                 <div
-                  key={index}
+                  key={job._id || index} 
                   className="grid grid-cols-7 items-center bg-white shadow-lg p-4 rounded-md my-2"
                 >
                   <h1 className="text-center">{job.jobTitle || "N/A"}</h1>
-                  <h1 className="text-center">{job.status || "N/A"}</h1>
+                  <h1 className="text-center">{"N/A"}</h1> 
                   <h1 className="text-center text-sm">
                     {job.startDate ? new Date(job.startDate).toLocaleDateString() : "N/A"}
                   </h1>
@@ -63,22 +69,25 @@ const CompanyJobListing = () => {
                   </h1>
                   <h1 className="text-center">{job.typesOfEmployment || "N/A"}</h1>
                   <h1 className="text-center">{job.slot || 0}</h1>
-                  <div className="flex justify-center">
-                    <EllipsisVertical className="cursor-pointer" />
+                  <div className="flex justify-center relative">
+                    <EllipsisVertical
+                      className="cursor-pointer"
+                      onClick={() => toggleDropdown(job._id || index.toString())}
+                    />
+                    {openDropdownId === (job._id || index.toString()) && (
+                      <JobListDropDown jobId={job._id || index.toString()} setJobs={setJobs} />
+                    )}
                   </div>
                 </div>
               ))
             ) : (
               <p className="text-center">Loading jobs...</p>
             )}
-
-
-
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CompanyJobListing
+export default CompanyJobListing;

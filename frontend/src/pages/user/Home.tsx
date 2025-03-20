@@ -88,8 +88,8 @@ const HeroSection = () => {
             <form className=" " action="">
               <div className="flex ">
                 <label htmlFor="serach" className="text-[#837F7F] whitespace-nowrap   p-5  ml-auto  font-extralight" >Job title or Keyword | Location</label>
-                <button className="w-20 h-14  ml-auto mt-1  mr-1  flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white cursor-pointer ">
-                  <IoIosSearch className="w-6  h-12 " />
+                <button className="w-20 h-14  ml-auto mt-1  mr-1  flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white cursor-pointer " onClick={()=>navigate("/jobs")}>
+                  <IoIosSearch className="w-6  h-12 "  />
                 </button>
               </div>
             </form>
