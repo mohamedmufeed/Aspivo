@@ -119,9 +119,9 @@ const JobLists = () => {
         <div className="px-20 mt-10 space-y-6">
           {filteredJobs ? (
             filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
+              filteredJobs.map((job,index) => (
                 <div
-                  key={job._id}
+                  key={index}
                   className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 p-4 items-center hover:bg-gray-50"
                 >
                   <div className="col-span-2 flex justify-center">
@@ -158,7 +158,7 @@ const JobLists = () => {
                   <div className="col-span-1 flex justify-center">
                     <button
                       className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg cursor-pointer hover:bg-orange-700"
-                      onClick={() => navigate("/job-details")}
+                      onClick={() => navigate(`/job-details/${job._id}`)}
                     >
                       More
                     </button>

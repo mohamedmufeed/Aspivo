@@ -77,7 +77,7 @@ const undreadNotification= notifications?.some((notification)=>!notification.isR
     const navItems = [
         { name: "Home", path: "/" },
         { name: "About", path: "/about" },
-        { name: "Category", path: "/category" },
+        { name: "Jobs", path: "/jobs" },
         { name: "Post job", path: "/company-dashboard" },
         {
             name: "Messages",

@@ -31,7 +31,7 @@ const AppRoutes = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/success" element={<RequestPage />} />
         <Route path="/jobs" element={<JobLists />} />
-        <Route path="/job-details" element={<JobDetails />} />
+        <Route path="/job-details/:id" element={<JobDetails />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-users" element={<UserManageMent />} />

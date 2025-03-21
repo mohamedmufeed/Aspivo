@@ -75,7 +75,7 @@ const CompanyJobListing = () => {
                       onClick={() => toggleDropdown(job._id || index.toString())}
                     />
                     {openDropdownId === (job._id || index.toString()) && (
-                      <JobListDropDown jobId={job._id || index.toString()} setJobs={setJobs} />
+                      <JobListDropDown jobId={job._id || index.toString()} setJobs={setJobs}  job={job}/>
                     )}
                   </div>
                 </div>

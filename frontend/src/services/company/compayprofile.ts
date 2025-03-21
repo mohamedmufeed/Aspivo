@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 
 const COMPANY_URI = "http://localhost:5001/api/company";
 export interface JobData {
-  _id?:string|undefined
+  _id:string|undefined;
   jobTitle: string;
   category: string;
   typesOfEmployment: string[];
@@ -21,6 +21,7 @@ export interface JobData {
     companyName: string;
     logo?: string; 
     location?: string; 
+    email?:string
   }
 }
 
