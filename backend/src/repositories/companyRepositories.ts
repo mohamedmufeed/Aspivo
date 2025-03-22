@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import Company from "../models/company.js";
 import { JobData } from "../types/companyTypes.js";
 import Job from "../models/job.js";
-import { runInThisContext } from "vm";
+import JobApplication from "../models/jobApplication.js";
+
 export class CompanyRepostries {
   async register(
     companyName: string,
@@ -78,5 +79,10 @@ export class CompanyRepostries {
 
   async deleteJob(jobId:string){
     return await Job.findByIdAndDelete(jobId)
+  }
+  async findApplications(jobId:string){
+    return await JobApplication.find({jobId})
+    .populate("userId","firstName lastName profileImage")
+    .populate("jobId","jobId jobTitle")
   }
 }

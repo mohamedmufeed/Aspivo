@@ -4,20 +4,23 @@ import React, { useState } from "react";
 import { deleteJob } from "../../../services/company/compayprofile";
 import { JobData } from "../../../services/company/compayprofile";
 import EditJobModal from "./EditJobModal";
+import { HiOutlineUsers } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 
 interface JobListDropDownProp {
   jobId: string;
   setJobs: React.Dispatch<React.SetStateAction<JobData[] | undefined>>;
-  job: JobData; // Added to pass job data to EditJobModal
+  job: JobData;
 }
 
-const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs ,job }) => {
+const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs, job }) => {
   const items = [
+    { icon: <HiOutlineUsers className="w-5 h-5" />, name: "Applicants", action: "Applicants" },
     { icon: <GoPencil className="w-5 h-5" />, name: "Edit", action: "Edit" },
     { icon: <AiOutlineDelete className="w-5 h-5" />, name: "Delete", action: "Delete" },
   ];
   const [editModal, setEditModal] = useState(false)
-
+  const navigate = useNavigate()
   const handleDelete = async (jobId: string) => {
     try {
       const response = await deleteJob(jobId)
@@ -36,6 +39,8 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs ,job })
       handleDelete(jobId)
     } else if (action === "Edit") {
       setEditModal(true)
+    } else if (action === "Applicants") {
+      navigate(`/company-applicants/${jobId}`)
     }
   }
 
@@ -61,9 +66,9 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs ,job })
       </div>
       {editModal && (
         <EditJobModal
-          onClose={() => setEditModal(false)} 
-          job={job} // Pass job data
-          setJobs={setJobs} 
+          onClose={() => setEditModal(false)}
+          job={job}
+          setJobs={setJobs}
         />
       )}
     </div>

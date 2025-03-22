@@ -14,6 +14,8 @@ const CompanyJobListing=lazy(()=>import("../pages/company/CompanyJobListing"))
 const RequestPage= lazy(()=>import("../pages/user/RequestPage"))
 const JobLists=lazy(()=>import("../pages/user/JobLists"))
 const JobDetails=lazy(()=>import("../pages/user/JobDetails"))
+const CopmanyApplicants=lazy(()=>import("../pages/company/CopmanyApplicants"))
+const CompanyApplicantDetails=lazy(()=>import("../pages/company/CompanyApplicantDetails"))
 
 
 
@@ -40,6 +42,8 @@ const AppRoutes = () => {
         <Route path="/company-dashboard" element={<ComapnyDashboard />} />
         <Route path="/company-profile" element={<CompanyProfile />} />
         <Route path="/company-jobs" element={<CompanyJobListing />} />
+        <Route path="/company-applicants/:jobId" element={<CopmanyApplicants />} />
+        <Route path="company/applicants/:applicationId" element={<CompanyApplicantDetails />} />
       </Routes>
       </Suspense>
     </Router>

@@ -1,8 +1,8 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchCompany } from "../../services/company/compayprofile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 
 
@@ -17,12 +17,11 @@ const CompanyDashboard = () => {
       try {
         if (!userId) return;
         const response = await fetchCompany(userId);
-        console.log(response.company.company)
         if (!response.company.company) {
           navigate("/company-signup");
         }
-        if(response.company.company.status!="Approved"){
-navigate("/success")
+        if (response.company.company.status != "Approved") {
+          navigate("/success")
         }
       } catch (error) {
         console.error("Error fetching company:", error);
@@ -32,7 +31,7 @@ navigate("/success")
     handleCompany();
   }, [userId, location]);
   const [selected, setSelectedMenu] = useState("Dashboard");
-  const [heading,setHeading]=useState("Dashboard")
+  const [heading, setHeading] = useState("Dashboard")
   return (
     <div className="flex">
       <CompanySidebar setSelected={setSelectedMenu} />
@@ -41,7 +40,7 @@ navigate("/success")
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
         {/* header */}
-        <ComapanyHeader heading={heading}/>
+        <ComapanyHeader heading={heading} />
 
         <div className="flex justify-center items-center ">
           <h1 className="font-bold text-center ">Hello Welcome 🫶🏻</h1>

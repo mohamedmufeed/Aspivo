@@ -12,7 +12,7 @@ import { CiViewList } from "react-icons/ci";
 const menuItems = [
     { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/company-dashboard" },
     { icon: <BsChatLeftText className="w-6 h-6" />, label: "Messages", path: "/company-messages" },
-    { icon: <HiOutlineUsers className="w-6 h-6" />, label: " Applicants", path: "/requests" },
+    { icon: <HiOutlineUsers className="w-6 h-6" />, label: " Applicants", path: "/company-applicants" },
     { icon: <RiHotelLine className="w-6 h-6" />, label: "C Profile", path: "/company-profile" },
     { icon: <CiViewList className="w-6 h-6" />, label: "Job Listing", path: "/company-jobs" },
     { divider: true },

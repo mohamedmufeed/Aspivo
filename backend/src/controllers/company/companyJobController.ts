@@ -103,21 +103,35 @@ export const editJob = async (req: Request, res: Response) => {
     const respone = await comapanyProfileService.editJob(jobId, data);
     res.status(200).json(respone);
   } catch (error) {
-    console.log("Error editng job", error)
-    res.status(500).json({message:"Internal server error"})
+    console.log("Error editng job", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
-
-
-export const deleteJob= async(req:Request,res:Response)=>{
+export const deleteJob = async (req: Request, res: Response) => {
   try {
-     const jobId= req.params.id
-     const respone= await comapanyProfileService.deleteJob(jobId)
-     res.status(200).json(respone)
-    
+    const jobId = req.params.id;
+    const respone = await comapanyProfileService.deleteJob(jobId);
+    res.status(200).json(respone);
   } catch (error) {
-    console.log("Error on deleting error",error)
-    res.status(500).json({message:"Internal server error"})
+    console.log("Error on deleting error", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
+export const getApplicantsForJob = async (req: Request, res: Response) => {
+  try {
+    const jobId = req.params.id;
+    const { companyId } = req.query;
+    if (typeof companyId == "string") {
+      const response = await comapanyProfileService.getApplicantsForJob(
+        jobId,
+        companyId
+      );
+      res.status(200).json(response);
+    }
+  } catch (error) {
+    console.log("Error in the fetchhing job applicants :", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

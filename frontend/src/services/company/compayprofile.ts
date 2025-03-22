@@ -83,3 +83,16 @@ export const deleteJob= async(jobId:string)=>{
     }
   }
 }
+
+export const getApplicants=async(jobId:string,companyId:string)=>{
+try {
+  const respone= await axios.get(`${COMPANY_URI}/jobapplicants/${jobId}`,{
+    params:{companyId}
+  })
+  return respone.data
+} catch (error) {
+  if (error instanceof AxiosError) {
+    console.error("Applicants fetching Error", error.response?.data);
+  }
+}
+}

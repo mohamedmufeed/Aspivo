@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchJob } from "../../services/jobService";
 import { useEffect, useState } from "react";
 import { JobData } from "../../services/company/compayprofile"
+import { BsXLg } from "react-icons/bs";
 
 const formatSalary = (amount: number): string => {
   if (amount >= 10000000) {
@@ -26,7 +27,7 @@ const JobLists = () => {
   const [filteredJobs, setFilteredJobs] = useState<JobData[]>([]);
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
-  const limit = 5
+  const limit = 8
   const [loading, setLoading] = useState(false);
 
 
@@ -37,7 +38,8 @@ const JobLists = () => {
     setLoading(true)
     try {
       const response = await fetchJob({ page, limit });
-      const newJobs = response.job;
+      console.log("res",response)
+      const newJobs = response.job || [];
       if (newJobs.length === 0 || newJobs.length < limit) {
         setHasMore(false)
       }
