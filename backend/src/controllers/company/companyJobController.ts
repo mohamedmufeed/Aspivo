@@ -1,11 +1,11 @@
 import { Request, response, Response } from "express";
-import { ComapnayProfileService } from "../../services/compnyService/comapnyProfileService.js";
-const comapanyProfileService = new ComapnayProfileService();
+import { ComapnayJobService } from "../../services/compnyService/comapnyJobService.js";
+const comapanyJobService = new ComapnayJobService();
 
 export const fetchCompany = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const company = await comapanyProfileService.fetchCompany(userId);
+    const company = await comapanyJobService.fetchCompany(userId);
     res.status(200).json({ company });
   } catch (error) {
     console.log("error in fetching company", error);
@@ -47,7 +47,7 @@ export const postJob = async (req: Request, res: Response) => {
       jobDescription,
       company,
     };
-    const respone = await comapanyProfileService.postJob(data);
+    const respone = await comapanyJobService.postJob(data);
     res.status(200).json(respone);
   } catch (error) {
     console.log("Error in the job creating ", error);
@@ -58,7 +58,7 @@ export const postJob = async (req: Request, res: Response) => {
 export const fetchJob = async (req: Request, res: Response) => {
   const companyId = req.params.id;
   try {
-    const respone = await comapanyProfileService.fetchJob(companyId);
+    const respone = await comapanyJobService.fetchJob(companyId);
     res.status(200).json(respone);
   } catch (error) {
     console.log("Error fetching the jobs", error);
@@ -100,7 +100,7 @@ export const editJob = async (req: Request, res: Response) => {
       requirements,
       jobDescription,
     };
-    const respone = await comapanyProfileService.editJob(jobId, data);
+    const respone = await comapanyJobService.editJob(jobId, data);
     res.status(200).json(respone);
   } catch (error) {
     console.log("Error editng job", error);
@@ -111,7 +111,7 @@ export const editJob = async (req: Request, res: Response) => {
 export const deleteJob = async (req: Request, res: Response) => {
   try {
     const jobId = req.params.id;
-    const respone = await comapanyProfileService.deleteJob(jobId);
+    const respone = await comapanyJobService.deleteJob(jobId);
     res.status(200).json(respone);
   } catch (error) {
     console.log("Error on deleting error", error);
@@ -124,7 +124,7 @@ export const getApplicantsForJob = async (req: Request, res: Response) => {
     const jobId = req.params.id;
     const { companyId } = req.query;
     if (typeof companyId == "string") {
-      const response = await comapanyProfileService.getApplicantsForJob(
+      const response = await comapanyJobService.getApplicantsForJob(
         jobId,
         companyId
       );
@@ -136,16 +136,28 @@ export const getApplicantsForJob = async (req: Request, res: Response) => {
   }
 };
 
- export const getApplicantDetials=async(req:Request,res:Response)=>{
+export const getApplicantDetials = async (req: Request, res: Response) => {
   try {
-    const applicantId=req.params.id
+    const applicantId = req.params.id;
 
-    const respone = await comapanyProfileService.getApplicantDetials(applicantId)
+    const respone = await comapanyJobService.getApplicantDetials(
+      applicantId
+    );
 
-    res.status(200).json(respone)
-    
+    res.status(200).json(respone);
   } catch (error) {
-    console.log("Error on fetching applicant details",error)
-    res.status(500).json({message:"Internal server Error"})
+    console.log("Error on fetching applicant details", error);
+    res.status(500).json({ message: "Internal server Error" });
   }
- }
+};
+
+export const updateStatus = async (req: Request, res: Response) => {
+  try {
+    const applicantId = req.params.id;
+    const {status}=req.body
+    const response= await comapanyJobService.updateStatus(applicantId,status)
+    res.status(200).json(response)
+  } catch (error) {
+    res.status(500).json({message:"Internal server error"})
+  }
+};

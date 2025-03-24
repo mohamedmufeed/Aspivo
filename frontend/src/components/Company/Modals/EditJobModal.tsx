@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import { jobSchema } from "../../../validation/zod";
-import { editJob } from "../../../services/company/compayprofile";
+import { editJob } from "../../../services/company/compayJob";
 
 
 interface JobData {

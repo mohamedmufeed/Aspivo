@@ -3,7 +3,7 @@ import Company from "../models/company.js";
 import { JobData } from "../types/companyTypes.js";
 import Job from "../models/job.js";
 import JobApplication from "../models/jobApplication.js";
-
+type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class CompanyRepostries {
   async register(
     companyName: string,
@@ -88,6 +88,10 @@ export class CompanyRepostries {
   async findApplicationDetail(applicantId:string){
     return await JobApplication.findById(applicantId).populate("userId")
     .populate("jobId", "jobTitle typesOfEmployment")
+   }
+
+   async findApplicationAndUpdate(applicantId:string,status:ApplicationStatus){
+    return await JobApplication.findByIdAndUpdate(applicantId,{status},{new:true})
    }
    
 }

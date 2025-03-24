@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchCompany } from "../../services/company/compayprofile";
+import { fetchCompany } from "../../services/company/compayJob";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useNavigate } from "react-router-dom";

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import profileImage from "../../assets/person_1.jpg"; 
-import { getApplicants } from "../../services/company/compayprofile";
+import { getApplicants } from "../../services/company/compayJob";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useParams, useNavigate } from "react-router-dom";

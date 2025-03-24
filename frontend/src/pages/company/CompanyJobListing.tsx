@@ -4,8 +4,8 @@ import { EllipsisVertical } from "lucide-react";
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { fetchJob } from "../../services/company/compayprofile";
-import { JobData } from "../../services/company/compayprofile";
+import { fetchJob } from "../../services/company/compayJob";
+import { JobData } from "../../services/company/compayJob";
 import JobListDropDown from "../../components/Company/Modals/JobListDropDown";
 const CompanyJobListing = () => {
   const [selected, setSelected] = useState("Job Listing");

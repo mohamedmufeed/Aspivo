@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { GoPlus } from "react-icons/go";
-import { JobData, postJob } from "../../services/company/compayprofile";
+import { JobData, postJob } from "../../services/company/compayJob";
 import { jobSchema } from "../../validation/zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -23,7 +23,7 @@ interface PopulatedUser {
 
 
 
-  type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+export type ApplicationStatus = "pending"| "reviewed"| "accepted"| "rejected";
 
 interface Education {
   degree: string;

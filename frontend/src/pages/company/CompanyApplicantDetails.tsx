@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import { BsChatLeftText } from "react-icons/bs";
@@ -9,9 +9,11 @@ import { BsDownload } from "react-icons/bs";
 import { CiStickyNote } from "react-icons/ci";
 import { FcGoogle } from "react-icons/fc";
 import { useParams } from "react-router-dom";
-import { getApplicantDetials } from "../../services/company/compayprofile";
+import { getApplicantDetials } from "../../services/company/compayJob";
 import { JobApplication } from "../../types/types";
 import { MdArrowDropDown } from "react-icons/md";
+import { updateStatus } from "../../services/company/compayJob";
+import { ApplicationStatus } from "../../types/types";
 
 
 const CompanyApplicantDetails = () => {
@@ -19,7 +21,9 @@ const CompanyApplicantDetails = () => {
     const [heading, setHeading] = useState("Application");
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState<JobApplication>();
+    const [status, setStatus] = useState<ApplicationStatus>("pending")
     const { applicationId } = useParams();
+    console.log(status)
 
     const handleDetails = async () => {
         try {
@@ -32,6 +36,18 @@ const CompanyApplicantDetails = () => {
         }
     };
 
+    const handleUpdateStatus = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        try {
+            const newStatus=e.target.value as ApplicationStatus
+            setStatus(newStatus)
+            const response = await updateStatus(applicationId || "", newStatus);
+            console.log("Status updated:", response);
+        } catch (error) {
+            console.error("Error updating status:", error);
+        }
+    };
+
+
     useEffect(() => {
         handleDetails();
     }, [applicationId]);
@@ -43,6 +59,7 @@ const CompanyApplicantDetails = () => {
     };
 
     return (
+
         <div className="flex">
             <CompanySidebar setSelected={setSelected} />
             <div
@@ -55,7 +72,7 @@ const CompanyApplicantDetails = () => {
                         <div className="bg-white shadow-lg rounded-xl p-6">
                             <div className="flex items-center">
                                 <img
-                                    src={details?.userId.profileImage||""}
+                                    src={details?.userId.profileImage || ""}
                                     alt="Profile"
                                     className="w-24 h-24 rounded-full object-cover"
                                 />
@@ -88,10 +105,11 @@ const CompanyApplicantDetails = () => {
                                     </p>
                                 </div>
                                 <div className="mt-6 flex justify-end space-x-4">
-                                    <div className="relative">
+                                <div className="relative">
                                         <select
-                                            value={details?.status}
-                                            className="appearance-none flex bg-white shadow-md font-semibold rounded-lg px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                            value={status}
+                                            onChange={handleUpdateStatus}
+                                            className="appearance-none flex bg-white shadow-md font-semibold rounded-lg px-5 py-2 hover:bg-gray-100 cursor-pointer"
                                         >
                                             <option value="pending">Pending</option>
                                             <option value="reviewed">Reviewed</option>
@@ -100,6 +118,7 @@ const CompanyApplicantDetails = () => {
                                         </select>
                                         <MdArrowDropDown className="absolute top-2 right-2 w-7 h-7 pointer-events-none" />
                                     </div>
+                                   
                                     <button className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center">
                                         <BsChatLeftText className="mr-2 w-5 h-5" />
                                         Chat
@@ -212,6 +231,7 @@ const CompanyApplicantDetails = () => {
                 </div>
             </div>
         </div>
+
     );
 };
 

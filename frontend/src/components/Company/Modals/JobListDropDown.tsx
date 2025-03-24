@@ -1,8 +1,8 @@
 import { GoPencil } from "react-icons/go";
 import { AiOutlineDelete } from "react-icons/ai";
 import React, { useState } from "react";
-import { deleteJob } from "../../../services/company/compayprofile";
-import { JobData } from "../../../services/company/compayprofile";
+import { deleteJob } from "../../../services/company/compayJob";
+import { JobData } from "../../../services/company/compayJob";
 import EditJobModal from "./EditJobModal";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";

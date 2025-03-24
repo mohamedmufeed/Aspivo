@@ -9,7 +9,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { useParams } from 'react-router-dom';
 import { getJobDetails } from '../../services/jobService';
 import { useEffect, useState } from 'react';
-import { JobData } from '../../services/company/compayprofile';
+import { JobData } from '../../services/company/compayJob';
 import { applyForJob } from '../../services/jobService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';

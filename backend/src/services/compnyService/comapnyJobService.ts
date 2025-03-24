@@ -1,29 +1,9 @@
-import { error } from "console";
 import { CompanyRepostries } from "../../repositories/companyRepositories.js";
 import { JobData } from "../../types/companyTypes.js";
-import { Types } from "mongoose";
-// interface PopulatedUser {
-//   _id: Types.ObjectId;
-//   firstName: string;
-//   lastName: string;
-//   profileImage: string;
-//   email?: string;
-//   phone?: string;
-//   skills?: string[];
-// }
-
-
-// interface ApplicationWithUser {
-//   _id: Types.ObjectId;
-//   jobId: Types.ObjectId;
-//   userId: PopulatedUser; 
-//   status: string;
-//   appliedAt: Date;
-// }
 
 const companyRepositories = new CompanyRepostries();
-
-export class ComapnayProfileService {
+export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
+export class ComapnayJobService {
   async fetchCompany(userId: string) {
     const company = await companyRepositories.findByUserId(userId);
     return { company, message: "comapany fetched sucsess fully" };
@@ -83,15 +63,15 @@ export class ComapnayProfileService {
         message: "You are not authorized to view applicants for this job",
       };
     }
-    const applications= await companyRepositories.findApplications(jobId);
+    const applications = await companyRepositories.findApplications(jobId);
     // console.log("the applic", applications);
     // if (applications && applications.length > 0) {
     //   for (const application of applications) {
     //     const user = application.userId;
-        
+
     //     if (!user?.firstName || !user?.lastName || !user?.profileImage) {
     //       throw {
-    //         status: 400, 
+    //         status: 400,
     //         message: `Applicant ${user?.firstName || "Unknown"} ${
     //           user?.lastName || "Unknown"
     //         } needs to update their profile`,
@@ -102,12 +82,22 @@ export class ComapnayProfileService {
     return { applications, message: "Job application fetched sucsess" };
   }
 
-  async getApplicantDetials(applicantId:string){
-    const applicant= await companyRepositories.findApplicationDetail(applicantId)
+  async getApplicantDetials(applicantId: string) {
+    const applicant = await companyRepositories.findApplicationDetail(
+      applicantId
+    );
 
-    if(!applicant){
-      throw new Error("Applicant detail not found")
+    if (!applicant) {
+      throw new Error("Applicant detail not found");
     }
-    return {applicant,message:"Applicant found"}
+    return { applicant, message: "Applicant found" };
+  }
+
+  async updateStatus(applicantId: string, status: ApplicationStatus) {
+    if (!applicantId) throw { status: 404, message: "Applicant ID required" };
+    if (!status) throw { status: 404, message: "Status not found" };
+    const application = await companyRepositories.findApplicationAndUpdate(applicantId,status);
+    if (!application) throw { status: 404, message: "Application not found" };
+    return { application, message: "Application updated successfully" };
   }
 }
