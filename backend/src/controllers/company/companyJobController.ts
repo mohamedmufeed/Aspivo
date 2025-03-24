@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { ComapnayProfileService } from "../../services/compnyService/comapnyProfileService.js";
 const comapanyProfileService = new ComapnayProfileService();
 
@@ -135,3 +135,17 @@ export const getApplicantsForJob = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+ export const getApplicantDetials=async(req:Request,res:Response)=>{
+  try {
+    const applicantId=req.params.id
+
+    const respone = await comapanyProfileService.getApplicantDetials(applicantId)
+
+    res.status(200).json(respone)
+    
+  } catch (error) {
+    console.log("Error on fetching applicant details",error)
+    res.status(500).json({message:"Internal server Error"})
+  }
+ }

@@ -49,9 +49,12 @@ const ProfileDropdown = () => {
                             <Settings size={20} />
                             <span>Settings</span>
                         </button>
-                        <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100">
+                        <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100 cursor-pointer">
+                
                             <Briefcase size={20} />
+                            <Link to={"/myjobs"}> 
                             <span>My Jobs</span>
+                            </Link>
                         </button>
                         <button className="flex items-center space-x-4 w-full p-2 rounded text-red-500 hover:bg-gray-100" onClick={handleLogout}>
                             <LogOut size={20} />

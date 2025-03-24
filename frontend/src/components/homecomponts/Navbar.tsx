@@ -68,7 +68,7 @@ const Navbar = () => {
     }, [])
 
 
-const undreadNotification= notifications?.some((notification)=>!notification.isRead)
+    const undreadNotification = notifications?.some((notification) => !notification.isRead)
 
 
 
@@ -97,7 +97,7 @@ const undreadNotification= notifications?.some((notification)=>!notification.isR
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
-            <div className="bg-[#F6F6F6] p-4 flex justify-between   items-center" style={{ fontFamily: "DM Sans, sans-serif" }}>
+            <div className="bg-[#F6F6F6] p-4 flex justify-between   items-center z-30" style={{ fontFamily: "DM Sans, sans-serif" }}>
 
                 <div className="text-[30px] ps-8 font-bold flex items-center font-[Montserrat]">
                     <span className="w-9 h-10 md:w-9 md:h-10 bg-orange-600 text-white rounded-lg font-extrabold flex items-center justify-center mr-1">A</span>
@@ -117,9 +117,9 @@ const undreadNotification= notifications?.some((notification)=>!notification.isR
 
                         <div className=" cursor-pointer font-medium hover:text-orange-600 ">
 
-                        {undreadNotification && (
-                <div className="absolute -top-1 -right-1 bg-orange-600 w-3 h-3 rounded-full" />
-              )}
+                            {undreadNotification && (
+                                <div className="absolute -top-1 -right-1 bg-orange-600 w-3 h-3 rounded-full" />
+                            )}
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 36 36">
                                 <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M32.51 27.83A14.4 14.4 0 0 1 30 24.9a12.6 12.6 0 0 1-1.35-4.81v-4.94A10.81 10.81 0 0 0 19.21 4.4V3.11a1.33 1.33 0 1 0-2.67 0v1.31a10.81 10.81 0 0 0-9.33 10.73v4.94a12.6 12.6 0 0 1-1.35 4.81a14.4 14.4 0 0 1-2.47 2.93a1 1 0 0 0-.34.75v1.36a1 1 0 0 0 1 1h27.8a1 1 0 0 0 1-1v-1.36a1 1 0 0 0-.34-.75" />
                                 <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M18 34.28A2.67 2.67 0 0 0 20.58 32h-5.26A2.67 2.67 0 0 0 18 34.28" />
@@ -134,8 +134,10 @@ const undreadNotification= notifications?.some((notification)=>!notification.isR
                             Login
                         </button>
                     }
+                    <div className="max-w-full relative z-30 ">
+                        {dropdown ? <ProfileDropdown /> : ""}
+                    </div>
 
-                    {dropdown ? <ProfileDropdown /> : ""}
                 </div>
 
                 <button className="block md:hidden text-orange-600 text-3xl" onClick={() => isOpen ? setIsOpen(false) : setIsOpen(true)}>

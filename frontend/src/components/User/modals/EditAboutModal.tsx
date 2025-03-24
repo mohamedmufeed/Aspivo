@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { editAbout, getProfile } from "../../services/profile";
-import { editAboutSchema } from "../../validation/zod";
+import { editAbout, getProfile } from "../../../services/profile";
+import { editAboutSchema } from "../../../validation/zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 

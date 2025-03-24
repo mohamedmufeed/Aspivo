@@ -1,29 +1,7 @@
 import axios, { AxiosError } from "axios";
-
+import { JobData } from "../../types/types";
 const COMPANY_URI = "http://localhost:5001/api/company";
-export interface JobData {
-  _id:string|undefined;
-  jobTitle: string;
-  category: string;
-  typesOfEmployment: string[];
-  maximumSalary: number;
-  minimumSalary: number;
-  qualification: string;
-  requiredSkills: string[];
-  jobResponsibilities: string;
-  startDate: Date;
-  endDate: Date;
-  slot: number;
-  requirements: string;
-  jobDescription: string;
-  company: {
-    _id: string;
-    companyName: string;
-    logo?: string; 
-    location?: string; 
-    email?:string
-  }
-}
+
 
 export const fetchCompany = async (userId: string) => {
   try {
@@ -95,4 +73,15 @@ try {
     console.error("Applicants fetching Error", error.response?.data);
   }
 }
+}
+
+export const getApplicantDetials=async(applicantId:string)=>{
+  try {
+    const respone=await axios.get(`${COMPANY_URI}/jobapplicants/details/${applicantId}`)
+    return respone.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Applicants details fetching Error", error.response?.data);
+    }
+  }
 }

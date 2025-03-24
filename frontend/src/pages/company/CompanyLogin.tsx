@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { lazy,Suspense } from "react";
 
-const SignupForm= lazy(()=>import("../../components/Company/Authforms/CompanySignUpForm"))
+const SignupForm= lazy(()=>import("../../components/Company/Authforms/ComapnyRegister"))
 const ForgotPasswordForm =lazy(()=>import("../../components/AuthForms/ForgotPasswordForm"))
 
 

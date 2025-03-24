@@ -27,4 +27,18 @@ export class JobRepositories {
     const savedApplication = await application.save();
     return { application: savedApplication };
   }
+
+  async findAppliedJobs(userId: string) {
+    return await JobApplication.find({userId:userId})
+    .populate({
+      path: "jobId", 
+      select: "jobTitle maximumSalary minimumSalary location typesOfEmployment", 
+      populate: {
+        path: "company", 
+        select: "companyName logo location", 
+      },
+    })
+    .lean(); 
+
+  }
 }

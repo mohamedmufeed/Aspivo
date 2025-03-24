@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 
-import { editEducation, getProfile } from "../../services/profile";
-import { educationSchema } from "../../validation/zod";
+import { editEducation, getProfile } from "../../../services/profile";
+import { educationSchema } from "../../../validation/zod";
 
 interface EditProfileModalProps {
     isOpen: boolean;

@@ -35,8 +35,8 @@ const OtpVerification = () => {
         e.preventDefault()
         try {
             const data = await verifyOtp({ email, otp })
-            console.log(" the data  from verify otp",data.user.user)
-            if (data.user.user ) {
+            console.log(" the data  from verify otp", data.user.user)
+            if (data.user.user) {
                 dispatch(login({
                     _id: data.user.user._id,
                     userName: data.user.user.userName,

@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { fetchJob } from "../../services/company/compayprofile";
 import { JobData } from "../../services/company/compayprofile";
-import JobListDropDown from "../../components/Company/Dropdown/JobListDropDown";
+import JobListDropDown from "../../components/Company/Modals/JobListDropDown";
 const CompanyJobListing = () => {
   const [selected, setSelected] = useState("Job Listing");
   const [heading, setHeading] = useState("All Jobs");

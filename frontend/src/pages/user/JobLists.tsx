@@ -3,9 +3,7 @@ import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate } from "react-router-dom";
 import { fetchJob } from "../../services/jobService";
 import { useEffect, useState } from "react";
-import { JobData } from "../../services/company/compayprofile"
-import { BsXLg } from "react-icons/bs";
-
+import { JobData } from "../../types/types";
 const formatSalary = (amount: number): string => {
   if (amount >= 10000000) {
     return `₹${(amount / 10000000).toFixed(1)}Cr`;
@@ -27,7 +25,7 @@ const JobLists = () => {
   const [filteredJobs, setFilteredJobs] = useState<JobData[]>([]);
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
-  const limit = 8
+  const limit = 5
   const [loading, setLoading] = useState(false);
 
 

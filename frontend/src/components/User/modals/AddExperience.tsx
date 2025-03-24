@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { addExprience } from "../../services/profile";
+import { addExprience } from "../../../services/profile";
 import { useDispatch } from "react-redux";
-import { addExperience } from "../../redux/slice/authSlice";
-import { experinceSchema } from "../../validation/zod";
+import { addExperience } from "../../../redux/slice/authSlice";
+import { experinceSchema } from "../../../validation/zod";
 
 
 

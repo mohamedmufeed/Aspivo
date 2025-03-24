@@ -42,3 +42,15 @@ export const applyForJob=async(req:Request,res:Response)=>{
     res.status(500).json({message:"Internal error"})
   }
 }
+
+export const appliedjobs=async(req:Request,res:Response)=>{
+  try {
+    const userId= req.params.id
+    const response= await jobService.appliedjobs(userId)
+    res.status(200).json(response)
+
+  } catch (error) {
+    console.log("Error in the appied job fetching",error)
+    res.status(500).json({message:"Internal server Error"})
+  }
+}

@@ -101,4 +101,13 @@ export class ComapnayProfileService {
     // }
     return { applications, message: "Job application fetched sucsess" };
   }
+
+  async getApplicantDetials(applicantId:string){
+    const applicant= await companyRepositories.findApplicationDetail(applicantId)
+
+    if(!applicant){
+      throw new Error("Applicant detail not found")
+    }
+    return {applicant,message:"Applicant found"}
+  }
 }

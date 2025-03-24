@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 
-import { addEducation } from "../../services/profile";
-import { educationSchema } from "../../validation/zod";
+import { addEducation } from "../../../services/profile";
+import { educationSchema } from "../../../validation/zod";
 
 
 

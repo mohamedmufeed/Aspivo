@@ -7,7 +7,7 @@ import api from "./api";
 
 export const signup = async (data: { userName: string; email: string; password: string }) => {
   try {
-    const response = await api.post("/signup", data);
+    const response = await api.post("user/signup", data);
     const user=response.data
     registerUserSocket("User",user._id)
     return user
@@ -22,7 +22,7 @@ export const signup = async (data: { userName: string; email: string; password: 
 
 export const login = async (data: { email: string; password: string }) => {
   try {
-    const response = await api.post("/login", data);
+    const response = await api.post("user/login", data);
 
     return response.data;
   } catch (error) {
@@ -36,7 +36,7 @@ export const login = async (data: { email: string; password: string }) => {
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
   try {
-    const response = await api.post("/otp-verification", data);
+    const response = await api.post("user/otp-verification", data);
     console.log("the from api",response.data)
     return response.data;
   } catch (error) {
@@ -50,7 +50,7 @@ export const verifyOtp = async (data: { email: string; otp: string }) => {
 
 export const resendOtp = async (data: { email: string }) => {
   try {
-    const response = await api.post("/resend-otp", data);
+    const response = await api.post("user/resend-otp", data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -63,7 +63,7 @@ export const resendOtp = async (data: { email: string }) => {
 
 export const forgotPassword = async (data: { email: string }) => {
   try {
-    const response = await api.post("/forgot-password", data);
+    const response = await api.post("user/forgot-password", data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -76,7 +76,7 @@ export const forgotPassword = async (data: { email: string }) => {
 
 export const resetPassword = async (data: { email: string; newPassword: string }) => {
   try {
-    const response = await api.post("/reset-password", data);
+    const response = await api.post("user/reset-password", data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -89,7 +89,7 @@ export const resetPassword = async (data: { email: string; newPassword: string }
 
 export const logout = async () => {
   try {
-    await api.post("/logout"); 
+    await api.post("user/logout"); 
 
   } catch (error) {
     if (error instanceof AxiosError) {

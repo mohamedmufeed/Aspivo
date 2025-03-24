@@ -5,21 +5,21 @@ import { EllipsisVertical } from "lucide-react";
 import { GoPencil } from "react-icons/go";
 import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
-import EditProileModal from "../../components/modals/EditProfileModal";
-import EditAboutModal from "../../components/modals/EditAboutModal";
+import EditProileModal from "../../components/User/modals/EditProfileModal";
+import EditAboutModal from "../../components/User/modals/EditAboutModal";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";
 import { useLocation } from "react-router-dom";
-import Resume from "../../components/ProfileComponets/Resume";
-import AddExperience, { Experience } from "../../components/modals/AddExperience";
-import EditExperience from "../../components/modals/EditExperience";
-import AddEducation, { Education } from "../../components/modals/AddEducation";
-import AddSkill from "../../components/modals/AddSkill";
+import Resume from "../../components/User/ProfileComponets/Resume";
+import AddExperience, { Experience } from "../../components/User/modals/AddExperience";
+import EditExperience from "../../components/User/modals/EditExperience";
+import AddEducation, { Education } from "../../components/User/modals/AddEducation";
+import AddSkill from "../../components/User/modals/AddSkill";
 import ProfileAvathar from "../../assets/user.png"
-import EditEducation from "../../components/modals/EditEducation";
-import EditSkill from "../../components/modals/EditSkill";
+import EditEducation from "../../components/User/modals/EditEducation";
+import EditSkill from "../../components/User/modals/EditSkill";
 
 const Profile = () => {
     const location = useLocation()
@@ -30,7 +30,7 @@ const Profile = () => {
     const [addEducation, setAddEducation] = useState(false)
     const [editEducation, setEditEucation] = useState(false)
     const [addSkill, setAddSkill] = useState(false)
-    const [editSkill,setEditSkill]=useState(false)
+    const [editSkill, setEditSkill] = useState(false)
     const [profileData, setProfileData] = useState<any>(null);
     const [currentExperinceId, setCurrentExperinceId] = useState("")
     const user = useSelector((state: RootState) => state.auth.user)
@@ -46,13 +46,13 @@ const Profile = () => {
 
 
     const handleEducationClick = (id: string) => {
-      
+
         setCurrentEducationId(id);
         setEditEucation(true);
     }
 
     const handelExperienceClick = (id: string) => {
-      
+
         setCurrentExperinceId(id)
         setEditExperience(true);
     }
@@ -90,7 +90,7 @@ const Profile = () => {
             try {
                 const response = await getProfile(userId);
                 setProfileData(response.user.user);
-                console.log("hell",response.user.user)
+                console.log("hell", response.user.user)
             } catch (error) {
                 console.error("Error fetching profile:", error);
             }
@@ -109,13 +109,13 @@ const Profile = () => {
 
             {/* profile section */}
             <div
-                className="bg-[#F6F6F6] min-h-screen"
+                className="bg-[#F6F6F6] min-h-screen "
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
                 <div className="p-7 px-8">
 
 
-                    <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg ">
+                    <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg z-0 ">
 
                         <div className="relative">
 
@@ -124,7 +124,7 @@ const Profile = () => {
                                 <img
                                     src={bannerImage}
                                     alt="Banner"
-                                    className="w-full h-40 object-cover rounded-t-lg"
+                                    className="w-full h-40 object-cover rounded-t-lg z-0 "
                                 />
                             </div>
 
@@ -172,7 +172,7 @@ const Profile = () => {
                                     </div>
 
                                     <div className="mb-5 flex space-x-3 ">
-                                        {profileData.skills.slice(0,3).map((skill:string, index:number) => (
+                                        {profileData.skills.slice(0, 3).map((skill: string, index: number) => (
                                             <span
                                                 key={index}
                                                 className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
@@ -204,7 +204,7 @@ const Profile = () => {
                     {editAboutOpen && <EditAboutModal setProfileData={setProfileData} userId={userId} isOpen={editAboutOpen} onClose={() => setAboutModal(false)} />}
                     {/* resueme section */}
 
-                    <Resume userId={userId}  setProfileData={setProfileData} />
+                    <Resume userId={userId} setProfileData={setProfileData} />
 
                     {/* exprience section */}
                     <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">

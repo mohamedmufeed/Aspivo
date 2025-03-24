@@ -85,4 +85,12 @@ export class CompanyRepostries {
     .populate("userId","firstName lastName profileImage")
     .populate("jobId","jobId jobTitle")
   }
+  async findApplicationDetail(applicantId:string){
+    return await JobApplication.findById(applicantId).populate("userId")
+    .populate("jobId", "jobTitle typesOfEmployment")
+   }
+   
 }
+
+
+

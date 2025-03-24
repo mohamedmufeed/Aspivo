@@ -6,7 +6,7 @@ import { IoCloudUploadOutline } from 'react-icons/io5'
 import { useDropzone } from "react-dropzone"
 import React, { use, useEffect, useState } from 'react'
 import axios from 'axios'
-import { deleteResume, getProfile, uploadResume } from '../../services/profile'
+import { deleteResume, getProfile, uploadResume } from '../../../services/profile'
 interface ResumeModalProps {
     userId: string,
     setProfileData: (prev: any) => void,

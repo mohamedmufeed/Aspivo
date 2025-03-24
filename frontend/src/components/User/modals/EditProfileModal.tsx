@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VscClose } from "react-icons/vsc";
-import { editProfileSchema } from "../../validation/zod";
-import { editProfile, getProfile } from "../../services/profile";
+import { editProfileSchema } from "../../../validation/zod";
+import { editProfile, getProfile } from "../../../services/profile";
 import axios from "axios";
 
 interface EditProfileForm {

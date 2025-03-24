@@ -10,7 +10,7 @@ const profileService = new ProfileSerive();
 export const editProfile = async (
   req: Request,
   res: Response
-): Promise<any> => {
+): Promise<void> => {
   try {
     const userId = req.params.id;
     const { firstName, lastName, phoneNumber, position, location } = req.body;
@@ -26,40 +26,41 @@ export const editProfile = async (
 
     const updatedProfile = await profileService.editProfile(userId, data);
 
-    return res
+    res
       .status(200)
       .json({ message: "User Profile updated scusessfully", updatedProfile });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       error:
         error instanceof Error ? error.message : "User profile updated  failed",
     });
   }
 };
 
-export const getProfile = async (req: Request, res: Response): Promise<any> => {
+export const getProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const userId = req.params.id;
     const user = await profileService.getProfile(userId);
-    return res.status(200).json({ user, message: "User Found sucsess full" });
+    res.status(200).json({ user, message: "User Found sucsess full" });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       error:
         error instanceof Error ? error.message : "User profile updated  failed",
     });
   }
 };
 
-export const editAbout = async (req: Request, res: Response): Promise<any> => {
+export const editAbout = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.id;
     const { about } = req.body;
     const user = await profileService.editAbout(userId, about);
-    return res
-      .status(200)
-      .json({ user, message: "User About edited successfully" });
+    res.status(200).json({ user, message: "User About edited successfully" });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       error:
         error instanceof Error ? error.message : "User About edited failed",
     });
@@ -219,13 +220,12 @@ export const uploadResume = async (
   }
 };
 
-export const deleteResume= async(req:Request,res:Response)=>{
-try {
-  const userId=req.params.id
-  const response= await profileService.deleteResume(userId)
-  res.status(200).json({response})
-  
-} catch (error) {
-  res.status(500).json({message:"Error deleting resume"})
-}
-}
+export const deleteResume = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const response = await profileService.deleteResume(userId);
+    res.status(200).json({ response });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting resume" });
+  }
+};

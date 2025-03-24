@@ -24,4 +24,11 @@ export class JobService {
     return {application, message:"JOb application sucsess"}
 
   }
+  async appliedjobs(userId:string){
+    const applications= await jobrepositories.findAppliedJobs(userId)
+    if(!applications ) throw {status:404, message:"application not found"}
+    return {applications, message:'saved job fethced sucsess fully'}
+  }
+
+
 }

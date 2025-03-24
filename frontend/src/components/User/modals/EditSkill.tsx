@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { addSkill } from "../../services/profile"; 
+import { addSkill } from "../../../services/profile"; 
 import { z } from "zod";
 
 
