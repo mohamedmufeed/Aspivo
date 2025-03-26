@@ -8,6 +8,10 @@ import { fetchUsers } from "../../services/adminService";
 import { useLocation } from "react-router-dom";
 import { blockUser } from "../../services/adminService";
 import profileAvathar from "../../assets/user.png"
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store/store";
+import { logout } from "../../redux/slice/authSlice";
+import { logoutUser } from "../../services/auth";
 type User = {
   _id: string;
   userName: string;
@@ -25,6 +29,7 @@ const UserManageMent = () => {
   const [users, setUsers] = useState<User[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const userPerPage = 5
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -55,6 +60,13 @@ const UserManageMent = () => {
             user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
           )
         );
+
+
+        const response = await logoutUser(userId)
+        if (response) {
+          dispatch(logout());
+        }
+
       } else {
         console.error("Failed to block/unblock user:", response.message);
       }

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { logout } from "./authSlice";
 
 interface Company {
   _id: string;
@@ -26,6 +27,9 @@ const companyAuthSlice = createSlice({
         email: action.payload.company.email,
         logo: action.payload.company.kyc || undefined,
       };
+    },
+    logout:(state)=>{
+      state.company=null
     }
   
   },

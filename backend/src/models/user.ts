@@ -108,24 +108,34 @@ const userSchema = new Schema(
       },
     ],
     skills: {
-      type: [String], 
-     default:[]
+      type: [String],
+      default: [],
     },
     profileImage: {
       type: String,
       default: " ",
     },
-    resume:{
-      type:String,
-      default:""
+    resume: {
+      type: String,
+      default: "",
     },
     isBlocked: {
       type: Boolean,
       default: false,
     },
-    googleId:{type:String},
+    googleId: { type: String },
     otp: { type: String },
     otpExpires: { type: Date },
+    customerId: { type: String },
+    subscription: {
+      subscriptionId: { type: String },
+      status: { type: String },
+      plan: { type: String },
+    },
+    features: {
+      resumeHighlighting: { type: Boolean, default: false },
+      unlimitedChat: { type: Boolean, default: false },
+    },
   },
   {
     timestamps: true,

@@ -62,6 +62,16 @@ const companySchema = new Schema(
       type: Number,
       required: false,
     },
+    customerId: { type: String }, 
+    subscription: {
+      subscriptionId: { type: String },
+      status: { type: String },
+      plan: { type: String },
+    },
+    features: {
+      unlimitedJobPosting: { type: Boolean, default: false },
+      accessToAnalytics: { type: Boolean, default: false },
+    },
   },
   {
     timestamps: true,

@@ -5,6 +5,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import companyRoutes from "./routes/companyRoutes.js";
+import stripeRoutes from "./routes/stripeRoutes.js"
 import cookieParser from "cookie-parser";
 import passport from "./config/passport.js";
 import session from "express-session";
@@ -43,6 +44,7 @@ app.use(passport.session());
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/company", companyRoutes);
+app.use("/api/stripe", stripeRoutes);
 
 const { io, sendNotification } = setupSocket(server);
 

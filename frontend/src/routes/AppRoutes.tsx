@@ -17,7 +17,9 @@ const JobDetails=lazy(()=>import("../pages/user/JobDetails"))
 const CopmanyApplicants=lazy(()=>import("../pages/company/CopmanyApplicants"))
 const CompanyApplicantDetails=lazy(()=>import("../pages/company/CompanyApplicantDetails"))
 const MyJobs=lazy(()=>import("../pages/user/MyJobs"))
-
+const Subscription=lazy(()=>import("../pages/user/Subscription"))
+const PaymentSuccess=lazy(()=>import("../pages/user/PaymentSuccess"))
+const PaymentCancel=lazy(()=>import("../pages/user/PaymentCancel"))
 
 
 const AppRoutes = () => {
@@ -37,6 +39,9 @@ const AppRoutes = () => {
         <Route path="/job-details/:id" element={<JobDetails />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/myjobs" element={<MyJobs />} />
+        <Route path="/subscription" element={<Subscription />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-users" element={<UserManageMent />} />
         <Route path="/admin-comapnyrequests" element={<AdminCompanyRequests />} />

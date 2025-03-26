@@ -12,7 +12,7 @@ const setupSocket=(server:HttpServer)=>{
     })
     const userSockets= new Map<string, Map<string,string>>();
     io.on("connection",(socket)=>{
-        console.log("A user conccets",socket.id)
+        // console.log("A user conccets",socket.id)
 
         socket.on("registerUser",(role:string,userid:string)=>{
             if(!userSockets.has(role)){
@@ -22,7 +22,7 @@ const setupSocket=(server:HttpServer)=>{
         })
 
         socket.on("disconnect",()=>{
-            console.log("User disconnected:", socket.id);
+            // console.log("User disconnected:", socket.id);
             for(const [role,users]of userSockets.entries()){
                 for(const [userId,socketId] of users.entries()){
                     if(socketId===socket.id){

@@ -25,20 +25,18 @@ const Navbar = () => {
         const handelGoogleUser = async () => {
             try {
                 const response = await fetchGoogleUser()
-                if (response?.data) {
-                    console.log(response.data)
+                if (response) {
                     dispatch(
                         login({
-                            _id: response.data._id,
-                            userName: response.data.userName,
-                            profileImage: response.data.profileImage,
-                            email: response.data.email,
-                            isAdmin: response.data.isAdmin || false,
-                            token: response.data.token,
-                            experiences: response.data.experiences || [],
+                            _id: response._id,
+                            userName: response.userName,
+                            profileImage: response.profileImage,
+                            email: response.email,
+                            isAdmin: response.isAdmin || false,
+                            token: response.token,
+                            experiences: response.experiences || [],
                         })
                     );
-                    console.log("Dispatched to Redux");
                 } else {
                     console.error("Google Auth failed or no data received");
                 }
@@ -52,7 +50,7 @@ const Navbar = () => {
 
     const user = useSelector((state: RootState) => state.auth.user)
     const userId = user?._id || ""
-
+    
     useEffect(() => {
 
         const fetchNotification = async () => {

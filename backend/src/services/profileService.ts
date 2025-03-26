@@ -27,7 +27,9 @@ export class ProfileSerive {
 
   async getProfile(id: string) {
     const user = await authRepostry.findById(id);
-    if (!user) throw new Error("User not found");
+    if (!user) {
+      throw new Error("User not found");
+    return}
     return { user, message: "User Found sucsess fully" };
   }
 

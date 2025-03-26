@@ -4,21 +4,36 @@ import { EllipsisVertical } from "lucide-react";
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { fetchJob } from "../../services/company/compayJob";
-import { JobData } from "../../services/company/compayJob";
+import { fetchCompany, fetchJob } from "../../services/company/compayJob";
+import { JobData } from "../../types/types";
 import JobListDropDown from "../../components/Company/Modals/JobListDropDown";
 const CompanyJobListing = () => {
   const [selected, setSelected] = useState("Job Listing");
   const [heading, setHeading] = useState("All Jobs");
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); 
-  const company = useSelector((state: RootState) => state.companyauth.company);
-  const companyId = company?._id || "";
+  const user = useSelector((state: RootState) => state.auth.user);
+  const userId = user?._id || "";
   const [jobs, setJobs] = useState<JobData[] | undefined>(undefined);
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+    useEffect(() => {
+    const fetchCompanyId = async () => {
+      try {
+        const response = await fetchCompany(userId);
+        console.log("Fetch company response:", response); 
+        if (response.company?.company) {
+          setCompanyId(response.company.company._id);
+        }
+      } catch (err: any) {
+        console.error("Error fetching company:", err.message);
+      }
+    };
+    fetchCompanyId();
+  }, [userId]);
 
   useEffect(() => {
     const handleFetchJob = async () => {
       try {
-        const response = await fetchJob(companyId);
+        const response = await fetchJob(companyId||"");
         console.log("the job response", response.jobs);
         setJobs(response.jobs);
       } catch (error) {

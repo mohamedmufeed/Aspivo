@@ -93,6 +93,7 @@ const Profile = () => {
                 console.log("hell", response.user.user)
             } catch (error) {
                 console.error("Error fetching profile:", error);
+                return
             }
         };
 

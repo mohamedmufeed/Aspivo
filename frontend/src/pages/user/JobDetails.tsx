@@ -9,10 +9,11 @@ import { FcGoogle } from 'react-icons/fc';
 import { useParams } from 'react-router-dom';
 import { getJobDetails } from '../../services/jobService';
 import { useEffect, useState } from 'react';
-import { JobData } from '../../services/company/compayJob';
+import { JobData } from '../../types/types';
 import { applyForJob } from '../../services/jobService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
+
 
 
 const formatSalary = (amount: number): string => {
@@ -33,21 +34,25 @@ const JobDetails = () => {
   const [jobDetails, setJobDetails] = useState<JobData>()
   const [loading,setLoading]=useState(true)
   const [applying, setApplying] = useState(false);
+  const [responseUserId,setResponseUserId]=useState("")
   useEffect(() => {
     const fechDetails = async () => {
       try {
         const response = await getJobDetails(id || "")
+
         if (response.job) {
           setJobDetails(response.job)
         }
-
-        console.log("the job response", response.job)
+        setResponseUserId(response.job.company.userId)
+        console.log("the job response", response.job.company.userId)
+        console.log("the user id", userId)
       } catch (error) {
         console.log("error in feching job details", error)
       }finally{
         setLoading(false)
       }
     }
+
     fechDetails()
   }, [id])
 
@@ -126,12 +131,12 @@ const JobDetails = () => {
                 </button>
                 <button
                   onClick={handleApplyJob}
-                  disabled={applying}
-                  className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition ${
+                  disabled={applying||responseUserId===userId}
+                  className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition cursor-pointer ${
                     applying ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-700"
                   }`}
                 >
-                  {applying ? "Applying..." : "Apply"}
+                {responseUserId===userId?"Applied":applying ? "Applying..." : "Apply"}
                 </button>
               </div>
             </div>

@@ -48,10 +48,7 @@ const HeroSection = () => {
     }
   }, [navigate, user]);
 
-
   const comapny = useSelector((state: RootState) => state.companyauth.company)
-  console.log("the company", comapny)
-
   const heroTextRef = useRef(null);
   const searchBoxRef = useRef(null);
   const paragraphRef = useRef(null);

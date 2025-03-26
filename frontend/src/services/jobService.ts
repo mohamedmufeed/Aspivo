@@ -41,7 +41,7 @@ try {
 export const appliedJobs=async(userId:string)=>{
     try {
         const response= await api.get(`user/applyed-jobs/${userId}`)
-        return response.data
+        return response
     } catch (error) {
         if (error instanceof AxiosError) {
             console.error("applied jobs  :", error.response?.data);

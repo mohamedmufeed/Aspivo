@@ -1,5 +1,5 @@
 
-import { register ,login, verifyOtp, resendOtp, forgotPassword, resetPassword, refreshToken, googleCallBack, getGoogleUser } from "../controllers/user/authController.js";
+import { register ,login, verifyOtp, resendOtp, forgotPassword, resetPassword, refreshToken, googleCallBack, getGoogleUser, logout } from "../controllers/user/authController.js";
 import { addEducation, addExprience, addSkill, deleteResume, editAbout, editEducation, editExperince, editProfile, getProfile , uploadResume} from "../controllers/user/profileController.js";
 import { getNotifications, isRead } from "../controllers/user/notificationController.js";
 import express  from "express";
@@ -7,6 +7,8 @@ import {  Imageupload , resumeUplaod } from "../config/multer.js";
 import protect from "../middleware/authMiddlwware.js";
 import passport from "passport";
 import { appliedjobs, applyForJob, fetchJob, getJobDetails } from "../controllers/user/jobcontroller.js";
+import { createCheckoutSession } from "../controllers/user/stripeController.js";
+
 
 const router= express.Router()
 router.post("/signup",register)
@@ -17,6 +19,7 @@ router.post("/forgot-password",forgotPassword)
 router.post("/reset-password",resetPassword)
 router.put("/edit-profile/:id", Imageupload.single("profileImage"), editProfile);
 router.get("/profile/:id",protect,getProfile)
+router.post("/logout/:id", logout);
 router.put("/edit-about/:id",editAbout)
 router.post("/upload-resume/:id",uploadResume)
 router.post("/add-experience/:id",addExprience)

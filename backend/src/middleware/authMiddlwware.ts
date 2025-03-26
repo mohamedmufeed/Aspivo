@@ -14,7 +14,7 @@ const protect = (
   const token = req.cookies?.access_token;
 
   if (!token) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" }).redirect("/login");
     return;
   }
   try {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import profileImage from "../../assets/person_1.jpg"; 
-import { getApplicants } from "../../services/company/compayJob";
+import { fetchCompany, getApplicants } from "../../services/company/compayJob";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { useParams, useNavigate } from "react-router-dom";
@@ -14,13 +14,29 @@ const CopmanyApplicants = () => {
   const [details, setDetails] = useState<Application[]>([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null); 
-  const company = useSelector((state: RootState) => state.companyauth.company);
-  const companyId = company?._id || "";
+  const user = useSelector((state: RootState) => state.auth.user);
+  const userId = user?._id || "";
   const { jobId } = useParams<{ jobId: string }>(); 
+  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
   const navigate = useNavigate(); 
+      useEffect(() => {
+    const fetchCompanyId = async () => {
+      try {
+        const response = await fetchCompany(userId);
+        if (response.company?.company) {
+          setCompanyId(response.company.company._id);
+        }
+      } catch (err: any) {
+        console.error("Error fetching company:", err.message);
+      }
+    };
+    fetchCompanyId();
+  }, [userId]);
 
-  const fetchApplicants = async () => {
+  const fetchApplicants = async (companyId:string) => {
+    console.log("e",jobId, companyId)
     if (!jobId || !companyId) {
+      console.log("eo",jobId, companyId)
       setError("Missing job ID or company ID");
       setLoading(false);
       return;
@@ -40,8 +56,10 @@ const CopmanyApplicants = () => {
   };
 
   useEffect(() => {
-    fetchApplicants();
-  }, [jobId, companyId]); 
+    if (companyId) {
+      fetchApplicants(companyId);
+    }
+  }, [jobId, companyId]);
 
   const handleViewApplication = (applicationId: string) => {
     navigate(`/company/applicants/${applicationId}`, { state: { companyId } });

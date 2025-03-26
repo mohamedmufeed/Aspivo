@@ -87,7 +87,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const verifyOtp = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, otp } = req.body;
-    
+
     const user = await authService.verifyotp(email, otp.trim());
     console.log("the user after verify otp ", user);
     res.status(200).json({
@@ -205,7 +205,6 @@ export const getGoogleUser = async (
   try {
     if (!req.user) {
       res.status(401).json({ message: "Not authenticated" });
-      return;
     }
 
     const user = req.user as any;
@@ -223,5 +222,31 @@ export const getGoogleUser = async (
     res
       .status(500)
       .json({ message: "Internal server error in the google auth" });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      res.status(404).json({ message: "User id is required" });
+      return
+    }
+    res.cookie("access_token", " ", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      expires: new Date(0),
+    });
+    res.cookie("refresh_token", " ", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      expires: new Date(0),
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    res.status(500).json({ message: "Logout failed", error: error });
   }
 };
