@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { AdminRepostry } from "../../repositories/adminRepositories.js";
 import { AdminService } from "../../services/adminService.js";
+import HttpStatus from "../../utils/httpStatusCode.js";
+
 
 const adminService= new AdminService()
 const adminRepostry = new AdminRepostry();
@@ -24,3 +26,15 @@ export const getCompanies= async(req:Request,res:Response)=>{
         res.status(500).json({message:"Internal server error"})
     }
  }
+
+ export const approvedCompanies=async(req:Request,res:Response)=>{
+    try {
+    const response= await adminService.approvedCompany()
+    res.status(HttpStatus.OK).json(response)
+    
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+ }
+
+  

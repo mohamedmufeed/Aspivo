@@ -9,7 +9,6 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
     const users = await adminRepostry.getAllUsers();
     res.status(200).json({ success: true, users ,message:"user fetchig sucsess" });
   } catch (error) {
-    console.error("Error fetching users:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -21,7 +20,6 @@ export const blockUser= async(req:Request,res:Response):Promise<void>=>{
    const response= await adminService.blockUser(userId)
     res.status(200).json({success:true, response,message:"User status changes sucsess fulyl"})
   } catch (error) {
-    console.error("Error fetching users:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 }

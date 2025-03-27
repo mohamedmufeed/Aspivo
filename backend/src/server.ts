@@ -46,6 +46,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/stripe", stripeRoutes);
 
+
 const { io, sendNotification } = setupSocket(server);
 
 const PORT = process.env.PORTNUMBER || 5001;

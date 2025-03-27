@@ -20,6 +20,7 @@ const MyJobs=lazy(()=>import("../pages/user/MyJobs"))
 const Subscription=lazy(()=>import("../pages/user/Subscription"))
 const PaymentSuccess=lazy(()=>import("../pages/user/PaymentSuccess"))
 const PaymentCancel=lazy(()=>import("../pages/user/PaymentCancel"))
+const CompanyManageMent=lazy(()=>import("../pages/admin/CompanyManageMent"))
 
 
 const AppRoutes = () => {
@@ -44,6 +45,7 @@ const AppRoutes = () => {
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-users" element={<UserManageMent />} />
+        <Route path="/admin-companies" element={<CompanyManageMent />} />
         <Route path="/admin-comapnyrequests" element={<AdminCompanyRequests />} />
         <Route path="/company-signup" element={<CompanyLogin />} />
         <Route path="/company-dashboard" element={<ComapnyDashboard />} />

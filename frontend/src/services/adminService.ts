@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { data } from "react-router-dom";
 const ADMIN_API = "http://localhost:5001/api/admin";
 
 export const fetchUsers = async () => {
@@ -58,3 +59,15 @@ export const updateCompanyStatus = async (
     }
   }
 };
+
+
+export const  approvedCompany=async()=>{
+  try {
+    const response=await axios.get(`${ADMIN_API}/approved-company`)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Fetch approved  company:", error.response?.data);
+    }
+  }
+}

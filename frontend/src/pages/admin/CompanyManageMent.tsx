@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import profile from "../../assets/person_1.jpg";
 import { EllipsisVertical, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
-import { getAllCompany, updateCompanyStatus } from "../../services/adminService";
+import { getAllCompany } from "../../services/adminService";
+import { approvedCompany } from "../../services/adminService";
 
 interface Company {
     _id: string;
@@ -15,7 +16,7 @@ interface Company {
 }
 
 const AdminCompanyRequests = () => {
-    const [selected, setSelectedMenu] = useState("Dashboard");
+    const [selected, setSelectedMenu] = useState("Companies");
     const [companyDetail, setCompanyDetail] = useState<Company[]>([]);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -25,25 +26,11 @@ const AdminCompanyRequests = () => {
     const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
     const currentCompanies = companyDetail?.slice(indexOfFirstCompany, indexOfLastCompany) || [];
 
-    const handleStatusChange = async (companyId: string, newStatus: string) => {
-        try {
-            await updateCompanyStatus(companyId, newStatus);
-            setCompanyDetail((prevDetails = []) =>
-                prevDetails.map((company) =>
-                    company._id === companyId ? { ...company, status: newStatus } : company
-                )
-            );
-            setCurrentPage(1); 
-            setOpenDropdown(null);
-        } catch (error) {
-            console.error("Error updating company status:", error);
-        }
-    };
 
     useEffect(() => {
         const fetchCompany = async () => {
             try {
-                const response = await getAllCompany();
+                const response = await approvedCompany();
                 console.log(response.company);
                 setCompanyDetail(response.company);
                 setCurrentPage(1); 
@@ -61,7 +48,7 @@ const AdminCompanyRequests = () => {
                 <div className="flex justify-between space-x-10">
                     <div className="flex mt-10">
                         <IoChevronBackOutline className="w-8 h-8 ml-3 mr-6" />
-                        <h1 className="text-3xl font-medium -mt-0">Requests</h1>
+                        <h1 className="text-3xl font-medium -mt-0">Companies</h1>
                     </div>
 
                     <div className="flex p-3 mt-5 px-15">
@@ -91,12 +78,11 @@ const AdminCompanyRequests = () => {
 
                 <div className="w-full p-5">
                     {/* Header Row */}
-                    <div className="grid grid-cols-7 items-center font-semibold bg-gray-100 p-3 rounded-md">
+                    <div className="grid grid-cols-6 items-center font-semibold bg-gray-100 p-3 rounded-md">
                         <p className="text-center">Company Name</p>
                         <p className="text-center">Email</p>
                         <p className="text-center">Status</p>
                         <p className="text-center">Created At</p>
-                        <p className="text-center">Change Status</p>
                         <p className="text-center">View KYC</p>
                         <p className="text-center">Actions</p>
                     </div>
@@ -104,41 +90,13 @@ const AdminCompanyRequests = () => {
 
                     {currentCompanies && currentCompanies.length > 0 ? (
                         currentCompanies.map((company) => (
-                            <div key={company._id} className="grid grid-cols-7 items-center bg-white shadow-md p-4 rounded-lg my-2">
+                            <div key={company._id} className="grid grid-cols-6 items-center bg-white shadow-md p-4 rounded-lg my-2">
                                 <h1 className="text-center font-medium">{company.companyName}</h1>
                                 <h1 className="text-center text-sm text-gray-600">{company.email}</h1>
                                 <h1 className="text-center font-medium">{company.status}</h1>
                                 <h1 className="text-center text-sm text-gray-500">
                                     {new Date(company.createdAt).toLocaleDateString()}
                                 </h1>
-
-                                <div className="relative flex justify-center">
-                                    <button
-                                        className={`px-4 py-2 text-white rounded-md flex items-center bg-orange-600`}
-                                        onClick={() => setOpenDropdown(openDropdown === company._id ? null : company._id)}
-                                    >
-                                        {company.status}
-                                        <ChevronDown className="ml-2 w-4 h-4" />
-                                    </button>
-
-                                    {openDropdown === company._id && (
-                                        <div className="absolute top-full mt-2 bg-white shadow-md rounded-md w-28 text-center z-10">
-                                            <button
-                                                className="block w-full px-4 py-2 hover:bg-green-100 text-green-600"
-                                                onClick={() => handleStatusChange(company._id, "Approved")}
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                className="block w-full px-4 py-2 hover:bg-red-100 text-red-600"
-                                                onClick={() => handleStatusChange(company._id, "Declined")}
-                                            >
-                                                Decline
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
                                 <div className="text-center">
                                     {company.kyc ? (
                                         <a

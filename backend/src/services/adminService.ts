@@ -31,4 +31,13 @@ export class AdminService {
     sendNotification("user", company.userId.toString(), message);
     return { company };
   }
+
+  async approvedCompany() {
+    const company = await this.adminRepostry.findApprovedCompany();
+    if (!company) {
+      throw new Error("Company not found");
+    }
+    return { company, message: "Approved company founded sucsess fully" };
+  }
+
 }

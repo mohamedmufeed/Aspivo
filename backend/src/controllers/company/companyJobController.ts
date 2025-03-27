@@ -103,7 +103,6 @@ export const editJob = async (req: Request, res: Response) => {
     const respone = await comapanyJobService.editJob(jobId, data);
     res.status(200).json(respone);
   } catch (error) {
-    console.log("Error editng job", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -114,7 +113,6 @@ export const deleteJob = async (req: Request, res: Response) => {
     const respone = await comapanyJobService.deleteJob(jobId);
     res.status(200).json(respone);
   } catch (error) {
-    console.log("Error on deleting error", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -131,7 +129,6 @@ export const getApplicantsForJob = async (req: Request, res: Response) => {
       res.status(200).json(response);
     }
   } catch (error) {
-    console.log("Error in the fetchhing job applicants :", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

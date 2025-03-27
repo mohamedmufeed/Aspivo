@@ -13,6 +13,10 @@ import { JobData } from '../../types/types';
 import { applyForJob } from '../../services/jobService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
+import ToastError from '../../components/Toast/ErrorToast';
+import { User } from "../../types/types"
+import { getProfile } from '../../services/profile';
+
 
 
 
@@ -32,47 +36,77 @@ const formatSalary = (amount: number): string => {
 const JobDetails = () => {
   const { id } = useParams()
   const [jobDetails, setJobDetails] = useState<JobData>()
-  const [loading,setLoading]=useState(true)
+  const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState(false);
-  const [responseUserId,setResponseUserId]=useState("")
+  const [responseUserId, setResponseUserId] = useState("")
+  const [userDetails, setUserDetails] = useState<User|null>(null)
+  const [errorMessage,setErrorMessage]=useState<string|null>(null)
   useEffect(() => {
     const fechDetails = async () => {
       try {
         const response = await getJobDetails(id || "")
-
         if (response.job) {
           setJobDetails(response.job)
         }
         setResponseUserId(response.job.company.userId)
-        console.log("the job response", response.job.company.userId)
-        console.log("the user id", userId)
+        if (response.job.company.userId) {
+          const userResponse = await getProfile(userId)
+          setUserDetails(userResponse.user.user)
+        }
       } catch (error) {
         console.log("error in feching job details", error)
-      }finally{
+      } finally {
         setLoading(false)
       }
     }
 
     fechDetails()
-  }, [id])
+  }, [id,responseUserId])
 
 
-  const user= useSelector((state:RootState)=>state.auth.user)
-  const userId=user?._id||""
+  const user = useSelector((state: RootState) => state.auth.user)
+  const userId = user?._id || ""
 
-  const handleApplyJob=async()=>{
+  const validateUserDetails = (user: User | null): boolean => {
+    if (!user) {
+        setErrorMessage("User details not found. Please log in again.");
+        return false;
+    }
+
+    const requiredFields = [
+        { field: user.firstName, name: "Full Name" },
+        { field: user.email, name: "Email" },
+        { field: user.resume, name: "Resume" },
+        { field: user.phoneNumber, name: "Phone Number" },
+        { field: user.education, name: "Education" },
+        { field: user.experiences, name: "Experience" },
+    ];
+
+    for (const { field, name } of requiredFields) {
+        if (!field ) {
+            setErrorMessage(`Please complete your profile: ${name} is required.`);
+            return false;
+        }
+    }
+
+    setErrorMessage(null);
+    return true;
+};
+
+  const handleApplyJob = async () => {
+    if (!validateUserDetails(userDetails)) {
+      return;
+  }
     setApplying(true);
+
     try {
-      const response=await applyForJob(id||"",userId)
-      
-      console.log("job application is done",response)
+      const response = await applyForJob(id || "", userId)
     } catch (error) {
-      console.log("Error in the apply for the job",error)
-    }finally{
+      console.log("Error in the apply for the job", error)
+    } finally {
       setApplying(false)
     }
   }
-
 
 
   if (loading) {
@@ -86,7 +120,12 @@ const JobDetails = () => {
 
   return (
     <div className="bg-[#F6F6F6] min-h-screen" style={{ fontFamily: "DM Sans, sans-serif" }}>
+    <div className= 'flex justify-center'>
+      {errorMessage?<ToastError  message={errorMessage} onClose={()=>setErrorMessage(null)}/>:""}
+      </div>
+   
       <Navbar />
+     
       <div className="px-10 py-6">
         {/* profiile section */}
         <div className="bg-white shadow-lg w-full rounded-xl overflow-hidden">
@@ -118,8 +157,8 @@ const JobDetails = () => {
                 <div className="flex items-center gap-6 text-sm text-gray-600">
                   <p className="font-light">{jobDetails?.company.location || "N/A"}</p>
                   <p>{jobDetails?.startDate
-                      ? `Posted ${new Date(jobDetails.startDate).toLocaleDateString()}`
-                      : "Date not available"}</p>
+                    ? `Posted ${new Date(jobDetails.startDate).toLocaleDateString()}`
+                    : "Date not available"}</p>
                 </div>
               </div>
 
@@ -131,12 +170,11 @@ const JobDetails = () => {
                 </button>
                 <button
                   onClick={handleApplyJob}
-                  disabled={applying||responseUserId===userId}
-                  className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition cursor-pointer ${
-                    applying ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-700"
-                  }`}
+                  disabled={applying || responseUserId === userId}
+                  className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition cursor-pointer ${applying ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-700"
+                    }`}
                 >
-                {responseUserId===userId?"Applied":applying ? "Applying..." : "Apply"}
+                  {responseUserId === userId ? "Applied" : applying ? "Applying..." : "Apply"}
                 </button>
               </div>
             </div>
@@ -192,8 +230,8 @@ const JobDetails = () => {
 
             <div className='p-4'>
               <h1 className='font-semibold text-2xl'>  {jobDetails?.minimumSalary && jobDetails.maximumSalary
-                        ? `${formatSalary(jobDetails.minimumSalary)} - ${formatSalary(jobDetails.maximumSalary)}`
-                        : "N/A"}</h1>
+                ? `${formatSalary(jobDetails.minimumSalary)} - ${formatSalary(jobDetails.maximumSalary)}`
+                : "N/A"}</h1>
               <p className='text-sm text-gray-700'>Yearly salary</p>
             </div>
 
@@ -249,7 +287,7 @@ const JobDetails = () => {
         <div className='bg-white shadow-lg rounded-xl flex mt-5'>
           <div className='p-5 '>
             <h1 className='font-semibold text-xl pl-4 pt-4 '>About the Company </h1>
-            <p className='text-sm text-gray-700 pl-4 pt-5'>{} Google is a multinational technology company known for its powerful search engine, which helps users find information
+            <p className='text-sm text-gray-700 pl-4 pt-5'>{ } Google is a multinational technology company known for its powerful search engine, which helps users find information
               quickly and efficiently. Founded in 1998, Google has grown to become one of the most influential tech companies in the world,
               offering a wide range of products and services, including Gmail, Google Maps, YouTube, Google Drive, and the Android operating
               system. It is renowned for its innovative approach to technology and its commitment to organizing the world's information, making

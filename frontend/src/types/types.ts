@@ -39,7 +39,7 @@ interface Experience {
   description: string;
 }
 
-interface User {
+ export interface User {
   _id: string;
   userName: string;
   firstName: string;
@@ -59,7 +59,7 @@ interface User {
   isAdmin: boolean;
   isBlocked: boolean;
   verified: boolean;
-  password: string;
+  password?: string;
   __v: number;
 }
 

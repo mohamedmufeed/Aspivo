@@ -13,7 +13,6 @@ export const fetchJob = async (req: Request, res: Response) => {
     const response = await jobService.fetchJob(page, limit);
     res.status(200).json(response);
   } catch (error) {
-    console.log("Error in fetch job", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -24,7 +23,6 @@ export const getJobDetails = async (req: Request, res: Response) => {
     const response = await jobService.getJobDetails(jobId);
     res.status(200).json(response);
   } catch (error) {
-    console.log("Erorr in geting job details", error);
     res.status(500).json({ message: "Internal server eror" });
   }
 };
@@ -38,7 +36,6 @@ export const applyForJob=async(req:Request,res:Response)=>{
     res.status(200).json(response)
     
   } catch (error) {
-    console.log("Eroro in apllying job",error)
     res.status(500).json({message:"Internal error"})
   }
 }
@@ -50,7 +47,6 @@ export const appliedjobs=async(req:Request,res:Response)=>{
     res.status(200).json(response)
 
   } catch (error) {
-    console.log("Error in the appied job fetching",error)
     res.status(500).json({message:"Internal server Error"})
   }
 }

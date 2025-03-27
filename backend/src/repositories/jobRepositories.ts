@@ -1,16 +1,26 @@
+import path from "path";
 import Job from "../models/job.js";
 import JobApplication from "../models/jobApplication.js";
 export class JobRepositories {
   async fetchJob(page: number, limit: number) {
     const skip = (page - 1) * limit;
+    const totalJobs = await Job.countDocuments();
     return await Job.find()
-      .populate("company", "companyName logo location")
-      .skip(skip)
-      .limit(limit);
+        .populate("company", "companyName logo location")
+        .sort({ createdAt: -1 }) 
+        .skip(skip)
+        .limit(limit);
+}
+async JobDetails(jobId: string) {
+  try {
+    const jobDetails = await Job.findById(jobId).populate("company")
+    return jobDetails;
+  } catch (error) {
+    console.error("Error fetching job details:", error);
+    throw new Error("Failed to fetch job details.");
   }
-  async JobDetails(jobId: string) {
-    return await Job.findById(jobId).populate("company");
-  }
+}
+
   async findJob(jobId: string) {
     return await Job.findById(jobId);
   }

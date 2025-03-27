@@ -15,12 +15,13 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     const response = await stripeService.setupStripe(userId, companyId);
     res.status(200).json(response);
   } catch (error: any) {
-    console.log("Error on subscription:", error.message);
     res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
 
 export const handleWebhook = async (req: Request, res: Response) => {
+  console.log("Webhook received with headers:", req.headers);
+  console.log("Webhook body:", req.body);
 
   const sig = req.headers["stripe-signature"];
   if (!sig) {
@@ -32,7 +33,6 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    console.error("Webhook error: STRIPE_WEBHOOK_SECRET is not defined");
     res.status(500).send("Webhook Error: STRIPE_WEBHOOK_SECRET is not defined");
     return; 
   }
@@ -41,9 +41,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
   try {
     event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
-    console.log("Webhook event received:", event.type, event.id); 
   } catch (error: any) {
-    console.error("Webhook error:", error.message);
     res.status(400).send(`Webhook Error: ${error.message}`);
     return; 
   }
@@ -52,7 +50,6 @@ export const handleWebhook = async (req: Request, res: Response) => {
     await stripeService.handleWebhookEvent(event);
     res.status(200).json({ received: true });
   } catch (error: any) {
-    console.error("Error handling webhook:", error.message);
     res.status(500).json({ message: error.message || "Internal server error" });
   }
 };

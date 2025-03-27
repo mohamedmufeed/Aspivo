@@ -1,12 +1,21 @@
 import { use } from "passport";
 import { JobRepositories } from "../repositories/jobRepositories.js";
+import Job from "../models/job.js";
 
 const jobrepositories = new JobRepositories();
 export class JobService {
   async fetchJob(page: number, limit: number) {
     const job = await jobrepositories.fetchJob(page, limit);
     if (!job || job.length === 0) throw new Error("Job not found");
-    return { job, message: "Job fetched sucsess fully" };
+    const total = await Job.countDocuments();
+
+    return {
+        job: job,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+        message: "Job fetched successfully", 
+    };
   }
   async getJobDetails(jobId: string) {
     const job = await jobrepositories.JobDetails(jobId);

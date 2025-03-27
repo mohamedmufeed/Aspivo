@@ -39,9 +39,12 @@ export class StripeService {
     try {
       switch (event.type) {
         case "customer.subscription.created":
+          console.log("Received Event Type:", event.type);
+console.log("Event Data:", event.data.object);
+
           const subscription = event.data.subscription;
-          const userIdCreated = event.data.object.metadata.userId;
-          const companyIdCreated = event.data.object.metadata.companyId;
+          const userIdCreated = event.data.metadata?.userId;
+          const companyIdCreated = event.data.metadata?.companyId;
 
           if (userIdCreated) {
             await this.stripeRepositories.updateUserSubscription(
@@ -79,10 +82,10 @@ export class StripeService {
           break;
         case "customer.subscription.updated": {
           const updatedSubscription = event.data.object;
-          const userIdUpdated = event.data.object.metadata.userId;
-          const companyIdUpdated = event.data.object.metadata.companyId;
+          const userIdUpdated = event.data.metadata?.userId;
+          const companyIdUpdated = event.data.metadata?.companyId;
 
-          if (userIdCreated) {
+          if (userIdUpdated) {
             await this.stripeRepositories.updateUserSubscription(
               userIdUpdated,
               {
@@ -135,7 +138,7 @@ export class StripeService {
           const invoice = event.data.object;
           const userIdPayment = event.data.object.metadata.userId;
           const companyIdPayment = event.data.object.metadata.companyId;
-          if (userIdCreated) {
+          if (userIdPayment) {
             await this.stripeRepositories.grantUserFeatures(userIdPayment);
             console.log("User features granted to user:", userIdPayment);
 

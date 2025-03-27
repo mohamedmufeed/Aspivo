@@ -205,6 +205,7 @@ export const getGoogleUser = async (
   try {
     if (!req.user) {
       res.status(401).json({ message: "Not authenticated" });
+      return
     }
 
     const user = req.user as any;

@@ -21,6 +21,10 @@ async findAllCompany(){
   return await Company.findById(companyId)
  }
 
+ async findApprovedCompany(){
+  return await Company.find({status:"Approved"})
+ }
+
 
 }
 

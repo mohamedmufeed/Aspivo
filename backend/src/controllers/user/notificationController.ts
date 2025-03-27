@@ -20,7 +20,6 @@ export const getNotifications = async (req: Request, res: Response) => {
     const notifications = await notificationService.getNotifications(userId);
     res.status(200).json(notifications);
   } catch (error) {
-    console.log("notification fetching error");
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -32,7 +31,6 @@ export const isRead = async (req: Request, res: Response) => {
     const response = await notificationService.isRead(userId, notificationId);
     res.status(200).json(response );
   } catch (error) {
-    console.log("Error updating notifivation",error)
     res.status(500).json({message:"Internal server error"})
   }
 };

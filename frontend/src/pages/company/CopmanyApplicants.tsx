@@ -9,7 +9,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Application } from "../../types/types";
 
 const CopmanyApplicants = () => {
-  const [selected, setSelected] = useState("Applicants");
+  const [selected, setSelected] = useState("Dashboard");
   const [heading, setHeading] = useState("Applicants");
   const [details, setDetails] = useState<Application[]>([]); 
   const [loading, setLoading] = useState(true); 

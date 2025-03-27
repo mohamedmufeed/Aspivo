@@ -6,7 +6,6 @@ import { SubscriptionData, SubscriptionTypes } from "../types/stripeTypes";
 export class StripeRepositories {
   async verifyCompany(userId: string, companyId: string) {
     try {
-      console.log("Verifying company for userId and companyId:", { userId, companyId });
       const company = await Company.findOne({ _id: companyId, userId });
       if (!company) {
         throw new Error("Company not found or not associated with user");
@@ -20,16 +19,15 @@ export class StripeRepositories {
 
   async updateUserSubscription(userId: string, subscription: SubscriptionTypes) {
     try {
-      console.log("Updating user subscription in DB:", { userId, subscription });
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         { $set: { subscription } },
         { new: true }
       );
+      console.log("Updated User:", updatedUser);
       if (!updatedUser) {
         throw new Error(`User with ID ${userId} not found`);
       }
-      console.log("User subscription updated:", updatedUser);
     } catch (error: any) {
       console.error("Error updating user subscription:", error.message);
       throw new Error(`Error updating user subscription: ${error.message}`);
@@ -38,7 +36,6 @@ export class StripeRepositories {
 
   async updateCompanySubscription(companyId: string, subscription: SubscriptionTypes) {
     try {
-      console.log("Updating company subscription in DB:", { companyId, subscription });
       const updatedCompany = await Company.findByIdAndUpdate(
         companyId,
         { $set: { subscription } },
@@ -47,7 +44,6 @@ export class StripeRepositories {
       if (!updatedCompany) {
         throw new Error(`Company with ID ${companyId} not found`);
       }
-      console.log("Company subscription updated:", updatedCompany);
     } catch (error: any) {
       console.error("Error updating company subscription:", error.message);
       throw new Error(`Error updating company subscription: ${error.message}`);
@@ -56,9 +52,8 @@ export class StripeRepositories {
 
   async storeSubscription(subscriptionData: SubscriptionData) {
     try {
-      console.log("Storing subscription in DB:", subscriptionData);
+   
       const newSubscription = await Subscription.create(subscriptionData);
-      console.log("Subscription stored:", newSubscription);
     } catch (error: any) {
       console.error("Error storing subscription:", error.message);
       throw new Error(`Error storing subscription: ${error.message}`);
@@ -67,7 +62,7 @@ export class StripeRepositories {
 
   async updateSubscriptionStatus(subscriptionId: string, status: string) {
     try {
-      console.log("Updating subscription status in DB:", { subscriptionId, status });
+
       const updatedSubscription = await Subscription.findOneAndUpdate(
         { subscriptionId },
         { status },
@@ -76,7 +71,7 @@ export class StripeRepositories {
       if (!updatedSubscription) {
         throw new Error(`Subscription with ID ${subscriptionId} not found`);
       }
-      console.log("Subscription status updated:", updatedSubscription);
+
     } catch (error: any) {
       console.error("Error updating subscription status:", error.message);
       throw new Error(`Error updating subscription status: ${error.message}`);
@@ -85,7 +80,7 @@ export class StripeRepositories {
 
   async revokeUserFeatures(userId: string) {
     try {
-      console.log("Revoking user features in DB:", userId);
+
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
@@ -102,7 +97,7 @@ export class StripeRepositories {
       if (!updatedUser) {
         throw new Error(`User with ID ${userId} not found`);
       }
-      console.log("User features revoked:", updatedUser);
+
     } catch (error: any) {
       console.error("Error revoking user features:", error.message);
       throw new Error(`Error revoking user features: ${error.message}`);
@@ -111,7 +106,6 @@ export class StripeRepositories {
 
   async revokeCompanyFeatures(companyId: string) {
     try {
-      console.log("Revoking company features in DB:", companyId);
       const updatedCompany = await Company.findByIdAndUpdate(
         companyId,
         {

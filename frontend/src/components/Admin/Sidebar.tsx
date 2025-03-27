@@ -5,13 +5,16 @@ import { MdOutlineAttachMoney } from "react-icons/md";
 import { TbHelp } from "react-icons/tb";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { SiHyperskill } from "react-icons/si";
+
 
 const menuItems = [
     { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/admin-dashboard" },
     { icon: <FaUsers className="w-6 h-6" />, label: "Users", path: "/admin-users" },
     { icon: <IoGitPullRequestSharp className="w-6 h-6" />, label: "Requests", path: "/admin-comapnyrequests" },
-    { icon: <RiHotelLine className="w-6 h-6" />, label: "Companies", path: "/companies" },
+    { icon: <RiHotelLine className="w-6 h-6" />, label: "Companies", path: "/admin-companies" },
     { icon: <MdOutlineAttachMoney className="w-6 h-6" />, label: "Subscription", path: "/subscription" },
+    { icon: <SiHyperskill className="w-5 h-5" />, label: "Skills", path: "/skill-management" },
     { divider: true },
     { icon: <IoSettingsOutline className="w-6 h-6" />, label: "Settings", path: "/settings" },
     { icon: <TbHelp className="w-6 h-6" />, label: "Help", path: "/help" },
