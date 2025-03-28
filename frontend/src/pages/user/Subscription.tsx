@@ -8,7 +8,7 @@ import { fetchCompany } from "../../services/company/compayJob";
 const Subscription = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [companyId, setCompanyId] = useState<string | undefined>(undefined);
+  const [companyId, setCompanyId] = useState<string | undefined>("");
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?._id || "";
 
@@ -20,7 +20,7 @@ const Subscription = () => {
       }
       try {
         const response = await fetchCompany(userId);
-        console.log("Fetch company response:", response); 
+        console.log("Fetch company response:", response);
         if (response.company?.company) {
           setCompanyId(response.company.company._id);
         }
@@ -42,14 +42,17 @@ const Subscription = () => {
     setError(null);
 
     try {
-      console.log("Initiating subscription with:", { userId, companyId }); // Add logging
+      console.log("Initiating subscription with:", { userId, companyId });
       const response = await subscriptions({
         userId,
-        companyId,
+        companyId
       });
 
+
       if (response.url) {
+        console.log(" the url ", response.url)
         window.location.href = response.url;
+
       } else {
         throw new Error("No checkout URL received");
       }
@@ -65,7 +68,7 @@ const Subscription = () => {
     <div>
       <Navbar />
       <div
-        className="bg-[#F6F6F6] pt-20 pb-40 flex justify-center items-center"
+        className="bg-[#F6F6F6] pt-20 pb-40 flex  h-screen overflow-y-hidden justify-center items-center"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
         <div className="w-1/3">
@@ -106,9 +109,8 @@ const Subscription = () => {
             <button
               onClick={handleSubscribe}
               disabled={isProcessing || !userId}
-              className={`w-full mt-8 py-4 bg-orange-600 text-white rounded-lg font-medium text-lg cursor-pointer ${
-                isProcessing || !userId ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`w-full mt-8 py-4 bg-orange-600 text-white rounded-lg font-medium text-lg cursor-pointer ${isProcessing || !userId ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               {isProcessing ? "Processing..." : "Get Plan"}
             </button>

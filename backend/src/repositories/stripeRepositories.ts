@@ -17,7 +17,10 @@ export class StripeRepositories {
     }
   }
 
-  async updateUserSubscription(userId: string, subscription: SubscriptionTypes) {
+  async updateUserSubscription(
+    userId: string,
+    subscription: SubscriptionTypes
+  ) {
     try {
       const updatedUser = await User.findByIdAndUpdate(
         userId,
@@ -34,7 +37,10 @@ export class StripeRepositories {
     }
   }
 
-  async updateCompanySubscription(companyId: string, subscription: SubscriptionTypes) {
+  async updateCompanySubscription(
+    companyId: string,
+    subscription: SubscriptionTypes
+  ) {
     try {
       const updatedCompany = await Company.findByIdAndUpdate(
         companyId,
@@ -49,20 +55,18 @@ export class StripeRepositories {
       throw new Error(`Error updating company subscription: ${error.message}`);
     }
   }
-
   async storeSubscription(subscriptionData: SubscriptionData) {
     try {
-   
       const newSubscription = await Subscription.create(subscriptionData);
+      return newSubscription;
     } catch (error: any) {
-      console.error("Error storing subscription:", error.message);
+      console.error("Error storing subscription:", error);
       throw new Error(`Error storing subscription: ${error.message}`);
     }
   }
 
   async updateSubscriptionStatus(subscriptionId: string, status: string) {
     try {
-
       const updatedSubscription = await Subscription.findOneAndUpdate(
         { subscriptionId },
         { status },
@@ -71,7 +75,6 @@ export class StripeRepositories {
       if (!updatedSubscription) {
         throw new Error(`Subscription with ID ${subscriptionId} not found`);
       }
-
     } catch (error: any) {
       console.error("Error updating subscription status:", error.message);
       throw new Error(`Error updating subscription status: ${error.message}`);
@@ -80,7 +83,6 @@ export class StripeRepositories {
 
   async revokeUserFeatures(userId: string) {
     try {
-
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
@@ -97,7 +99,6 @@ export class StripeRepositories {
       if (!updatedUser) {
         throw new Error(`User with ID ${userId} not found`);
       }
-
     } catch (error: any) {
       console.error("Error revoking user features:", error.message);
       throw new Error(`Error revoking user features: ${error.message}`);
@@ -131,7 +132,6 @@ export class StripeRepositories {
 
   async grantUserFeatures(userId: string) {
     try {
-      console.log("Granting user features in DB:", userId);
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         {
@@ -147,7 +147,6 @@ export class StripeRepositories {
       if (!updatedUser) {
         throw new Error(`User with ID ${userId} not found`);
       }
-      console.log("User features granted:", updatedUser);
     } catch (error: any) {
       console.error("Error granting user features:", error.message);
       throw new Error(`Error granting user features: ${error.message}`);
@@ -156,7 +155,6 @@ export class StripeRepositories {
 
   async grantCompanyFeatures(companyId: string) {
     try {
-      console.log("Granting company features in DB:", companyId);
       const updatedCompany = await Company.findByIdAndUpdate(
         companyId,
         {
@@ -172,7 +170,6 @@ export class StripeRepositories {
       if (!updatedCompany) {
         throw new Error(`Company with ID ${companyId} not found`);
       }
-      console.log("Company features granted:", updatedCompany);
     } catch (error: any) {
       console.error("Error granting company features:", error.message);
       throw new Error(`Error granting company features: ${error.message}`);

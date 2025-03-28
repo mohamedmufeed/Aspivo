@@ -21,13 +21,18 @@ const Subscription=lazy(()=>import("../pages/user/Subscription"))
 const PaymentSuccess=lazy(()=>import("../pages/user/PaymentSuccess"))
 const PaymentCancel=lazy(()=>import("../pages/user/PaymentCancel"))
 const CompanyManageMent=lazy(()=>import("../pages/admin/CompanyManageMent"))
-
+const SkillManagement=lazy(()=>import("../pages/admin/SkillManagement"))
+import { Bouncy } from 'ldrs/react'
+import 'ldrs/react/Bouncy.css'
 
 const AppRoutes = () => {
   return (
     <Router>
-      <Suspense fallback={<div>Loding</div>}> 
+      <Suspense fallback={        <div className="#bg-[#F6F6F6] flex justify-center items-center h-screen">
+                <Bouncy size="45" speed="1.75" color="#FE4F00" />
+            </div>}> 
       <Routes>
+        {/* user routes */}
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<Login />} />
         <Route path="/login" element={<Login />} />
@@ -43,10 +48,15 @@ const AppRoutes = () => {
         <Route path="/subscription" element={<Subscription />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
+
+        {/* admin  routes*/}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-users" element={<UserManageMent />} />
         <Route path="/admin-companies" element={<CompanyManageMent />} />
         <Route path="/admin-comapnyrequests" element={<AdminCompanyRequests />} />
+        <Route path="/admin-skillmanagement" element={<SkillManagement />} />
+
+        {/* company routes */}
         <Route path="/company-signup" element={<CompanyLogin />} />
         <Route path="/company-dashboard" element={<ComapnyDashboard />} />
         <Route path="/company-profile" element={<CompanyProfile />} />

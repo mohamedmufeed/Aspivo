@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { appliedJobs } from "../../services/jobService";
+import { Bouncy } from 'ldrs/react'
+import 'ldrs/react/Bouncy.css'
 
 export interface Job {
   id: string;
@@ -44,17 +46,22 @@ const MyJobs = () => {
     try {
       setLoading(true);
       const response = await appliedJobs(userId);
-      console.log(response)
-      const mappedJobs = response.applications.map((app: any) => ({
-        id: app.jobId._id,
-        title: app.jobId.jobTitle,
-        company: app.jobId.company.companyName,
-        location: app.jobId.company.location,
-        salaryRange: `$${app.jobId.minimumSalary / 1000}k - $${app.jobId.maximumSalary / 1000}k`,
-        status: app.status,
-        logo: app.jobId.company.logo,
-      }));
-      setAppliedJob(mappedJobs);
+     
+      if (response) {
+        console.log(response.data.applications)
+        const mappedJobs = response?.data.applications.map((app:any) => ({
+          id: app.jobId._id,
+          title: app.jobId.jobTitle,
+          company: app.jobId.company.companyName,
+          location: app.jobId.company.location,
+          salaryRange: `$${app.jobId.minimumSalary / 1000}k - $${app.jobId.maximumSalary / 1000}k`,
+          status: app.status,
+          logo: app.jobId.company.logo,
+        }));
+        setAppliedJob(mappedJobs);
+      }
+
+
     } catch (error: any) {
       console.log("Error in fetching applied jobs", error);
       setError(error.response?.data?.message || "Failed to load applied jobs");
@@ -111,7 +118,11 @@ const MyJobs = () => {
             />
             <h1 className="text-3xl font-medium">My Jobs</h1>
           </div>
-          <div className="text-center text-gray-600 p-5">Loading jobs...</div>
+          <div className="text-center text-gray-600 p-5">  
+          <div className="#bg-[#F6F6F6] flex justify-center items-center h-screen">
+                <Bouncy size="45" speed="1.75" color="#FE4F00" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -149,17 +160,15 @@ const MyJobs = () => {
         <div className="bg-white shadow-lg rounded-lg mt-5">
           <div className="flex space-x-10 px-20 p-5">
             <h1
-              className={`cursor-pointer hover:text-orange-600 ${
-                activeTab === "Saved Jobs" ? "text-orange-600 font-semibold" : ""
-              }`}
+              className={`cursor-pointer hover:text-orange-600 ${activeTab === "Saved Jobs" ? "text-orange-600 font-semibold" : ""
+                }`}
               onClick={() => setActiveTab("Saved Jobs")}
             >
               Saved Jobs
             </h1>
             <h1
-              className={`cursor-pointer hover:text-orange-600 ${
-                activeTab === "Applied Jobs" ? "text-orange-600 font-semibold" : ""
-              }`}
+              className={`cursor-pointer hover:text-orange-600 ${activeTab === "Applied Jobs" ? "text-orange-600 font-semibold" : ""
+                }`}
               onClick={() => setActiveTab("Applied Jobs")}
             >
               Applied Jobs
@@ -190,7 +199,7 @@ const MyJobs = () => {
                     <p className="text-sm text-gray-500">{job.company}</p>
                   </div>
                   <div className="col-span-2">
-                    <h1 className="font-semibold text-lg">{job.location||"N/A"}</h1>
+                    <h1 className="font-semibold text-lg">{job.location || "N/A"}</h1>
                     <p className="text-sm text-gray-500">Location</p>
                   </div>
                   <div className="col-span-2">

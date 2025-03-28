@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AdminRepostry } from "../../repositories/adminRepositories.js";
-import { AdminService } from "../../services/adminService.js";
+import { AdminService } from "../../services/adminService/adminService.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
 
 

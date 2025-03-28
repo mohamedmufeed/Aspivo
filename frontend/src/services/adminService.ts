@@ -71,3 +71,26 @@ export const  approvedCompany=async()=>{
     }
   }
 }
+
+
+export const addSkill=async(skills:any)=>{
+try {
+  const response=await axios.post(`${ADMIN_API}/add-skill`,skills)
+  return response.data
+} catch (error) {
+  if (error instanceof AxiosError) {
+    console.error("adding skill:", error.response?.data);
+  }
+}
+}
+
+export const getSkills=async()=>{
+  try {
+    const response=await axios.get(`${ADMIN_API}/get-skills`)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("geting skill:", error.response?.data);
+    }
+  }
+}

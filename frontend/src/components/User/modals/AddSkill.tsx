@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { addSkill } from "../../../services/profile"; 
+import { addSkill } from "../../../services/profile";
 import { z } from "zod";
+import { getSkills } from "../../../services/adminService";
 
 
 
@@ -25,6 +26,23 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     const [skills, setSkills] = useState<string[]>([]);
     const [skillInput, setSkillInput] = useState("");
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [sugesstionSkill, setSugesstionSkill] = useState([])
+
+    const fetchSkills = async () => {
+        try {
+            const response = await getSkills()
+            setSugesstionSkill(response.response)
+            console.log(response.response)
+        } catch (error) {
+            console.log("Error in fetching skills")
+        }
+    }
+
+
+    useEffect(() => {
+        fetchSkills()
+    }, [])
+
 
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -68,7 +86,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
         if (!validateForm()) return;
 
         try {
-    
+
             const response = await addSkill(userId, skills);
 
             console.log("the response", response)
@@ -101,6 +119,20 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                         <VscClose onClick={onClose} className="cursor-pointer w-8 h-8" />
                     </div>
                     <hr className="mt-2" />
+                    <div className="p-6">
+                        <div className="border rounded-lg ">
+                            <p className="text-gray-800 p-4">Skill sugesstions</p>
+                            {sugesstionSkill && (
+                                sugesstionSkill.map((skill, index) => (
+                                    <div key={index}>
+                                        <p>{skill.name}</p>
+                                    </div>
+                                ))
+                            )}
+
+
+                        </div>
+                    </div>
 
 
 
@@ -125,7 +157,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                         <form onSubmit={handleSubmit} >
                             <div className="flex mt-6 flex-col">
                                 <div className="mt-5">
-                                    <label className="text-gray-600">School*</label>
+                                    <label className="text-gray-600">Skill*</label>
                                     {errors.skill && <p className="text-red-500">{errors.skill}</p>}
                                     <input
                                         type="text"
@@ -133,7 +165,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                                         value={skillInput}
                                         onChange={(e) => setSkillInput(e.target.value)}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        placeholder="Ex: Oxford"
+                                        placeholder="Ex: HTML"
                                         required
                                     />
                                 </div>
@@ -152,8 +184,8 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                                         }
                                     }}
                                     className={`p-3 px-5 rounded-lg text-white font-bold ${skillInput.trim() || skills.length > 0
-                                            ? "bg-orange-600 hover:bg-orange-700"
-                                            : "bg-gray-400 cursor-not-allowed"
+                                        ? "bg-orange-600 hover:bg-orange-700"
+                                        : "bg-gray-400 cursor-not-allowed"
                                         }`}
                                     disabled={!skillInput.trim() && skills.length === 0}
                                 >

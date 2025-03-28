@@ -1,6 +1,6 @@
-import { AdminRepostry } from "../repositories/adminRepositories.js";
-import { NotificationService } from "./notificationService.js";
-import { sendNotification } from "../server.js";
+import { AdminRepostry } from "../../repositories/adminRepositories.js";
+import { NotificationService } from ".././notificationService.js";
+import { sendNotification } from "../../server.js";
 const notificationService = new NotificationService();
 export class AdminService {
   private adminRepostry = new AdminRepostry();

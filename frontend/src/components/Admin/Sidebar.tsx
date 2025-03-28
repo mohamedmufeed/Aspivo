@@ -2,7 +2,6 @@ import { IoHomeOutline, IoGitPullRequestSharp, IoSettingsOutline } from "react-i
 import { FaUsers } from "react-icons/fa";
 import { RiHotelLine } from "react-icons/ri";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { TbHelp } from "react-icons/tb";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SiHyperskill } from "react-icons/si";
@@ -14,10 +13,9 @@ const menuItems = [
     { icon: <IoGitPullRequestSharp className="w-6 h-6" />, label: "Requests", path: "/admin-comapnyrequests" },
     { icon: <RiHotelLine className="w-6 h-6" />, label: "Companies", path: "/admin-companies" },
     { icon: <MdOutlineAttachMoney className="w-6 h-6" />, label: "Subscription", path: "/subscription" },
-    { icon: <SiHyperskill className="w-5 h-5" />, label: "Skills", path: "/skill-management" },
+    { icon: <SiHyperskill className="w-5 h-5" />, label: "Skills", path: "/admin-skillmanagement" },
     { divider: true },
     { icon: <IoSettingsOutline className="w-6 h-6" />, label: "Settings", path: "/settings" },
-    { icon: <TbHelp className="w-6 h-6" />, label: "Help", path: "/help" },
 ];
 
 const Sidebar = ({setSelected}:{setSelected:(label:string)=>void}) => {

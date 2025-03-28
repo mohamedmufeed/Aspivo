@@ -20,6 +20,11 @@ import AddSkill from "../../components/User/modals/AddSkill";
 import ProfileAvathar from "../../assets/user.png"
 import EditEducation from "../../components/User/modals/EditEducation";
 import EditSkill from "../../components/User/modals/EditSkill";
+import { Bouncy } from 'ldrs/react'
+import 'ldrs/react/Bouncy.css'
+
+
+
 
 const Profile = () => {
     const location = useLocation()
@@ -90,7 +95,6 @@ const Profile = () => {
             try {
                 const response = await getProfile(userId);
                 setProfileData(response.user.user);
-                console.log("hell", response.user.user)
             } catch (error) {
                 console.error("Error fetching profile:", error);
                 return
@@ -101,7 +105,11 @@ const Profile = () => {
     }, [userId, location]);
 
     if (!profileData) {
-        return <p>Loading profile...</p>;
+        return (
+            <div className="#bg-[#F6F6F6] flex justify-center items-center h-screen">
+                <Bouncy size="45" speed="1.75" color="#FE4F00" />
+            </div>
+        )
     }
 
     return (
