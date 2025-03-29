@@ -31,13 +31,13 @@ router.post("/refresh",refreshToken)
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback", passport.authenticate("google"), googleCallBack);
 router.get("/google/success", getGoogleUser);
-router.delete("/delete-resume/:id",deleteResume)
-router.get("/notifications/:id",getNotifications)
-router.patch("/markas-read/:id",isRead)
+router.delete("/delete-resume/:id",protect,deleteResume)
+router.get("/notifications/:id",protect,getNotifications)
+router.patch("/markas-read/:id",protect,isRead)
 router.get("/jobs",fetchJob)
 router.get("/job-details/:id",getJobDetails)
-router.post("/applyjob/:id",applyForJob)
-router.get("/applyed-jobs/:id",appliedjobs)
+router.post("/applyjob/:id",protect,applyForJob)
+router.get("/applyed-jobs/:id",protect,appliedjobs)
 
 
 export default router

@@ -11,7 +11,6 @@ import profileAvathar from "../../assets/user.png"
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store/store";
 import { logout } from "../../redux/slice/authSlice";
-import { logoutUser } from "../../services/auth";
 type User = {
   _id: string;
   userName: string;
@@ -60,13 +59,7 @@ const UserManageMent = () => {
             user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
           )
         );
-
-
-        const response = await logoutUser(userId)
-        if (response) {
-          dispatch(logout());
-        }
-
+        dispatch(logout());
       } else {
         console.error("Failed to block/unblock user:", response.message);
       }

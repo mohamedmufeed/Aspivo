@@ -13,7 +13,7 @@ import { JobData } from '../../types/types';
 import { applyForJob } from '../../services/jobService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
-import ToastError from '../../components/Toast/ErrorToast';
+import ToastError from '../../components/Tost/ErrorToast';
 import { User } from "../../types/types"
 import { getProfile } from '../../services/profile';
 

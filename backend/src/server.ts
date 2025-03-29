@@ -18,7 +18,6 @@ connectDb();
 const app = express();
 const server = http.createServer(app);
 
-// Apply express.raw() specifically for the Stripe webhook route
 app.post(
     "/api/stripe/webhook",
     express.raw({ type: "application/json" }),
@@ -54,7 +53,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Define your routes
+
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/company", companyRoutes);

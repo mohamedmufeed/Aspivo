@@ -27,3 +27,14 @@ export const getSkills = async (req: Request, res: Response) => {
       .json({ message: "internal server Error" });
   }
 };
+
+
+export const removeSkill=async(req:Request,res:Response)=>{
+  try {
+    const skillId=req.params.id
+    const response=await skillService.removeSkill(skillId)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server Error"})
+  }
+}

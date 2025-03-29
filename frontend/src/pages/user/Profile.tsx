@@ -164,7 +164,7 @@ const Profile = () => {
                                 </div>
 
                                 <div className="flex flex-col   items-end">
-                                    <div className=" absolute  right-8  bottom-43 flex  gap-5">
+                                    <div className=" absolute  right-8  bottom-35 flex  gap-5">
                                         <GoPencil className="font-extralight cursor-pointer w-6 h-6" onClick={() => setEditModal(true)} />
                                         <EllipsisVertical className="cursor-pointer" />
                                     </div>

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { AuthService } from "../../services/authService.js";
-import { promises } from "dns";
-import { json } from "stream/consumers";
 import { generateRefreshToken, generateToken } from "../../utils/jwt.js";
 
 const authService = new AuthService();
@@ -167,8 +165,16 @@ export const refreshToken = async (
   res: Response
 ): Promise<void> => {
   try {
+ 
     const refreshToken = req.cookies?.refresh_token;
     const newToken = await authService.refreshToken(refreshToken);
+    res.cookie("access_token", newToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+
     res.status(200).json({ accessToken: newToken });
   } catch (error) {
     res.status(500).json({ message: "Internal server errror" });

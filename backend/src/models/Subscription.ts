@@ -24,10 +24,6 @@ const subscriptionSchema = new Schema(
       type: Number,
       required: true,
     },
-    startDate: {
-      type: Date,
-      default: Date.now,
-    },
     status: {
       type: String,
       required: true,

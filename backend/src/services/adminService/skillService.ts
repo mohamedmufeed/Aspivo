@@ -12,11 +12,19 @@ export class SkillService {
     return { addeddSkill, message: "Skill addedd sucsessfully" };
   }
 
-  async  getSkils() {
+  async getSkils() {
     const response = await this.skillRespositories.getSkills();
     if (!response) {
-      throw { status: HttpStatus.BAD_REQUEST, message: "Skilss not found" };
+      throw { status: HttpStatus.BAD_REQUEST, message: "Skils not found" };
     }
-    return {response , message:"Skills found sucessfuly"}
+    return { response, message: "Skills found sucessfuly" };
+  }
+
+  async removeSkill(skillId: string) {
+    const response = await this.skillRespositories.removeSkill(skillId);
+    if(!response){
+      throw {status:HttpStatus.BAD_REQUEST, message:"Skill not found"}
+    }
+    return{response, message:"Skill removed sucessfull"}
   }
 }

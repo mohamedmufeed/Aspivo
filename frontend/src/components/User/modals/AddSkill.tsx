@@ -4,8 +4,6 @@ import { addSkill } from "../../../services/profile";
 import { z } from "zod";
 import { getSkills } from "../../../services/adminService";
 
-
-
 const skillSchema = z.object({
     skills: z.array(z.string().min(1, "Skill cannot be empty")),
 });
@@ -17,6 +15,10 @@ interface EditProfileModalProps {
     setProfileData: (prev: any) => void;
 }
 
+interface SkillType {
+    name: string;
+}
+
 const AddSkill: React.FC<EditProfileModalProps> = ({
     isOpen,
     onClose,
@@ -26,23 +28,24 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     const [skills, setSkills] = useState<string[]>([]);
     const [skillInput, setSkillInput] = useState("");
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [sugesstionSkill, setSugesstionSkill] = useState([])
+    const [sugesstionSkill, setSugesstionSkill] = useState<SkillType[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [filteredSuggestions, setFilteredSuggestions] = useState<SkillType[]>([]);
+    const [isSaving, setIsSaving] = useState(false);
 
     const fetchSkills = async () => {
         try {
-            const response = await getSkills()
-            setSugesstionSkill(response.response)
-            console.log(response.response)
+            const response = await getSkills();
+            setSugesstionSkill(response.response);
+            console.log(response.response);
         } catch (error) {
-            console.log("Error in fetching skills")
+            console.log("Error in fetching skills");
         }
-    }
-
+    };
 
     useEffect(() => {
-        fetchSkills()
-    }, [])
-
+        fetchSkills();
+    }, []);
 
     useEffect(() => {
         document.body.style.overflow = isOpen ? "hidden" : "auto";
@@ -52,18 +55,30 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     }, [isOpen]);
 
 
-    const addSkillToList = () => {
-        if (skillInput.trim() && !skills.includes(skillInput)) {
-            setSkills([...skills, skillInput.trim()]);
+    useEffect(() => {
+        if (skillInput.trim()) {
+            const filtered = sugesstionSkill.filter((skill) =>
+                skill.name.toLowerCase().includes(skillInput.toLowerCase())
+            );
+            setFilteredSuggestions(filtered);
+            setShowSuggestions(true);
+        } else {
+            setFilteredSuggestions([]);
+            setShowSuggestions(false);
+        }
+    }, [skillInput, sugesstionSkill]);
+
+    const addSkillToList = (skill: string) => {
+        if (skill.trim() && !skills.some((s) => s.toLowerCase() === skill.toLowerCase())) {
+            setSkills([...skills, skill.trim()]);
             setSkillInput("");
+            setShowSuggestions(false);
         }
     };
-
 
     const removeSkill = (skillToRemove: string) => {
         setSkills(skills.filter((skill) => skill !== skillToRemove));
     };
-
 
     const validateForm = () => {
         const result = skillSchema.safeParse({ skills });
@@ -79,25 +94,39 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
         return true;
     };
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+
+        if (skillInput.trim()) {
+            addSkillToList(skillInput);
+            return;
+        }
+        const isDuplicate = skills.some((skill) => skill === skillInput.trim())
+        if (isDuplicate) {
+
+        }
         if (!validateForm()) return;
 
+        if (skills.length === 0) {
+            setErrors({ skills: "Please add at least one skill before saving." });
+            return;
+        }
+
+        setIsSaving(true);
         try {
-
             const response = await addSkill(userId, skills);
-
-            console.log("the response", response)
+            console.log("the response", response);
             setProfileData((prev: any) => ({
                 ...prev,
                 skills: [...(prev.skills || []), ...skills],
             }));
-
             onClose();
         } catch (error) {
             console.log("Error adding skill:", error);
+            setErrors({ skills: "Failed to save skills. Please try again." });
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -113,32 +142,15 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                 className="fixed inset-0 flex items-center justify-center z-50"
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
-                <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg ">
+                <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg">
                     <div className="flex justify-between mt-2 px-5 p-5">
                         <h1 className="text-2xl font-medium">Add Skill</h1>
                         <VscClose onClick={onClose} className="cursor-pointer w-8 h-8" />
                     </div>
                     <hr className="mt-2" />
-                    <div className="p-6">
-                        <div className="border rounded-lg ">
-                            <p className="text-gray-800 p-4">Skill sugesstions</p>
-                            {sugesstionSkill && (
-                                sugesstionSkill.map((skill, index) => (
-                                    <div key={index}>
-                                        <p>{skill.name}</p>
-                                    </div>
-                                ))
-                            )}
-
-
-                        </div>
-                    </div>
-
-
 
                     <div className="px-7 space-y-10 max-h-[70vh] overflow-y-auto">
-
-                        <div className="bg-white ">
+                        <div className="bg-white flex flex-wrap gap-2">
                             {skills.map((skill) => (
                                 <span
                                     key={skill}
@@ -151,23 +163,45 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                                     />
                                 </span>
                             ))}
-
                         </div>
 
-                        <form onSubmit={handleSubmit} >
+                        <form onSubmit={handleSubmit}>
                             <div className="flex mt-6 flex-col">
-                                <div className="mt-5">
+                                <div className="mt-5 relative">
                                     <label className="text-gray-600">Skill*</label>
-                                    {errors.skill && <p className="text-red-500">{errors.skill}</p>}
+                                    {errors.skills && (
+                                        <p className="text-red-500">{errors.skills}</p>
+                                    )}
                                     <input
                                         type="text"
-                                        name="skill"
                                         value={skillInput}
                                         onChange={(e) => setSkillInput(e.target.value)}
+                                        onFocus={() => setShowSuggestions(true)}
+                                        onBlur={() =>
+                                            setTimeout(() => setShowSuggestions(false), 200)
+                                        }
+                                        onKeyPress={(e) => {
+                                            if (e.key === "Enter" && skillInput.trim()) {
+                                                e.preventDefault();
+                                                addSkillToList(skillInput);
+                                            }
+                                        }}
                                         className="border p-2 w-full rounded-lg focus:outline-orange-400"
-                                        placeholder="Ex: HTML"
-                                        required
+                                        placeholder="Type or select a skill"
                                     />
+                                    {showSuggestions && filteredSuggestions.length > 0 && (
+                                        <ul className="absolute z-10 bg-white border rounded-lg w-full mt-1 max-h-40 overflow-y-auto shadow-lg">
+                                            {filteredSuggestions.map((skill, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="p-2 hover:bg-orange-100 cursor-pointer"
+                                                    onClick={() => addSkillToList(skill.name)}
+                                                >
+                                                    {skill.name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                 </div>
                             </div>
 
@@ -175,23 +209,20 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                             <div className="flex justify-end p-6">
                                 <button
                                     type="submit"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        if (skillInput.trim()) {
-                                            addSkillToList();
-                                        } else if (skills.length > 0) {
-                                            handleSubmit(e);
-                                        }
-                                    }}
-                                    className={`p-3 px-5 rounded-lg text-white font-bold ${skillInput.trim() || skills.length > 0
-                                        ? "bg-orange-600 hover:bg-orange-700"
-                                        : "bg-gray-400 cursor-not-allowed"
+                                    className={`p-3 px-5 rounded-lg text-white font-bold ${(skillInput.trim() || skills.length > 0) && !isSaving
+                                            ? "bg-orange-600 hover:bg-orange-700"
+                                            : "bg-gray-400 cursor-not-allowed"
                                         }`}
-                                    disabled={!skillInput.trim() && skills.length === 0}
+                                    disabled={
+                                        (!skillInput.trim() && skills.length === 0) || isSaving
+                                    }
                                 >
-                                    {skillInput.trim() ? "Add Skill" : "Save Changes"}
+                                    {isSaving
+                                        ? "Saving..."
+                                        : skillInput.trim()
+                                            ? "Add Skill"
+                                            : "Save Changes"}
                                 </button>
-
                             </div>
                         </form>
                     </div>
@@ -199,6 +230,6 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
             </div>
         </div>
     );
-}
+};
 
 export default AddSkill;

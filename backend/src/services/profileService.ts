@@ -4,12 +4,14 @@ import { ProfileTypes } from "../types/userTypes";
 import { Experience } from "../types/userTypes";
 import { Education } from "../types/userTypes";
 import cloudinary from "../config/cloudinaryConfig.js";
+import { SkillRepository } from "../repositories/skillREpositories.js";
 
-const authRepostry = new AuthRepostry();
+const authRepository = new AuthRepostry();
+const skillRepository = new SkillRepository();
 
 export class ProfileSerive {
   async editProfile(id: string, data: ProfileTypes) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     if (data.profileImage) {
@@ -26,15 +28,16 @@ export class ProfileSerive {
   }
 
   async getProfile(id: string) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) {
       throw new Error("User not found");
-    return}
+      return;
+    }
     return { user, message: "User Found sucsess fully" };
   }
 
   async editAbout(id: string, about: string) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
     user.about = about || user.about;
     await user.save();
@@ -43,7 +46,7 @@ export class ProfileSerive {
   }
 
   async addExperience(id: string, data: Experience) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     const {
@@ -73,7 +76,7 @@ export class ProfileSerive {
   }
 
   async editExperience(id: string, data: Experience, experienceId: string) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
     const {
       title,
@@ -101,7 +104,7 @@ export class ProfileSerive {
   }
 
   async addEducation(id: string, data: Education) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
     const { degree, endDate, fieldOfStudy, grade, school, startDate } = data;
     user.education.push({
@@ -117,7 +120,7 @@ export class ProfileSerive {
   }
 
   async editEducation(id: string, data: Education, educationId: string) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
     const { degree, endDate, fieldOfStudy, grade, school, startDate } = data;
     const education = user.education.id(educationId);
@@ -135,7 +138,7 @@ export class ProfileSerive {
   }
 
   async addSkill(id: string, skills: string[]) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     if (!user.skills) {
@@ -159,38 +162,48 @@ export class ProfileSerive {
 
     await user.save();
 
+    for (const skill of newSkills) {
+      try {
+        const existingSkill = await skillRepository.findByName(skill);
+        if (!existingSkill) {
+          await skillRepository.create({ name: skill });
+        }
+      } catch (error) {
+        console.error(`Error adding skill "${skill}" to suggestions:`, error);
+      }
+    }
+
     return { user, message: "User skill added successfully" };
   }
 
   async uploadResume(id: string, url: string) {
-    const user = await authRepostry.findById(id);
+    const user = await authRepository.findById(id);
     if (!user) throw new Error("User not found");
     if (url) {
-      user.resume = url; 
+      user.resume = url;
       await user.save();
+    }
+    return { user, message: "Resume Uplaoded sucess fully" };
   }
-    return {user,message:"Resume Uplaoded sucess fully"}
-  }
 
-   async deleteResume(id:string){
-    const user=await authRepostry.findById(id)
-    if(!user) throw new Error("User not found")
-      if(user.resume){
+  async deleteResume(id: string) {
+    const user = await authRepository.findById(id);
+    if (!user) throw new Error("User not found");
+    if (user.resume) {
+      const publicId = user.resume.split("/").pop()?.split(".")[0];
 
-        const publicId = user.resume.split("/").pop()?.split(".")[0];
-
-        if (publicId) {
-            try {
-                await cloudinary.uploader.destroy(publicId); 
-            } catch (error) {
-                console.error("Error deleting resume from Cloudinary:", error);
-                throw new Error("Failed to delete resume from Cloudinary");
-            }
+      if (publicId) {
+        try {
+          await cloudinary.uploader.destroy(publicId);
+        } catch (error) {
+          console.error("Error deleting resume from Cloudinary:", error);
+          throw new Error("Failed to delete resume from Cloudinary");
         }
-                user.resume=""
-                await user.save()
       }
+      user.resume = "";
+      await user.save();
+    }
 
-      return {user,message:"User resume deleted sucsess fully"}
-   }
+    return { user, message: "User resume deleted sucsess fully" };
+  }
 }

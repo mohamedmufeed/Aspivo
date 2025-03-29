@@ -150,6 +150,7 @@ export class AuthService {
             process.env.REFRESH_JWT_SECRET as string,
             (err, decoded: any) => {
                 if (err) {
+                  console.log(err)
                     reject(new Error("Invalid Token"));
                     return;
                 }

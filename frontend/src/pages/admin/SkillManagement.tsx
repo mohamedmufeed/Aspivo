@@ -3,12 +3,10 @@ import Sidebar from "../../components/Admin/Sidebar";
 import { IoChevronBackOutline, IoClose } from "react-icons/io5";
 import profile from "../../assets/person_1.jpg";
 import { addSkill, getSkills } from "../../services/adminService";
-
-const initialSkills = [
-  { name: "JavaScript" },
-  { name: "HTML" },
-];
+import ToastError from "../../components/Tost/ErrorToast";
+import { removeSkill } from "../../services/adminService";
 interface SkillType {
+  _id?: string;
   name: string,
   createdAt: Date
 }
@@ -18,6 +16,7 @@ const SkillManagement = () => {
   const [skills, setSkills] = useState<SkillType[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null)
 
 
 
@@ -40,30 +39,56 @@ const SkillManagement = () => {
       name: skillInput.trim(),
       createdAt: new Date(),
     };
+    const trimmedSkill = skillInput.trim()
+    const isDuplicate = skills.some((skill) => skill.name.toLowerCase() === trimmedSkill.toLowerCase())
+    if (isDuplicate) {
+      setError(`Skill "${trimmedSkill}" already exists.`)
+      return
+    }
     setSkills((prevSkills) => [...prevSkills, newSkillObj]);
     setSkillInput("");
   };
 
 
 
-  const handleDelete = (name: string) => {
-    setSkills((prevSkills) => prevSkills.filter((skill) => skill.name !== name));
+  const handleDelete = async (name: string, id: string) => {
+    if (!id) return
+    try {
+      const response = await removeSkill(id)
+      if (response) {
+        setSkills((prevSkills) => prevSkills.filter((skill) => skill.name !== name));
+      }
+
+    } catch (error) {
+      setError("Error on removing skill")
+    }
   };
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
-    setLoading(true);
     e.preventDefault();
-    try {
-      const response = await addSkill(requestData)
-      setSkills((prev) => [...prev,response.addeddSkill])
-      console.log(skills)
-    } catch (error) {
-      console.log("Error in adding skill")
+    const newSkills = skills.filter((skill) => !skill._id);
+
+    if (newSkills.length === 0) {
+      setError("No new skills to save.");
+      return;
     }
-  };
-  const requestData = {
-    skills: skills
+
+    setLoading(true);
+    try {
+      const requestData = {
+        skills: newSkills.map((skill) => skill.name),
+      };
+
+      const response = await addSkill(requestData);
+      console.log("Add skill response:", response);
+      setSkills((prev) => [...prev, response.addeddSkill])
+    } catch (error) {
+      console.log("Error in adding skill:", error);
+      setError("Error adding skill");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,6 +106,9 @@ const SkillManagement = () => {
         </div>
 
         <hr className="border-gray-300" />
+        <div className="flex justify-center">
+          {error && <ToastError message={error} onClose={() => setError(null)} />}
+        </div>
 
         <div className="p-9">
           <div className="bg-white p-7 rounded-lg shadow-lg mb-10">
@@ -94,7 +122,7 @@ const SkillManagement = () => {
                 {skills.map((skill, index) => (
                   <div key={index} className="bg-[#eb5a007a] rounded-xl p-3 flex items-center space-x-3">
                     <p className=" font-medium">{skill.name}</p>
-                    <button onClick={() => handleDelete(skill.name)}>
+                    <button onClick={() => handleDelete(skill.name, skill._id || "")}>
                       <IoClose className="w-6 h-6 " />
                     </button>
                   </div>
