@@ -1,8 +1,8 @@
 import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import { RiHotelLine } from "react-icons/ri";
 import { TbHelp } from "react-icons/tb";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BsChatLeftText } from "react-icons/bs";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { CiViewList } from "react-icons/ci";
@@ -20,16 +20,26 @@ const menuItems = [
     { icon: <TbHelp className="w-6 h-6" />, label: "Help", path: "/help" },
 ];
 
-const CompanySidebar = ({setSelected}:{setSelected:(label:string)=>void}) => {
-    const [selected, setLocalSelected] = useState<string | null>("Dashboard");
-const navigate= useNavigate()
-    const handleSelect = (label?: string, path?: string) => {
-        if(label && path ){
-            setLocalSelected(label); 
-            setSelected(label); 
-            navigate(path); 
+const CompanySidebar = ({ setSelected }: { setSelected: (label: string) => void }) => {
+    const [selected, setLocalSelected] = useState<string | undefined>("Dashboard");
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    useEffect(() => {
+        const currentItem = menuItems.find((item) => item.path === location.pathname)
+        if (currentItem) {
+            setLocalSelected(currentItem.label);
+            setSelected(currentItem.label||"");
         }
-     
+    }, [location])
+    const handleSelect = (label?: string, path?: string) => {
+        if (label && path) {
+            setLocalSelected(label);
+            setSelected(label);
+            navigate(path);
+        }
+
+
     };
     return (
         <div className='bg-[#eb5a0023] w-1/6 h-screen px-3' style={{ fontFamily: "DM Sans, sans-serif" }}>
@@ -38,10 +48,10 @@ const navigate= useNavigate()
                 spivo
             </div>
             <div className="mt-15 space-y-4 p-4">
-            {menuItems.map((item, index) => (
+                {menuItems.map((item, index) => (
                     item.divider ? <hr key={index} className="my-2 w-full" /> : (
-                        <div 
-                            key={index} 
+                        <div
+                            key={index}
                             className={`relative flex items-center space-x-4 cursor-pointer p-3 rounded-md ${selected === item.label ? 'bg-[#eb5a0048] text-black' : 'hover:bg-orange-200/80'}`}
                             onClick={() => handleSelect(item.label, item.path)}
 
@@ -54,20 +64,20 @@ const navigate= useNavigate()
                 ))}
             </div>
 
-       <div className="mt-5">
-         <hr className=" relative border-2 left-17.5 border-gray-500 -rotate-19 mt-10 w-40 " />
-     <hr className="border-2 relative top-13 left-11 w-16 border-gray-500 rotate-90"  />
- 
-     <div className=" relative top-7 right-3 border-t-2  border-gray-500 bg-[#eb5a0048] w-60 h-40" style={{ clipPath: "polygon(0 51%, 100% 0, 100% 100%, 0% 100%)" }}>
-  Custom Shape
-</div>
-<div>
+            <div className="mt-5">
+                <hr className=" relative border-2 left-17.5 border-gray-500 -rotate-19 mt-10 w-40 " />
+                <hr className="border-2 relative top-13 left-11 w-16 border-gray-500 rotate-90" />
 
-</div>
-         </div>
+                <div className=" relative top-7 right-3 border-t-2  border-gray-500 bg-[#eb5a0048] w-60 h-40" style={{ clipPath: "polygon(0 51%, 100% 0, 100% 100%, 0% 100%)" }}>
+                    Custom Shape
+                </div>
+                <div>
+
+                </div>
+            </div>
 
 
-           
+
 
 
         </div>

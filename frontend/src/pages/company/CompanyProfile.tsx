@@ -8,7 +8,7 @@ import { FaInstagram, FaLinkedin, FaFacebook } from "react-icons/fa";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 
 const CompanyProfile = () => {
-  const [selected, setSelectedMenu] = useState("Dashboard")
+  const [selected, setSelectedMenu] = useState<string|undefined>("C Profile")
   const [heading,setHeading]=useState("Company Profile")
   const techStacks = [
     { name: "MERN Stack", icon: "https://via.placeholder.com/40" },

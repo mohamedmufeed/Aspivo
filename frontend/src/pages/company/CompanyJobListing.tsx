@@ -8,7 +8,7 @@ import { fetchCompany, fetchJob } from "../../services/company/compayJob";
 import { JobData } from "../../types/types";
 import JobListDropDown from "../../components/Company/Modals/JobListDropDown";
 const CompanyJobListing = () => {
-  const [selected, setSelected] = useState("Dashboard");
+  const [selected, setSelected] = useState <string|undefined>("Dashboard");
   const [heading, setHeading] = useState("All Jobs");
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); 
   const user = useSelector((state: RootState) => state.auth.user);

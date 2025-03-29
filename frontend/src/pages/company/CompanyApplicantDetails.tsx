@@ -17,7 +17,7 @@ import { ApplicationStatus } from "../../types/types";
 
 
 const CompanyApplicantDetails = () => {
-    const [selected, setSelected] = useState("Job Listing");
+    const [selected, setSelected] = useState<string|undefined>("Job Listing");
     const [heading, setHeading] = useState("Application");
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState<JobApplication>();

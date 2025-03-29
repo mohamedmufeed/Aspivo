@@ -30,7 +30,7 @@ const CompanyDashboard = () => {
 
     handleCompany();
   }, [userId, location]);
-  const [selected, setSelectedMenu] = useState("Dashboard");
+  const [selected, setSelectedMenu] = useState <string|undefined>("Dashboard");
   const [heading, setHeading] = useState("Dashboard")
   return (
     <div className="flex">
