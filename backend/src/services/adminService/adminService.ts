@@ -29,7 +29,7 @@ export class AdminService {
       message
     );
     sendNotification("user", company.userId.toString(), message);
-    return { company };
+    return { company , message:"Company stathus changes sucsessfully"};
   }
 
   async approvedCompany() {

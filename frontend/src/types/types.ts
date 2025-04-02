@@ -1,29 +1,31 @@
 interface PopulatedUser {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    profileImage: string;
-    email: string;
-    phone: string;
-    skills: string[];
-  }
-  
-  interface PopulatedJob {
-    _id: string;
-    jobTitle: string;
-  }
-  
-  export interface Application {
-    _id: string;
-    userId: PopulatedUser;
-    jobId: PopulatedJob;
-    status: string;
-    appliedAt: string;
-  }
+  _id: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string;
+  email: string;
+  phone: string;
+  skills: string[];
+}
 
+interface PopulatedJob {
+  _id: string;
+  jobTitle: string;
+}
 
+export interface Application {
+  _id: string;
+  userId: PopulatedUser;
+  jobId: PopulatedJob;
+  status: string;
+  appliedAt: string;
+}
 
-export type ApplicationStatus = "pending"| "reviewed"| "accepted"| "rejected";
+export type ApplicationStatus =
+  | "pending"
+  | "reviewed"
+  | "accepted"
+  | "rejected";
 
 interface Education {
   degree: string;
@@ -39,7 +41,7 @@ interface Experience {
   description: string;
 }
 
- export interface User {
+export interface User {
   _id: string;
   userName: string;
   firstName: string;
@@ -60,16 +62,15 @@ interface Experience {
   isBlocked: boolean;
   verified: boolean;
   password?: string;
-  __v: number;
 }
 
-interface Job{
-  _id:string;
-  jobTitle:string;
-  typesOfEmployment:string
+interface Job {
+  _id: string;
+  jobTitle: string;
+  typesOfEmployment: string;
 }
 
-  export interface JobApplication {
+export interface JobApplication {
   _id: string;
   jobId: Job;
   userId: User;
@@ -78,10 +79,8 @@ interface Job{
   __v: number;
 }
 
-
-
 export interface JobData {
-  _id:string|undefined;
+  _id: string | undefined;
   jobTitle: string;
   category: string;
   typesOfEmployment: string[];
@@ -98,8 +97,8 @@ export interface JobData {
   company: {
     _id: string;
     companyName: string;
-    logo?: string; 
-    location?: string; 
-    email?:string
-  }
+    logo?: string;
+    location?: string;
+    email?: string;
+  };
 }

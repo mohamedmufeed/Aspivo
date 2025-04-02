@@ -9,6 +9,7 @@ export class SkillService {
       throw new Error("Invalid skills data");
     }
     const addeddSkill = await this.skillRespositories.createSkills(skillNames);
+    console.log(addeddSkill)
     return { addeddSkill, message: "Skill addedd sucsessfully" };
   }
 

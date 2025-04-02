@@ -15,7 +15,7 @@ const ComapanyHeader:React.FC<HeaderProps> = ({heading}) => {
     <div>
           <div className="flex justify-between   space-x-10 ">
           <div className="flex mt-10 ">
-            <IoChevronBackOutline className="w-8 h-8  ml-3 mr-6" onClick={()=>navigate(-1)} />
+            <IoChevronBackOutline className="w-8 h-8  cursor-pointer ml-3 mr-6" onClick={()=>navigate(-1)} />
             <h1 className="text-3xl font-medium  -mt-0"> {heading}</h1>
           </div>
 

@@ -59,9 +59,8 @@ const MyJobs = () => {
           logo: app.jobId.company.logo,
         }));
         setAppliedJob(mappedJobs);
+        console.log(mappedJobs)
       }
-
-
     } catch (error: any) {
       console.log("Error in fetching applied jobs", error);
       setError(error.response?.data?.message || "Failed to load applied jobs");

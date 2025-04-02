@@ -103,7 +103,8 @@ const AdminCompanyRequests = () => {
                                             href={company.kyc}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-gray-600 hover:text-blue-800"
+                                            className="text-gray-600 hover:text-blue-800 "
+                            
                                         >
                                             View KYC
                                         </a>

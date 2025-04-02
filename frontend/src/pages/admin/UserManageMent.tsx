@@ -11,6 +11,7 @@ import profileAvathar from "../../assets/user.png"
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store/store";
 import { logout } from "../../redux/slice/authSlice";
+import { logoutUser } from "../../services/auth";
 type User = {
   _id: string;
   userName: string;
@@ -49,7 +50,7 @@ const UserManageMent = () => {
   const currentUsers = users.slice(indexOfFirstUser, indexofLastuser)
 
 
-  const handleBlockUser = async (userId: string) => {
+  const handleBlockUser = async (userId: string,isCurrentlyBlocked: boolean) => {
     try {
       const response = await blockUser(userId);
 
@@ -59,6 +60,10 @@ const UserManageMent = () => {
             user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
           )
         );
+        if (!isCurrentlyBlocked) {
+          await logoutUser(userId);
+          console.log(`User ${userId} has been logged out due to blocking.`);
+        }
         dispatch(logout());
       } else {
         console.error("Failed to block/unblock user:", response.message);
@@ -128,7 +133,7 @@ const UserManageMent = () => {
               <h1 className="text-center text-sm">{user.email}</h1>
               <h1 className="text-center">{new Date(user.createdAt).toLocaleDateString()}</h1>
               <div className="flex justify-center space-x-4">
-                <button className="bg-orange-600 p-2 px-4 text-white rounded-lg" onClick={() => handleBlockUser(user._id)} >
+                <button className="bg-orange-600 p-2 px-4 text-white rounded-lg" onClick={() => handleBlockUser(user._id, user.isBlocked)} >
                   {user.isBlocked ? "Unblock" : "Block"}
                 </button>
               </div>

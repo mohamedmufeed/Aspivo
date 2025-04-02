@@ -4,6 +4,7 @@ import { ProfileSerive } from "../../services/profileService.js";
 import cloudinary from "../../config/cloudinaryConfig.js";
 import { json } from "stream/consumers";
 import { promises } from "dns";
+import HttpStatus from "../../utils/httpStatusCode.js";
 
 const profileService = new ProfileSerive();
 
@@ -27,10 +28,10 @@ export const editProfile = async (
     const updatedProfile = await profileService.editProfile(userId, data);
 
     res
-      .status(200)
+      .status(HttpStatus.OK)
       .json({ message: "User Profile updated scusessfully", updatedProfile });
   } catch (error) {
-    res.status(500).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       error:
         error instanceof Error ? error.message : "User profile updated  failed",
     });
@@ -44,9 +45,9 @@ export const getProfile = async (
   try {
     const userId = req.params.id;
     const user = await profileService.getProfile(userId);
-    res.status(200).json({ user, message: "User Found sucsess full" });
+    res.status(HttpStatus.OK).json({ user, message: "User Found sucsess full" });
   } catch (error) {
-    res.status(500).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       error:
         error instanceof Error ? error.message : "User profile updated  failed",
     });
@@ -58,9 +59,9 @@ export const editAbout = async (req: Request, res: Response): Promise<void> => {
     const userId = req.params.id;
     const { about } = req.body;
     const user = await profileService.editAbout(userId, about);
-    res.status(200).json({ user, message: "User About edited successfully" });
+    res.status(HttpStatus.OK).json({ user, message: "User About edited successfully" });
   } catch (error) {
-    res.status(500).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       error:
         error instanceof Error ? error.message : "User About edited failed",
     });
@@ -95,10 +96,10 @@ export const addExprience = async (
     };
     const user = await profileService.addExperience(userId, data);
     res
-      .status(200)
+      .status(HttpStatus.OK)
       .json({ user, message: "User Experience added sucessfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error  adding experince" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error  adding experince" });
   }
 };
 
@@ -140,10 +141,10 @@ export const editExperince = async (
     );
 
     res
-      .status(200)
+      .status(HttpStatus.OK)
       .json({ user, message: "User experince edited sucssessfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error  editing experince" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error  editing experince" });
   }
 };
 
@@ -157,9 +158,9 @@ export const addEducation = async (
       req.body;
     const data = { school, degree, fieldOfStudy, startDate, endDate, grade };
     const response = await profileService.addEducation(userId, data);
-    res.status(200).json({ response });
+    res.status(HttpStatus.OK).json({ response });
   } catch (error) {
-    res.status(500).json({ message: "error adding education" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "error adding education" });
   }
 };
 
@@ -184,9 +185,9 @@ export const editEducation = async (
       data,
       educationId
     );
-    res.status(200).json({ response });
+    res.status(HttpStatus.OK).json({ response });
   } catch (error) {
-    res.status(500).json({ message: `error editing skill :${error}` });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `error editing skill :${error}` });
   }
 };
 
@@ -196,9 +197,9 @@ export const addSkill = async (req: Request, res: Response): Promise<void> => {
     const { skills } = req.body;
 
     const response = await profileService.addSkill(userId, skills);
-    res.status(200).json({ response });
+    res.status(HttpStatus.OK).json({ response });
   } catch (error) {
-    res.status(500).json({ message: "error adding skill" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "error adding skill" });
   }
 };
 
@@ -210,13 +211,13 @@ export const uploadResume = async (
     const userId = req.params.id;
     const resumeUrl = Object.keys(req.body)[0];
     if (!resumeUrl || !resumeUrl.startsWith("http")) {
-      res.status(400).json({ message: "Invalid resume URL" });
+      res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid resume URL" });
     }
     const response = await profileService.uploadResume(userId, resumeUrl);
 
     res.json({ response });
   } catch (error) {
-    res.status(500).json({ message: "Error uplaoding Resume" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error uplaoding Resume" });
   }
 };
 
@@ -224,8 +225,8 @@ export const deleteResume = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     const response = await profileService.deleteResume(userId);
-    res.status(200).json({ response });
+    res.status(HttpStatus.OK).json({ response });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting resume" });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error deleting resume" });
   }
 };

@@ -111,7 +111,7 @@ export const resetPassword = async (data: {
 
 export const logoutUser = async (userId: string) => {
   try {
-    const response = await api.post(`user/logout/${userId}`);
+    const response = await api.post(`user/logout/${userId}`)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

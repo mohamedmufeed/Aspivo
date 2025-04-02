@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { CompanyAuthService } from "../../services/compnyService/comanyauthservice.js";
+import HttpStatus from "../../utils/httpStatusCode.js";
 
 
 const companyService = new CompanyAuthService();
@@ -14,9 +15,9 @@ export const register= async (req: Request, res: Response) => {
       userId,
     );
 
-    res.status(200).json(company);
+    res.status(HttpStatus.OK).json(company);
   } catch (error) {
-    res.status(500).json({ message: "Error on company signup",error });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error on company signup",error });
   }
 };
 

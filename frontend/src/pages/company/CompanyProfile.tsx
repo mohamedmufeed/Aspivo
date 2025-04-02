@@ -1,11 +1,13 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import CompanySidebar from "../../components/Company/ComapnySidebar"
-import { IoChevronBackOutline } from "react-icons/io5"
 import profile from "../../assets/user.png"
 import { GoPencil } from "react-icons/go";
 import { GoPlus } from "react-icons/go";
 import { FaInstagram, FaLinkedin, FaFacebook } from "react-icons/fa";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
+import { getComapny } from "../../services/company/companyProfile";
+import { getProfile } from "../../services/profile";
+
 
 const CompanyProfile = () => {
   const [selected, setSelectedMenu] = useState<string|undefined>("C Profile")
@@ -25,6 +27,17 @@ const CompanyProfile = () => {
     { name: "LinkedIn", icon: <FaLinkedin className="text-blue-600 w-6 h-6" />, link: "https://linkedin.com" },
     { name: "Facebook", icon: <FaFacebook className="text-blue-500 w-6 h-6" />, link: "https://facebook.com" },
   ];
+
+  const getComapny=async()=>{
+    useEffect(()=>{
+      try {
+  
+      } catch (error) {
+        
+      }
+
+    },[])
+  }
   return (
     <div>
       <div className="flex">

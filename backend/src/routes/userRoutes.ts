@@ -6,7 +6,7 @@ import express  from "express";
 import {  Imageupload , resumeUplaod } from "../config/multer.js";
 import protect from "../middleware/authMiddlwware.js";
 import passport from "passport";
-import { appliedjobs, applyForJob, fetchJob, getJobDetails } from "../controllers/user/jobcontroller.js";
+import { appliedjobs, applyForJob, fetchJob, getJobDetails, isApplied } from "../controllers/user/jobcontroller.js";
 import { createCheckoutSession } from "../controllers/user/stripeController.js";
 
 
@@ -38,6 +38,7 @@ router.get("/jobs",fetchJob)
 router.get("/job-details/:id",getJobDetails)
 router.post("/applyjob/:id",protect,applyForJob)
 router.get("/applyed-jobs/:id",protect,appliedjobs)
+router.get("/is-applied/:id",isApplied)
 
 
 export default router

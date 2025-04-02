@@ -9,10 +9,10 @@ const adminRepostry = new AdminRepostry();
 export const getCompanies= async(req:Request,res:Response)=>{
     try {
         const company=  await adminRepostry.findAllCompany()
-        res.status(200).json({company , message:"Fetch comapny sucsees full"})
+        res.status(HttpStatus.OK).json({company , message:"Fetch comapny sucsees full"})
     } catch (error) {
         console.log("error from fetching all company ", error)
-        res.status(500).json({message:"Interanl server error"})
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Interanl server error"})
     }
 }
  export const handleCompanyRequest= async(req:Request,res:Response)=>{
@@ -20,10 +20,10 @@ export const getCompanies= async(req:Request,res:Response)=>{
         const {comapnyId,action}=req.body
 
         const comapny= await adminService.handleCompanyRequest(comapnyId,action)
-        res.status(200).json(comapny)
+        res.status(HttpStatus.OK).json(comapny)
     } catch (error) {
         console.log("error in the handling req",error)
-        res.status(500).json({message:"Internal server error"})
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
  }
 

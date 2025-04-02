@@ -8,7 +8,7 @@ export class CompanyAuthService {
     companyName: string,
     email: string,
     kyc: string,
-    userId: string,
+    userId: string
   ) {
     const existCompany = await companyRepositories.findByEmail(email);
     if (existCompany) {
@@ -18,12 +18,9 @@ export class CompanyAuthService {
       companyName,
       email,
       kyc,
-      userId,
+      userId
     );
     await company.save();
-    return { company };
+    return { company, message: "Comapny refited sucesssfully" };
   }
-
-
-
 }

@@ -16,6 +16,7 @@ import { RootState } from '../../redux/store/store';
 import ToastError from '../../components/Tost/ErrorToast';
 import { User } from "../../types/types"
 import { getProfile } from '../../services/profile';
+import { isApplied } from '../../services/jobService';
 
 
 
@@ -39,8 +40,13 @@ const JobDetails = () => {
   const [loading, setLoading] = useState(true)
   const [applying, setApplying] = useState(false);
   const [responseUserId, setResponseUserId] = useState("")
-  const [userDetails, setUserDetails] = useState<User|null>(null)
-  const [errorMessage,setErrorMessage]=useState<string|null>(null)
+  const [hasApplied, setHasApplied] = useState(false);
+  const [userDetails, setUserDetails] = useState<User | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+   const user = useSelector((state: RootState) => state.auth.user)
+  const userId = user?._id || ""
+
   useEffect(() => {
     const fechDetails = async () => {
       try {
@@ -48,6 +54,7 @@ const JobDetails = () => {
         if (response.job) {
           setJobDetails(response.job)
         }
+  
         setResponseUserId(response.job.company.userId)
         if (response.job.company.userId) {
           const userResponse = await getProfile(userId)
@@ -59,48 +66,64 @@ const JobDetails = () => {
         setLoading(false)
       }
     }
-
     fechDetails()
-  }, [id,responseUserId])
+  }, [id, responseUserId])
 
 
-  const user = useSelector((state: RootState) => state.auth.user)
-  const userId = user?._id || ""
+
+  useEffect(()=>{
+
+  const handleApplied = async () => {
+    try {
+      const response = await isApplied(userId, id||"")
+     if(response.application){
+      setHasApplied(true)
+     }
+    } catch (error) {
+      setHasApplied(false)
+      console.log("error in feching job applied status", error)
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+    handleApplied()
+  },[id,userId])
 
   const validateUserDetails = (user: User | null): boolean => {
     if (!user) {
-        setErrorMessage("User details not found. Please log in again.");
-        return false;
+      setErrorMessage("User details not found. Please log in again.");
+      return false;
     }
 
     const requiredFields = [
-        { field: user.firstName, name: "Full Name" },
-        { field: user.email, name: "Email" },
-        { field: user.resume, name: "Resume" },
-        { field: user.phoneNumber, name: "Phone Number" },
-        { field: user.education, name: "Education" },
-        { field: user.experiences, name: "Experience" },
+      { field: user.firstName, name: "Full Name" },
+      { field: user.email, name: "Email" },
+      { field: user.resume, name: "Resume" },
+      { field: user.phoneNumber, name: "Phone Number" },
+      { field: user.education, name: "Education" },
+      { field: user.experiences, name: "Experience" },
     ];
 
     for (const { field, name } of requiredFields) {
-        if (!field ) {
-            setErrorMessage(`Please complete your profile: ${name} is required.`);
-            return false;
-        }
+      if (!field) {
+        setErrorMessage(`Please complete your profile: ${name} is required.`);
+        return false;
+      }
     }
 
     setErrorMessage(null);
     return true;
-};
+  };
 
   const handleApplyJob = async () => {
     if (!validateUserDetails(userDetails)) {
       return;
-  }
+    }
     setApplying(true);
-
     try {
       const response = await applyForJob(id || "", userId)
+      console.log("the response", response)
     } catch (error) {
       console.log("Error in the apply for the job", error)
     } finally {
@@ -120,12 +143,12 @@ const JobDetails = () => {
 
   return (
     <div className="bg-[#F6F6F6] min-h-screen" style={{ fontFamily: "DM Sans, sans-serif" }}>
-    <div className= 'flex justify-center'>
-      {errorMessage?<ToastError  message={errorMessage} onClose={()=>setErrorMessage(null)}/>:""}
+      <div className='flex justify-center'>
+        {errorMessage ? <ToastError message={errorMessage} onClose={() => setErrorMessage(null)} /> : ""}
       </div>
-   
+
       <Navbar />
-     
+
       <div className="px-10 py-6">
         {/* profiile section */}
         <div className="bg-white shadow-lg w-full rounded-xl overflow-hidden">
@@ -170,11 +193,17 @@ const JobDetails = () => {
                 </button>
                 <button
                   onClick={handleApplyJob}
-                  disabled={applying || responseUserId === userId}
+                  disabled={applying || hasApplied}
                   className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition cursor-pointer ${applying ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-700"
                     }`}
                 >
-                  {responseUserId === userId ? "Applied" : applying ? "Applying..." : "Apply"}
+               {responseUserId === userId
+                                        ? "Your Job"
+                                        : hasApplied
+                                        ? "Applied"
+                                        : applying
+                                        ? "Applying..."
+                                        : "Apply"}
                 </button>
               </div>
             </div>

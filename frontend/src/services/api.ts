@@ -14,7 +14,6 @@ api.interceptors.response.use(
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          console.log("hello");
           const response = await api.post("user/refresh");
           console.log("Refresh response:", response);
           const newAccessToken = response.data.accessToken;
@@ -23,6 +22,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (Refresherror) {
           console.error("Refresh token failed:", Refresherror);
+          // window.location.href="/login"
         }
       }
       return Promise.reject(error);

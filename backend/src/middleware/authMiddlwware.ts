@@ -7,7 +7,7 @@ dotenv.config();
 interface AuthenticatedRequest extends Request {
   user?: any;
 }
-const protect =  async(
+const protect = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -19,28 +19,30 @@ const protect =  async(
     return;
   }
   try {
-    const decode = jwt.verify(token, process.env.JWT_SECRET||"" ) as {id:string};
+    const decode = jwt.verify(token, process.env.JWT_SECRET || "") as {
+      id: string;
+    };
     const user = await User.findById(decode.id);
     if (!user) {
-       res.status(401).json({ success: false, message: "User not found" });
-       return
-  }
+      res.status(401).json({ success: false, message: "User not found" });
+      return;
+    }
 
-  if (user.isBlocked) {
-    res.cookie("access_token", "", {
+    if (user.isBlocked) {
+      res.cookie("access_token", "", {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
         expires: new Date(0),
-    });
-    res.cookie("refresh_token", "", {
+      });
+      res.cookie("refresh_token", "", {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
         expires: new Date(0),
-    });
-     res.status(401).json({ success: false, message: "User is blocked" });
-}
+      });
+      res.status(401).json({ success: false, message: "User is blocked" });
+    }
     req.user = { id: user._id.toString() };
     next();
   } catch (error) {
