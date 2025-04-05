@@ -155,7 +155,7 @@ export class ProfileSerive {
     );
 
     if (newSkills.length === 0) {
-      return { status: 400, message: " skills already exist" };
+      throw { status: 400, message: " skills already exist" };
     }
 
     user.skills.push(...newSkills);
@@ -205,5 +205,12 @@ export class ProfileSerive {
     }
 
     return { user, message: "User resume deleted sucsess fully" };
+  }
+
+  async subscriptionHistory(userId: string) {
+    const user = await authRepository.findById(userId);
+    if (!user) throw new Error("User not found");
+    const subscriptions = await authRepository.findSubscriptions(userId);
+    return { subscriptions, message: "Subscription found" };
   }
 }

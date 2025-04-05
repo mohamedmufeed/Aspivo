@@ -81,3 +81,25 @@ export const experinceSchema = z
     jobResponsibilities: z.string().min(5, "Job responsibilities are required"),
     requirements: z.string().min(5, "Requirements are required"),
   });
+
+
+  export const editCompanyProfileSchema = z.object({
+    companyName: z.string().min(2, "Company name must be at least 2 characters"),
+    companyUrl: z.string().min(2, "Company Url must be at least 2 characters"),
+    industry: z
+      .string().nonempty("Industry is required"),
+     startDate: z.string().nonempty("Start date is required"),
+     employees: z.string().min(1, "Employess is required"),
+    location: z.string().min(2, "Location is required"),
+  });
+
+
+  export const comapnyDescriptionSchema = z.object({
+    description: z
+      .string()
+      .trim()
+      .min(20, " must be at least 20 characters")
+      .refine((value) => value.split(/\s+/).filter(Boolean).length <= 150, {
+        message: "description must be at most 150 words",
+      }),
+  });

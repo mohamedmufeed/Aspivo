@@ -1,3 +1,4 @@
+import Subscription from "../models/Subscription.js";
 import User from "../models/user.js";
 import { generateRefreshToken,  } from "../utils/jwt.js";
 import { generateToken } from "../utils/jwt.js";
@@ -31,5 +32,8 @@ export class AuthRepostry {
   }
   async findById(id: string) {
     return await User.findById(new mongoose.Types.ObjectId(id));
+  }
+  async findSubscriptions(userId:string){
+    return await Subscription.find({userId})
   }
 }

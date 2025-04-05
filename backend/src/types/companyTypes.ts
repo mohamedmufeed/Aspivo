@@ -68,3 +68,15 @@ export interface Company {
     unlimitedJobPosting: boolean;
   };
 }
+
+
+export interface IComapny{
+  logo?:string;
+  companyName: string;
+  companyUrl: string;
+  industry: string;
+  startDate:Date;
+  employees:string;
+  location: string;  
+  stack?: string[];
+}

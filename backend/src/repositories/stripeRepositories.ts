@@ -27,7 +27,6 @@ export class StripeRepositories {
         { $set: { subscription } },
         { new: true }
       );
-      console.log("Updated User:", updatedUser);
       if (!updatedUser) {
         throw new Error(`User with ID ${userId} not found`);
       }
@@ -123,7 +122,6 @@ export class StripeRepositories {
       if (!updatedCompany) {
         throw new Error(`Company with ID ${companyId} not found`);
       }
-      console.log("Company features revoked:", updatedCompany);
     } catch (error: any) {
       console.error("Error revoking company features:", error.message);
       throw new Error(`Error revoking company features: ${error.message}`);

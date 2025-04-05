@@ -15,7 +15,7 @@ const LoginForm = () => {
   const [emailError, setEmailError] = useState("")
   const [password, setPassword] = useState<string>("")
   const [passwordError, setPasswordError] = useState("")
-  const [loading,setloading]=useState(true)
+  const [loading,setloading]=useState(false)
   const [error, setError] = useState("")
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
@@ -45,7 +45,7 @@ const LoginForm = () => {
 
       dispatch(login(data.user))
       registerUserSocket("user", data.user.id);
-      setloading(false)
+      setloading(true)
       if (data.user && data.user.isAdmin === true) {
         navigate("/admin-dashboard");
       } else {

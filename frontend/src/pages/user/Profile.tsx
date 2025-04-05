@@ -321,7 +321,7 @@ const Profile = () => {
                             ))}
                         </div>
                     </div>
-                    {addSkill && <AddSkill setProfileData={setProfileData} userId={userId} isOpen={addSkill} onClose={() => setAddSkill(false)} />}
+                    {addSkill && <AddSkill  existingSkill={profileData.skills}  setProfileData={setProfileData} userId={userId} isOpen={addSkill} onClose={() => setAddSkill(false)} />}
                     {editSkill && <EditSkill setProfileData={setProfileData} userId={userId} isOpen={editSkill} onClose={() => setEditSkill(false)} />}
 
                 </div>

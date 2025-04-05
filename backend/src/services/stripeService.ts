@@ -171,7 +171,7 @@ export class StripeService {
           break;
 
         default:
-          console.log(`Unhandled event type ${event.type}`);
+          // console.log(`Unhandled event type ${event.type}`);
       }
     } catch (error) {
       throw new Error(`Error handling webhook event: ${error}\n${error}`);

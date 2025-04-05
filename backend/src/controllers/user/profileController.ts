@@ -230,3 +230,13 @@ export const deleteResume = async (req: Request, res: Response) => {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error deleting resume" });
   }
 };
+
+export const subscriptionHistory=async(req:Request,res:Response)=>{
+  try {
+    const userId=req.params.id
+    const response=await profileService.subscriptionHistory(userId)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server Error"})
+  }
+}

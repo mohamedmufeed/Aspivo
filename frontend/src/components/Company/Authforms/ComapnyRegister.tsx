@@ -1,8 +1,6 @@
 
-import React, { useEffect, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { data, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import { signup } from "../../../services/company/auth";
 import { useSelector } from "react-redux";
@@ -161,14 +159,7 @@ const dispatch=useDispatch<AppDispatch>()
 
 
         <div className="w-full  flex felx-col md:flex-row justify-center gap-7  sm:gap-4 space-y-4 sm:space-y-0 mt-6">
-
-          <button className=" w-full sm:w-35 h-12 py-3  bg-white border rounded-lg flex items-center justify-center space-x-2">
-            <FcGoogle className="w-7 h-7" />
-
-            <span className="font-bold">Google</span>
-          </button>
-
-          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition" disabled={uploading===true}>{uploading?"Uploading ..":"Sign Up"}</button>
+          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition" disabled={uploading===true}>{uploading?"Uploading ..":"Register"}</button>
         </div>
 
       </form>

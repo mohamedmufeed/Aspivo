@@ -59,7 +59,7 @@ const companySchema = new Schema(
       },
     ],
     employees: {
-      type: Number,
+      type: String,
       required: false,
     },
     customerId: { type: String }, 

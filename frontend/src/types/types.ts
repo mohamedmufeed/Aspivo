@@ -102,3 +102,36 @@ export interface JobData {
     email?: string;
   };
 }
+
+
+export interface IComapny{
+  companyName: string;
+  companyUrl: string;
+  industry: string;
+  startDate: string;
+  employees:string;
+  location: string;  
+}
+
+export interface IPopulatedCompany {
+  _id?:string;
+  companyName: string;
+  companyUrl: string;
+  email: string;
+  employees: number;
+description:string;
+  industry: string;
+  location: string;
+  stack:string[]
+  logo: string;
+  startDate: string;
+  status: "Approved" | "Pending" | "Rejected";
+  verified: boolean;
+  subscription: {
+    subscriptionId: string;
+    status: "active" | "canceled" | "expired";
+  };
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

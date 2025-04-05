@@ -35,7 +35,6 @@ export const applyForJob=async(req:Request,res:Response)=>{
     const jobId=req.params.id
     const {userId}=req.body
     const response=await jobService.applyForJOb(jobId,userId)
-    console.log(response)
     res.status(200).json(response)
     
   } catch (error) {

@@ -67,7 +67,7 @@ const SkillManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const newSkills = skills.filter((skill) => !skill._id);
+    const newSkills = skills.filter((skill) => !skill._id); 
 
     if (newSkills.length === 0) {
       setError("No new skills to save.");
@@ -82,7 +82,14 @@ const SkillManagement = () => {
 
       const response = await addSkill(requestData);
       console.log("Add skill response:", response);
-      setSkills((prev) => [...prev, response.addeddSkill])
+
+        if (response.addeddSkill) {
+        setSkills((prev) =>
+          prev
+            .filter((skill) => skill._id) 
+            .concat(response.addeddSkill) 
+        );
+      }
     } catch (error) {
       console.log("Error in adding skill:", error);
       setError("Error adding skill");

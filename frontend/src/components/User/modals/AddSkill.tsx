@@ -3,6 +3,8 @@ import { VscClose } from "react-icons/vsc";
 import { addSkill } from "../../../services/profile";
 import { z } from "zod";
 import { getSkills } from "../../../services/adminService";
+import ToastError from "../../Tost/ErrorToast";
+
 
 const skillSchema = z.object({
     skills: z.array(z.string().min(1, "Skill cannot be empty")),
@@ -13,6 +15,7 @@ interface EditProfileModalProps {
     onClose: () => void;
     userId: string;
     setProfileData: (prev: any) => void;
+    existingSkill: any
 }
 
 interface SkillType {
@@ -24,6 +27,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     onClose,
     userId,
     setProfileData,
+    existingSkill
 }) => {
     const [skills, setSkills] = useState<string[]>([]);
     const [skillInput, setSkillInput] = useState("");
@@ -32,16 +36,17 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [filteredSuggestions, setFilteredSuggestions] = useState<SkillType[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null)
 
     const fetchSkills = async () => {
         try {
             const response = await getSkills();
             setSugesstionSkill(response.response);
-            console.log(response.response);
         } catch (error) {
             console.log("Error in fetching skills");
         }
     };
+
 
     useEffect(() => {
         fetchSkills();
@@ -53,8 +58,6 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
             document.body.style.overflow = "auto";
         };
     }, [isOpen]);
-
-
     useEffect(() => {
         if (skillInput.trim()) {
             const filtered = sugesstionSkill.filter((skill) =>
@@ -96,15 +99,9 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-
         if (skillInput.trim()) {
             addSkillToList(skillInput);
             return;
-        }
-        const isDuplicate = skills.some((skill) => skill === skillInput.trim())
-        if (isDuplicate) {
-
         }
         if (!validateForm()) return;
 
@@ -116,12 +113,21 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
         setIsSaving(true);
         try {
             const response = await addSkill(userId, skills);
-            console.log("the response", response);
-            setProfileData((prev: any) => ({
-                ...prev,
-                skills: [...(prev.skills || []), ...skills],
-            }));
-            onClose();
+            console.log("the response",response)
+            console.log(response.status)
+            if (response.status === 400) {
+                console.log("hlo")
+                setError("Skill alredy exits")
+                return
+            }else{
+                setProfileData((prev: any) => ({
+                    ...prev,
+                    skills: [...(prev.skills || []), ...skills],
+                }));
+                onClose();
+            }
+     
+      
         } catch (error) {
             console.log("Error adding skill:", error);
             setErrors({ skills: "Failed to save skills. Please try again." });
@@ -134,6 +140,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
+            {error ? <ToastError message={error} onClose={() => setError(null)} /> : ""}
             <div
                 className="absolute inset-0 bg-black opacity-30 transition-opacity duration-300"
                 onClick={onClose}
@@ -142,6 +149,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                 className="fixed inset-0 flex items-center justify-center z-50"
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
+
                 <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg">
                     <div className="flex justify-between mt-2 px-5 p-5">
                         <h1 className="text-2xl font-medium">Add Skill</h1>
@@ -210,8 +218,8 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
                                 <button
                                     type="submit"
                                     className={`p-3 px-5 rounded-lg text-white font-bold ${(skillInput.trim() || skills.length > 0) && !isSaving
-                                            ? "bg-orange-600 hover:bg-orange-700"
-                                            : "bg-gray-400 cursor-not-allowed"
+                                        ? "bg-orange-600 hover:bg-orange-700"
+                                        : "bg-gray-400 cursor-not-allowed"
                                         }`}
                                     disabled={
                                         (!skillInput.trim() && skills.length === 0) || isSaving

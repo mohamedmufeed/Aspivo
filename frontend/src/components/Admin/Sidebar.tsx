@@ -12,7 +12,7 @@ const menuItems = [
     { icon: <FaUsers className="w-6 h-6" />, label: "Users", path: "/admin-users" },
     { icon: <IoGitPullRequestSharp className="w-6 h-6" />, label: "Requests", path: "/admin-comapnyrequests" },
     { icon: <RiHotelLine className="w-6 h-6" />, label: "Companies", path: "/admin-companies" },
-    { icon: <MdOutlineAttachMoney className="w-6 h-6" />, label: "Subscription", path: "/subscription" },
+    { icon: <MdOutlineAttachMoney className="w-6 h-6" />, label: "Subscription", path: "/admin-subscriptions" },
     { icon: <SiHyperskill className="w-5 h-5" />, label: "Skills", path: "/admin-skillmanagement" },
     { divider: true },
     { icon: <IoSettingsOutline className="w-6 h-6" />, label: "Settings", path: "/settings" },

@@ -44,7 +44,7 @@ const JobDetails = () => {
   const [userDetails, setUserDetails] = useState<User | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-   const user = useSelector((state: RootState) => state.auth.user)
+  const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || ""
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const JobDetails = () => {
         if (response.job) {
           setJobDetails(response.job)
         }
-  
+
         setResponseUserId(response.job.company.userId)
         if (response.job.company.userId) {
           const userResponse = await getProfile(userId)
@@ -71,24 +71,24 @@ const JobDetails = () => {
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
-  const handleApplied = async () => {
-    try {
-      const response = await isApplied(userId, id||"")
-     if(response.application){
-      setHasApplied(true)
-     }
-    } catch (error) {
-      setHasApplied(false)
-      console.log("error in feching job applied status", error)
+    const handleApplied = async () => {
+      try {
+        const response = await isApplied(userId, id || "")
+        if (response.application) {
+          setHasApplied(true)
+        }
+      } catch (error) {
+        setHasApplied(false)
+        console.log("error in feching job applied status", error)
+      }
+      finally {
+        setLoading(false)
+      }
     }
-    finally {
-      setLoading(false)
-    }
-  }
     handleApplied()
-  },[id,userId])
+  }, [id, userId])
 
   const validateUserDetails = (user: User | null): boolean => {
     if (!user) {
@@ -123,6 +123,9 @@ const JobDetails = () => {
     setApplying(true);
     try {
       const response = await applyForJob(id || "", userId)
+      if (response.application) {
+        setHasApplied(true)
+      }
       console.log("the response", response)
     } catch (error) {
       console.log("Error in the apply for the job", error)
@@ -197,13 +200,13 @@ const JobDetails = () => {
                   className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition cursor-pointer ${applying ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-700"
                     }`}
                 >
-               {responseUserId === userId
-                                        ? "Your Job"
-                                        : hasApplied
-                                        ? "Applied"
-                                        : applying
-                                        ? "Applying..."
-                                        : "Apply"}
+                  {responseUserId === userId
+                    ? "Your Job"
+                    : hasApplied
+                      ? "Applied"
+                      : applying
+                        ? "Applying..."
+                        : "Apply"}
                 </button>
               </div>
             </div>

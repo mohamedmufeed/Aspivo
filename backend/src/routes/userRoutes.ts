@@ -1,6 +1,6 @@
 
 import { register ,login, verifyOtp, resendOtp, forgotPassword, resetPassword, refreshToken, googleCallBack, getGoogleUser, logout } from "../controllers/user/authController.js";
-import { addEducation, addExprience, addSkill, deleteResume, editAbout, editEducation, editExperince, editProfile, getProfile , uploadResume} from "../controllers/user/profileController.js";
+import { addEducation, addExprience, addSkill, deleteResume, editAbout, editEducation, editExperince, editProfile, getProfile , subscriptionHistory, uploadResume} from "../controllers/user/profileController.js";
 import { getNotifications, isRead } from "../controllers/user/notificationController.js";
 import express  from "express";
 import {  Imageupload , resumeUplaod } from "../config/multer.js";
@@ -39,6 +39,7 @@ router.get("/job-details/:id",getJobDetails)
 router.post("/applyjob/:id",protect,applyForJob)
 router.get("/applyed-jobs/:id",protect,appliedjobs)
 router.get("/is-applied/:id",isApplied)
+router.get("/subscription-history/:id",subscriptionHistory)
 
 
 export default router

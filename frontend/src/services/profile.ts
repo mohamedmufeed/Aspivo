@@ -169,3 +169,16 @@ export const deleteResume= async(userId:string)=>{
     throw new Error("Something went wrong. Please try again."); 
   }
 };
+
+
+export const getSubscriptionHistory=async(userId:string)=>{
+  try {
+    const response=await api.get(`user/subscription-history/${userId}`)
+  return  response.data
+
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Subscription History:", error.response?.data);
+    }
+  }
+}

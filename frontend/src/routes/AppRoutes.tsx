@@ -22,6 +22,8 @@ const PaymentSuccess=lazy(()=>import("../pages/user/PaymentSuccess"))
 const PaymentCancel=lazy(()=>import("../pages/user/PaymentCancel"))
 const CompanyManageMent=lazy(()=>import("../pages/admin/CompanyManageMent"))
 const SkillManagement=lazy(()=>import("../pages/admin/SkillManagement"))
+const SubscriptionHistory=lazy(()=>import("../pages/user/SubscriptionHIstory"))
+const SubscriptionHnadling=lazy(()=>import("../pages/admin/SubscriptionHnadling"))
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 
@@ -48,6 +50,7 @@ const AppRoutes = () => {
         <Route path="/subscription" element={<Subscription />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
+        <Route path="/subscription-history" element={<SubscriptionHistory />} />
 
         {/* admin  routes*/}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -55,6 +58,7 @@ const AppRoutes = () => {
         <Route path="/admin-companies" element={<CompanyManageMent />} />
         <Route path="/admin-comapnyrequests" element={<AdminCompanyRequests />} />
         <Route path="/admin-skillmanagement" element={<SkillManagement />} />
+        <Route path="/admin-subscriptions" element={<SubscriptionHnadling />} />
 
         {/* company routes */}
         <Route path="/company-signup" element={<CompanyLogin />} />

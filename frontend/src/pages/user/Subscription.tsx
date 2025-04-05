@@ -4,6 +4,7 @@ import { subscriptions } from "../../services/stripe";
 import { RootState } from "../../redux/store/store";
 import { useEffect, useState } from "react";
 import { fetchCompany } from "../../services/company/compayJob";
+import ToastError from "../../components/Tost/ErrorToast";
 
 const Subscription = () => {
   const [error, setError] = useState<string | null>(null);
@@ -71,10 +72,10 @@ const Subscription = () => {
         className="bg-[#F6F6F6] pt-20 pb-40 flex  h-screen overflow-y-hidden justify-center items-center"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
+        {error ? <ToastError message={error} onClose={() => setError(null)} /> : ""}
         <div className="w-1/3">
           <h1 className="font-bold text-2xl text-center">Subscription</h1>
           <p className="text-gray-600 text-center">Talk to the Decision-Makers</p>
-          {error && <div className="text-red-600 text-center mt-4">{error}</div>}
           <div className="w-3/3 p-6 ml-4 bg-white rounded-lg shadow-sm border mt-10 border-gray-100">
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-4">
