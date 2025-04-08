@@ -87,7 +87,7 @@ export class CompanyRepostries {
   }
   async findApplicationDetail(applicantId:string){
     return await JobApplication.findById(applicantId).populate("userId")
-    .populate("jobId", "jobTitle typesOfEmployment")
+    .populate("jobId", "jobTitle typesOfEmployment company")
    }
 
    async findApplicationAndUpdate(applicantId:string,status:ApplicationStatus){

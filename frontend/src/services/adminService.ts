@@ -102,3 +102,24 @@ export const removeSkill = async (skillId: string) => {
     }
   }
 };
+
+export const getSubcriptions=async()=>{
+  try {
+    const response=await axios.get(`${ADMIN_API}/subscriptions`)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("geting subscriptions:", error.response?.data);
+    }
+  }
+}
+export const updateSubscriptionStatus = async (subscriptionId: string, { status }: { status: "active" | "inactive" | "cancelled" })=>{
+  try {
+    const response=await axios.post(`${ADMIN_API}/update-subscriptionstatus/${subscriptionId}`,{status})
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("updating subscription status subscriptions:", error.response?.data);
+    }
+  }
+ }

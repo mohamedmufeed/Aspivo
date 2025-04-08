@@ -67,6 +67,7 @@ export interface User {
 interface Job {
   _id: string;
   jobTitle: string;
+  company:string
   typesOfEmployment: string;
 }
 

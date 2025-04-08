@@ -14,16 +14,18 @@ import { JobApplication } from "../../types/types";
 import { MdArrowDropDown } from "react-icons/md";
 import { updateStatus } from "../../services/company/compayJob";
 import { ApplicationStatus } from "../../types/types";
-
+import { useNavigate } from "react-router-dom";
+import { InitializeChat } from "../../services/messageService";
 
 const CompanyApplicantDetails = () => {
-    const [selected, setSelected] = useState<string|undefined>("Job Listing");
+    const [selected, setSelected] = useState<string |undefined>("Job Listing");
     const [heading, setHeading] = useState("Application");
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState<JobApplication>();
     const [status, setStatus] = useState<ApplicationStatus>("pending")
     const { applicationId } = useParams();
-    console.log(status)
+
+    const navigate = useNavigate()
 
     const handleDetails = async () => {
         try {
@@ -38,7 +40,7 @@ const CompanyApplicantDetails = () => {
 
     const handleUpdateStatus = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         try {
-            const newStatus=e.target.value as ApplicationStatus
+            const newStatus = e.target.value as ApplicationStatus
             setStatus(newStatus)
             const response = await updateStatus(applicationId || "", newStatus);
             console.log("Status updated:", response);
@@ -47,12 +49,34 @@ const CompanyApplicantDetails = () => {
         }
     };
 
+    const handleStartChat = async () => {
+        if (details?.userId._id) {
+            const companyId = details?.jobId.company;
+            try {
+                const response = await InitializeChat(companyId, details.userId._id, "company");
+                console.log("the chat response", response);
+                if (response && response.channel) {
+                    navigate("/company-messages", {
+                        state: {
+                            newConversation: {
+                                userId: details.userId._id,
+                                userName: `${details.userId.firstName} ${details.userId.lastName || ""}`,
+                                lastMessage: "Chat started",
+                                timestamp: new Date().toISOString(),
+                                channel: response.channel,
+                            },
+                        },
+                    });
+                }
+            } catch (error) {
+                console.error("Error initializing chat:", error);
+            }
+        }
+    };
 
     useEffect(() => {
         handleDetails();
     }, [applicationId]);
-
-    console.log(details);
 
     const getDownloadableLink = (resumeUrl: string) => {
         return resumeUrl.replace("/upload/", "/upload/fl_attachment:");
@@ -105,7 +129,7 @@ const CompanyApplicantDetails = () => {
                                     </p>
                                 </div>
                                 <div className="mt-6 flex justify-end space-x-4">
-                                <div className="relative">
+                                    <div className="relative">
                                         <select
                                             value={status}
                                             onChange={handleUpdateStatus}
@@ -118,8 +142,8 @@ const CompanyApplicantDetails = () => {
                                         </select>
                                         <MdArrowDropDown className="absolute top-2 right-2 w-7 h-7 pointer-events-none" />
                                     </div>
-                                   
-                                    <button className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center">
+
+                                    <button className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center" onClick={handleStartChat} disabled={ !details?.userId._id}>
                                         <BsChatLeftText className="mr-2 w-5 h-5" />
                                         Chat
                                     </button>
@@ -219,8 +243,8 @@ const CompanyApplicantDetails = () => {
                     <div className="bg-white shadow-lg rounded-xl p-6">
                         <h1 className="font-semibold text-xl mb-4">Skills</h1>
                         <div className="flex flex-wrap gap-3">
-                            {details?.userId.skills.map((skill) => (
-                                <div className="bg-orange-100 rounded-lg px-3 py-1">
+                            {details?.userId.skills.map((skill,index) => (
+                                <div key={index} className="bg-orange-100 rounded-lg px-3 py-1">
                                     <p className="text-sm text-gray-800">{skill}</p>
                                 </div>
                             ))}

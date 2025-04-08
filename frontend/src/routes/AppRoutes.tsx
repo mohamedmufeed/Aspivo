@@ -24,6 +24,8 @@ const CompanyManageMent=lazy(()=>import("../pages/admin/CompanyManageMent"))
 const SkillManagement=lazy(()=>import("../pages/admin/SkillManagement"))
 const SubscriptionHistory=lazy(()=>import("../pages/user/SubscriptionHIstory"))
 const SubscriptionHnadling=lazy(()=>import("../pages/admin/SubscriptionHnadling"))
+const Messages=lazy(()=>import("../pages/user/Messages"))
+const CompanyMessages=lazy(()=>import("../pages/company/CompanyMessages"))
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 
@@ -51,6 +53,7 @@ const AppRoutes = () => {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/subscription-history" element={<SubscriptionHistory />} />
+        <Route path="/messages" element={<Messages />} />
 
         {/* admin  routes*/}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -67,6 +70,7 @@ const AppRoutes = () => {
         <Route path="/company-jobs" element={<CompanyJobListing />} />
         <Route path="/company-applicants/:jobId" element={<CopmanyApplicants />} />
         <Route path="company/applicants/:applicationId" element={<CompanyApplicantDetails />} />
+        <Route path="/company-messages" element={<CompanyMessages />} />
       </Routes>
       </Suspense>
     </Router>

@@ -1,6 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { title } from "process";
-import { start } from "repl";
+
 
 const userSchema = new Schema(
   {

@@ -1,5 +1,5 @@
+
 import { Server as HttpServer } from "http";
-import { use } from "passport";
 import { Server as SocketServer } from "socket.io";
 
 const setupSocket=(server:HttpServer)=>{
@@ -12,7 +12,7 @@ const setupSocket=(server:HttpServer)=>{
     })
     const userSockets= new Map<string, Map<string,string>>();
     io.on("connection",(socket)=>{
-        // console.log("A user conccets",socket.id)
+        console.log("A user conccets",socket.id)
 
         socket.on("registerUser",(role:string,userid:string)=>{
             if(!userSockets.has(role)){
@@ -21,8 +21,22 @@ const setupSocket=(server:HttpServer)=>{
             userSockets.get(role)?.set(userid,socket.id)
         })
 
+        socket.on("joinChannel",(channel:string)=>{
+            socket.join(channel);
+            console.log(`User ${socket.id} joined channel ${channel}`);
+        })
+
+        socket.on("sendMessage",(data:{channel:string,message:string,senderId:string})=>{
+            io.to(data.channel).emit("receiveMessage",{
+                senderId:data.senderId,
+                message:data.message,
+                timeStamp:new Date().toISOString()
+            })
+            console.log(`Message sent to ${data.channel}: ${data.message}`);
+        })
+
         socket.on("disconnect",()=>{
-            // console.log("User disconnected:", socket.id);
+            console.log("User disconnected:", socket.id);
             for(const [role,users]of userSockets.entries()){
                 for(const [userId,socketId] of users.entries()){
                     if(socketId===socket.id){
