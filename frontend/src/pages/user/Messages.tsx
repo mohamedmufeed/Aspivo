@@ -3,7 +3,6 @@ import { IoChevronBackOutline } from "react-icons/io5";
 import Navbar from "../../components/homecomponts/Navbar";
 import { GoPencil } from "react-icons/go";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
 import { io } from "socket.io-client";
 import { IoVideocamOutline } from "react-icons/io5";
@@ -14,6 +13,7 @@ import { RootState } from "../../redux/store/store";
 import { fetchCompany } from "../../services/company/compayJob";
 import { format } from 'date-fns';
 import avathar from "../../assets/user.png"
+import { useSocket } from "../../hooks/socket";
 
 interface ChatMessage {
     senderId: string;
@@ -43,9 +43,7 @@ const Messages = () => {
     const [loading, setLoading] = useState(true);
     const [isInitialized, setIsInitialized] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const socket = io("http://localhost:5001", { 
-        autoConnect: false, 
-    });
+     const socket = useSocket();
 
     const user = useSelector((state: RootState) => state.auth.user);
     const authUserId = user?._id || "";
@@ -56,7 +54,6 @@ const Messages = () => {
             const fetchUserData = async () => {
                 try {
                     const response = await fetchCompany(authUserId);
-                    console.log("the response", response.company.company._id);
                     setCompanyId(response.company.company._id || authUserId);
                 } catch (error) {
                     console.log("Error fetching company ID:", error);
@@ -83,7 +80,6 @@ const Messages = () => {
                     unread: conv.unread || false,
                     channel: conv.channel || `chat:${conv.targetId || conv.companyId}:${userId}`,
                 }));
-                console.log("Formatted conversations:", formatted);
                 setConversations(formatted);
             } catch (error) {
                 console.error("Error fetching employee conversations:", error);
@@ -94,12 +90,10 @@ const Messages = () => {
 
 
     useEffect(() => {
+        if (!socket) return;
         if (selectedEmployeeId && userId && conversations.length > 0) {
-            socket.connect();
             const conversation = conversations.find((c) => c.employeeId === selectedEmployeeId);
             const channel = conversation?.channel || `chat:${selectedEmployeeId}:${userId}`;
-            console.log("Fetching history for channel:", channel);
-
             const fetchHistory = async () => {
                 try {
                     const data = await getMessageHistory(channel);
@@ -114,7 +108,6 @@ const Messages = () => {
 
             socket.emit("joinChannel", channel);
             socket.on("receiveMessage", (message: ChatMessage) => {
-                console.log("Received message:", message);
                 setMessages((prev) => [...prev, message]);
             });
 
@@ -132,16 +125,15 @@ const Messages = () => {
 
     // Send message
     const handleSendMessage = async () => {
+        if (!socket) return;
         if (newMessage.trim() && selectedEmployeeId && userId && companyId) {
             const conversation = conversations.find((c) => c.employeeId === selectedEmployeeId);
             const channel = conversation?.channel || `chat:${selectedEmployeeId}:${userId}`;
-            console.log("Sending message on channel:", channel);
             try {
                 await sendMessage(channel, newMessage, userId);
                 socket.emit("sendMessage", { channel, message: newMessage, senderId: userId });
                 setNewMessage("");
                 const updatedMessages = await getMessageHistory(channel);
-                console.log("Updated messages:", updatedMessages);
                 setMessages(updatedMessages);
             } catch (error) {
                 console.error("Error sending message:", error);
@@ -152,10 +144,9 @@ const Messages = () => {
     const handleSelectConversation = (employeeId: string) => {
         setSelectedEmployeeId(employeeId);
         setMessages([]); // Clear messages when switching
-        console.log("Selected conversation employeeId:", employeeId);
     };
 
-    // Handle new conversation from navigation
+
     useEffect(() => {
         const newConversation = location.state?.newConversation as Conversation | undefined;
         if (

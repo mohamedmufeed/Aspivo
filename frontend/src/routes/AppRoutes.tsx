@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { lazy,Suspense } from "react"
+import { SocketProvider } from "../hooks/socket"
 const Login= lazy(()=>import("../pages/user/Login"))
 const Home =lazy(()=>import("../pages/user/Home"))
 const Profile= lazy(()=>import("../pages/user/Profile"))
@@ -26,11 +27,14 @@ const SubscriptionHistory=lazy(()=>import("../pages/user/SubscriptionHIstory"))
 const SubscriptionHnadling=lazy(()=>import("../pages/admin/SubscriptionHnadling"))
 const Messages=lazy(()=>import("../pages/user/Messages"))
 const CompanyMessages=lazy(()=>import("../pages/company/CompanyMessages"))
+const VideoCall=lazy(()=>import("../pages/user/VideoCall"))
+const CompanyVideoCall=lazy(()=>import("../pages/company/CompanyVideoCall"))
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 
 const AppRoutes = () => {
   return (
+    <SocketProvider> 
     <Router>
       <Suspense fallback={        <div className="#bg-[#F6F6F6] flex justify-center items-center h-screen">
                 <Bouncy size="45" speed="1.75" color="#FE4F00" />
@@ -54,6 +58,8 @@ const AppRoutes = () => {
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/subscription-history" element={<SubscriptionHistory />} />
         <Route path="/messages" element={<Messages />} />
+        <Route path="/video" element={<VideoCall />} />
+    
 
         {/* admin  routes*/}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -71,9 +77,11 @@ const AppRoutes = () => {
         <Route path="/company-applicants/:jobId" element={<CopmanyApplicants />} />
         <Route path="company/applicants/:applicationId" element={<CompanyApplicantDetails />} />
         <Route path="/company-messages" element={<CompanyMessages />} />
+        <Route path="/company-video" element={<CompanyVideoCall />} />
       </Routes>
       </Suspense>
     </Router>
+    </SocketProvider>
   )
 }
 

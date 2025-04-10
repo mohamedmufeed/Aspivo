@@ -15,10 +15,10 @@ import { MdArrowDropDown } from "react-icons/md";
 import { updateStatus } from "../../services/company/compayJob";
 import { ApplicationStatus } from "../../types/types";
 import { useNavigate } from "react-router-dom";
-import { InitializeChat } from "../../services/messageService";
+import { getConversations, InitializeChat } from "../../services/messageService";
 
 const CompanyApplicantDetails = () => {
-    const [selected, setSelected] = useState<string |undefined>("Job Listing");
+    const [selected, setSelected] = useState<string | undefined>("Job Listing");
     const [heading, setHeading] = useState("Application");
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState<JobApplication>();
@@ -43,18 +43,35 @@ const CompanyApplicantDetails = () => {
             const newStatus = e.target.value as ApplicationStatus
             setStatus(newStatus)
             const response = await updateStatus(applicationId || "", newStatus);
-            console.log("Status updated:", response);
         } catch (error) {
             console.error("Error updating status:", error);
         }
     };
 
     const handleStartChat = async () => {
-        if (details?.userId._id) {
-            const companyId = details?.jobId.company;
-            try {
+        if (!details?.userId._id) return
+        const companyId = details?.jobId.company;
+        const userId = details.userId._id
+        const existingConversations = await getConversations(companyId, "company")
+
+        const existingConversation = existingConversations.find(
+            (conv: any) => conv.targetId === userId || conv.channel === `chat:${companyId}:${userId}`
+        );
+        try {
+            if (existingConversation && existingConversation.channel) {
+                navigate("/company-messages", {
+                    state: {
+                        newConversation: {
+                            userId: existingConversation.targetId,
+                            userName: existingConversation.targetName || `${details.userId.firstName} ${details.userId.lastName || ""}`,
+                            lastMessage: existingConversation.lastMessage || "Chat started",
+                            timestamp: existingConversation.timestamp || new Date().toISOString(),
+                            channel: existingConversation.channel,
+                        },
+                    },
+                });
+            } else {
                 const response = await InitializeChat(companyId, details.userId._id, "company");
-                console.log("the chat response", response);
                 if (response && response.channel) {
                     navigate("/company-messages", {
                         state: {
@@ -67,13 +84,16 @@ const CompanyApplicantDetails = () => {
                             },
                         },
                     });
+                } else {
+                    console.warn("No channel returned from InitializeChat");
                 }
-            } catch (error) {
-                console.error("Error initializing chat:", error);
             }
-        }
-    };
 
+        } catch (error) {
+            console.error("Error initializing or finding chat:", error);
+
+        }
+    }
     useEffect(() => {
         handleDetails();
     }, [applicationId]);
@@ -143,7 +163,7 @@ const CompanyApplicantDetails = () => {
                                         <MdArrowDropDown className="absolute top-2 right-2 w-7 h-7 pointer-events-none" />
                                     </div>
 
-                                    <button className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center" onClick={handleStartChat} disabled={ !details?.userId._id}>
+                                    <button className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center" onClick={handleStartChat} disabled={!details?.userId._id}>
                                         <BsChatLeftText className="mr-2 w-5 h-5" />
                                         Chat
                                     </button>
@@ -243,7 +263,7 @@ const CompanyApplicantDetails = () => {
                     <div className="bg-white shadow-lg rounded-xl p-6">
                         <h1 className="font-semibold text-xl mb-4">Skills</h1>
                         <div className="flex flex-wrap gap-3">
-                            {details?.userId.skills.map((skill,index) => (
+                            {details?.userId.skills.map((skill, index) => (
                                 <div key={index} className="bg-orange-100 rounded-lg px-3 py-1">
                                     <p className="text-sm text-gray-800">{skill}</p>
                                 </div>

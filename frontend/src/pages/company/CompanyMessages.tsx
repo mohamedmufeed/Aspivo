@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import  { useState, useEffect, useRef } from "react";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import { IoIosSearch } from "react-icons/io";
@@ -7,12 +7,12 @@ import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
 import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { companyByuserId } from "../../services/company/companyProfile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { io } from "socket.io-client";
 import { format } from 'date-fns';
+import { useSocket } from "../../hooks/socket";
 
 interface ChatMessage {
     senderId: string;
@@ -21,11 +21,11 @@ interface ChatMessage {
 }
 
 interface Conversation {
-    
+
     targetId: string;
     targetName: string;
     lastMessage: string;
-    targetProfile:string
+    targetProfile: string
     timestamp: string;
     unread?: boolean;
     channel: string;
@@ -40,10 +40,9 @@ const CompanyMessages = () => {
     const [newMessage, setNewMessage] = useState("");
     const [companyId, setCompanyId] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate()
     const location = useLocation();
-    const socket = io("http://localhost:5001", { 
-        autoConnect: false, 
-    });
+    const socket = useSocket();
 
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
@@ -52,8 +51,8 @@ const CompanyMessages = () => {
         const fetchCompany = async () => {
             try {
                 const response = await companyByuserId(userId);
+                console.log("the  comapny respose", response.company.company._id)
                 setCompanyId(response.company.company._id);
-                console.log("Fetched companyId:", response.company.company._id);
             } catch (error) {
                 console.error("Error fetching company:", error);
             }
@@ -64,14 +63,12 @@ const CompanyMessages = () => {
     useEffect(() => {
         const fetchConversations = async () => {
             if (!companyId) {
-                console.log("companyId is not set");
+                console.log(companyId, "companyId is not set");
                 return;
             }
 
             try {
                 const data = await getConversations(companyId, "company");
-                console.log("Raw getConversations response:", data);
-
                 if (!Array.isArray(data)) {
                     console.warn("Expected array from getConversations, got:", data);
                     return;
@@ -82,7 +79,7 @@ const CompanyMessages = () => {
                         unique.push({
                             targetId: current.targetId,
                             targetName: current.targetName,
-                            targetProfile:current.targetProfile,
+                            targetProfile: current.targetProfile,
                             lastMessage: current.lastMessage || "",
                             timestamp: current.timestamp,
                             unread: current.unread || false,
@@ -93,8 +90,6 @@ const CompanyMessages = () => {
                 }, []);
 
                 const newConversation = location.state?.newConversation as Conversation | undefined;
-                console.log("Navigation state newConversation:", newConversation);
-
                 if (newConversation) {
                     const index = uniqueConversations.findIndex(conv => conv.targetId === newConversation.targetId);
 
@@ -113,7 +108,6 @@ const CompanyMessages = () => {
 
                 if (firstUserId) {
                     setSelectedUserId(firstUserId);
-                    console.log("Selected User ID:", firstUserId);
                 } else {
                     console.log("No firstUserId found");
                 }
@@ -128,16 +122,15 @@ const CompanyMessages = () => {
 
 
     useEffect(() => {
+        if (!socket) return;
         if (selectedUserId && conversations.length > 0) {
             socket.connect();
             let channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-            console.log("Fetching history for channel:", channel);
-
             const fetchHistory = async () => {
                 if (channel) {
                     try {
                         const data = await getMessageHistory(channel);
-                        console.log("Fetched messages:", data);
+                        console.log("the data, ", data)
                         if (data) setMessages(data);
                     } catch (error) {
                         console.error("Error fetching message history:", error);
@@ -152,7 +145,6 @@ const CompanyMessages = () => {
             if (channel) {
                 socket.emit("joinChannel", channel);
                 socket.on("receiveMessage", (message: ChatMessage) => {
-                    console.log("Received message:", message);
                     setMessages((prev) => [...prev, message]);
                 });
             }
@@ -171,6 +163,7 @@ const CompanyMessages = () => {
     }, [messages]);
 
     const handleSendMessage = async () => {
+        if (!socket) return;
         if (newMessage.trim() && selectedUserId && companyId) {
             const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
             if (channel) {
@@ -197,12 +190,12 @@ const CompanyMessages = () => {
         if (companyId) {
             try {
                 const data = await InitializeChat(companyId, userId, "company");
-                console.log("the data from inti",data)
+                console.log("the data from inti", data)
                 if (data && data.channel) {
                     setConversations((prev) => [
                         ...prev,
                         {
-                            targetProfile:userId,// not correct  i want  to change
+                            targetProfile: userId,// not correct  i want  to change
                             targetId: userId,
                             targetName: userName,
                             lastMessage: "Chat started",
@@ -214,6 +207,33 @@ const CompanyMessages = () => {
                 }
             } catch (error) {
                 console.error("Error initializing chat:", error);
+            }
+        }
+    };
+
+    const handleStartVideoCall = async () => {
+        if (!socket) return;
+        console.log("brrr");
+        console.log("the company id ", companyId);
+        console.log("the selected user id", selectedUserId);
+        console.log("the socket is connected", socket.connected);
+    
+        if (selectedUserId && companyId) {
+            console.log("hll");
+            const roomId = `meeting-${companyId}-${selectedUserId}-${Date.now()}`; 
+            const meetingLink = `${window.location.origin}/company-video?room=${roomId}`;
+            const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
+            if (channel) {
+                const invitationMessage = `Join the video call: ${meetingLink}`;
+                try {
+                    await sendMessage(channel, invitationMessage, companyId);
+                    socket.emit("sendMessage", { channel, message: invitationMessage, senderId: companyId });  
+                    const updatedMessages = await getMessageHistory(channel);
+                    if (updatedMessages) setMessages(updatedMessages);
+                    navigate("/company-video", { state: { roomId, selectedUserId } });
+                } catch (error) {
+                    console.error("Error initiating video call:", error);
+                }
             }
         }
     };
@@ -274,7 +294,7 @@ const CompanyMessages = () => {
                                 <div className="flex justify-between items-center px-4 py-2">
                                     <div className="flex items-center">
                                         <img
-                                            src={conversations.find((c)=>c.targetId===selectedUserId)?.targetProfile||person}
+                                            src={conversations.find((c) => c.targetId === selectedUserId)?.targetProfile || person}
                                             alt="User"
                                             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3"
                                         />
@@ -285,7 +305,10 @@ const CompanyMessages = () => {
                                             <p className="text-xs sm:text-sm text-gray-600">Online</p>
                                         </div>
                                     </div>
-                                    <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                                    <button onClick={handleStartVideoCall}>
+                                        <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 cursor-pointer" />
+                                    </button>
+
                                 </div>
                                 <div className="h-px bg-gray-400 w-full mt-2" />
                                 {/* Scrollable Message Area */}
@@ -299,14 +322,14 @@ const CompanyMessages = () => {
                                             >
                                                 <div
                                                     className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === companyId
-                                                            ? "bg-orange-200 text-black"
-                                                            : "bg-orange-600 text-white"
+                                                        ? "bg-orange-200 text-black"
+                                                        : "bg-orange-600 text-white"
                                                         }`}
                                                 >
                                                     <p className="text-sm sm:text-base">{msg.message}</p>
 
-                                                    <span className={`text-sm sm:text-sm  block mt-1 ${msg.senderId===companyId?"text-gray-500":" text-white"}`}>
-                                                    {format(new Date(msg.timestamp), 'p')}
+                                                    <span className={`text-sm sm:text-sm  block mt-1 ${msg.senderId === companyId ? "text-gray-500" : " text-white"}`}>
+                                                        {format(new Date(msg.timestamp || Date.now()), 'p')}
                                                     </span>
                                                 </div>
                                             </div>
