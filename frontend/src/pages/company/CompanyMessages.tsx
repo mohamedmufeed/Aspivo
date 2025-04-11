@@ -1,4 +1,4 @@
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import { IoIosSearch } from "react-icons/io";
@@ -212,34 +212,35 @@ const CompanyMessages = () => {
     };
 
     const handleStartVideoCall = async () => {
-        if (!socket) return;
         console.log("brrr");
         console.log("the company id ", companyId);
         console.log("the selected user id", selectedUserId);
-        console.log("the socket is connected", socket.connected);
     
-        if (selectedUserId && companyId) {
-            console.log("hll");
-            const roomId = `meeting-${companyId}-${selectedUserId}-${Date.now()}`; 
-            const meetingLink = `${window.location.origin}/company-video?room=${roomId}`;
-            const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-            if (channel) {
-                const invitationMessage = `Join the video call: ${meetingLink}`;
-                try {
-                    await sendMessage(channel, invitationMessage, companyId);
-                    socket.emit("sendMessage", { channel, message: invitationMessage, senderId: companyId });  
-                    const updatedMessages = await getMessageHistory(channel);
-                    if (updatedMessages) setMessages(updatedMessages);
-                    navigate("/company-video", { state: { roomId, selectedUserId } });
-                } catch (error) {
-                    console.error("Error initiating video call:", error);
-                }
+        if (!companyId || !selectedUserId) {
+            console.error("Company ID or Selected User ID is missing");
+            return;
+        }
+    
+        console.log("hll");
+        const roomId = `meeting-${companyId}-${Date.now()}`;
+        const participantId = `participant-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // Unique participant ID
+        const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${participantId}`;
+        const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
+    
+        if (channel) {
+            const invitationMessage = `Join the video call: ${meetingLink}`;
+            try {
+                await sendMessage(channel, invitationMessage, companyId);
+                const updatedMessages = await getMessageHistory(channel);
+                if (updatedMessages) setMessages(updatedMessages);
+                navigate("/company-video", { state: { roomId, selectedUserId: participantId }, replace: true });
+            } catch (error) {
+                console.error("Error initiating video call:", error);
             }
         }
     };
-
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen ">
             <CompanySidebar setSelected={setSelected} />
             <div className="bg-[#F6F6F6] w-full flex flex-col" style={{ fontFamily: "DM Sans, sans-serif" }}>
                 <ComapanyHeader heading={heading} />
@@ -259,7 +260,7 @@ const CompanyMessages = () => {
                             conversations.map((conv) => (
                                 <div
                                     key={conv.targetId}
-                                    className={`flex justify-between items-center px-4 py-3 hover:bg-gray-100 cursor-pointer ${selectedUserId === conv.targetId ? "bg-gray-100" : ""
+                                    className={`flex justify-between items-center px-4 py-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200  ${selectedUserId === conv.targetId ? "bg-gray-100" : ""
                                         }`}
                                     onClick={() => handleSelectConversation(conv.targetId)}
                                 >
@@ -271,7 +272,12 @@ const CompanyMessages = () => {
                                         />
                                         <div>
                                             <h1 className="font-semibold text-sm sm:text-base">{conv.targetName}</h1>
-                                            <p className="text-xs sm:text-sm text-gray-600">{conv.lastMessage}</p>
+                                            <p className="text-xs sm:text-sm text-gray-600">
+                                                {conv.lastMessage.length > 20
+                                                    ? `${conv.lastMessage.slice(0, 20)}...`
+                                                    : conv.lastMessage}
+                                            </p>
+
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">

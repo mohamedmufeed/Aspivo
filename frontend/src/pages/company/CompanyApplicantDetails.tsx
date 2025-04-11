@@ -104,7 +104,7 @@ const CompanyApplicantDetails = () => {
 
     return (
 
-        <div className="flex">
+        <div className="flex overflow-hidden">
             <CompanySidebar setSelected={setSelected} />
             <div
                 className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
@@ -223,38 +223,55 @@ const CompanyApplicantDetails = () => {
                         <h1 className="font-semibold text-xl mb-4">
                             Employment Experience
                         </h1>
-
-                        {details?.userId.experiences.map((exp, index) => (
-                            <div key={index} className="flex items-start space-x-4 mt-4">
-                                <FcGoogle className="w-8 h-8" />
-                                <div>
-                                    <h1 className="font-bold text-lg"></h1>
-                                    <p className="text-md text-gray-700">{exp.company}</p>
-                                    <p className="text-sm text-gray-600">        {exp.startDate ? new Date(exp.startDate).toLocaleDateString() : "N/A"}</p>
-                                    <p className="text-sm text-gray-600">{exp.position}</p>
+                        {details?.userId?.experiences && details.userId.experiences.length > 0 ? (
+                            details.userId.experiences.map((exp, index) => (
+                                <div key={index} className="flex items-start space-x-4 mt-4">
+                                    <FcGoogle className="w-8 h-8" />
+                                    <div>
+                                        <h1 className="font-bold text-lg">{exp.position || "No position specified"}</h1>
+                                        <p className="text-md text-gray-700">{exp.company || "No company specified"}</p>
+                                        <p className="text-sm text-gray-600">
+                                            {exp.startDate
+                                                ? `${new Date(exp.startDate).toLocaleDateString()} - ${exp.endDate ? new Date(exp.endDate).toLocaleDateString() : "Present"
+                                                }`
+                                                : "Dates not available"}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-gray-500 mt-2">No experience details available.</p>
+                        )}
+
+
                     </div>
 
                     <div className="w-full md:w-1/2 bg-white shadow-lg rounded-xl p-6">
                         <h1 className="font-semibold text-xl mb-4">Education</h1>
-                        {details?.userId.education.map((edu, index) => (
-                            <div key={index} className="flex items-start space-x-7">
-                                <img
-                                    src="https://via.placeholder.com/32"
-                                    alt="Oxford University"
-                                    className="w-8 h-8 rounded-full object-contain"
-                                />
-                                <div>
-                                    <h1 className="font-bold text-lg">{edu.school}</h1>
-                                    <p className="text-sm text-gray-600">
-                                        {edu.degree}
-                                    </p>
-                                    <p className="text-sm text-gray-600">{edu.startDate ? new Date(edu.startDate).toLocaleDateString() : "N/A"}</p>
+
+                        {details?.userId?.education && details.userId.education.length > 0 ? (
+                            details.userId.education.map((edu, index) => (
+                                <div key={index} className="flex items-start space-x-7 mt-4">
+                                    <img
+                                        src="https://via.placeholder.com/32"
+                                        alt={edu.school || "Institution"}
+                                        className="w-8 h-8 rounded-full object-contain"
+                                    />
+                                    <div>
+                                        <h1 className="font-bold text-lg">{edu.school || "Institution not specified"}</h1>
+                                        <p className="text-sm text-gray-600">{edu.degree || "Degree not specified"}</p>
+                                        <p className="text-sm text-gray-600">
+                                            {edu.startDate
+                                                ? `${new Date(edu.startDate).toLocaleDateString()} - ${edu.startDate ? new Date(edu.startDate).toLocaleDateString() : "Present"
+                                                }`
+                                                : "Dates not available"}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-gray-500 mt-2">No education details available.</p>
+                        )}
 
 
                     </div>
@@ -263,11 +280,18 @@ const CompanyApplicantDetails = () => {
                     <div className="bg-white shadow-lg rounded-xl p-6">
                         <h1 className="font-semibold text-xl mb-4">Skills</h1>
                         <div className="flex flex-wrap gap-3">
-                            {details?.userId.skills.map((skill, index) => (
-                                <div key={index} className="bg-orange-100 rounded-lg px-3 py-1">
-                                    <p className="text-sm text-gray-800">{skill}</p>
+                            {details?.userId?.skills && details.userId.skills.length > 0 ? (
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    {details.userId.skills.map((skill, index) => (
+                                        <div key={index} className="bg-orange-100 rounded-lg px-3 py-1">
+                                            <p className="text-sm text-gray-800">{skill}</p>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            ) : (
+                                <p className="text-gray-500 mt-2">No skills added yet.</p>
+                            )}
+
 
 
                         </div>

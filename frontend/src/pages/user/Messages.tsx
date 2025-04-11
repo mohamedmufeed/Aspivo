@@ -1,10 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import Navbar from "../../components/homecomponts/Navbar";
-import { GoPencil } from "react-icons/go";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
-import { io } from "socket.io-client";
 import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink, IoIosSearch } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
@@ -43,7 +41,7 @@ const Messages = () => {
     const [loading, setLoading] = useState(true);
     const [isInitialized, setIsInitialized] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-     const socket = useSocket();
+    const socket = useSocket();
 
     const user = useSelector((state: RootState) => state.auth.user);
     const authUserId = user?._id || "";
@@ -118,7 +116,7 @@ const Messages = () => {
         }
     }, [selectedEmployeeId, userId, conversations]);
 
-    
+
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -235,7 +233,7 @@ const Messages = () => {
                             conversations.map((conv) => (
                                 <div
                                     key={conv.employeeId}
-                                    className={`flex justify-between px-4 sm:px-8 py-3 sm:py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-100 ${selectedEmployeeId === conv.employeeId ? "bg-gray-100" : ""
+                                    className={`flex justify-between px-4 sm:px-8 py-3 sm:py-4 border-b border-gray-200 cursor-pointer hover:bg-gray-100  ${selectedEmployeeId === conv.employeeId ? "bg-gray-100" : ""
                                         }`}
                                     onClick={() => handleSelectConversation(conv.employeeId)}
                                 >
@@ -245,7 +243,12 @@ const Messages = () => {
                                         </div>
                                         <div>
                                             <h1 className="text-sm sm:text-base">{conv.employeeName}</h1>
-                                            <p className="text-xs sm:text-sm text-gray-500">{conv.lastMessage || "No messages yet"}</p>
+                                            <p className="text-xs sm:text-sm text-gray-600">
+                                                {conv.lastMessage.length > 20
+                                                    ? `${conv.lastMessage.slice(0, 20)}...`
+                                                    : conv.lastMessage}
+                                            </p>
+
                                         </div>
                                     </div>
                                     <div className="flex flex-col items-end">
@@ -254,6 +257,7 @@ const Messages = () => {
                                     </div>
                                 </div>
                             ))
+                      
                         ) : (
                             <p className="text-center text-gray-500 text-sm">No conversations available</p>
                         )}
@@ -290,7 +294,7 @@ const Messages = () => {
                                                 >
                                                     <p>{msg.message}</p>
                                                     <span className="text-xs sm:text-sm text-gray-500 block mt-1">
-                                                        {format(new Date(msg.timestamp), 'p')}
+                                                    {format(new Date(msg.timestamp || Date.now()), 'p')}
                                                     </span>
                                                 </div>
                                             </div>

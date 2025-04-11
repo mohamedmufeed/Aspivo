@@ -19,7 +19,7 @@ const setupSocket = (server: HttpServer) => {
     const userSockets = new Map<string, Map<string, string>>();
     const meetingRooms = new Map<string, Set<string>>();
     io.on("connection", (socket) => {
-        console.log("A user conccets", socket.id, socket.data)
+        console.log("A user conccets", socket.id)
         // regitser user
         socket.on("registerUser", (role: string, userid: string) => {
             if (!userSockets.has(role)) {

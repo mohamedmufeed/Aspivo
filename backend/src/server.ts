@@ -12,12 +12,23 @@ import passport from "./config/passport.js";
 import session from "express-session";
 import http from "http";
 import setupSocket from "./config/socket.js";
+import {  PeerServer } from "peer"
 
 dotenv.config();
 connectDb();
 
 const app = express();
 const server = http.createServer(app);
+
+const peerServer = PeerServer({
+    port: 9000,
+    path: "/peerjs",
+    allow_discovery: true,
+});
+
+peerServer.on("connection", (client) => {
+    console.log("Peer connected:", client.getId());
+});
 
 app.post(
     "/api/stripe/webhook",
@@ -59,7 +70,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/stripe", stripeRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/message", messageRoutes)
 
 const { io, sendNotification } = setupSocket(server);
 

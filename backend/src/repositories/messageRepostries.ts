@@ -37,7 +37,8 @@ export class MessageRepostries {
         await conversation.save();
   }
   async findChat(channel:string){
- return await ChatMessage.find({channel}).sort({timeStamp:1})    
+    return await ChatMessage.find({ channel }).sort({ timestamp: 1 });
+
   }
   async getConversations(userId: string, role: string): Promise<ConversationResponse[]> {
     const conversations = await Conversation.find({
