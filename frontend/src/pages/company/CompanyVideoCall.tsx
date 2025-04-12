@@ -3,99 +3,62 @@ import { LuSend } from "react-icons/lu";
 import { IoMicOutline } from "react-icons/io5";
 import { CiVideoOn } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Peer from "peerjs";
+import Peer from "peerjs"
 
-const CompanyVideoCall = () => {
-  const { state } = useLocation();
-  const roomId = state?.roomId || `meeting-${Date.now()}`;
+const CompanyVideoCall: React.FC = () => {
+  const location = useLocation();
+  const { roomId, peerId } = location.state || {};
+  console.log("the room is ", roomId)
+  console.log("the perr id id ", peerId)
+  const localVideoRef = useRef<HTMLVideoElement | null>(null)
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null)
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const [mediaStatus, setMediaStatus] = useState("Waiting for media access...");
-  const [peerId, setPeerId] = useState("");
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const peer = useRef<Peer | null>(null);
-  const localStream = useRef<MediaStream | null>(null);
-  const currentCall = useRef<any>(null);
 
   useEffect(() => {
-    const setupCall = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStream.current = stream;
-        setMediaStatus("Media access granted");
+    const peer = new Peer(peerId, {
+      host: "localhost",
+      port: 9000,
+      path: "/peerjs",
+      secure: false,
+    });
+
+    peer.on("open", (id) => {
+      console.log("Peer connected with ID from comapny side:", id);
+ 
+    });
+
+    peer.on("open", () => {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
         if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-          localVideoRef.current.play();
+          localVideoRef.current.srcObject = stream
+          localVideoRef.current.play()
         }
-
-        peer.current = new Peer(peerId, {
-          host: "localhost",
-          port: 9000,
-          path: "/peerjs",
-          config: { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] },
-        });
-
-        peer.current.on("open", (id) => {
-          setPeerId(id);
-          console.log("Company: Peer ID ->", id);
-        });
-
-        peer.current.on("call", (call) => {
-          console.log("Incoming call from:", call.peer);
-          call.answer(stream);
-          currentCall.current = call;
-
-          call.on("stream", (remoteStream) => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remoteStream;
-              remoteVideoRef.current.play();
-            }
-          });
-        });
-      } catch (err: any) {
-        console.error("Media error:", err.message);
-        setMediaStatus(`Media access denied: ${err.message}`);
-      }
-    };
-
-    setupCall();
-
-    return () => {
-      if (peer.current) peer.current.destroy();
-      if (localStream.current) {
-        localStream.current.getTracks().forEach((track) => track.stop());
-      }
-      if (currentCall.current) currentCall.current.close();
-    };
-  }, []);
+        const call = peer.call(roomId!, stream)
+        call.on("stream", (remoteStream) => {
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream
+            remoteVideoRef.current.play()
+          }
+        })
+      })
+    })
+    return () => peer.destroy()
+  }, [])
 
   const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const message = {
-        message: newMessage,
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, message]);
-      setNewMessage("");
-    }
+    setNewMessage("");
   };
 
   const handleLeaveCall = () => {
-    if (currentCall.current) currentCall.current.close();
-    if (peer.current) peer.current.destroy();
     navigate("/messages");
   };
 
   const toggleAudio = () => {
-    if (localStream.current) {
-      const audioTrack = localStream.current.getAudioTracks()[0];
-      audioTrack.enabled = !audioTrack.enabled;
-    }
+
   };
 
   return (
@@ -106,8 +69,19 @@ const CompanyVideoCall = () => {
           <AiOutlineTeam className="bg-orange-200 p-2 rounded-full w-10 h-10" />
         </div>
         <div className="relative h-[70vh]">
-          <video ref={remoteVideoRef} autoPlay className="w-full h-full object-cover rounded-lg shadow-lg" style={{ transform: "scaleX(-1)" }} />
-          <video ref={localVideoRef} autoPlay muted className="absolute bottom-4 right-4 w-48 h-32 rounded-md border-2 border-white shadow-md" style={{ transform: "scaleX(-1)" }} />
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            className="w-full h-full object-cover rounded-lg shadow-lg"
+            style={{ transform: "scaleX(-1)", objectFit: "cover" }}
+          />
+          <video
+            ref={localVideoRef}
+            autoPlay
+            muted
+            className="absolute bottom-4 right-4 w-48 h-32 object-cover rounded-md border-2 border-white shadow-md"
+            style={{ transform: "scaleX(-1)", objectFit: "cover" }}
+          />
         </div>
         <div className="flex justify-center pt-6">
           <div className="bg-white flex justify-between items-center gap-10 px-10 py-4 shadow-lg w-[60%] max-w-xl rounded-2xl">
@@ -137,11 +111,7 @@ const CompanyVideoCall = () => {
         <h1 className="text-xl font-semibold p-3">Messages</h1>
         <hr className="text-gray-300" />
         <div className="flex-1 overflow-y-auto space-y-3 pt-4">
-          {messages.map((msg, index) => (
-            <div key={index} className="p-3 rounded-lg text-sm bg-orange-200 self-end ml-auto">
-              {msg.message}
-            </div>
-          ))}
+          {/* Future messages will go here */}
         </div>
         <div className="mt-4 flex gap-3">
           <input
@@ -155,7 +125,6 @@ const CompanyVideoCall = () => {
             <LuSend className="text-white w-5 h-5" />
           </div>
         </div>
-        <p className="text-sm mt-2 text-gray-500">Media Status: {mediaStatus}</p>
       </div>
     </div>
   );

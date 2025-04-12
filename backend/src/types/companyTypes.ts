@@ -80,3 +80,14 @@ export interface IComapny{
   location: string;  
   stack?: string[];
 }
+
+export interface TeamMember {
+  _id?: string;
+  position: string;
+  name: string;
+}
+export interface Contact {
+  _id?: string;
+  name: string;
+     url: string;
+}

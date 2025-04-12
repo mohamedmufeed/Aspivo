@@ -15,11 +15,18 @@ import { format } from 'date-fns';
 import { useSocket } from "../../hooks/socket";
 
 interface ChatMessage {
+    _id:string;
     senderId: string;
     message: string;
     timestamp: string;
 }
 
+interface RawSocketMessage {
+    _id?: string;
+    senderId: string;
+    message: string;
+    timeStamp: string;
+  }
 interface Conversation {
 
     targetId: string;
@@ -130,7 +137,6 @@ const CompanyMessages = () => {
                 if (channel) {
                     try {
                         const data = await getMessageHistory(channel);
-                        console.log("the data, ", data)
                         if (data) setMessages(data);
                     } catch (error) {
                         console.error("Error fetching message history:", error);
@@ -142,12 +148,30 @@ const CompanyMessages = () => {
 
             fetchHistory();
 
+            // if (channel) {
+            //     socket.emit("joinChannel", channel);
+            //     socket.on("receiveMessage", (message: ChatMessage) => {
+            //         console.log(" from Received message:", message);
+            //         setMessages((prev) => [...prev, message]);
+            //     });
+            // }
             if (channel) {
                 socket.emit("joinChannel", channel);
-                socket.on("receiveMessage", (message: ChatMessage) => {
-                    setMessages((prev) => [...prev, message]);
+                socket.on("receiveMessage", (message: RawSocketMessage) => {
+                  console.log("Received message:", message);
+                  const normalizedMessage: ChatMessage = {
+                    _id: message._id || `${message.senderId}-${message.timeStamp}`,
+                    senderId: message.senderId,
+                    message: message.message || "",
+                    timestamp: message.timeStamp || new Date().toISOString(),
+                  };
+                  if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
+                    setMessages((prev) => [...prev, normalizedMessage]);
+                  } else {
+                    console.warn("Invalid message received after normalization:", normalizedMessage);
+                  }
                 });
-            }
+              }
 
             return () => {
                 if (channel) {
@@ -220,11 +244,10 @@ const CompanyMessages = () => {
             console.error("Company ID or Selected User ID is missing");
             return;
         }
-    
-        console.log("hll");
+
         const roomId = `meeting-${companyId}-${Date.now()}`;
-        const participantId = `participant-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // Unique participant ID
-        const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${participantId}`;
+        const peerId = `participant-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // Unique participant ID
+        const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${peerId}`;
         const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
     
         if (channel) {
@@ -233,7 +256,7 @@ const CompanyMessages = () => {
                 await sendMessage(channel, invitationMessage, companyId);
                 const updatedMessages = await getMessageHistory(channel);
                 if (updatedMessages) setMessages(updatedMessages);
-                navigate("/company-video", { state: { roomId, selectedUserId: participantId }, replace: true });
+                navigate("/company-video", { state: { roomId, peerId: peerId }, replace: true });
             } catch (error) {
                 console.error("Error initiating video call:", error);
             }
@@ -322,7 +345,7 @@ const CompanyMessages = () => {
                                     {messages.length > 0 ? (
                                         messages.map((msg) => (
                                             <div
-                                                key={`${msg.timestamp}-${msg.senderId}`}
+                                                key={`${ msg?._id||msg.timestamp}-${msg.senderId}`}
                                                 className={`flex mb-2 ${msg.senderId === companyId ? "justify-end" : "justify-start"
                                                     }`}
                                             >

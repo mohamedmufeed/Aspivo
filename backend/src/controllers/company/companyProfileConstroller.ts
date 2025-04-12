@@ -50,24 +50,48 @@ export const editCompanyProfile = async (req: Request, res: Response) => {
 };
 
 
-export const editCompanyDescription=async(req:Request,res:Response)=>{
+export const editCompanyDescription = async (req: Request, res: Response) => {
   try {
-    const companyId=req.params.id
-    const {description}=req.body
-    const response=await companyProfileService.editCompanyDescription(companyId,description)
+    const companyId = req.params.id
+    const { description } = req.body
+    const response = await companyProfileService.editCompanyDescription(companyId, description)
     res.status(HttpStatus.OK).json(response)
   } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
   }
 }
 
 
-export const  addTechStack=async(req:Request,res:Response)=>{
+export const addTechStack = async (req: Request, res: Response) => {
+  try {
+    const comapnyId = req.params.id
+    const { stack } = req.body
+    const response = await companyProfileService.addTechStack(comapnyId, stack)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
+  }
+}
+
+export const editTeam = async (req: Request, res: Response) => {
+  try {
+    const comapnyId = req.params.id
+    const members = req.body
+    const response = await companyProfileService.editTeam(comapnyId, members)
+    res.status(HttpStatus.OK).json(response)
+  } catch (error) {
+    console.log("the error",error)
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server errro" })
+  }
+}
+
+export const editContact=async(req:Request,res:Response)=>{
   try {
     const comapnyId=req.params.id
-    const {stack}=req.body
-    const response=await companyProfileService.addTechStack(comapnyId, stack)
+    const contact=req.body
+    const response=await companyProfileService.editContact(comapnyId,contact)
     res.status(HttpStatus.OK).json(response)
+
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
   }

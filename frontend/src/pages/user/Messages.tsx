@@ -14,10 +14,18 @@ import avathar from "../../assets/user.png"
 import { useSocket } from "../../hooks/socket";
 
 interface ChatMessage {
+    _id:string;
     senderId: string;
     message: string;
     timestamp: string;
 }
+
+interface RawSocketMessage {
+    _id?: string;
+    senderId: string;
+    message: string;
+    timeStamp: string;
+  }
 
 interface Conversation {
     employeeId: string;
@@ -105,9 +113,26 @@ const Messages = () => {
             fetchHistory();
 
             socket.emit("joinChannel", channel);
-            socket.on("receiveMessage", (message: ChatMessage) => {
-                setMessages((prev) => [...prev, message]);
-            });
+            // socket.on("receiveMessage", (message: ChatMessage) => {
+            //     setMessages((prev) => [...prev, message]);
+            // });
+            if (channel) {
+                socket.emit("joinChannel", channel);
+                socket.on("receiveMessage", (message: RawSocketMessage) => {
+                  console.log("Received message:", message);
+                  const normalizedMessage: ChatMessage = {
+                    _id: message._id || `${message.senderId}-${message.timeStamp}`,
+                    senderId: message.senderId,
+                    message: message.message || "",
+                    timestamp: message.timeStamp || new Date().toISOString(),
+                  };
+                  if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
+                    setMessages((prev) => [...prev, normalizedMessage]);
+                  } else {
+                    console.warn("Invalid message received after normalization:", normalizedMessage);
+                  }
+                });
+              }
 
             return () => {
                 socket.off("receiveMessage");

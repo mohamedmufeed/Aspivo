@@ -2,7 +2,8 @@ import { threadId } from "worker_threads";
 import { CompanyProfileRepositiories } from "../../repositories/companyProfileRepositories.js";
 import { IComapny } from "../../types/companyTypes.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
-import { use } from "passport";
+import { TeamMember } from "../../types/companyTypes.js";
+import { Contact } from "../../types/companyTypes.js";
 export class CompanyProfileService {
   private companyProfileRepositories: CompanyProfileRepositiories;
   constructor() {
@@ -74,5 +75,53 @@ export class CompanyProfileService {
     company.stack.push(...newStack);
     await company.save();
     return { company, message: "Comapny stack addedd sucsessfilly" };
+  }
+
+  async editTeam(companyId: string, members: TeamMember[]) {
+    const company = await this.companyProfileRepositories.findCompanyById(companyId);
+    if (!company) throw new Error("Company not found");
+
+    const existingTeam = company.team || [];
+
+    const trimmedNewMembers = members.map((member) => ({
+      position: member.position.trim(),
+      name: member.name.trim()
+    }));
+    const membersToAdd = trimmedNewMembers.filter(
+      (newMember) =>
+        !existingTeam.some(
+          (existing) =>
+            existing.position === newMember.position && existing.name === newMember.name
+        )
+    );
+
+    company.team.push(...membersToAdd);
+    await company.save();
+    return {
+      company,
+      message: "Company team updated successfully"
+    };
+  }
+
+  async editContact(comapnyId: string, contact: Contact[]) {
+    const company = await this.companyProfileRepositories.findCompanyById(comapnyId)
+    if (!company) throw new Error("Comapny not found")
+    const existingContact = company.contact || []
+    const trimmedNewContacts = contact.map((contact) => ({
+      name: contact.name.trim(),
+      url: contact.url.trim()
+    }))
+
+    const contactToAdd=trimmedNewContacts.filter(
+      (newContact)=>
+        !existingContact.some(
+          (existing)=>
+            existing.name=== newContact.name && existing.url=== newContact.url
+        )
+    )
+
+    company.contact.push(...contactToAdd)
+    await company.save()
+    return {company , message:"Company contact updated successfully"}
   }
 }

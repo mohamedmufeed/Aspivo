@@ -67,7 +67,7 @@ export interface User {
 interface Job {
   _id: string;
   jobTitle: string;
-  company:string
+  company: string
   typesOfEmployment: string;
 }
 
@@ -105,25 +105,33 @@ export interface JobData {
 }
 
 
-export interface IComapny{
+export interface IComapny {
   companyName: string;
   companyUrl: string;
   industry: string;
   startDate: string;
-  employees:string;
-  location: string;  
+  employees: string;
+  location: string;
+}
+export interface TeamMember {
+  position: string;
+  name: string;
+}
+export interface Contact {
+  name: string;
+  url: string;
 }
 
 export interface IPopulatedCompany {
-  _id?:string;
+  _id?: string;
   companyName: string;
   companyUrl: string;
   email: string;
   employees: number;
-description:string;
+  description: string;
   industry: string;
   location: string;
-  stack:string[]
+  stack: string[]
   logo: string;
   startDate: string;
   status: "Approved" | "Pending" | "Rejected";
@@ -132,7 +140,10 @@ description:string;
     subscriptionId: string;
     status: "active" | "canceled" | "expired";
   };
+  team: TeamMember[]
+  contact: Contact[];
   userId: string;
   createdAt: Date;
   updatedAt: Date;
 }
+

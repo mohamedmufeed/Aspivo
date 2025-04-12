@@ -54,8 +54,8 @@ const companySchema = new Schema(
     },
     contact: [
       {
-        type: { type: String, required: false },
-        logo: { type: String, required: false },
+        name: { type: String, required: false , trim:true },
+        url: { type: String, required: false,trim:true  },
       },
     ],
     employees: {
@@ -72,6 +72,20 @@ const companySchema = new Schema(
       unlimitedJobPosting: { type: Boolean, default: false },
       accessToAnalytics: { type: Boolean, default: false },
     },
+    team: [
+      {
+        position: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

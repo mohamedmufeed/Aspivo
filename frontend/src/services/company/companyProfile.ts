@@ -3,7 +3,15 @@ import api from "../api";
 import { IComapny } from "../../types/types";
 import { FormData } from "../../components/Company/Modals/EditCompanyDescriptionModal";
 import { string } from "zod";
+import { TeamMember } from "../../components/Company/Modals/EditCompanyTeamModal";
+import { ContactUrl } from "../../components/Company/Modals/EditContactModal";
+export interface EditTeamPayload {
+  members: TeamMember[];
+}
 
+export interface EditContactPayload{
+  contact: ContactUrl[]
+}
 
 export const getComapny = async (companyId: string) => {
   try {
@@ -59,4 +67,26 @@ try {
     console.error("Add company tech stack :", error.response?.data);
   }
 }
+}
+
+export const editTeam=async(companyId:string,data:EditTeamPayload)=>{
+try {
+  const response=await api.post(`company/edit-companyteam/${companyId}`,data)
+  return response.data
+  
+} catch (error) {
+  if (error instanceof AxiosError) {
+    console.error("Edit company team :", error.response?.data);
+  }
+}
+}
+export const editContact=async(companyId:string,data:EditContactPayload)=>{
+  try {
+    const response=await api.post(`company/edit-company-contact/${companyId}`,data)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Edit company contact :", error.response?.data);
+    }
+  }
 }

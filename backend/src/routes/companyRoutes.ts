@@ -1,7 +1,7 @@
 import express  from "express";
 import { register } from "../controllers/company/companyauthcontroller.js";
 import { fetchCompany ,fetchJob,postJob,editJob, deleteJob, getApplicantsForJob, getApplicantDetials, updateStatus} from "../controllers/company/companyJobController.js";
-import { addTechStack, editCompanyDescription, editCompanyProfile, getProfile } from "../controllers/company/companyProfileConstroller.js";
+import { addTechStack, editCompanyDescription, editCompanyProfile, editContact, editTeam, getProfile } from "../controllers/company/companyProfileConstroller.js";
 
 
 
@@ -19,4 +19,6 @@ router.get("/company-profile/:id",getProfile)
 router.post("/edit-companyprofile/:id",editCompanyProfile)
 router.post("/edit-comapnydescription/:id",editCompanyDescription)
 router.post("/add-comapnytechstack/:id",addTechStack)
+router.post("/edit-companyteam/:id",editTeam)
+router.post("/edit-company-contact/:id",editContact)
 export default router

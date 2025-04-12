@@ -11,7 +11,8 @@ import { companyByuserId } from "../../services/company/companyProfile";
 import { IPopulatedCompany } from "../../types/types";
 import EditCompanyDescriptionModal from "../../components/Company/Modals/EditCompanyDescriptionModal";
 import AddTeachStack from "../../components/Company/Modals/AddTechStack";
-
+import EditCompanyTeam from "../../components/Company/Modals/EditCompanyTeamModal";
+import EditCompanyContact from "../../components/Company/Modals/EditContactModal";
 
 
 const CompanyProfile = () => {
@@ -21,6 +22,8 @@ const CompanyProfile = () => {
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editDescriptionModalOpen, setEditDescriptionModalOpen] = useState(false)
   const [addTeachStackModalOpen, setAddTeachStackModalOpen]=useState(false)
+  const [editTeamModalOpen,setEditTeamModalOpen]=useState(false)
+  const [editContactModalOpen,setEditConatactModalOpen]=useState(false)
   const [companyData, setCompanyData] = useState<IPopulatedCompany>()
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || ""
@@ -45,11 +48,7 @@ const CompanyProfile = () => {
     return new Date(date).toLocaleDateString('en-US', options);
   };
 
-  const team = [
-    { name: "John Doe", position: "Software Engineer" },
-    { name: "Jane Smith", position: "Project Manager" },
-    { name: "Alice Johnson", position: "UI/UX Designer" }
-  ];
+
   const socialLinks = [
     { name: "Instagram", icon: <FaInstagram className="text-pink-500 w-6 h-6" />, link: "https://instagram.com" },
     { name: "LinkedIn", icon: <FaLinkedin className="text-blue-600 w-6 h-6" />, link: "https://linkedin.com" },
@@ -153,35 +152,36 @@ const CompanyProfile = () => {
               <div className="bg-white  shadow-gray-100 shadow-lg w-2/4 rounded-lg  p-5 mt-5">
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Team</h1>
-                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
+                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={()=>setEditTeamModalOpen(true)} />
                 </div>
 
                 <div className="px-6 mt-4 flex items-center gap-4 overflow-x-auto">
-                  {team.map((member, index) => (
+                  {companyData?.team.map((member, index) => (
                     <div key={index} className="flex flex-col items-center p-4 bg-[#eb5a0023] rounded-lg shadow-md min-w-[200px]">
                       <h3 className="font-semibold text-lg text-gray-800">{member.position}</h3>
                       <p className="text-gray-600">{member.name}</p>
                     </div>
                   ))}
                 </div>
-
+        <EditCompanyTeam isOpen={editTeamModalOpen} onClose={()=>setEditTeamModalOpen(false)} companyId={companyData?._id||""} setCompanyData={setCompanyData}/>
               </div>
 
 
               <div className="bg-white  shadow-gray-100 shadow-lg w-2/4 rounded-lg  p-5 mt-5">
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Contact</h1>
-                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" />
+                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={()=>setEditConatactModalOpen(true)} />
                 </div>
                 <div className="flex gap-4 p-4 rounded-lg ">
-                  {socialLinks.map((social, index) => (
-                    <a key={index} href={social.link} target="_blank" rel="noopener noreferrer"
+                  {companyData?.contact.map((social, index) => (
+                    <a key={index} href={social.url} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 p-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
-                      {social.icon}
-                      <span className="text-gray-700 font-medium">{social.name}</span>
+                      {social.name}
+                      {/* <span className="text-gray-700 font-medium">{social.name}</span> */}
                     </a>
                   ))}
                 </div>
+                <EditCompanyContact isOpen={editContactModalOpen} companyId={companyData?._id||""} onClose={()=>setEditConatactModalOpen(false)}  setCompanyData={setCompanyData}/>
               </div>
 
 
