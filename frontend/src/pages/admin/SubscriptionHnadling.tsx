@@ -35,8 +35,8 @@ const SubscriptionHandling = () => {
             setLoading(true);
             try {
                 const response = await getSubcriptions();
-                console.log(response.subscriptions);
-                setSubscriptions(response.subscriptions);
+                console.log(" the repsonse",response.subscription);
+                setSubscriptions(response.subscription);
             } catch (error) {
                 console.log("Error fetching subscriptions:", error);
             } finally {
@@ -84,6 +84,8 @@ const SubscriptionHandling = () => {
             setDropdownOpen(null); 
         }
     };
+
+
 
     return (
         <div className="flex">

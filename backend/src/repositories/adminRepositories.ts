@@ -3,35 +3,37 @@ import Company from "../models/company.js";
 import Subscription from "../models/Subscription.js";
 import {generateToken} from "../utils/jwt.js";
 import mongoose from "mongoose";
+import IAdminRepostry from "../interface/repositories/adminRepository.js";
 
 
 
 export class AdminRepostry {
+  constructor(private userModel: typeof User , private companyModel: typeof Company, private subscriptionModel: typeof Subscription) {}
 async getAllUsers(){
-  return  await User.find()
+  return  await this.userModel.find()
 }
 
 async findById(id:string){
-  return await  User.findById(id)
+  return await this.userModel.findById(id)
 }
 async findAllCompany(){
-  return await Company.find()
+  return await this.companyModel.find()
 }
 
  async findComapny(companyId:string){
-  return await Company.findById(companyId)
+  return await this.companyModel.findById(companyId)
  }
 
  async findApprovedCompany(){
-  return await Company.find({status:"Approved"})
+  return await this.companyModel.find({status:"Approved"})
  }
 
 async findSubscriptions(){
-  return await Subscription.find().populate("userId" ,"firstName lastName email")  .sort({createdAt:-1})
+  return await this.subscriptionModel.find().populate("userId" ,"firstName lastName email").sort({createdAt:-1})
 }
 
 async findSubscriptionById(subscriptionId:string){
-return await Subscription.findById(subscriptionId)
+return await this.subscriptionModel.findById(subscriptionId)
 }
 
 }

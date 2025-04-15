@@ -1,4 +1,4 @@
-import { SkillItemList, User } from "./userTypes";
+import { SkillItemList, User ,ISubscription} from "./userTypes";
 import { Company, JobApplication, JobData } from "./companyTypes";
 export interface UserServiceResponse {
   user: User;
@@ -24,4 +24,14 @@ export interface JobServiceResponse{
 export interface JobApplicationResponse{
     applications:JobApplication
     message:string
+}
+
+export interface SubscriptionResponse{
+  subscription:ISubscription
+  message:string
+}
+
+export interface MessageResponse{
+  channel:string;
+  message:string
 }

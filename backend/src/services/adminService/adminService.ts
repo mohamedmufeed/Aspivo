@@ -1,19 +1,25 @@
 import { AdminRepostry } from "../../repositories/adminRepositories.js";
-import { NotificationService } from ".././notificationService.js";
+import { NotificationService } from "../notificationService.js";
 import { sendNotification } from "../../server.js";
 const notificationService = new NotificationService();
-export class AdminService {
-  private adminRepostry = new AdminRepostry();
+
+export class AdminService  {
+  constructor(private adminRepository: AdminRepostry) {}
+
+  async getAllCompanies() {
+    return await this.adminRepository.findAllCompany();
+  }
+
   async blockUser(id: string) {
-    const user = await this.adminRepostry.findById(id);
+    const user = await this.adminRepository.findById(id);
     if (!user) throw new Error("User not found");
     user.isBlocked = !user.isBlocked;
     await user.save();
-    return { user, message: "User status chnages sucsessfully" };
+    return { user, message: "User status changed successfully" };
   }
 
-  async handleCompanyRequest(comapnyId: string, action: string) {
-    const company = await this.adminRepostry.findComapny(comapnyId);
+  async handleCompanyRequest(companyId: string, action: string) {
+    const company = await this.adminRepository.findComapny(companyId);
     if (!company) throw new Error("Company not found");
     if (action === "Approved") {
       company.status = action || "Approved";
@@ -29,15 +35,14 @@ export class AdminService {
       message
     );
     sendNotification("user", company.userId.toString(), message);
-    return { company , message:"Company stathus changes sucsessfully"};
+    return { company, message: "Company status changed successfully" };
   }
 
   async approvedCompany() {
-    const company = await this.adminRepostry.findApprovedCompany();
+    const company = await this.adminRepository.findApprovedCompany();
     if (!company) {
       throw new Error("Company not found");
     }
-    return { company, message: "Approved company founded sucsess fully" };
+    return { company, message: "Approved company found successfully" };
   }
-
 }

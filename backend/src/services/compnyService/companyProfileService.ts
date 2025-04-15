@@ -1,16 +1,13 @@
-import { threadId } from "worker_threads";
+
 import { CompanyProfileRepositiories } from "../../repositories/companyProfileRepositories.js";
 import { IComapny } from "../../types/companyTypes.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
 import { TeamMember } from "../../types/companyTypes.js";
 import { Contact } from "../../types/companyTypes.js";
 export class CompanyProfileService {
-  private companyProfileRepositories: CompanyProfileRepositiories;
-  constructor() {
-    this.companyProfileRepositories = new CompanyProfileRepositiories();
-  }
+  constructor(private companyRepo: CompanyProfileRepositiories) {}
   async getProfile(companyId: string) {
-    const company = await this.companyProfileRepositories.findCompanyById(
+    const company = await this.companyRepo.findCompanyById(
       companyId
     );
     if (!company) throw new Error("Company Not found");
@@ -18,7 +15,7 @@ export class CompanyProfileService {
   }
 
   async editCompanyProfile(companyId: string, data: IComapny) {
-    const company = await this.companyProfileRepositories.findCompanyById(
+    const company = await this.companyRepo.findCompanyById(
       companyId
     );
     if (!company) throw new Error("Comapny not found");
@@ -44,7 +41,7 @@ export class CompanyProfileService {
   }
 
   async editCompanyDescription(companyId: string, data: string) {
-    const comapny = await this.companyProfileRepositories.findCompanyById(
+    const comapny = await this.companyRepo.findCompanyById(
       companyId
     );
     if (!comapny) throw new Error("Company not found");
@@ -57,7 +54,7 @@ export class CompanyProfileService {
   }
 
   async addTechStack(comapnyId: string, stack: string[]) {
-    const company = await this.companyProfileRepositories.findCompanyById(
+    const company = await this.companyRepo.findCompanyById(
       comapnyId
     );
     if (!company) throw new Error("Comapny not found");
@@ -78,7 +75,7 @@ export class CompanyProfileService {
   }
 
   async editTeam(companyId: string, members: TeamMember[]) {
-    const company = await this.companyProfileRepositories.findCompanyById(companyId);
+    const company = await this.companyRepo.findCompanyById(companyId);
     if (!company) throw new Error("Company not found");
 
     const existingTeam = company.team || [];
@@ -90,7 +87,7 @@ export class CompanyProfileService {
     const membersToAdd = trimmedNewMembers.filter(
       (newMember) =>
         !existingTeam.some(
-          (existing) =>
+          (existing:any) =>
             existing.position === newMember.position && existing.name === newMember.name
         )
     );
@@ -104,7 +101,7 @@ export class CompanyProfileService {
   }
 
   async editContact(comapnyId: string, contact: Contact[]) {
-    const company = await this.companyProfileRepositories.findCompanyById(comapnyId)
+    const company = await this.companyRepo.findCompanyById(comapnyId)
     if (!company) throw new Error("Comapny not found")
     const existingContact = company.contact || []
     const trimmedNewContacts = contact.map((contact) => ({
@@ -115,7 +112,7 @@ export class CompanyProfileService {
     const contactToAdd=trimmedNewContacts.filter(
       (newContact)=>
         !existingContact.some(
-          (existing)=>
+          (existing:any)=>
             existing.name=== newContact.name && existing.url=== newContact.url
         )
     )

@@ -27,10 +27,11 @@ export const getMessageHistory = async (channel: string) => {
 };
 
 
-export const sendMessage = async (channel: string, message: string, senderId: string) => {
+export const sendMessage = async (channel: string, message: string, senderId: string,imageUrl?:string) => {
     try {
         const response = await api.post(`message/send-message`, {
-            channel, message, senderId
+            channel, message, senderId,
+            imageUrl
         })
         return response.data
     } catch (error) {

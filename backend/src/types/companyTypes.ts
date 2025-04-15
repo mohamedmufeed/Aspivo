@@ -59,6 +59,7 @@ export interface Company {
   userId: ObjectId;
   verified: boolean;
   stack: string[];
+  logo:string;
   contact: string[];
   createdAt: Date;
   updatedAt: Date;

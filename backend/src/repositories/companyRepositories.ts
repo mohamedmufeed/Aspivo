@@ -5,6 +5,7 @@ import Job from "../models/job.js";
 import JobApplication from "../models/jobApplication.js";
 type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class CompanyRepostries {
+  constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication) {}
   async register(
     companyName: string,
     email: string,
@@ -12,7 +13,7 @@ export class CompanyRepostries {
     userId: string
   ) {
     const userObjectId = new mongoose.Types.ObjectId(userId);
-    const company = new Company({
+    const company = new this.companyModel({
       companyName,
       email,
       kyc,
@@ -25,11 +26,13 @@ export class CompanyRepostries {
   }
 
   async findByEmail(email: string) {
-    return await Company.findOne({ email });
+    return await this.companyModel.findOne({ email });
   }
   async findByUserId(userId: string) {
-    const userObjectId = new mongoose.Types.ObjectId(userId);
-    return await Company.findOne({ userId: userObjectId });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error('Invalid user ID format');
+    }
+    return await this.companyModel.findOne({ userId: userId });
   }
 
   async createJob(data: JobData) {
@@ -50,7 +53,7 @@ export class CompanyRepostries {
       company,
     } = data;
     const comapanyId = new mongoose.Types.ObjectId(company);
-    const job = new Job({
+    const job = new this.jobModel({
       jobTitle,
       category,
       typesOfEmployment,
@@ -71,27 +74,27 @@ export class CompanyRepostries {
     return { job: savedJob };
   }
   async findJobs(comapanyId: string) {
-    return await Job.find({ company: comapanyId }).sort({createdAt:-1});
+    return await this.jobModel.find({company:comapanyId}).sort({createdAt:-1});
   }
   async findJob(jobId:string){
-  return await Job.findById(jobId)
+  return await this.jobModel.findById(jobId)
   }
 
   async deleteJob(jobId:string){
-    return await Job.findByIdAndDelete(jobId)
+    return await this.jobModel.findByIdAndDelete(jobId)
   }
   async findApplications(jobId:string){
-    return await JobApplication.find({jobId})
+    return await this.jobApplication.find({jobId})
     .populate("userId","firstName lastName profileImage")
     .populate("jobId","jobId jobTitle")
   }
   async findApplicationDetail(applicantId:string){
-    return await JobApplication.findById(applicantId).populate("userId")
+    return await this.jobApplication.findById(applicantId).populate("userId")
     .populate("jobId", "jobTitle typesOfEmployment company")
    }
 
    async findApplicationAndUpdate(applicantId:string,status:ApplicationStatus){
-    return await JobApplication.findByIdAndUpdate(applicantId,{status},{new:true})
+    return await this.jobApplication.findByIdAndUpdate(applicantId,{status},{new:true})
    }
    
 }

@@ -53,8 +53,9 @@ const EditCompanyProfileModal: React.FC<EditProfileModalProps> = ({ setCompanyDa
             try {
                 setLoading(true);
                 const response = await getComapny(companyId);
+                console.log("fkrfm",response)
                 const companyData = response.company;
-                console.log("Fetched Company Data:", companyData);
+
                 setValue("companyName", companyData.companyName || "");
                 setValue("companyUrl", companyData.companyUrl || "");
                 setValue("startDate", companyData.startDate || "");

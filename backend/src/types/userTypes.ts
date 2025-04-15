@@ -58,3 +58,13 @@ export interface SkillItem {
   createdAt: Date;
 }
 export type SkillItemList = SkillItem[];
+
+
+export interface ISubscription extends Document {
+  userId: string;
+  companyId?:string;
+  subscriptionId: string;
+  plan: string;
+  amount: number;
+  status: string;
+}

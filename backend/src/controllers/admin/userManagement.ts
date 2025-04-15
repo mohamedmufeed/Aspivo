@@ -2,32 +2,46 @@ import { Request, Response } from "express";
 import { AdminRepostry } from "../../repositories/adminRepositories.js";
 import { AdminService } from "../../services/adminService/adminService.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
-const adminService = new AdminService();
-const adminRepostry = new AdminRepostry();
+import IUserManagementController from "../../interface/controller/admin/userManagementInterface.js";
 
-export const getUsers = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const users = await adminRepostry.getAllUsers();
-    res
-      .status(HttpStatus.OK)
-      .json({ success: true, users, message: "user fetchig sucsess" });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
-  }
-};
+export class UserManagementController  implements IUserManagementController{
+  constructor(
+    private adminService: AdminService,
+    private adminRepostry: AdminRepostry
+  ) {}
 
-export const blockUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const response = await adminService.blockUser(userId);
-    res
-      .status(HttpStatus.OK)
-      .json({
+  getUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const users = await this.adminRepostry.getAllUsers();
+      res.status(HttpStatus.OK).json({
+        success: true,
+        users,
+        message: "User fetching successful",
+      });
+    } catch (error) {
+      console.log("Error fetching users:", error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  };
+
+  blockUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const response = await this.adminService.blockUser(userId);
+      res.status(HttpStatus.OK).json({
         success: true,
         response,
-        message: "User status changes sucsess fulyl",
+        message: "User status changed successfully",
       });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
-  }
-};
+    } catch (error) {
+      console.log("Error blocking user:", error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  };
+}

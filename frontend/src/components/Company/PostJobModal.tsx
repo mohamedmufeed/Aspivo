@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { GoPlus } from "react-icons/go";
-import {  postJob } from "../../services/company/compayJob";
+import {  fetchCompany, postJob } from "../../services/company/compayJob";
 import { JobData } from "../../types/types";
 import { jobSchema } from "../../validation/zod";
 import { useForm } from "react-hook-form";
@@ -33,7 +33,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
     ];
 
     const [skills, setSkills] = useState<string[]>([""]);
-    
+    const [companyId,setCompanyId]=useState()
     const {
         register,
         handleSubmit,
@@ -69,10 +69,23 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
         setSkills([...skills, ""]);
         setValue("requiredSkills", [...skills, ""]);
     };
-    const company= useSelector((state:RootState)=>state.companyauth.company)
+const user=useSelector((state:RootState)=>state.auth.user)
+const userId=user?._id||""
+        useEffect(() => {
+            const fetchCompanie = async () => {
+                try {
+                    const response = await fetchCompany(userId);
+                    console.log("the  comapny respose", response)
+                    setCompanyId(response.company.company._id);
+                } catch (error) {
+                    console.error("Error fetching company:", error);
+                }
+            };
+            fetchCompanie();
+        }, [userId]);
+  
 
 
-    const companyId=company?._id||""
     const onSubmit = async (data: any) => {
         try {
      
@@ -83,7 +96,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                 slot: Number(data.slot)
             };
             window.location.reload()
-          const response= await postJob(companyId,submitData)
+          const response= await postJob(companyId||"",submitData)
           console.log(response)
             onClose();
         } catch (error) {

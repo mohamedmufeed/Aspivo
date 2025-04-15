@@ -5,4 +5,5 @@ export default interface IJobService{
     getJobDetails(jobId:string):JobServiceResponse;
     applyForJOb(jobId:string,userId:string):JobServiceResponse;
     appliedjobs(userId:string):JobServiceResponse
+    isApplied(userId:string,jobId:string):JobServiceResponse
 }

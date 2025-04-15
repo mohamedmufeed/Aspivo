@@ -13,10 +13,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { format } from 'date-fns';
 import { useSocket } from "../../hooks/socket";
+import axios from "axios";
+import { fetchCompany } from "../../services/company/compayJob";
 
 interface ChatMessage {
-    _id:string;
+    _id: string;
     senderId: string;
+    imageUrl?: string
     message: string;
     timestamp: string;
 }
@@ -24,9 +27,10 @@ interface ChatMessage {
 interface RawSocketMessage {
     _id?: string;
     senderId: string;
+    imageUrl?: string;
     message: string;
     timeStamp: string;
-  }
+}
 interface Conversation {
 
     targetId: string;
@@ -36,6 +40,10 @@ interface Conversation {
     timestamp: string;
     unread?: boolean;
     channel: string;
+}
+interface UserStatus {
+    targetId: string;
+    isOnline: boolean;
 }
 
 const CompanyMessages = () => {
@@ -50,21 +58,24 @@ const CompanyMessages = () => {
     const navigate = useNavigate()
     const location = useLocation();
     const socket = useSocket();
-
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [userStatuses, setUserStatuses] = useState<Record<string, boolean>>({});
+    const [imageUrl, setImageUrl] = useState<string | null>(null)
+    const [imageError, setImageError] = useState<string | null>(null)
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
 
     useEffect(() => {
-        const fetchCompany = async () => {
+        const fetchCompanie = async () => {
             try {
-                const response = await companyByuserId(userId);
-                console.log("the  comapny respose", response.company.company._id)
+                const response = await fetchCompany(userId);
+                console.log("the  comapny respose", response)
                 setCompanyId(response.company.company._id);
             } catch (error) {
                 console.error("Error fetching company:", error);
             }
         };
-        fetchCompany();
+        fetchCompanie();
     }, [userId]);
 
     useEffect(() => {
@@ -132,6 +143,7 @@ const CompanyMessages = () => {
         if (!socket) return;
         if (selectedUserId && conversations.length > 0) {
             socket.connect();
+            socket.emit("registerUser", "company", companyId);
             let channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
             const fetchHistory = async () => {
                 if (channel) {
@@ -158,24 +170,50 @@ const CompanyMessages = () => {
             if (channel) {
                 socket.emit("joinChannel", channel);
                 socket.on("receiveMessage", (message: RawSocketMessage) => {
-                  console.log("Received message:", message);
-                  const normalizedMessage: ChatMessage = {
-                    _id: message._id || `${message.senderId}-${message.timeStamp}`,
-                    senderId: message.senderId,
-                    message: message.message || "",
-                    timestamp: message.timeStamp || new Date().toISOString(),
-                  };
-                  if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
-                    setMessages((prev) => [...prev, normalizedMessage]);
-                  } else {
-                    console.warn("Invalid message received after normalization:", normalizedMessage);
-                  }
+                    console.log("Received message:", message);
+                    const normalizedMessage: ChatMessage = {
+                        _id: message._id || `${message.senderId}-${message.timeStamp}`,
+                        senderId: message.senderId,
+                        message: message.message || "",
+                        timestamp: message.timeStamp || new Date().toISOString(),
+                    };
+                    if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
+                        setMessages((prev) => [...prev, normalizedMessage]);
+                    } else {
+                        console.warn("Invalid message received after normalization:", normalizedMessage);
+                    }
                 });
-              }
+
+                const handleUserOnline = (status: { targetId: string; isOnline: boolean }) => {
+                    console.log("User online:", status.targetId);
+                    setUserStatuses((prev) => ({ ...prev, [status.targetId]: status.isOnline }));
+                  };
+              
+                  const handleUserOffline = (status: { targetId: string; isOnline: boolean }) => {
+                    console.log("User offline:", status.targetId);
+                    setUserStatuses((prev) => ({ ...prev, [status.targetId]: status.isOnline }));
+                  };
+              
+                  const handleOnlineUsers = (users: { targetId: string; isOnline: boolean }[]) => {
+                    console.log("Initial online users:", users);
+                    const initialStatuses = users.reduce((acc, user) => {
+                      acc[user.targetId] = user.isOnline;
+                      return acc;
+                    }, {} as Record<string, boolean>);
+                    setUserStatuses((prev) => ({ ...prev, ...initialStatuses }));
+                  };
+              
+                  socket.on("user-online", handleUserOnline);
+                  socket.on("user-offline", handleUserOffline);
+                  socket.on("online-users", handleOnlineUsers);
+            }
 
             return () => {
                 if (channel) {
                     socket.off("receiveMessage");
+                    socket.off("user-online");
+                    socket.off("user-offline");
+                    socket.off("online-users");
                     socket.emit("leaveChannel", channel);
                 }
             };
@@ -188,13 +226,21 @@ const CompanyMessages = () => {
 
     const handleSendMessage = async () => {
         if (!socket) return;
-        if (newMessage.trim() && selectedUserId && companyId) {
+        if ((newMessage.trim() || imageUrl) && selectedUserId && companyId) {
             const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
             if (channel) {
                 try {
-                    await sendMessage(channel, newMessage, companyId);
-                    socket.emit("sendMessage", { channel, message: newMessage, senderId: companyId });
+                    const messageData = {
+                        channel,
+                        message: newMessage || (imageUrl ? imageUrl : ""),
+                        imageUrl: imageUrl || undefined,
+                        senderId: companyId,
+                        timeStamp: new Date().toISOString(),
+                    };
+                    await sendMessage(channel, messageData.message, companyId, messageData.imageUrl);
+                    socket.emit("sendMessage", messageData);
                     setNewMessage("");
+                    setImageUrl(null);
                     const data = await getMessageHistory(channel);
                     if (data) setMessages(data);
                 } catch (error) {
@@ -219,7 +265,7 @@ const CompanyMessages = () => {
                     setConversations((prev) => [
                         ...prev,
                         {
-                            targetProfile: userId,// not correct  i want  to change
+                            targetProfile: userId,
                             targetId: userId,
                             targetName: userName,
                             lastMessage: "Chat started",
@@ -239,17 +285,17 @@ const CompanyMessages = () => {
         console.log("brrr");
         console.log("the company id ", companyId);
         console.log("the selected user id", selectedUserId);
-    
+
         if (!companyId || !selectedUserId) {
             console.error("Company ID or Selected User ID is missing");
             return;
         }
 
         const roomId = `meeting-${companyId}-${Date.now()}`;
-        const peerId = `participant-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // Unique participant ID
+        const peerId = `participant-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; 
         const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${peerId}`;
         const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-    
+
         if (channel) {
             const invitationMessage = `Join the video call: ${meetingLink}`;
             try {
@@ -262,6 +308,42 @@ const CompanyMessages = () => {
             }
         }
     };
+
+
+
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const uploadedImageUrl = await uploadToCloudinary(file);
+            if (uploadedImageUrl) {
+                setImageUrl(uploadedImageUrl);
+                setImageError(null);
+            }
+        }
+    };
+    const uploadToCloudinary = async (file: File) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "Aspivo");
+
+        try {
+            const { data } = await axios.post(`https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`, formData);
+            console.log("Image uploaded successfully:", data.secure_url);
+
+            return data.secure_url;
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            setImageError("Failed to upload image. Please try again.");
+            return null;
+        }
+    };
+
+    const handleFileChange = () => {
+        fileInputRef.current?.click();
+    };
+
+
     return (
         <div className="flex min-h-screen ">
             <CompanySidebar setSelected={setSelected} />
@@ -295,11 +377,17 @@ const CompanyMessages = () => {
                                         />
                                         <div>
                                             <h1 className="font-semibold text-sm sm:text-base">{conv.targetName}</h1>
-                                            <p className="text-xs sm:text-sm text-gray-600">
-                                                {conv.lastMessage.length > 20
-                                                    ? `${conv.lastMessage.slice(0, 20)}...`
-                                                    : conv.lastMessage}
-                                            </p>
+                                            {conv.lastMessage && conv.lastMessage.startsWith("http") ? (
+                                               <p  className="text-sm text-gray-700">
+                                                Image
+                                               </p>
+                                            ) : (
+                                                <p  className="text-sm text-gray-700">
+                                                    {conv.lastMessage && conv.lastMessage.length > 20
+                                                        ? `${conv.lastMessage.slice(0, 20)}...`
+                                                        : conv.lastMessage || "No message"}
+                                                </p>
+                                            )}
 
                                         </div>
                                     </div>
@@ -331,7 +419,10 @@ const CompanyMessages = () => {
                                             <h1 className="font-bold text-sm sm:text-lg">
                                                 {conversations.find((c) => c.targetId === selectedUserId)?.targetName || "Unknown"}
                                             </h1>
-                                            <p className="text-xs sm:text-sm text-gray-600">Online</p>
+
+                                            <p className="text-xs sm:text-sm text-gray-600">
+                                                {userStatuses[selectedUserId] ? "Online" : "Offline"}
+                                            </p>
                                         </div>
                                     </div>
                                     <button onClick={handleStartVideoCall}>
@@ -345,20 +436,24 @@ const CompanyMessages = () => {
                                     {messages.length > 0 ? (
                                         messages.map((msg) => (
                                             <div
-                                                key={`${ msg?._id||msg.timestamp}-${msg.senderId}`}
-                                                className={`flex mb-2 ${msg.senderId === companyId ? "justify-end" : "justify-start"
-                                                    }`}
+                                                key={`${msg?._id || msg.timestamp}-${msg.senderId}`}
+                                                className={`flex mb-2 ${msg.senderId === companyId ? "justify-end" : "justify-start"}`}
                                             >
                                                 <div
-                                                    className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === companyId
-                                                        ? "bg-orange-200 text-black"
-                                                        : "bg-orange-600 text-white"
-                                                        }`}
+                                                    className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === companyId ? "bg-orange-200 text-black" : "bg-orange-600 text-white"}`}
                                                 >
-                                                    <p className="text-sm sm:text-base">{msg.message}</p>
-
-                                                    <span className={`text-sm sm:text-sm  block mt-1 ${msg.senderId === companyId ? "text-gray-500" : " text-white"}`}>
-                                                        {format(new Date(msg.timestamp || Date.now()), 'p')}
+                                                    {/* Display uploaded image if available */}
+                                                    {msg.imageUrl && (
+                                                        <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px]  h-auto mb-2 rounded" />
+                                                    )}
+                                                    {/* Display preview if message starts with http */}
+                                                    {msg.message && msg.message.startsWith("http") ? (
+                                                        <img src={msg.message} alt="Preview" className="max-w-[200px]  h-auto mb-2 rounded" />
+                                                    ) : (
+                                                        <p className="text-sm sm:text-base">{msg.message}</p>
+                                                    )}
+                                                    <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === companyId ? "text-gray-500" : "text-white"}`}>
+                                                        {format(new Date(msg.timestamp || Date.now()), "p")}
                                                     </span>
                                                 </div>
                                             </div>
@@ -371,7 +466,11 @@ const CompanyMessages = () => {
                                 <div className="h-px bg-gray-400 w-full" />
                                 {/* Fixed Input Section */}
                                 <div className="flex items-center justify-between px-4 py-2 mt-2">
-                                    <IoIosLink className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                                    <div>
+                                        <input type="file" ref={fileInputRef} className="hidden" onChange={handleImageChange} />
+                                        <IoIosLink onClick={handleFileChange} className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                                    </div>
+
                                     <input
                                         type="text"
                                         value={newMessage}
@@ -382,7 +481,7 @@ const CompanyMessages = () => {
                                     <button
                                         onClick={handleSendMessage}
                                         className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
-                                        disabled={!newMessage.trim()}
+                                        disabled={!newMessage.trim() && !imageUrl}
                                     >
                                         <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
                                     </button>

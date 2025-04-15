@@ -5,11 +5,14 @@ import { generateRefreshToken } from "../utils/jwt.js";
 import crypto from "crypto";
 import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp.js";
 import jwt, { decode } from "jsonwebtoken";
+import IAuthService from "../interface/service/user/authServiceInterface.js";
 
-const authRepostry = new AuthRepostry();
-export class AuthService {
+
+
+export class AuthService  {
+  constructor(private authRepostry: AuthRepostry) {}
   async regitser(userName: string, email: string, password: string) {
-    const existUser = await authRepostry.findByEmail(email);
+    const existUser = await this.authRepostry.findByEmail(email);
     if (existUser) {
       throw { status: 404, message: "User alredy exists" };
     }
@@ -20,7 +23,7 @@ export class AuthService {
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-    const { user, token, refreshToken } = await authRepostry.register(
+    const { user, token, refreshToken } = await this.authRepostry.register(
       userName,
       email,
       hashedOtp,
@@ -33,7 +36,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await authRepostry.findByEmail(email);
+    const user = await this.authRepostry.findByEmail(email);
     if (!user) {
       throw { status: 404, message: "User does not exist" };
     }
@@ -62,7 +65,7 @@ export class AuthService {
   }
 
   async verifyotp(email: string, otp: string) {
-    const user = await authRepostry.findByEmail(email);
+    const user = await this.authRepostry.findByEmail(email);
 
     if (!user) {
       throw { status: 404, message: "User does not exist" };
@@ -92,7 +95,7 @@ export class AuthService {
   }
 
   async resendOtp(email: string) {
-    const user = await authRepostry.findByEmail(email);
+    const user = await this.authRepostry.findByEmail(email);
     if (!user) {
       throw { status: 404, message: "User does not exist" };
     }
@@ -110,11 +113,11 @@ export class AuthService {
 
     const mailSent = await resendOtpMail(email, newOtp);
 
-    return { user };
+    return { user, message:"User otp resnsed sucsess fully" };
   }
 
   async forgotPassword(email: string) {
-    const user = await authRepostry.findByEmail(email);
+    const user = await this.authRepostry.findByEmail(email);
     if (!user) {
       throw { status: 404, message: "User does not exist" };
     }
@@ -132,7 +135,7 @@ export class AuthService {
   }
 
   async resetPassword(email: string, newPassword: string) {
-    const user = await authRepostry.findByEmail(email);
+    const user = await this.authRepostry.findByEmail(email);
     if (!user) throw new Error("User not foud");
 
     const hashePassword = await bcrypt.hash(newPassword, 10);

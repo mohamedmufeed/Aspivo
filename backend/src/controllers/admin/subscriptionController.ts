@@ -1,25 +1,37 @@
-import { Response,Request } from "express";
+import { Request, Response } from "express";
 import { SubscriptionService } from "../../services/adminService/subscriptionService.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
+import ISubscriptionController from "../../interface/controller/admin/subscriptionControllerInterface.js";
 
-const subscriptionSerivce = new SubscriptionService();
+export class SubscriptionController  implements ISubscriptionController{
+  constructor(private subscriptionService: SubscriptionService) {}
 
-export const getSubscriptions=async(req:Request,res:Response)=>{
+  getSubscriptions = async (req: Request, res: Response) => {
     try {
-        const response=await subscriptionSerivce.getSubcriptions()
-        res.status(HttpStatus.OK).json(response)
+      const response = await this.subscriptionService.getSubcriptions();
+      res.status(HttpStatus.OK).json(response);
     } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+      console.log("Error fetching subscriptions:", error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Internal server error" });
     }
-}
+  };
 
-export const updateSubscriptionStatus=async(req:Request,res:Response)=>{
+  updateSubscriptionStatus = async (req: Request, res: Response) => {
     try {
-        const subscriptionId=req.params.id
-        const {status}=req.body
-        const response=await subscriptionSerivce.updateSubscriptionStatus(subscriptionId,status)
-        res.status(HttpStatus.OK).json(response)
+      const subscriptionId = req.params.id;
+      const { status } = req.body;
+      const response = await this.subscriptionService.updateSubscriptionStatus(
+        subscriptionId,
+        status
+      );
+      res.status(HttpStatus.OK).json(response);
     } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server Error"})
+      console.log("Error updating subscription status:", error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Internal server Error" });
     }
+  };
 }

@@ -5,7 +5,7 @@ import { Education } from "../components/User/modals/AddEducation";
 
 export const editProfile = async (userId: string, formData: FormData) => {
   try {
-    const response = await api.put(`user/edit-profile/${userId}`, formData);
+    const response = await api.put(`user/users/${userId}/profile`, formData);
     console.log(response);
     return response.data;
   } catch (error) {
@@ -22,7 +22,7 @@ export const editProfile = async (userId: string, formData: FormData) => {
 
 export const getProfile = async (userId: string) => {
   try {
-    const response = await api.get(`user/profile/${userId}`);
+    const response = await api.get(`user/users/${userId}/profile`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -38,7 +38,7 @@ export const getProfile = async (userId: string) => {
 
 export const editAbout = async (userId: string, data: string) => {
   try {
-    const response = await api.put(`user/edit-about/${userId}`, {
+    const response = await api.put(`user/users/${userId}/about`, {
       about: data,
     });
     console.log(response.data);
@@ -57,7 +57,7 @@ export const editAbout = async (userId: string, data: string) => {
 
 export const addExprience = async (userId: string, data: Experience) => {
   try {
-    const response = await api.post(`user/add-experience/${userId}`, data);
+    const response = await api.post(`user/users/${userId}/experience`, data);
     console.log(" the response data", response.data);
     return response.data;
   } catch (error) {
@@ -74,7 +74,7 @@ export const addExprience = async (userId: string, data: Experience) => {
 
 export const editExperience = async (userId: string, data: Experience) => {
   try {
-    const response = await api.put(`user/edit-experience/${userId}`, data);
+    const response = await api.put(`user/users/${userId}/experience`, data);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -91,7 +91,7 @@ export const editExperience = async (userId: string, data: Experience) => {
 
 export const addEducation = async (userId: string, data: Education) => {
   try {
-    const response = await api.post(`user/add-education/${userId}`, data);
+    const response = await api.post(`user/users/${userId}/education`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -107,7 +107,7 @@ export const addEducation = async (userId: string, data: Education) => {
 
 export const editEducation = async(userId:string,data:Education)=>{
   try {
-    const response = await api.put(`user/edit-education/${userId}`,data)
+    const response = await api.put(`user/users/${userId}/education`,data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -123,7 +123,7 @@ export const editEducation = async(userId:string,data:Education)=>{
 
 export const addSkill = async (userId: string, skills: string[]) => {
   try {
-    const response = await api.post(`user/add-skill/${userId}`, {skills});
+    const response = await api.post(`user/users/${userId}/skills`, {skills});
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -139,7 +139,7 @@ export const addSkill = async (userId: string, skills: string[]) => {
 
 export const uploadResume=async ( userid:string,data:string)=>{
   try {
-    const response= await api.post(`user/upload-resume/${userid}`,data)
+    const response= await api.post(`user/users/${userid}/resume`,data)
     console.log(" the response data",response.data)
     return response.data
   } catch (error) {
@@ -156,7 +156,7 @@ export const uploadResume=async ( userid:string,data:string)=>{
 
 export const deleteResume= async(userId:string)=>{
   try {
-    const response = await api.delete(`user/delete-resume/${userId}`)
+    const response = await api.delete(`user/users/${userId}/resume`)
     return response.data  
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -173,7 +173,7 @@ export const deleteResume= async(userId:string)=>{
 
 export const getSubscriptionHistory=async(userId:string)=>{
   try {
-    const response=await api.get(`user/subscription-history/${userId}`)
+    const response=await api.get(`user/users/${userId}/subscription-history`)
   return  response.data
 
   } catch (error) {

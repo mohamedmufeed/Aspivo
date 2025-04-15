@@ -1,5 +1,5 @@
 import { Education, Experience, ProfileTypes } from "../../../types/userTypes";
-import { UserServiceResponse } from "../../../types/interfaceTypes";
+import { UserServiceResponse ,SubscriptionResponse} from "../../../types/interfaceTypes";
 
 export default interface IProfileService {
 editProfile(id:string,data:ProfileTypes):UserServiceResponse
@@ -12,6 +12,5 @@ editEducation(id:string,data:Education,educationId:string):UserServiceResponse
 addSkill(id:string,data:string[]):UserServiceResponse
 uploadResume(id:string,url:string):UserServiceResponse
 deleteResume(id:string):UserServiceResponse
-
-
+subscriptionHistory(id:string):SubscriptionResponse
 }

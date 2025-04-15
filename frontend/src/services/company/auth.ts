@@ -10,7 +10,7 @@ export const signup = async (
 ) => {
   try {
     const data = { companyName, email, kyc };
-    const response = await axios.post(`${COMPANY_URI}/signup/${userId}`, data);
+    const response = await axios.post(`${COMPANY_URI}/auth/signup/${userId}`, data);
     
     return response.data;
   } catch (error) {

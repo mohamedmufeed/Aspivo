@@ -18,14 +18,22 @@ const setupSocket = (server: HttpServer) => {
 
     const userSockets = new Map<string, Map<string, string>>();
     const meetingRooms = new Map<string, Set<string>>();
+    const onlineUsers = new Map();
     io.on("connection", (socket) => {
         console.log("A user conccets", socket.id)
         // regitser user
-        socket.on("registerUser", (role: string, userid: string) => {
+        socket.on("registerUser", (role: string, userId: string) => {
             if (!userSockets.has(role)) {
                 userSockets.set(role, new Map<string, string>())
             }
-            userSockets.get(role)?.set(userid, socket.id)
+            userSockets.get(role)?.set(userId, socket.id)
+            if (userId) {
+                onlineUsers.set(userId, socket.id);
+                socket.broadcast.emit("user-online", { targetId: userId, isOnline: true }); // Consistent payload
+                // Send initial online users to the newly connected client
+                socket.emit("online-users", Array.from(onlineUsers.keys()).map((id) => ({ targetId: id, isOnline: true })));
+              }
+
         })
         //join channel
         socket.on("joinChannel", (channel: string) => {
@@ -33,10 +41,11 @@ const setupSocket = (server: HttpServer) => {
             // console.log(`User ${socket.id} joined channel ${channel}`);
         })
         //send message 
-        socket.on("sendMessage", (data: { channel: string, message: string, senderId: string }) => {
+        socket.on("sendMessage", (data: { channel: string, message: string, senderId: string,imageUrl?: string; }) => {
             io.to(data.channel).emit("receiveMessage", {
                 senderId: data.senderId,
                 message: data.message,
+                imageUrl: data.imageUrl,
                 timeStamp: new Date().toISOString()
             })
             // console.log(`Message sent to ${data.channel}: ${data.message}`);
@@ -124,37 +133,34 @@ const setupSocket = (server: HttpServer) => {
                 } else {
                     console.warn("No callback provided for leaveMeeting event");
                 }
-            }else if (typeof callback === "function") {
-                callback({ success: false }); 
+            } else if (typeof callback === "function") {
+                callback({ success: false });
             }
         })
         socket.on("disconnect", (reason: string) => {
-            // console.log("User disconnected:", socket.id, "Reason:", reason);
+            console.log("User disconnected:", socket.id, "Reason:", reason);
             for (const [role, users] of userSockets.entries()) {
-                for (const [userId, socketId] of users.entries()) {
-                    if (socketId === socket.id) {
-                        users.delete(userId);
-                        if (users.size === 0) {
-                            userSockets.delete(role);
-                        }
-                        break;
-                    }
+              for (const [userId, socketId] of users.entries()) {
+                if (socketId === socket.id) {
+                  users.delete(userId);
+                  if (users.size === 0) userSockets.delete(role);
+                  onlineUsers.delete(userId);
+                  socket.broadcast.emit("user-offline", { targetId: userId, isOnline: false }); // Consistent payload
+                  break;
                 }
+              }
             }
+      
             if (socket.roomId) {
-                meetingRooms.get(socket.roomId)?.delete(socket.id);
-                socket.to(socket.roomId).emit("userLeft", socket.id);
-                // console.log(`${socket.id} left room ${socket.roomId} on disconnect`);
-                if (meetingRooms.get(socket.roomId)?.size === 0) {
-                    meetingRooms.delete(socket.roomId);
-                    // console.log(`Room ${socket.roomId} deleted on disconnect`);
-                }
-                delete socket.roomId;
+              meetingRooms.get(socket.roomId)?.delete(socket.id);
+              socket.to(socket.roomId).emit("userLeft", socket.id);
+              if (meetingRooms.get(socket.roomId)?.size === 0) meetingRooms.delete(socket.roomId);
+              delete socket.roomId;
             }
-        });
+          });
     });
 
-  
+
     const sendNotification = (role: string, userId: string, message: string) => {
         const socketId = userSockets.get(role)?.get(userId)
         if (socketId) {

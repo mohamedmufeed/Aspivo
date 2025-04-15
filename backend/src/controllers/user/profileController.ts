@@ -1,242 +1,149 @@
 import { Request, Response } from "express";
-import { AuthService } from "../../services/authService.js";
-import { ProfileSerive } from "../../services/profileService.js";
-import cloudinary from "../../config/cloudinaryConfig.js";
-import { json } from "stream/consumers";
-import { promises } from "dns";
+import { ProfileService } from "../../services/profileService.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
+import { IProfileController } from "../../interface/controller/user/profileControllerInterface.js";
 
-const profileService = new ProfileSerive();
+export class ProfileController implements IProfileController {
+  // private profileService: ProfileSerive;
 
-export const editProfile = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const { firstName, lastName, phoneNumber, position, location } = req.body;
-    const path = req.file?.path;
-    const data = {
-      profileImage: path || "",
-      firstName,
-      lastName,
-      phoneNumber,
-      position,
-      location,
-    };
+  // constructor() {
+  //   this.profileService = new ProfileSerive();
+  // }
+    constructor(private profileService:ProfileService) {}
 
-    const updatedProfile = await profileService.editProfile(userId, data);
+  public editProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const { firstName, lastName, phoneNumber, position, location } = req.body;
+      const path = req.file?.path;
+      const data = {
+        profileImage: path || "",
+        firstName,
+        lastName,
+        phoneNumber,
+        position,
+        location,
+      };
 
-    res
-      .status(HttpStatus.OK)
-      .json({ message: "User Profile updated scusessfully", updatedProfile });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      error:
-        error instanceof Error ? error.message : "User profile updated  failed",
-    });
-  }
-};
-
-export const getProfile = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const user = await profileService.getProfile(userId);
-    res.status(HttpStatus.OK).json({ user, message: "User Found sucsess full" });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      error:
-        error instanceof Error ? error.message : "User profile updated  failed",
-    });
-  }
-};
-
-export const editAbout = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const { about } = req.body;
-    const user = await profileService.editAbout(userId, about);
-    res.status(HttpStatus.OK).json({ user, message: "User About edited successfully" });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      error:
-        error instanceof Error ? error.message : "User About edited failed",
-    });
-  }
-};
-
-export const addExprience = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const {
-      title,
-      company,
-      description,
-      employmentType,
-      endDate,
-      location,
-      startDate,
-      currentlyWorking,
-    } = req.body;
-    const data = {
-      title,
-      company,
-      description,
-      employmentType,
-      endDate,
-      location,
-      startDate,
-      currentlyWorking,
-    };
-    const user = await profileService.addExperience(userId, data);
-    res
-      .status(HttpStatus.OK)
-      .json({ user, message: "User Experience added sucessfully" });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error  adding experince" });
-  }
-};
-
-export const editExperince = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.id;
-
-    const {
-      title,
-      company,
-      description,
-      employmentType,
-      endDate,
-      location,
-      startDate,
-      experienceId,
-      currentlyWorking,
-    } = req.body;
-
-    const data = {
-      title,
-      company,
-      description,
-      employmentType,
-      endDate,
-      location,
-      startDate,
-      currentlyWorking,
-    };
-    console.log(data);
-
-    const user = await profileService.editExperience(
-      userId,
-      data,
-      experienceId
-    );
-
-    res
-      .status(HttpStatus.OK)
-      .json({ user, message: "User experince edited sucssessfully" });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error  editing experince" });
-  }
-};
-
-export const addEducation = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const { school, degree, fieldOfStudy, startDate, endDate, grade } =
-      req.body;
-    const data = { school, degree, fieldOfStudy, startDate, endDate, grade };
-    const response = await profileService.addEducation(userId, data);
-    res.status(HttpStatus.OK).json({ response });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "error adding education" });
-  }
-};
-
-export const editEducation = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const userId = req.params.id;
-  try {
-    const {
-      degree,
-      endDate,
-      fieldOfStudy,
-      grade,
-      school,
-      startDate,
-      educationId,
-    } = req.body;
-    const data = { degree, endDate, fieldOfStudy, grade, school, startDate };
-    const response = await profileService.editEducation(
-      userId,
-      data,
-      educationId
-    );
-    res.status(HttpStatus.OK).json({ response });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `error editing skill :${error}` });
-  }
-};
-
-export const addSkill = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const { skills } = req.body;
-
-    const response = await profileService.addSkill(userId, skills);
-    res.status(HttpStatus.OK).json({ response });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "error adding skill" });
-  }
-};
-
-export const uploadResume = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.id;
-    const resumeUrl = Object.keys(req.body)[0];
-    if (!resumeUrl || !resumeUrl.startsWith("http")) {
-      res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid resume URL" });
+      const updatedProfile = await this.profileService.editProfile(userId, data);
+      res.status(HttpStatus.OK).json({ message: "User profile updated successfully", updatedProfile });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: error instanceof Error ? error.message : "Failed to update user profile",
+      });
     }
-    const response = await profileService.uploadResume(userId, resumeUrl);
+  };
 
-    res.json({ response });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error uplaoding Resume" });
-  }
-};
+  public getProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const user = await this.profileService.getProfile(userId);
+      res.status(HttpStatus.OK).json({ user, message: "User found successfully" });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: error instanceof Error ? error.message : "Failed to fetch user profile",
+      });
+    }
+  };
 
-export const deleteResume = async (req: Request, res: Response) => {
-  try {
-    const userId = req.params.id;
-    const response = await profileService.deleteResume(userId);
-    res.status(HttpStatus.OK).json({ response });
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Error deleting resume" });
-  }
-};
+  public editAbout = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const { about } = req.body;
+      const user = await this.profileService.editAbout(userId, about);
+      res.status(HttpStatus.OK).json({ user, message: "User about updated successfully" });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to update about section" });
+    }
+  };
 
-export const subscriptionHistory=async(req:Request,res:Response)=>{
-  try {
-    const userId=req.params.id
-    const response=await profileService.subscriptionHistory(userId)
-    res.status(HttpStatus.OK).json(response)
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server Error"})
-  }
+  public addExperience = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const data = req.body;
+      const user = await this.profileService.addExperience(userId, data);
+      res.status(HttpStatus.OK).json({ user, message: "Experience added successfully" });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add experience" });
+    }
+  };
+
+  public editExperience = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const { experienceId, ...data } = req.body;
+      const user = await this.profileService.editExperience(userId, data, experienceId);
+      res.status(HttpStatus.OK).json({ user, message: "Experience updated successfully" });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to update experience" });
+    }
+  };
+
+  public addEducation = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const data = req.body;
+      const response = await this.profileService.addEducation(userId, data);
+      res.status(HttpStatus.OK).json({ response });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add education" });
+    }
+  };
+
+  public editEducation = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const { educationId, ...data } = req.body;
+      const response = await this.profileService.editEducation(userId, data, educationId);
+      res.status(HttpStatus.OK).json({ response });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to edit education: ${error}` });
+    }
+  };
+
+  public addSkill = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const { skills } = req.body;
+      const response = await this.profileService.addSkill(userId, skills);
+      res.status(HttpStatus.OK).json({ response });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add skills" });
+    }
+  };
+
+  public uploadResume = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const resumeUrl = Object.keys(req.body)[0];
+      if (!resumeUrl || !resumeUrl.startsWith("http")) {
+       res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid resume URL" });
+       return
+      }
+      const response = await this.profileService.uploadResume(userId, resumeUrl);
+      res.json({ response });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to upload resume" });
+    }
+  };
+
+  public deleteResume = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const response = await this.profileService.deleteResume(userId);
+      res.status(HttpStatus.OK).json({ response });
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to delete resume" });
+    }
+  };
+
+  public subscriptionHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id;
+      const response = await this.profileService.subscriptionHistory(userId);
+      res.status(HttpStatus.OK).json(response);
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to fetch subscription history" });
+    }
+  };
 }

@@ -1,11 +1,14 @@
 import { CompanyRepostries } from "../../repositories/companyRepositories.js";
+import { sendNotification } from "../../server.js";
 import { JobData } from "../../types/companyTypes.js";
+import { NotificationService } from "../notificationService.js";
 
-const companyRepositories = new CompanyRepostries();
+const notificationService = new NotificationService();
 export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class ComapnayJobService {
+  constructor(private companyRepositories: CompanyRepostries) {}
   async fetchCompany(userId: string) {
-    const company = await companyRepositories.findByUserId(userId);
+    const company = await this.companyRepositories.findByUserId(userId);
     return { company, message: "comapany fetched sucsess fully" };
   }
 
@@ -13,19 +16,19 @@ export class ComapnayJobService {
     if (!data) {
       throw { message: "data not found" };
     }
-    const response = await companyRepositories.createJob(data);
+    const response = await this.companyRepositories.createJob(data);
 
     return { response, message: "job created sucsess fully" };
   }
 
   async fetchJob(comapanyId: string) {
-    const jobs = await companyRepositories.findJobs(comapanyId);
+    const jobs = await this.companyRepositories.findJobs(comapanyId);
     if (!jobs) throw new Error("Jobs not found");
     return { jobs, message: "JOb fetched succsess fully" };
   }
 
   async editJob(jobId: string, data: JobData) {
-    const job = await companyRepositories.findJob(jobId);
+    const job = await this.companyRepositories.findJob(jobId);
     if (!job) throw new Error("JOb not found");
     job.jobTitle = data.jobTitle || job.jobTitle;
     job.category = data.category || job.category;
@@ -48,14 +51,14 @@ export class ComapnayJobService {
 
   async deleteJob(jobId: string) {
     if (!jobId) throw new Error("Job id nor found");
-    const job = await companyRepositories.deleteJob(jobId);
+    const job = await this.companyRepositories.deleteJob(jobId);
     if (!job) throw new Error("Somthing went wrong in job deleting");
     return { job, message: "job deletion sucsess fully" };
   }
 
   async getApplicantsForJob(jobId: string, companyId: string) {
     if (!companyId) throw { status: 404, message: "Company id is required" };
-    const job = await companyRepositories.findJob(jobId);
+    const job = await this.companyRepositories.findJob(jobId);
     if (!job) throw { status: 404, message: "JOb not found" };
     if (job.company.toString() != companyId) {
       throw {
@@ -63,7 +66,7 @@ export class ComapnayJobService {
         message: "You are not authorized to view applicants for this job",
       };
     }
-    const applications = await companyRepositories.findApplications(jobId);
+    const applications = await this.companyRepositories.findApplications(jobId);
     // console.log("the applic", applications);
     // if (applications && applications.length > 0) {
     //   for (const application of applications) {
@@ -83,7 +86,7 @@ export class ComapnayJobService {
   }
 
   async getApplicantDetials(applicantId: string) {
-    const applicant = await companyRepositories.findApplicationDetail(
+    const applicant = await this.companyRepositories.findApplicationDetail(
       applicantId
     );
 
@@ -96,8 +99,20 @@ export class ComapnayJobService {
   async updateStatus(applicantId: string, status: ApplicationStatus) {
     if (!applicantId) throw { status: 404, message: "Applicant ID required" };
     if (!status) throw { status: 404, message: "Status not found" };
-    const application = await companyRepositories.findApplicationAndUpdate(applicantId,status);
+    const application = await this.companyRepositories.findApplicationAndUpdate(applicantId,status);
     if (!application) throw { status: 404, message: "Application not found" };
+    const job = await this.companyRepositories.findJob(application?.jobId.toString());
+    const jobTitle = job?.jobTitle || "the job position";
+    const message = status === "accepted"
+    ? `🎉 Your application for '${jobTitle}' was approved. The company will reach out soon.`
+    : `Your application for '${jobTitle}' was ${status}. Thanks for applying!`;
+  
+   
+    await notificationService.createNotification(
+      application.userId.toString(),
+      message
+    );
+    sendNotification("user", application.userId.toString(), message);
     return { application, message: "Application updated successfully" };
   }
 }

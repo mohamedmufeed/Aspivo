@@ -19,8 +19,7 @@ const CompanyJobListing = () => {
     const fetchCompanyId = async () => {
       try {
         const response = await fetchCompany(userId);
-        console.log("Fetch company response:", response); 
-        if (response.company?.company) {
+        if (response.company) {
           setCompanyId(response.company.company._id);
         }
       } catch (err: any) {
@@ -29,19 +28,19 @@ const CompanyJobListing = () => {
     };
     fetchCompanyId();
   }, [userId]);
-
   useEffect(() => {
     const handleFetchJob = async () => {
       try {
+     
         const response = await fetchJob(companyId||"");
-        console.log("the job response", response.jobs);
+        console.log("the job response", response);
         setJobs(response.jobs);
       } catch (error) {
         console.log("Error in fetching Jobs", error); 
       }
     };
     handleFetchJob();
-  }, [companyId]);
+  }, [userId,companyId]);
 
   const toggleDropdown = (jobId: string) => {
     setOpenDropdownId(openDropdownId === jobId ? null : jobId); 

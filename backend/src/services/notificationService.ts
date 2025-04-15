@@ -1,9 +1,11 @@
 import { use } from "passport";
 import { NotificationRepository } from "../repositories/notificationRepository.js";
+import { INotificationRepository } from "../interface/repositories/NotifictatonRepository.js";
 
 const notificationRepository = new NotificationRepository();
 
 export class NotificationService {
+
   async createNotification(userId: string, message: string) {
     return await notificationRepository.createNotification(userId, message);
   }

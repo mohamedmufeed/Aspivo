@@ -7,12 +7,13 @@ import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import EditCompanyProfileModal from "../../components/Company/Modals/EditCompanyProfile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { companyByuserId } from "../../services/company/companyProfile";
+
 import { IPopulatedCompany } from "../../types/types";
 import EditCompanyDescriptionModal from "../../components/Company/Modals/EditCompanyDescriptionModal";
 import AddTeachStack from "../../components/Company/Modals/AddTechStack";
 import EditCompanyTeam from "../../components/Company/Modals/EditCompanyTeamModal";
 import EditCompanyContact from "../../components/Company/Modals/EditContactModal";
+import { fetchCompany } from "../../services/company/compayJob";
 
 
 const CompanyProfile = () => {
@@ -30,7 +31,7 @@ const CompanyProfile = () => {
 
   const fetchcomapny = async () => {
     try {
-      const response = await companyByuserId(userId)
+      const response = await fetchCompany(userId)
       setCompanyData(response.company.company)
       console.log("the rs", response.company.company
       )

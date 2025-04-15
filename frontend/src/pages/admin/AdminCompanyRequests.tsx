@@ -44,8 +44,9 @@ const AdminCompanyRequests = () => {
         const fetchCompany = async () => {
             try {
                 const response = await getAllCompany();
-                console.log(response.company);
-                setCompanyDetail(response.company);
+                console.log(" thre reposen",response.companies
+                );
+                setCompanyDetail(response.companies);
                 setCurrentPage(1); 
             } catch (error) {
                 console.log("error in fetching company");

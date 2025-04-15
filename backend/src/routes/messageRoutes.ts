@@ -1,11 +1,11 @@
 import express from "express";
-import {initializeChatController,getApprovedConversations,sendMessage,getChatHistoryController,} from "../controllers/user/messageController.js";
+import {MessageController,} from "../controllers/user/messageController.js";
 
 const router = express.Router();
-
-router.post("/initialize-chat", initializeChatController);
-router.get("/approved-conversations", getApprovedConversations);
-router.post("/send-message", sendMessage);
-router.get("/chat-history", getChatHistoryController);
+const messageController = new MessageController();
+router.post("/initialize-chat",messageController. initializeChatController);
+router.get("/approved-conversations",  messageController.getApprovedConversations);
+router.post("/send-message",messageController. sendMessage);
+router.get("/chat-history", messageController.getChatHistoryController);
 
 export default router;

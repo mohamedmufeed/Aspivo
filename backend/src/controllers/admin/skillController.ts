@@ -1,40 +1,46 @@
 import { Request, Response } from "express";
 import { SkillService } from "../../services/adminService/skillService.js";
 import HttpStatus from "../../utils/httpStatusCode.js";
+import ISkillController from "../../interface/controller/admin/skillControllerInterface.js";
 
-const skillService = new SkillService();
-export const addSkill = async (req: Request, res: Response) => {
-  try {
-    const { skills } = req.body;
-    const response = await skillService.addSkill(skills);
-    res.status(HttpStatus.OK).json(response);
-  } catch (error) {
-    console.log("the error adding the skil",error)
-    res
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "Internal server Error" });
-  }
-};
+export class SkillController implements ISkillController {
+  constructor(private skillService: SkillService) {}
 
-export const getSkills = async (req: Request, res: Response) => {
-  try {
-    const response = await skillService.getSkils();
-    res.status(HttpStatus.OK).json(response);
-  } catch (error) {
+  addSkill = async (req: Request, res: Response) => {
+    try {
+      const { skills } = req.body;
+      const response = await this.skillService.addSkill(skills);
+      res.status(HttpStatus.OK).json(response);
+    } catch (error) {
+      console.log("Error adding the skill:", error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Internal server Error" });
+    }
+  };
 
-    res
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .json({ message: "internal server Error" });
-  }
-};
+  getSkills = async (req: Request, res: Response) => {
+    try {
+      const response = await this.skillService.getSkils();
+      res.status(HttpStatus.OK).json(response);
+    } catch (error) {
+      console.log("Error getting skills:", error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Internal server Error" });
+    }
+  };
 
-
-export const removeSkill=async(req:Request,res:Response)=>{
-  try {
-    const skillId=req.params.id
-    const response=await skillService.removeSkill(skillId)
-    res.status(HttpStatus.OK).json(response)
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:"Internal server Error"})
-  }
+  removeSkill = async (req: Request, res: Response) => {
+    try {
+      const skillId = req.params.id;
+      const response = await this.skillService.removeSkill(skillId);
+      res.status(HttpStatus.OK).json(response);
+    } catch (error) {
+      console.log("Error removing skill:", error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Internal server Error" });
+    }
+  };
 }
