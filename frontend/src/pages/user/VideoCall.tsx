@@ -3,52 +3,157 @@ import { LuSend } from "react-icons/lu";
 import { IoMicOutline } from "react-icons/io5";
 import { CiVideoOn } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
-import { useLocation } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 
 const VideoCall = () => {
-  const { search } = useLocation()
-  const params = new URLSearchParams(search)
-  const roomId = params.get("room")
-  const peerId = params.get("peerId")
-
-console.log(" the peer id from  ",peerId)
-  const localVideoRef = useRef<HTMLVideoElement | null>(null)
-  const remoteVideoRef = useRef<HTMLVideoElement | null>(null)
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const roomId = params.get("room");
+  const peerId = params.get("peerId");
+  const navigate = useNavigate();
+  
+  console.log("Room ID:", roomId);
+  console.log("My Peer ID:", peerId);
+  
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+  const peerRef = useRef<Peer | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState("Waiting for media access...");
 
   useEffect(() => {
-    const peer = new Peer(peerId!, {
+    if (!peerId) {
+      console.error("Missing peer ID");
+      setConnectionStatus("Error: Missing peer ID");
+      return;
+    }
+
+    // Create peer connection
+    const peer = new Peer(peerId, {
       host: "localhost",
       port: 9000,
       path: "/peerjs",
       secure: false,
     });
-    peer.on("open", (id) => {
-      console.log("Peer connected with ID From the user side:", id);
- 
-    });
-    peer.on("call", (call) => {
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-        call.answer(stream)
-        console.log("the lcal current",localVideoRef.current)
-        if (localVideoRef.current) {
-          console.log("the stram of the local",stream)
-          localVideoRef.current.srcObject = stream
-          localVideoRef.current.play()
-        }
+    
+    peerRef.current = peer;
 
-        call.on("stream", (remoteStream) => {
-          if (remoteVideoRef.current) {
-            console.log("the stream of the remote",remoteStream)
-            remoteVideoRef.current.srcObject = remoteStream
-            remoteVideoRef.current.play()
+    peer.on("open", (id) => {
+      console.log("User peer connected with ID:", id);
+      setConnectionStatus("Connected. Waiting for call...");
+      
+      // Get user media
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then((stream) => {
+          localStreamRef.current = stream;
+          
+          // Display local video
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
           }
+          
+          setConnectionStatus("Media access granted. Ready for call.");
         })
-      })
-    })
-    return () => peer.destroy()
-  }, [])
+        .catch((err) => {
+          console.error("Failed to get user media:", err);
+          setConnectionStatus("Error: Failed to access camera and microphone");
+        });
+    });
+
+    // Handle incoming calls
+    peer.on("call", (call) => {
+      console.log("Received call from:", call.peer);
+      setConnectionStatus("Incoming call...");
+      
+      // Answer the call with our stream
+      if (localStreamRef.current) {
+        call.answer(localStreamRef.current);
+        setConnectionStatus("Call connected");
+      } else {
+        // If we don't have our stream yet, get it and then answer
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then((stream) => {
+            localStreamRef.current = stream;
+            if (localVideoRef.current) {
+              localVideoRef.current.srcObject = stream;
+            }
+            call.answer(stream);
+            setConnectionStatus("Call connected");
+          })
+          .catch((err) => {
+            console.error("Failed to get user media during call:", err);
+            setConnectionStatus("Error: Failed to access media during call");
+          });
+      }
+      
+      // Handle the incoming stream
+      call.on("stream", (remoteStream) => {
+        console.log("Received remote stream");
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = remoteStream;
+        }
+        setConnectionStatus("Call in progress");
+      });
+      
+      call.on("error", (err) => {
+        console.error("Call error:", err);
+        setConnectionStatus("Call error: " + err.message);
+      });
+    });
+
+    peer.on("error", (err) => {
+      console.error("Peer connection error:", err);
+      setConnectionStatus("Connection error: " + err.message);
+    });
+
+    // Clean up
+    return () => {
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+      peer.destroy();
+    };
+  }, [peerId]);
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      // Implement socket message sending here
+      console.log("Sending message:", newMessage);
+      setNewMessage("");
+    }
+  };
+
+  const handleLeaveCall = () => {
+    if (peerRef.current) {
+      peerRef.current.destroy();
+    }
+    navigate("/");
+  };
+
+  const toggleAudio = () => {
+    if (localStreamRef.current) {
+      const audioTracks = localStreamRef.current.getAudioTracks();
+      audioTracks.forEach(track => {
+        track.enabled = !track.enabled;
+      });
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const toggleVideo = () => {
+    if (localStreamRef.current) {
+      const videoTracks = localStreamRef.current.getVideoTracks();
+      videoTracks.forEach(track => {
+        track.enabled = !track.enabled;
+      });
+      setIsVideoOff(!isVideoOff);
+    }
+  };
 
   return (
     <div
@@ -65,6 +170,7 @@ console.log(" the peer id from  ",peerId)
           <video
             ref={remoteVideoRef}
             autoPlay
+            playsInline
             className="w-full h-full object-cover rounded-lg shadow-lg"
             style={{ transform: "scaleX(-1)", objectFit: "cover" }}
           />
@@ -72,6 +178,7 @@ console.log(" the peer id from  ",peerId)
             ref={localVideoRef}
             autoPlay
             muted
+            playsInline
             className="absolute bottom-4 right-4 w-48 h-32 object-cover rounded-md border-2 border-white shadow-md"
             style={{ transform: "scaleX(-1)", objectFit: "cover" }}
           />
@@ -80,19 +187,19 @@ console.log(" the peer id from  ",peerId)
         <div className="flex justify-center pt-6">
           <div className="bg-white flex justify-between items-center gap-10 px-10 py-4 shadow-lg w-[60%] max-w-xl rounded-2xl">
             <div className="flex flex-col items-center">
-              <div className="bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition">
+              <div onClick={toggleAudio} className={`${isMuted ? 'bg-red-600' : 'bg-orange-600'} text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
                 <IoMicOutline className="w-6 h-6" />
               </div>
               <p className="text-sm text-center pt-2">Mic</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition">
+              <div onClick={toggleVideo} className={`${isVideoOff ? 'bg-red-600' : 'bg-orange-600'} text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
                 <CiVideoOn className="w-6 h-6" />
               </div>
               <p className="text-sm text-center pt-2">Cam</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="bg-white border border-orange-600 text-orange-600 p-3 rounded-xl cursor-pointer hover:bg-orange-50 transition">
+              <div onClick={handleLeaveCall} className="bg-white border border-orange-600 text-orange-600 p-3 rounded-xl cursor-pointer hover:bg-orange-50 transition">
                 <RxExit className="w-6 h-6" />
               </div>
               <p className="text-sm text-center pt-2">Leave</p>
@@ -110,14 +217,17 @@ console.log(" the peer id from  ",peerId)
         <div className="mt-4 flex gap-3">
           <input
             type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
             className="w-full p-2 bg-white shadow-xl border border-gray-100 pl-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          <div className="bg-orange-600 rounded-lg p-5 cursor-pointer">
+          <div onClick={handleSendMessage} className="bg-orange-600 rounded-lg p-5 cursor-pointer">
             <LuSend className="text-white w-5 h-5" />
           </div>
         </div>
-        <p className="text-sm mt-2 text-gray-500">Media Status: Waiting for media access...</p>
+        <p className="text-sm mt-2 text-gray-500">Media Status: {connectionStatus}</p>
       </div>
     </div>
   );

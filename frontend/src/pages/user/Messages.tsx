@@ -47,8 +47,8 @@ const Messages = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null); // State for image URL
-  const [imageError, setImageError] = useState<string | null>(null); // State for image errors
+  const [imageUrl, setImageUrl] = useState<string | null>(null); 
+  const [imageError, setImageError] = useState<string | null>(null); 
   const [userId, setUserId] = useState<string | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +56,8 @@ const Messages = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageLoading,setImageLoading]=useState(false)
+
 
   const user = useSelector((state: RootState) => state.auth.user);
   const authUserId = user?._id || "";
@@ -239,6 +241,7 @@ const Messages = () => {
     }
   };
   const uploadToCloudinary = async (file: File) => {
+setImageLoading(true)
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "Aspivo");
@@ -252,6 +255,8 @@ const Messages = () => {
         console.error("Error uploading image:", error);
         setImageError("Failed to upload image. Please try again.");
         return null;
+    }finally{
+      setImageLoading(false)
     }
 };
 
@@ -312,7 +317,7 @@ const Messages = () => {
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-xs sm:text-sm text-gray-400">{format(new Date(conv.timestamp), "p")}</span>
-                    {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />}
+                    {/* {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />} */}
                   </div>
                 </div>
               ))
@@ -394,12 +399,35 @@ const Messages = () => {
                     className="w-2/3 sm:w-3/4 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none text-sm sm:text-base"
                   />
                   <button
-                    onClick={handleSendMessage}
-                    className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
-                    disabled={!newMessage.trim() && !imageUrl}
-                  >
-                    <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
+                                        onClick={handleSendMessage}
+                                        className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
+                                        disabled={(imageLoading || (!newMessage.trim() && !imageUrl))}
+                                    >
+                                        {imageLoading ? (
+                                            <svg
+                                                className="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-white"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                                ></path>
+                                            </svg>
+                                        ) : (
+                                            <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
+                                        )}
+                                    </button>
                 </div>
               </>
             ) : (

@@ -62,6 +62,7 @@ const CompanyMessages = () => {
     const [userStatuses, setUserStatuses] = useState<Record<string, boolean>>({});
     const [imageUrl, setImageUrl] = useState<string | null>(null)
     const [imageError, setImageError] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
 
@@ -187,25 +188,25 @@ const CompanyMessages = () => {
                 const handleUserOnline = (status: { targetId: string; isOnline: boolean }) => {
                     console.log("User online:", status.targetId);
                     setUserStatuses((prev) => ({ ...prev, [status.targetId]: status.isOnline }));
-                  };
-              
-                  const handleUserOffline = (status: { targetId: string; isOnline: boolean }) => {
+                };
+
+                const handleUserOffline = (status: { targetId: string; isOnline: boolean }) => {
                     console.log("User offline:", status.targetId);
                     setUserStatuses((prev) => ({ ...prev, [status.targetId]: status.isOnline }));
-                  };
-              
-                  const handleOnlineUsers = (users: { targetId: string; isOnline: boolean }[]) => {
+                };
+
+                const handleOnlineUsers = (users: { targetId: string; isOnline: boolean }[]) => {
                     console.log("Initial online users:", users);
                     const initialStatuses = users.reduce((acc, user) => {
-                      acc[user.targetId] = user.isOnline;
-                      return acc;
+                        acc[user.targetId] = user.isOnline;
+                        return acc;
                     }, {} as Record<string, boolean>);
                     setUserStatuses((prev) => ({ ...prev, ...initialStatuses }));
-                  };
-              
-                  socket.on("user-online", handleUserOnline);
-                  socket.on("user-offline", handleUserOffline);
-                  socket.on("online-users", handleOnlineUsers);
+                };
+
+                socket.on("user-online", handleUserOnline);
+                socket.on("user-offline", handleUserOffline);
+                socket.on("online-users", handleOnlineUsers);
             }
 
             return () => {
@@ -282,33 +283,48 @@ const CompanyMessages = () => {
     };
 
     const handleStartVideoCall = async () => {
-        console.log("brrr");
-        console.log("the company id ", companyId);
-        console.log("the selected user id", selectedUserId);
+        console.log("Starting video call");
+        console.log("Company ID:", companyId);
+        console.log("Selected User ID:", selectedUserId);
 
         if (!companyId || !selectedUserId) {
             console.error("Company ID or Selected User ID is missing");
             return;
         }
 
+
         const roomId = `meeting-${companyId}-${Date.now()}`;
-        const peerId = `participant-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; 
-        const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${peerId}`;
+        const companyPeerId = `company-${companyId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const userPeerId = `user-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+
+        const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${userPeerId}`;
+
         const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
 
         if (channel) {
+
             const invitationMessage = `Join the video call: ${meetingLink}`;
             try {
                 await sendMessage(channel, invitationMessage, companyId);
                 const updatedMessages = await getMessageHistory(channel);
                 if (updatedMessages) setMessages(updatedMessages);
-                navigate("/company-video", { state: { roomId, peerId: peerId }, replace: true });
+
+                navigate("/company-video", {
+                    state: {
+                        roomId,
+                        myPeerId: companyPeerId,
+                        targetPeerId: userPeerId
+                    },
+                    replace: true
+                });
             } catch (error) {
                 console.error("Error initiating video call:", error);
             }
+        } else {
+            console.error("No channel found for the selected user");
         }
     };
-
 
 
 
@@ -323,6 +339,7 @@ const CompanyMessages = () => {
         }
     };
     const uploadToCloudinary = async (file: File) => {
+        setLoading(true)
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", "Aspivo");
@@ -332,10 +349,13 @@ const CompanyMessages = () => {
             console.log("Image uploaded successfully:", data.secure_url);
 
             return data.secure_url;
+
         } catch (error) {
             console.error("Error uploading image:", error);
             setImageError("Failed to upload image. Please try again.");
             return null;
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -378,11 +398,11 @@ const CompanyMessages = () => {
                                         <div>
                                             <h1 className="font-semibold text-sm sm:text-base">{conv.targetName}</h1>
                                             {conv.lastMessage && conv.lastMessage.startsWith("http") ? (
-                                               <p  className="text-sm text-gray-700">
-                                                Image
-                                               </p>
+                                                <p className="text-sm text-gray-700">
+                                                    Image
+                                                </p>
                                             ) : (
-                                                <p  className="text-sm text-gray-700">
+                                                <p className="text-sm text-gray-700">
                                                     {conv.lastMessage && conv.lastMessage.length > 20
                                                         ? `${conv.lastMessage.slice(0, 20)}...`
                                                         : conv.lastMessage || "No message"}
@@ -395,7 +415,7 @@ const CompanyMessages = () => {
                                         <span className="text-xs sm:text-sm text-gray-400">
                                             {format(new Date(conv.timestamp), 'p')}
                                         </span>
-                                        {conv.unread && <div className="bg-orange-600 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full mt-1" />}
+                                        {/* {conv.unread && <div className="bg-orange-600 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full mt-1" />} */}
                                     </div>
                                 </div>
                             ))
@@ -481,10 +501,34 @@ const CompanyMessages = () => {
                                     <button
                                         onClick={handleSendMessage}
                                         className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
-                                        disabled={!newMessage.trim() && !imageUrl}
+                                        disabled={(loading || (!newMessage.trim() && !imageUrl))}
                                     >
-                                        <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
+                                        {loading ? (
+                                            <svg
+                                                className="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-white"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                                ></path>
+                                            </svg>
+                                        ) : (
+                                            <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
+                                        )}
                                     </button>
+
                                 </div>
                             </>
                         )}
