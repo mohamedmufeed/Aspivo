@@ -1,15 +1,20 @@
 import express  from "express";
-import { CompanyAuthController } from "../controllers/company/companyauthcontroller.js";
-import {  CompanyJobController} from "../controllers/company/companyJobController.js";
-import {  CompanyProfileController } from "../controllers/company/companyProfileConstroller.js";
-import { CompanyRepostries } from "../repositories/companyRepositories.js";
-import Job from "../models/job.js";
-import Company from "../models/company.js";
-import JobApplication from "../models/jobApplication.js";
-import { CompanyAuthService } from "../services/compnyService/comanyauthservice.js";
-import { ComapnayJobService } from "../services/compnyService/comapnyJobService.js";
-import { CompanyProfileRepositiories } from "../repositories/companyProfileRepositories.js";
-import { CompanyProfileService } from "../services/compnyService/companyProfileService.js";
+import { CompanyAuthController } from "../controllers/company/companyauthcontroller";
+import {  CompanyJobController} from "../controllers/company/companyJobController";
+import {  CompanyProfileController } from "../controllers/company/companyProfileConstroller";
+import { CompanyRepostries } from "../repositories/companyRepositories";
+import Job from "../models/job";
+import Company from "../models/company";
+import JobApplication from "../models/jobApplication";
+import { CompanyAuthService } from "../services/compnyService/comanyauthservice";
+import { ComapnayJobService } from "../services/compnyService/comapnyJobService";
+import { CompanyProfileRepositiories } from "../repositories/companyProfileRepositories";
+import { CompanyProfileService } from "../services/compnyService/companyProfileService";
+import { CompanyMeetingRepositories } from "../repositories/coampanyMeetingRepositories";
+import { CompanyMeetingService } from "../services/compnyService/companyMeetingService";
+import { NotificationRepository } from "../repositories/notificationRepository";
+import { NotificationService } from "../services/notificationService";
+import { ComapnyMeetingController } from "../controllers/company/companyMeetingController";
 
 
 
@@ -26,6 +31,12 @@ const companyJobController = new CompanyJobController(companyJobService);
 const companyRepo = new CompanyProfileRepositiories();
 const companyService = new CompanyProfileService(companyRepo);
 const companyProfileController = new CompanyProfileController(companyService);
+
+
+const notificationService= new NotificationService()
+const meetingRepository= new CompanyMeetingRepositories()
+const meetingService= new CompanyMeetingService(meetingRepository,notificationService)
+const meetingController= new ComapnyMeetingController(meetingService)
 
 
 // router.post("/signup/:id",companyAuthController.register)
@@ -99,5 +110,13 @@ router
 router
   .route("/jobs/applicants/:id/status")
   .patch(companyJobController.updateStatus);
+
+  router
+  .route("/meetings")
+  .post(meetingController.sheduleMeeting)
+
+  router.route("/meetings/:id")
+  .get(meetingController.getMeetings)
+
 
 export default router

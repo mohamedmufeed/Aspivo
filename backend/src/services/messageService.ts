@@ -1,8 +1,8 @@
 
-import { MessageRepostries } from "../repositories/messageRepostries.js";
+import { MessageRepostries } from "../repositories/messageRepostries";
 import { createClient } from "redis";
-import { io } from "../server.js";
-import Conversation from "../models/conversations.js";
+import { io } from "../server";
+import Conversation from "../models/conversations";
 
 const redisClient = createClient({
   url: "redis://localhost:6379",

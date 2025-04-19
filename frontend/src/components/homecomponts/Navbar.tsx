@@ -38,7 +38,7 @@ const Navbar = () => {
                         })
                     );
                 } else {
-                    console.error("Google Auth failed or no data received");
+                    console.log("Google Auth failed or no data received");
                 }
 
             } catch (error) {

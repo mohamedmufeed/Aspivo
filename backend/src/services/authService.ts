@@ -1,11 +1,11 @@
-import { AuthRepostry } from "../repositories/userRepositories.js";
+import { AuthRepostry } from "../repositories/userRepositories";
 import bcrypt from "bcryptjs";
-import {generateToken } from "../utils/jwt.js";
-import { generateRefreshToken } from "../utils/jwt.js";
+import {generateToken } from "../utils/jwt";
+import { generateRefreshToken } from "../utils/jwt";
 import crypto from "crypto";
-import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp.js";
+import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp";
 import jwt, { decode } from "jsonwebtoken";
-import IAuthService from "../interface/service/user/authServiceInterface.js";
+import IAuthService from "../interface/service/user/authServiceInterface";
 
 
 

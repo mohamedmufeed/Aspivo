@@ -13,12 +13,14 @@ import { format } from "date-fns";
 import avathar from "../../assets/user.png";
 import { useSocket } from "../../hooks/socket";
 import axios from "axios";
+import { User } from "../../types/types";
+
 
 interface ChatMessage {
   _id: string;
   senderId: string;
   message: string;
-  imageUrl?: string; // Added for image support
+  imageUrl?: string;
   timestamp: string;
 }
 
@@ -26,7 +28,7 @@ interface RawSocketMessage {
   _id?: string;
   senderId: string;
   message: string;
-  imageUrl?: string; // Added for image support
+  imageUrl?: string;
   timeStamp: string;
 }
 
@@ -43,12 +45,13 @@ interface Conversation {
 const Messages = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userStatuses, setUserStatuses] = useState<Record<string, boolean>>({});
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null); 
-  const [imageError, setImageError] = useState<string | null>(null); 
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,7 +59,7 @@ const Messages = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageLoading,setImageLoading]=useState(false)
+  const [imageLoading, setImageLoading] = useState(false)
 
 
   const user = useSelector((state: RootState) => state.auth.user);
@@ -165,7 +168,7 @@ const Messages = () => {
         await sendMessage(channel, messageData.message, userId, messageData.imageUrl);
         socket.emit("sendMessage", { ...messageData, timeStamp: new Date().toISOString() });
         setNewMessage("");
-        setImageUrl(null); 
+        setImageUrl(null);
         const updatedMessages = await getMessageHistory(channel);
         setMessages(updatedMessages);
       } catch (error) {
@@ -176,8 +179,42 @@ const Messages = () => {
 
   const handleSelectConversation = (employeeId: string) => {
     setSelectedEmployeeId(employeeId);
-    setMessages([]); 
+    setMessages([]);
   };
+
+  useEffect(() => {
+    if (!socket || !companyId) return;
+
+    socket.connect();
+    socket.emit("registerUser", "employee", userId);
+
+    const handleUserStatus = (data: any) => {
+      console.log("User status update:", data);
+      setUserStatuses(prev => ({
+        ...prev,
+        [data.targetId]: data.isOnline
+      }));
+    };
+
+    const handleOnlineUsers = (users: User[]) => {
+      console.log("Initial online users:", users);
+      const statuses = {};
+      users.forEach(user => {
+        statuses[user._id] = user.isOnline;
+      });
+      setUserStatuses(statuses);
+    };
+
+    socket.on("user-online", handleUserStatus);
+    socket.on("user-offline", handleUserStatus);
+    socket.on("online-users", handleOnlineUsers);
+
+    return () => {
+      socket.off("user-online", handleUserStatus);
+      socket.off("user-offline", handleUserStatus);
+      socket.off("online-users", handleOnlineUsers);
+    };
+  }, [socket, companyId]);
 
   useEffect(() => {
     const newConversation = location.state?.newConversation as Conversation | undefined;
@@ -241,24 +278,24 @@ const Messages = () => {
     }
   };
   const uploadToCloudinary = async (file: File) => {
-setImageLoading(true)
+    setImageLoading(true)
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "Aspivo");
 
     try {
-        const { data } = await axios.post(`https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`, formData);
-        console.log("Image uploaded successfully:", data.secure_url);
+      const { data } = await axios.post(`https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`, formData);
+      console.log("Image uploaded successfully:", data.secure_url);
 
-        return data.secure_url;
+      return data.secure_url;
     } catch (error) {
-        console.error("Error uploading image:", error);
-        setImageError("Failed to upload image. Please try again.");
-        return null;
-    }finally{
+      console.error("Error uploading image:", error);
+      setImageError("Failed to upload image. Please try again.");
+      return null;
+    } finally {
       setImageLoading(false)
     }
-};
+  };
 
   const handleFileChange = () => {
     fileInputRef.current?.click();
@@ -303,8 +340,8 @@ setImageLoading(true)
                       <h1 className="text-sm sm:text-base">{conv.employeeName}</h1>
                       <div className="text-xs sm:text-sm text-gray-600">
                         {conv.lastMessage && conv.lastMessage.startsWith("http") ? (
-                        <p>Image</p>
-                          
+                          <p>Image</p>
+
                         ) : (
                           <p>
                             {conv.lastMessage && conv.lastMessage.length > 20
@@ -341,50 +378,72 @@ setImageLoading(true)
                       <h1 className="font-bold text-sm sm:text-lg">
                         {conversations.find((c) => c.employeeId === selectedEmployeeId)?.employeeName || "Unknown"}
                       </h1>
-                      <p className="text-xs sm:text-sm text-gray-600">Online</p>
+                      <p className="text-xs sm:text-sm text-gray-600 flex items-center">
+                        <span
+                          className={`inline-block w-2 h-2 rounded-full mr-1 ${userStatuses[userId||""] ? "bg-green-500" : "bg-gray-400"
+                            }`}
+                        ></span>
+                        {userStatuses[userId||""] ? "Online" : "Offline"}
+                      </p>
                     </div>
                   </div>
                   <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                 </div>
                 <div className="h-px bg-gray-400 w-full mt-2" />
                 <div className="flex-1 overflow-y-auto p-2 sm:p-4" style={{ maxHeight: "calc(100vh - 300px)" }}>
-  {messages.length > 0 ? (
-    messages.map((msg) => (
-      <div
-        key={`${msg._id || msg.timestamp}-${msg.senderId}`}
-        className={`flex mb-2 ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
-      >
-        <div
-          className={`p-2 rounded-lg max-w-xs sm:max-w-md ${
-            msg.senderId === userId ? "bg-orange-200 text-black" : "bg-orange-600 text-white"
-          }`}
-        >
-          {/* Display uploaded image if available */}
-          {msg.imageUrl && (
-            <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px] h-auto mb-2 rounded" />
-          )}
-          {/* Display preview if message starts with http */}
-          {msg.message && msg.message.startsWith("http") ? (
-            <img
-              src={msg.message}
-              alt="Preview"
-              className="max-w-[200px] h-auto mb-2 rounded"
-              onError={(e) => (e.currentTarget.style.display = "none")}
-            />
-          ) : (
-            <p className="text-sm sm:text-base">{msg.message}</p>
-          )}
-          <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === userId ? "text-gray-500" : "text-white"}`}>
-            {format(new Date(msg.timestamp || Date.now()), "p")}
-          </span>
-        </div>
-      </div>
-    ))
-  ) : (
-    <p className="text-center text-gray-500 text-sm">No messages yet</p>
-  )}
-  <div ref={messagesEndRef} />
-</div>
+                  {messages.length > 0 ? (
+                    messages.map((msg) => (
+                      <div
+                        key={`${msg._id || msg.timestamp}-${msg.senderId}`}
+                        className={`flex mb-2 ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
+                      >
+                        <div
+                          className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === userId ? "bg-orange-200 text-black" : "bg-white text-black shadow-xl shadow-gray-200"
+                            }`}
+                        >
+                          {/* Display uploaded image if available */}
+                          {msg.imageUrl && (
+                            <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px]  h-auto mb-2 rounded" />
+                          )}
+                          {/* Display preview if message starts with http */}
+                          {msg.message && msg.message.startsWith("http") ? (
+                            <img src={msg.message} alt="Preview" className="max-w-[200px]  h-auto mb-2 rounded" />
+                          ) :
+
+                            msg.message && msg.message.includes("scheduled video call") ? (
+                              <>
+                                <p className="text-sm sm:text-base">
+                                  You have a scheduled video call!<br />
+                                  <span className="font-medium">
+                                    Time: {msg.message.split("Time:")[1]?.split("🔗")[0]?.trim()}
+                                  </span>
+                                </p>
+                                <a
+                                  href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400 underline break-all block mt-1 text-sm"
+                                >
+                                  🔗 Join: {msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0]}
+                                </a>
+                              </>
+                            ) :
+
+
+                              (
+                                <p className="text-sm sm:text-base">{msg.message}</p>
+                              )}
+                          <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === userId ? "text-gray-500" : "text-black"}`}>
+                            {format(new Date(msg.timestamp || Date.now()), "p")}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-500 text-sm">No messages yet</p>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
                 <div className="h-px bg-gray-400 w-full" />
                 <div className="flex items-center justify-between px-4 py-2 mt-2">
                   <div>
@@ -399,35 +458,35 @@ setImageLoading(true)
                     className="w-2/3 sm:w-3/4 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none text-sm sm:text-base"
                   />
                   <button
-                                        onClick={handleSendMessage}
-                                        className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
-                                        disabled={(imageLoading || (!newMessage.trim() && !imageUrl))}
-                                    >
-                                        {imageLoading ? (
-                                            <svg
-                                                className="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-white"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                ></circle>
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                                                ></path>
-                                            </svg>
-                                        ) : (
-                                            <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
-                                        )}
-                                    </button>
+                    onClick={handleSendMessage}
+                    className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
+                    disabled={(imageLoading || (!newMessage.trim() && !imageUrl))}
+                  >
+                    {imageLoading ? (
+                      <svg
+                        className="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                    ) : (
+                      <LuSend className="w-5 h-5 sm:w-6 sm:h-6" />
+                    )}
+                  </button>
                 </div>
               </>
             ) : (

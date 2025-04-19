@@ -1,6 +1,6 @@
 import { use } from "passport";
-import { NotificationRepository } from "../repositories/notificationRepository.js";
-import { INotificationRepository } from "../interface/repositories/NotifictatonRepository.js";
+import { NotificationRepository } from "../repositories/notificationRepository";
+import { INotificationRepository } from "../interface/repositories/NotifictatonRepository";
 
 const notificationRepository = new NotificationRepository();
 

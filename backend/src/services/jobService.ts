@@ -1,6 +1,6 @@
 import { use } from "passport";
-import { JobRepositories } from "../repositories/jobRepositories.js";
-import Job from "../models/job.js";
+import { JobRepositories } from "../repositories/jobRepositories";
+import Job from "../models/job";
 
 
 export class JobService {

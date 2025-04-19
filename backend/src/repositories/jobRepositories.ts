@@ -1,6 +1,6 @@
 import path from "path";
-import Job from "../models/job.js";
-import JobApplication from "../models/jobApplication.js";
+import Job from "../models/job";
+import JobApplication from "../models/jobApplication";
 export class JobRepositories {
   async fetchJob(page: number, limit: number) {
     const skip = (page - 1) * limit;

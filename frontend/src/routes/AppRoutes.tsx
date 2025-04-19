@@ -29,6 +29,7 @@ const Messages=lazy(()=>import("../pages/user/Messages"))
 const CompanyMessages=lazy(()=>import("../pages/company/CompanyMessages"))
 const VideoCall=lazy(()=>import("../pages/user/VideoCall"))
 const CompanyVideoCall=lazy(()=>import("../pages/company/CompanyVideoCall"))
+const CompanyScheduledMeeting=lazy(()=>import("../pages/company/CompanyScheduledMeeting"))
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 
@@ -78,6 +79,7 @@ const AppRoutes = () => {
         <Route path="company/applicants/:applicationId" element={<CompanyApplicantDetails />} />
         <Route path="/company-messages" element={<CompanyMessages />} />
         <Route path="/company-video" element={<CompanyVideoCall />} />
+        <Route path="/company-scheduledmeeting" element={<CompanyScheduledMeeting />} />
       </Routes>
       </Suspense>
     </Router>

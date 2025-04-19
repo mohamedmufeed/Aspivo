@@ -1,18 +1,19 @@
 import { Request, Response } from "express";
-import { CompanyProfileService } from "../../services/compnyService/companyProfileService.js";
-import HttpStatus from "../../utils/httpStatusCode.js";
-import ICompanyProfileController from "../../interface/controller/company/comapnyProfileInterface.js";
+import { CompanyProfileService } from "../../services/compnyService/companyProfileService";
+import HttpStatus from "../../utils/httpStatusCode";
+import ICompanyProfileController from "../../interface/controller/company/comapnyProfileInterface";
+import { ERROR_MESSAGES } from "../../constants/error";
 
 export class CompanyProfileController implements ICompanyProfileController {
-  constructor(private companyProfileService: CompanyProfileService) {}
+  constructor(private _companyProfileService: CompanyProfileService) {}
 
   getProfile = async (req: Request, res: Response) => {
     try {
       const companyId = req.params.id;
-      const response = await this.companyProfileService.getProfile(companyId);
+      const response = await this._companyProfileService.getProfile(companyId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message:ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -39,11 +40,11 @@ export class CompanyProfileController implements ICompanyProfileController {
         logo,
       };
 
-      const response = await this.companyProfileService.editCompanyProfile(companyId, data);
+      const response = await this._companyProfileService.editCompanyProfile(companyId, data);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       console.log("Error editing company profile", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -51,10 +52,10 @@ export class CompanyProfileController implements ICompanyProfileController {
     try {
       const companyId = req.params.id;
       const { description } = req.body;
-      const response = await this.companyProfileService.editCompanyDescription(companyId, description);
+      const response = await this._companyProfileService.editCompanyDescription(companyId, description);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -62,10 +63,10 @@ export class CompanyProfileController implements ICompanyProfileController {
     try {
       const companyId = req.params.id;
       const { stack } = req.body;
-      const response = await this.companyProfileService.addTechStack(companyId, stack);
+      const response = await this._companyProfileService.addTechStack(companyId, stack);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -73,11 +74,11 @@ export class CompanyProfileController implements ICompanyProfileController {
     try {
       const companyId = req.params.id;
       const members = req.body;
-      const response = await this.companyProfileService.editTeam(companyId, members);
+      const response = await this._companyProfileService.editTeam(companyId, members);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       console.log("Error editing team", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -85,10 +86,10 @@ export class CompanyProfileController implements ICompanyProfileController {
     try {
       const companyId = req.params.id;
       const contact = req.body;
-      const response = await this.companyProfileService.editContact(companyId, contact);
+      const response = await this._companyProfileService.editContact(companyId, contact);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 }

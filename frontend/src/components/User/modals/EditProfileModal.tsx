@@ -103,9 +103,7 @@ const [loading,setLoading]=useState(false)
   
   const onSubmit = async (data: EditProfileForm) => {
     try {
-      const formData = new FormData();
-  
-    
+      const formData = new FormData()
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
       });
@@ -115,7 +113,7 @@ const [loading,setLoading]=useState(false)
       }
       setLoading(true)
       const response = await editProfile(userId, formData); 
-  setLoading(false)
+      setLoading(false)
       console.log("Profile updated successfully:", response.updatedProfile.user);
       setProfileData(response.updatedProfile.user);
 

@@ -1,3 +1,5 @@
+import Types from "mongoose"
+import mongoose from "mongoose";
 interface PopulatedUser {
   _id: string;
   firstName: string;
@@ -147,3 +149,14 @@ export interface IPopulatedCompany {
   updatedAt: Date;
 }
 
+
+
+export interface IMeetingData {
+  _id?:string
+  roomId: string;
+  peerId: string;
+  startTime: string; 
+  initiatorId: string;
+  targetId: string;
+  link: string; 
+}

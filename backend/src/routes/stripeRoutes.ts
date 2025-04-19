@@ -1,5 +1,5 @@
 import  express from "express";
-import { createCheckoutSession, handleWebhook } from "../controllers/user/stripeController.js";
+import { createCheckoutSession, handleWebhook } from "../controllers/user/stripeController";
 
 const router=express.Router()
 router.post("/create-checkout-session",createCheckoutSession)

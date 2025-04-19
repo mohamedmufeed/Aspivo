@@ -1,5 +1,5 @@
 import { SkillItemList, User ,ISubscription} from "./userTypes";
-import { Company, JobApplication, JobData } from "./companyTypes";
+import { Company, IMeetingData, JobApplication, JobData } from "./companyTypes";
 export interface UserServiceResponse {
   user: User;
   message: string;
@@ -35,3 +35,12 @@ export interface MessageResponse{
   channel:string;
   message:string
 }
+
+ export interface MeetinngRespose{
+  meeting:IMeetingData;
+  message:string
+ }
+ export interface FetchingMeetinngResposes{
+  meeting:IMeetingData[];
+  message:string
+ }

@@ -1,9 +1,10 @@
-import { AdminRepostry } from "../../repositories/adminRepositories.js";
-import { NotificationService } from "../notificationService.js";
-import { sendNotification } from "../../server.js";
+import { AdminRepostry } from "../../repositories/adminRepositories";
+import { NotificationService } from "../notificationService";
+import { sendNotification } from "../../server";
+import IAdminService from "../../interface/service/admin/adminInterface.js";
 const notificationService = new NotificationService();
 
-export class AdminService  {
+export class AdminService   {
   constructor(private adminRepository: AdminRepostry) {}
 
   async getAllCompanies() {

@@ -1,30 +1,31 @@
-import { Request, Response } from "express";
-import { MessageService } from "../../services/messageService.js";
-import HttpStatus from "../../utils/httpStatusCode.js";
-import User from "../../models/user.js";
-import { ConversationResponse } from "../../repositories/messageRepostries.js";
-import Company from "../../models/company.js";
-import { IMessageController } from "../../interface/controller/user/messageControllerInterface.js";
+import {  Request, Response } from "express";
+import { MessageService } from "../../services/messageService";
+import HttpStatus from "../../utils/httpStatusCode";
+import User from "../../models/user";
+import { ConversationResponse } from "../../repositories/messageRepostries";
+import Company from "../../models/company";
+import { IMessageController } from "../../interface/controller/user/messageControllerInterface";
+import { ERROR_MESSAGES } from "../../constants/error";
 
 export class MessageController  implements IMessageController{
-  private messageService: MessageService;
+  private _messageService: MessageService;
 
   constructor() {
-    this.messageService = new MessageService();
+    this._messageService = new MessageService();
   }
 
-  initializeChatController = async (req: Request, res: Response): Promise<void> => {
+  initializeChatController = async (req: Request, res: Response ): Promise<void> => {
     try {
       const { initiatorId, targetId, role } = req.body;
       if (!initiatorId || !targetId || !role) {
         res.status(HttpStatus.BAD_REQUEST).json({ message: "initiatorId, targetId, and role are required" });
         return;
       }
-      const channel = await this.messageService.initializeChat(initiatorId, targetId, role);
+      const channel = await this._messageService.initializeChat(initiatorId, targetId, role);
       res.status(HttpStatus.OK).json(channel);
     } catch (error) {
       console.log("Error from initializeChatController:", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -36,7 +37,7 @@ export class MessageController  implements IMessageController{
         return;
       }
 
-      const conversations: ConversationResponse[] = await this.messageService.getConversations(userId as string, role as string);
+      const conversations: ConversationResponse[] = await this._messageService.getConversations(userId as string, role as string);
       const enhancedConversations = await Promise.all(
         conversations.map(async (conv) => {
           let targetName = conv.targetId;
@@ -65,7 +66,7 @@ export class MessageController  implements IMessageController{
 
       res.status(HttpStatus.OK).json(enhancedConversations);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 
@@ -76,10 +77,10 @@ export class MessageController  implements IMessageController{
         res.status(HttpStatus.BAD_REQUEST).json({ message: "Channel, message, and senderId are required" });
         return;
       }
-      await this.messageService.sendChatMessage(channel, message, senderId);
+      await this._messageService.sendChatMessage(channel, message, senderId);
       res.status(HttpStatus.OK).json({ message: "Message sent" });
     } catch (error: any) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 
@@ -90,10 +91,10 @@ export class MessageController  implements IMessageController{
         res.status(HttpStatus.BAD_REQUEST).json({ message: "Channel is required" });
         return;
       }
-      const history = await this.messageService.getHistory(channel as string);
+      const history = await this._messageService.getHistory(channel as string);
       res.status(HttpStatus.OK).json(history);
     } catch (error: any) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 }

@@ -1,5 +1,5 @@
-import { SkillRepository } from "../../repositories/skillREpositories.js";
-import HttpStatus from "../../utils/httpStatusCode.js";
+import { SkillRepository } from "../../repositories/skillREpositories";
+import HttpStatus from "../../utils/httpStatusCode";
 
 export class SkillService {
   constructor(private skillRepository: SkillRepository) {}

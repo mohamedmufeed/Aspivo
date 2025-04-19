@@ -1,9 +1,9 @@
-import axios, { AxiosError } from "axios";
-const ADMIN_API = "http://localhost:5001/api/admin";
+import  { AxiosError } from "axios";
+import api from "./api";
 
 export const fetchUsers = async () => {
   try {
-    const response = await axios.get(`${ADMIN_API}/users`);
+    const response = await api.get(`admin/users`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -19,7 +19,7 @@ export const fetchUsers = async () => {
 
 export const blockUser = async (userId: string) => {
   try {
-    const response = await axios.patch(`${ADMIN_API}/users/${userId}/block`);
+    const response = await api.patch(`admin/users/${userId}/block`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -35,7 +35,7 @@ export const blockUser = async (userId: string) => {
 
 export const getAllCompany = async () => {
   try {
-    const response = await axios.get(`${ADMIN_API}/companies`);
+    const response = await api.get(`admin/companies`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -50,7 +50,7 @@ export const updateCompanyStatus = async (
 ) => {
   try {
     const data = { comapnyId, action };
-    const response = await axios.post(`${ADMIN_API}/companies/requests`, data);
+    const response = await api.post(`admin/companies/requests`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -61,7 +61,7 @@ export const updateCompanyStatus = async (
 
 export const approvedCompany = async () => {
   try {
-    const response = await axios.get(`${ADMIN_API}/companies/approved`);
+    const response = await api.get(`admin/companies/approved`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -72,7 +72,7 @@ export const approvedCompany = async () => {
 
 export const addSkill = async (skills: any) => {
   try {
-    const response = await axios.post(`${ADMIN_API}/skills`, skills);
+    const response = await api.post(`admin/skills`, skills);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -83,7 +83,7 @@ export const addSkill = async (skills: any) => {
 
 export const getSkills = async () => {
   try {
-    const response = await axios.get(`${ADMIN_API}/skills`);
+    const response = await api.get(`admin/skills`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -94,7 +94,7 @@ export const getSkills = async () => {
 
 export const removeSkill = async (skillId: string) => {
   try {
-    const response = await axios.delete(`${ADMIN_API}/skills/${skillId}`);
+    const response = await api.delete(`admin/skills/${skillId}`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -105,7 +105,7 @@ export const removeSkill = async (skillId: string) => {
 
 export const getSubcriptions=async()=>{
   try {
-    const response=await axios.get(`${ADMIN_API}/subscriptions`)
+    const response=await api.get(`admin/subscriptions`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -115,7 +115,7 @@ export const getSubcriptions=async()=>{
 }
 export const updateSubscriptionStatus = async (subscriptionId: string, { status }: { status: "active" | "inactive" | "cancelled" })=>{
   try {
-    const response=await axios.patch(`${ADMIN_API}/subscriptions/${subscriptionId}/status`,{status})
+    const response=await api.patch(`admin/subscriptions/${subscriptionId}/status`,{status})
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { User } from "./userTypes";
+import { Types } from "mongoose";
 export interface JobData {
   jobTitle: string;
   category: string;
@@ -91,4 +92,14 @@ export interface Contact {
   _id?: string;
   name: string;
      url: string;
+}
+export interface IMeetingData {
+  roomId: string;
+  peerId: string;
+  startTime: string; 
+  initiatorId: Types.ObjectId;
+  targetId: Types.ObjectId;
+  link: string; 
+  createdAt: Date; 
+  updatedAt: Date;
 }

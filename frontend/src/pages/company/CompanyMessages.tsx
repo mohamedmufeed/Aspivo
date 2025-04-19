@@ -8,13 +8,15 @@ import { IoIosLink } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
 import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
 import { useLocation, useNavigate } from "react-router-dom";
-import { companyByuserId } from "../../services/company/companyProfile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { format } from 'date-fns';
 import { useSocket } from "../../hooks/socket";
 import axios from "axios";
 import { fetchCompany } from "../../services/company/compayJob";
+import { sheduleMeeting } from "../../services/company/companyMeeting";
+import { TimePickerModal } from "../../components/Company/Modals/TimePickerModal";
+import { time } from "framer-motion";
 
 interface ChatMessage {
     _id: string;
@@ -41,10 +43,6 @@ interface Conversation {
     unread?: boolean;
     channel: string;
 }
-interface UserStatus {
-    targetId: string;
-    isOnline: boolean;
-}
 
 const CompanyMessages = () => {
     const [selected, setSelected] = useState<string | undefined>("Messages");
@@ -65,6 +63,8 @@ const CompanyMessages = () => {
     const [loading, setLoading] = useState(false)
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
+    const [showTimeModal, setShowTimeModal] = useState(false)
+    const [meetingTime, setMeetingTime] = useState<Date | null>()
 
     useEffect(() => {
         const fetchCompanie = async () => {
@@ -184,42 +184,49 @@ const CompanyMessages = () => {
                         console.warn("Invalid message received after normalization:", normalizedMessage);
                     }
                 });
-
-                const handleUserOnline = (status: { targetId: string; isOnline: boolean }) => {
-                    console.log("User online:", status.targetId);
-                    setUserStatuses((prev) => ({ ...prev, [status.targetId]: status.isOnline }));
-                };
-
-                const handleUserOffline = (status: { targetId: string; isOnline: boolean }) => {
-                    console.log("User offline:", status.targetId);
-                    setUserStatuses((prev) => ({ ...prev, [status.targetId]: status.isOnline }));
-                };
-
-                const handleOnlineUsers = (users: { targetId: string; isOnline: boolean }[]) => {
-                    console.log("Initial online users:", users);
-                    const initialStatuses = users.reduce((acc, user) => {
-                        acc[user.targetId] = user.isOnline;
-                        return acc;
-                    }, {} as Record<string, boolean>);
-                    setUserStatuses((prev) => ({ ...prev, ...initialStatuses }));
-                };
-
-                socket.on("user-online", handleUserOnline);
-                socket.on("user-offline", handleUserOffline);
-                socket.on("online-users", handleOnlineUsers);
             }
 
             return () => {
                 if (channel) {
-                    socket.off("receiveMessage");
-                    socket.off("user-online");
-                    socket.off("user-offline");
-                    socket.off("online-users");
-                    socket.emit("leaveChannel", channel);
+                    socket.off("receiveMessage")
                 }
             };
         }
     }, [selectedUserId, conversations]);
+
+    useEffect(() => {
+        if (!socket || !companyId) return;
+
+        socket.connect();
+        socket.emit("registerUser", "company", companyId);
+
+        const handleUserStatus = (data: any) => {
+            console.log("User status update:", data);
+            setUserStatuses(prev => ({
+                ...prev,
+                [data.targetId]: data.isOnline
+            }));
+        };
+
+        const handleOnlineUsers = (users: any) => {
+            console.log("Initial online users:", users);
+            const statuses = {};
+            // users.forEach(user => {
+            //     statuses[user.targetId] = user.isOnline;
+            // });
+            setUserStatuses(statuses);
+        };
+
+        socket.on("user-online", handleUserStatus);
+        socket.on("user-offline", handleUserStatus);
+        socket.on("online-users", handleOnlineUsers);
+
+        return () => {
+            socket.off("user-online", handleUserStatus);
+            socket.off("user-offline", handleUserStatus);
+            socket.off("online-users", handleOnlineUsers);
+        };
+    }, [socket, companyId]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -255,32 +262,11 @@ const CompanyMessages = () => {
         setSelectedUserId(targetId);
         setMessages([]);
         console.log("Selected conversation:", targetId);
+        setTimeout(() => {
+            console.log("Selected user's online status:", userStatuses[targetId]);
+        }, 100);
     };
 
-    const handleInitializeChat = async (userId: string, userName: string) => {
-        if (companyId) {
-            try {
-                const data = await InitializeChat(companyId, userId, "company");
-                console.log("the data from inti", data)
-                if (data && data.channel) {
-                    setConversations((prev) => [
-                        ...prev,
-                        {
-                            targetProfile: userId,
-                            targetId: userId,
-                            targetName: userName,
-                            lastMessage: "Chat started",
-                            timestamp: new Date().toISOString(),
-                            channel: data.channel,
-                        },
-                    ]);
-                    setSelectedUserId(userId);
-                }
-            } catch (error) {
-                console.error("Error initializing chat:", error);
-            }
-        }
-    };
 
     const handleStartVideoCall = async () => {
         console.log("Starting video call");
@@ -291,33 +277,45 @@ const CompanyMessages = () => {
             console.error("Company ID or Selected User ID is missing");
             return;
         }
-
-
         const roomId = `meeting-${companyId}-${Date.now()}`;
-        const companyPeerId = `company-${companyId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        // const companyPeerId = `company-${companyId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const userPeerId = `user-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
 
         const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${userPeerId}`;
 
         const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
 
         if (channel) {
+            const startTime = new Date(Date.now() + 10 * 60 * 1000);
+            const meetingData = {
+                roomId: roomId,
+                peerId: userPeerId,
+                startTime: startTime.toISOString(),
+                initiatorId: companyId,
+                targetId: selectedUserId,
+                link: meetingLink,
+            }
+            const formattedTime = new Date(startTime).toLocaleString();
+            const invitationMessage = ` You have a scheduled video call! \n Time: ${formattedTime}\n🔗 Join: ${meetingLink}`;
 
-            const invitationMessage = `Join the video call: ${meetingLink}`;
             try {
+
+                const response = await sheduleMeeting(meetingData)
+                if (!response) {
+                    console.log("Failed to schedule meeting");
+                    return
+                }
                 await sendMessage(channel, invitationMessage, companyId);
                 const updatedMessages = await getMessageHistory(channel);
                 if (updatedMessages) setMessages(updatedMessages);
-
-                navigate("/company-video", {
-                    state: {
-                        roomId,
-                        myPeerId: companyPeerId,
-                        targetPeerId: userPeerId
-                    },
-                    replace: true
-                });
+                // navigate("/company-video", {
+                //     state: {
+                //         roomId,
+                //         myPeerId: companyPeerId,
+                //         targetPeerId: userPeerId
+                //     },
+                //     replace: true
+                // });
             } catch (error) {
                 console.error("Error initiating video call:", error);
             }
@@ -362,7 +360,29 @@ const CompanyMessages = () => {
     const handleFileChange = () => {
         fileInputRef.current?.click();
     };
+    // Add near the end of your component, before the return
+    useEffect(() => {
+        if (selectedUserId) {
+            console.log("Selected user status:",
+                selectedUserId,
+                userStatuses[selectedUserId] ? "Online" : "Offline");
+        }
+    }, [selectedUserId, userStatuses]);
 
+//     const TimesheduleMeeting = () => {
+//         setShowTimeModal(true);
+//     };
+// console.log("meeting time ",meetingTime?.toLocaleDateString)
+// console.log("curent time",new Date().toLocaleString())
+//     const handleTimeConfirm = () => {
+//         if (meetingTime) {
+//             handleStartVideoCall();
+//             setShowTimeModal(false);
+//         } else {
+//             console.log("No meeting time selected");
+//         }
+
+//     };
 
     return (
         <div className="flex min-h-screen ">
@@ -440,13 +460,24 @@ const CompanyMessages = () => {
                                                 {conversations.find((c) => c.targetId === selectedUserId)?.targetName || "Unknown"}
                                             </h1>
 
-                                            <p className="text-xs sm:text-sm text-gray-600">
-                                                {userStatuses[selectedUserId] ? "Online" : "Offline"}
+                                            <p className="text-xs sm:text-sm text-gray-600 flex items-center">
+                                                <span
+                                                    className={`inline-block w-2 h-2 rounded-full mr-1 ${userStatuses[companyId] ? "bg-green-500" : "bg-gray-400"
+                                                        }`}
+                                                ></span>
+                                                {userStatuses[companyId] ? "Online" : "Offline"}
                                             </p>
                                         </div>
                                     </div>
                                     <button onClick={handleStartVideoCall}>
                                         <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 cursor-pointer" />
+                                        {/* {showTimeModal && (
+                                            <TimePickerModal
+                                                setShowTimeModal={setShowTimeModal}
+                                                onTimeSelect={(time) => setMeetingTime(time)}
+                                                onConfirm={handleTimeConfirm}
+                                            />
+                                        )} */}
                                     </button>
 
                                 </div>
@@ -469,9 +500,37 @@ const CompanyMessages = () => {
                                                     {/* Display preview if message starts with http */}
                                                     {msg.message && msg.message.startsWith("http") ? (
                                                         <img src={msg.message} alt="Preview" className="max-w-[200px]  h-auto mb-2 rounded" />
-                                                    ) : (
-                                                        <p className="text-sm sm:text-base">{msg.message}</p>
-                                                    )}
+                                                    ) :
+
+                                                        msg.message && msg.message.includes("scheduled video call") ? (
+                                                            <>
+                                                                <p className="text-sm sm:text-base">
+                                                                    You have a scheduled video call!<br />
+                                                                    <span className="font-medium">
+                                                                        Time: {msg.message.split("Time:")[1]?.split("🔗")[0]?.trim()}
+                                                                    </span>
+                                                                </p>
+                                                                <a
+                                                                    href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-blue-500 underline break-all block mt-1 text-sm"
+                                                                >
+                                                                    🔗 Join: {msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0]}
+                                                                </a>
+                                                            </>
+                                                        ) :
+
+
+                                                            (
+                                                                <p className="text-sm sm:text-base">{msg.message}</p>
+                                                            )}
+
+                                                    {/* Dispaly when meeting link */}
+
+
+
+
                                                     <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === companyId ? "text-gray-500" : "text-white"}`}>
                                                         {format(new Date(msg.timestamp || Date.now()), "p")}
                                                     </span>

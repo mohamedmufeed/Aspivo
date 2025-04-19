@@ -70,7 +70,7 @@ const Notifications = () => {
                         <div className="flex items-center text-center p-5 pl-10 gap-4 ">
                             {/* <FcGoogle className="w-10 h-10" /> */}
                             <div className="pl-10">
-                                <h1 className="text-black text-xl font-semibold"> {notification.message}</h1>
+                                {notification.message &&  notification.message.startsWith("Your meeting")?(<h1 className="text-black text-xl font-semibold"> {`${notification.message.slice(0,30)}...\n${notification.message.slice(-47)}`}</h1>):<h1 className="text-black text-xl font-semibold"> {notification.message}</h1>}
                                 <p className="text-gray-700 text-md font-extralight text-start">    {new Date(notification.createdAt).toLocaleDateString()}</p>
                             </div>
                         </div>

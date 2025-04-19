@@ -1,10 +1,13 @@
-import Subscription from "../models/Subscription.js";
-import User from "../models/user.js";
-import { generateRefreshToken,  } from "../utils/jwt.js";
-import { generateToken } from "../utils/jwt.js";
+import Subscription from "../models/Subscription";
+import User from "../models/user";
+import { generateRefreshToken,  } from "../utils/jwt";
+import { generateToken } from "../utils/jwt";
 import mongoose from "mongoose";
+import { BaseRepository } from "./baseRepository";
+import { User as UserType } from "../types/userTypes";
 
-export class AuthRepostry {
+export class AuthRepostry{
+  
   async register(
     userName: string,
     email: string,

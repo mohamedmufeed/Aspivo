@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import Company from "../models/company.js";
-import { JobData } from "../types/companyTypes.js";
-import Job from "../models/job.js";
-import JobApplication from "../models/jobApplication.js";
+import Company from "../models/company";
+import { JobData } from "../types/companyTypes";
+import Job from "../models/job";
+import JobApplication from "../models/jobApplication";
 type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class CompanyRepostries {
   constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication) {}

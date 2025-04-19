@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import dotenv from "dotenv";
-import { StripeService } from "../../services/stripeService.js";
+import { StripeService } from "../../services/stripeService";
 import Stripe from "stripe";
-import HttpStatus from "../../utils/httpStatusCode.js";
+import HttpStatus from "../../utils/httpStatusCode";
 
 dotenv.config();
 const stripeService = new StripeService();

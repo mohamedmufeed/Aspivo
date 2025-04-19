@@ -1,7 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import User from "../models/user.js";
+import User from "../models/user";
+import { use } from "passport";
 dotenv.config();
 
 interface AuthenticatedRequest extends Request {
@@ -27,23 +28,14 @@ const protect = async (
       res.status(401).json({ success: false, message: "User not found" });
       return;
     }
+ 
 
     if (user.isBlocked) {
-      res.cookie("access_token", "", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-        expires: new Date(0),
-      });
-      res.cookie("refresh_token", "", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "strict",
-        expires: new Date(0),
-      });
+      res.clearCookie("access_token");
+      res.clearCookie("refresh_token");
       res.status(401).json({ success: false, message: "User is blocked" });
     }
-    req.user = { id: user._id.toString() };
+    req.user = { id: user._id.toString(), isAdmin: user.isAdmin, };
     next();
   } catch (error) {
     res.status(401).json({ message: "Invalid token or expires" });

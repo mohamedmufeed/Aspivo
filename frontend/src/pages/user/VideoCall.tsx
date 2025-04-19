@@ -33,7 +33,6 @@ const VideoCall = () => {
       return;
     }
 
-    // Create peer connection
     const peer = new Peer(peerId, {
       host: "localhost",
       port: 9000,
@@ -47,12 +46,12 @@ const VideoCall = () => {
       console.log("User peer connected with ID:", id);
       setConnectionStatus("Connected. Waiting for call...");
       
-      // Get user media
+ 
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then((stream) => {
           localStreamRef.current = stream;
           
-          // Display local video
+        
           if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream;
           }
@@ -65,17 +64,15 @@ const VideoCall = () => {
         });
     });
 
-    // Handle incoming calls
+
     peer.on("call", (call) => {
       console.log("Received call from:", call.peer);
       setConnectionStatus("Incoming call...");
-      
-      // Answer the call with our stream
+    
       if (localStreamRef.current) {
         call.answer(localStreamRef.current);
         setConnectionStatus("Call connected");
       } else {
-        // If we don't have our stream yet, get it and then answer
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
             localStreamRef.current = stream;
@@ -91,9 +88,7 @@ const VideoCall = () => {
           });
       }
       
-      // Handle the incoming stream
       call.on("stream", (remoteStream) => {
-        console.log("Received remote stream");
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
         }
@@ -122,7 +117,6 @@ const VideoCall = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      // Implement socket message sending here
       console.log("Sending message:", newMessage);
       setNewMessage("");
     }

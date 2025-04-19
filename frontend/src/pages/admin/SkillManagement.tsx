@@ -5,6 +5,7 @@ import profile from "../../assets/person_1.jpg";
 import { addSkill, getSkills } from "../../services/adminService";
 import ToastError from "../../components/Tost/ErrorToast";
 import { removeSkill } from "../../services/adminService";
+import AdminHeader from "../../components/Admin/AdminHeader";
 interface SkillType {
   _id?: string;
   name: string,
@@ -102,15 +103,8 @@ const SkillManagement = () => {
     <div className="flex">
       <Sidebar setSelected={setSelectedMenu} />
       <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
-        <div className="flex justify-between items-center p-6">
-          <div className="flex items-center">
-            <IoChevronBackOutline className="w-8 h-8 cursor-pointer" />
-            <h1 className="text-3xl font-medium ml-4">Skill Management</h1>
-          </div>
-          <div className="flex items-center gap-6">
-            <img className="w-12 h-12 rounded-full border-2 border-orange-600" src={profile} alt="Profile" />
-          </div>
-        </div>
+      <AdminHeader heading="Skill Management"/>
+       
 
         <hr className="border-gray-300" />
         <div className="flex justify-center">

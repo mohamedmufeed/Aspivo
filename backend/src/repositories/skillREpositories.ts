@@ -1,4 +1,4 @@
-import Skill from "../models/skills.js";
+import Skill from "../models/skills";
 export class SkillRepository{
     async createSkills(skillNames: string[]){
         const skills = skillNames.map((name) => ({ name }));

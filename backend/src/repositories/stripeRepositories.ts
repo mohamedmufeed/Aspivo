@@ -1,6 +1,6 @@
-import Company from "../models/company.js";
-import User from "../models/user.js";
-import Subscription from "../models/Subscription.js";
+import Company from "../models/company";
+import User from "../models/user";
+import Subscription from "../models/Subscription";
 import { SubscriptionData, SubscriptionTypes } from "../types/stripeTypes";
 
 export class StripeRepositories {

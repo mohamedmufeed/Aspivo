@@ -1,21 +1,21 @@
 
-import { AuthController } from "../controllers/user/authController.js";
-import {  ProfileController} from "../controllers/user/profileController.js";
-import {  NotificationController } from "../controllers/user/notificationController.js";
+import { AuthController } from "../controllers/user/authController";
+import {  ProfileController} from "../controllers/user/profileController";
+import {  NotificationController } from "../controllers/user/notificationController";
 import express  from "express";
-import {  Imageupload } from "../config/multer.js";
-import protect from "../middleware/authMiddlwware.js";
+import {  Imageupload } from "../config/multer";
+import protect from "../middleware/authMiddlwware";
 import passport from "passport";
-import { JobController } from "../controllers/user/jobcontroller.js";
-import { createCheckoutSession } from "../controllers/user/stripeController.js";
-import { AuthService } from "../services/authService.js";
-import { AuthRepostry } from "../repositories/userRepositories.js";
-import { JobRepositories } from "../repositories/jobRepositories.js";
-import { JobService } from "../services/jobService.js";
-import { NotificationRepository } from "../repositories/notificationRepository.js";
-import { NotificationService } from "../services/notificationService.js";
-import { ProfileService } from "../services/profileService.js";
-import { SkillRepository } from "../repositories/skillREpositories.js";
+import { JobController } from "../controllers/user/jobcontroller";
+import { createCheckoutSession } from "../controllers/user/stripeController";
+import { AuthService } from "../services/authService";
+import { AuthRepostry } from "../repositories/userRepositories";
+import { JobRepositories } from "../repositories/jobRepositories";
+import { JobService } from "../services/jobService";
+import { NotificationRepository } from "../repositories/notificationRepository";
+import { NotificationService } from "../services/notificationService";
+import { ProfileService } from "../services/profileService";
+import { SkillRepository } from "../repositories/skillREpositories";
 
 
 const router= express.Router()
@@ -142,7 +142,7 @@ router
 
 router
   .route("/users/:id/subscription-history")
-  .get(profileController.subscriptionHistory);
+  .get(protect,profileController.subscriptionHistory);
 
 
 router

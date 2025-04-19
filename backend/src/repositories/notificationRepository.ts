@@ -1,4 +1,4 @@
-import Notification, { INotification } from "../models/notification.js";
+import Notification, { INotification } from "../models/notification";
 import mongoose from "mongoose";
  export class NotificationRepository {
   async createNotification(userId: string, message: string) {

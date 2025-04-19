@@ -2,7 +2,7 @@ import { IoHomeOutline, IoGitPullRequestSharp, IoSettingsOutline } from "react-i
 import { FaUsers } from "react-icons/fa";
 import { RiHotelLine } from "react-icons/ri";
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SiHyperskill } from "react-icons/si";
 
@@ -20,8 +20,9 @@ const menuItems = [
 
 const Sidebar = ({ setSelected }: { setSelected: (label: string) => void }) => {
     const [selected, setLocalSelected] = useState<string | undefined>("Dashboard");
-    const location=useLocation()
+    const location = useLocation()
     const navigate = useNavigate()
+
     useEffect(() => {
         const currentItem = menuItems.find((item) => item.path === location.pathname)
         if (currentItem) {
@@ -37,6 +38,7 @@ const Sidebar = ({ setSelected }: { setSelected: (label: string) => void }) => {
         }
 
     };
+   
     return (
         <div className='bg-[#eb5a0023] w-1/6 h-screen px-3' style={{ fontFamily: "DM Sans, sans-serif" }}>
             <div className="text-[30px] pl-10 pt-15 ps-8 font-bold flex items-center font-[Montserrat]">

@@ -7,9 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slice/authSlice";
 import { logoutUser } from "../../services/auth";
-import api from "../../services/api";
-
-
 const ProfileDropdown = () => {
 
     const dispatch = useDispatch()

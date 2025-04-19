@@ -5,6 +5,7 @@ import Profile from "../../assets/person_1.jpg";
 import { ChevronDown, EllipsisVertical } from "lucide-react";
 import { getSubcriptions } from "../../services/adminService";
 import { updateSubscriptionStatus } from "../../services/adminService";
+import AdminHeader from "../../components/Admin/AdminHeader";
 
 interface Subscription {
     _id: string;
@@ -94,19 +95,8 @@ const SubscriptionHandling = () => {
                 className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
-                <div className="flex justify-between items-center p-6">
-                    <div className="flex items-center">
-                        <IoChevronBackOutline className="w-8 h-8 cursor-pointer" />
-                        <h1 className="text-3xl font-medium ml-4">Subscription Management</h1>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <img
-                            className="w-12 h-12 rounded-full border-2 border-orange-600"
-                            src={Profile}
-                            alt="Profile"
-                        />
-                    </div>
-                </div>
+                      <AdminHeader heading="Subscription Management"/>
+              
 
                 <hr className="border-black border-1.5" />
 

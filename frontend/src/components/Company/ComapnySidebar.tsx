@@ -1,10 +1,9 @@
-import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
+import { IoHomeOutline, IoSettingsOutline, IoVideocamOutline } from "react-icons/io5";
 import { RiHotelLine } from "react-icons/ri";
 import { TbHelp } from "react-icons/tb";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BsChatLeftText } from "react-icons/bs";
-import { HiOutlineUsers } from "react-icons/hi2";
 import { CiViewList } from "react-icons/ci";
 
 
@@ -12,7 +11,7 @@ import { CiViewList } from "react-icons/ci";
 const menuItems = [
     { icon: <IoHomeOutline className="w-6 h-6" />, label: "Dashboard", path: "/company-dashboard" },
     { icon: <BsChatLeftText className="w-6 h-6" />, label: "Messages", path: "/company-messages" },
-    { icon: <HiOutlineUsers className="w-6 h-6" />, label: " Applicants", path: "/company-applicants" },
+    { icon: <IoVideocamOutline className="w-6 h-6" />, label: "Meetings", path: "/company-scheduledmeeting" },
     { icon: <RiHotelLine className="w-6 h-6" />, label: "C Profile", path: "/company-profile" },
     { icon: <CiViewList className="w-6 h-6" />, label: "Job Listing", path: "/company-jobs" },
     { divider: true },

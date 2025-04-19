@@ -1,4 +1,4 @@
-import { AdminRepostry } from "../../repositories/adminRepositories.js";
+import { AdminRepostry } from "../../repositories/adminRepositories";
 
 export class SubscriptionService {
   constructor(private subscriptionRepository: AdminRepostry) {}

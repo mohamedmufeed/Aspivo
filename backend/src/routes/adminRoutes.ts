@@ -1,17 +1,18 @@
 import express  from "express";
-import {  UserManagementController} from "../controllers/admin/userManagement.js";
-import { AdminController } from "../controllers/admin/comapnyMangement.js";
-import {  SkillController } from "../controllers/admin/skillController.js";
-import {  SubscriptionController } from "../controllers/admin/subscriptionController.js";
-import Company from "../models/company.js";
-import User from "../models/user.js";
-import Skill from "../models/skills.js";
-import Subscription from "../models/Subscription.js";
-import { AdminRepostry } from "../repositories/adminRepositories.js";
-import { AdminService } from "../services/adminService/adminService.js";
-import { SkillRepository } from "../repositories/skillREpositories.js";
-import { SkillService } from "../services/adminService/skillService.js";
-import { SubscriptionService } from "../services/adminService/subscriptionService.js";
+import {  UserManagementController} from "../controllers/admin/userManagement";
+import { AdminController } from "../controllers/admin/comapnyMangement";
+import {  SkillController } from "../controllers/admin/skillController";
+import {  SubscriptionController } from "../controllers/admin/subscriptionController";
+import Company from "../models/company";
+import User from "../models/user";
+import Skill from "../models/skills";
+import Subscription from "../models/Subscription";
+import { AdminRepostry } from "../repositories/adminRepositories";
+import { AdminService } from "../services/adminService/adminService";
+import { SkillRepository } from "../repositories/skillREpositories";
+import { SkillService } from "../services/adminService/skillService";
+import { SubscriptionService } from "../services/adminService/subscriptionService";
+import protect from "../middleware/authMiddlwware";
 const router= express.Router()
 
 
@@ -44,24 +45,24 @@ const userController = new UserManagementController(adminService,adminRepository
 
 
 router
-  .get("/users", userController.getUsers)              
+  .get("/users",protect,userController.getUsers)              
   .patch("/users/:id/block", userController.blockUser); 
 
 
 router
-  .get("/companies", adminController.getCompanies)               
-  .get("/companies/approved", adminController.approvedCompanies) 
+  .get("/companies",protect, adminController.getCompanies)               
+  .get("/companies/approved",protect, adminController.approvedCompanies) 
   .post("/companies/requests", adminController.handleCompanyRequest);
 
 
 router
   .post("/skills", skillController.addSkill)           
-  .get("/skills", skillController.getSkills)            
+  .get("/skills", protect,skillController.getSkills)            
   .delete("/skills/:id", skillController.removeSkill); 
 
 
 router
-  .get("/subscriptions", subscriptionController.getSubscriptions)          
+  .get("/subscriptions", protect,subscriptionController.getSubscriptions)          
   .patch("/subscriptions/:id/status", subscriptionController.updateSubscriptionStatus);
 
  export default router

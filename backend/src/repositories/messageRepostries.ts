@@ -1,7 +1,7 @@
 
-import ChatMessage from "../models/chat.js";
-import Conversation from "../models/conversations.js";
-import User from "../models/user.js";
+import ChatMessage from "../models/chat";
+import Conversation from "../models/conversations";
+import User from "../models/user";
  export  interface ConversationResponse {
     targetId: string | undefined;
     targetName: string;

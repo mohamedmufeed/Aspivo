@@ -26,6 +26,7 @@ const companySchema = new Schema(
     logo: {
       type: String,
       required: false,
+      default: ''
     },
     kyc: {
       type: String,

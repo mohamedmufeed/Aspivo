@@ -1,7 +1,7 @@
-import { AuthRepostry } from "../repositories/userRepositories.js";
-import { ProfileTypes, Experience, Education } from "../types/userTypes.js";
-import cloudinary from "../config/cloudinaryConfig.js";
-import { SkillRepository } from "../repositories/skillREpositories.js";
+import { AuthRepostry } from "../repositories/userRepositories";
+import { ProfileTypes, Experience, Education } from "../types/userTypes";
+import cloudinary from "../config/cloudinaryConfig";
+import { SkillRepository } from "../repositories/skillREpositories";
 
 export class ProfileService {
   constructor(

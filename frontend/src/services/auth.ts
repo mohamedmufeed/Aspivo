@@ -136,7 +136,7 @@ export const fetchGoogleUser = async () => {
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error("Login Error:", error.response?.data);
+      console.log("Login Error:", error.response?.data);
     }
   }
 };

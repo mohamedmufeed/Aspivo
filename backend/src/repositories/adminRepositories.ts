@@ -1,9 +1,9 @@
-import User from "../models/user.js";
-import Company from "../models/company.js";
-import Subscription from "../models/Subscription.js";
-import {generateToken} from "../utils/jwt.js";
+import User from "../models/user";
+import Company from "../models/company";
+import Subscription from "../models/Subscription";
+import {generateToken} from "../utils/jwt";
 import mongoose from "mongoose";
-import IAdminRepostry from "../interface/repositories/adminRepository.js";
+import IAdminRepostry from "../interface/repositories/adminRepository";
 
 
 

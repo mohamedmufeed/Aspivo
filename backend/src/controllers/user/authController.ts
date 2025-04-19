@@ -1,17 +1,18 @@
 // controllers/authController.ts
 import { Request, Response } from "express";
-import { AuthService } from "../../services/authService.js";
-import { generateRefreshToken, generateToken } from "../../utils/jwt.js";
-import HttpStatus from "../../utils/httpStatusCode.js";
-import IAuthController from "../../interface/controller/user/authControllerInterface.js";
+import { AuthService } from "../../services/authService";
+import { generateRefreshToken, generateToken } from "../../utils/jwt";
+import HttpStatus from "../../utils/httpStatusCode";
+import IAuthController from "../../interface/controller/user/authControllerInterface";
+import { ERROR_MESSAGES } from "../../constants/error";
 
 export class AuthController  implements IAuthController{
-  constructor(private authService: AuthService) {}
+  constructor(private _authService: AuthService) {}
 
   register = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userName, email, password } = req.body;
-      const { user, token, refreshToken } = await this.authService.regitser(userName, email, password);
+      const { user, token, refreshToken } = await this._authService.regitser(userName, email, password);
 
       res.cookie("access_token", token, {
         httpOnly: true,
@@ -31,14 +32,14 @@ export class AuthController  implements IAuthController{
     } catch (error: any) {
       res
         .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error?.message || "Internal Server Error" });
+        .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 
   login = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-      const { user, token, refreshToken } = await this.authService.login(email, password);
+      const { user, token, refreshToken } = await this._authService.login(email, password);
 
       res.cookie("access_token", token, {
         httpOnly: true,
@@ -58,14 +59,14 @@ export class AuthController  implements IAuthController{
     } catch (error: any) {
       res
         .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error?.message || "Internal Server Error" });
+        .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
   verifyOtp = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, otp } = req.body;
-      const user = await this.authService.verifyotp(email, otp.trim());
+      const user = await this._authService.verifyotp(email, otp.trim());
 
       res.status(HttpStatus.OK).json({
         message: "OTP validation success",
@@ -74,14 +75,14 @@ export class AuthController  implements IAuthController{
     } catch (error: any) {
       res
         .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error?.message || "Internal Server Error" });
+        .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
   resendOtp = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
-      await this.authService.resendOtp(email);
+      await this._authService.resendOtp(email);
       res.status(HttpStatus.OK).json({ message: "OTP Resent successfully" });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -93,20 +94,20 @@ export class AuthController  implements IAuthController{
   forgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
-      await this.authService.forgotPassword(email);
+      await this._authService.forgotPassword(email);
 
       res.status(HttpStatus.OK).json({ message: "Forgot password OTP sent successfully" });
     } catch (error) {
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: "Internal Server Error" });
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
   resetPassword = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, newPassword } = req.body;
-      await this.authService.resetPassword(email, newPassword);
+      await this._authService.resetPassword(email, newPassword);
 
       res.status(HttpStatus.OK).json({ message: "Password reset successfully" });
     } catch (error) {
@@ -119,7 +120,7 @@ export class AuthController  implements IAuthController{
   refreshToken = async (req: Request, res: Response): Promise<void> => {
     try {
       const refreshToken = req.cookies?.refresh_token;
-      const newToken = await this.authService.refreshToken(refreshToken);
+      const newToken = await this._authService.refreshToken(refreshToken);
 
       res.cookie("access_token", newToken, {
         httpOnly: true,
@@ -130,7 +131,7 @@ export class AuthController  implements IAuthController{
 
       res.status(HttpStatus.OK).json({ accessToken: newToken });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 

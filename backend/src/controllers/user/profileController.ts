@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { ProfileService } from "../../services/profileService.js";
-import HttpStatus from "../../utils/httpStatusCode.js";
-import { IProfileController } from "../../interface/controller/user/profileControllerInterface.js";
+import { ProfileService } from "../../services/profileService";
+import HttpStatus from "../../utils/httpStatusCode";
+import { IProfileController } from "../../interface/controller/user/profileControllerInterface";
 
 export class ProfileController implements IProfileController {
   // private profileService: ProfileSerive;
@@ -9,7 +9,7 @@ export class ProfileController implements IProfileController {
   // constructor() {
   //   this.profileService = new ProfileSerive();
   // }
-    constructor(private profileService:ProfileService) {}
+    constructor(private _profileService:ProfileService) {}
 
   public editProfile = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -25,7 +25,7 @@ export class ProfileController implements IProfileController {
         location,
       };
 
-      const updatedProfile = await this.profileService.editProfile(userId, data);
+      const updatedProfile = await this._profileService.editProfile(userId, data);
       res.status(HttpStatus.OK).json({ message: "User profile updated successfully", updatedProfile });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -37,7 +37,7 @@ export class ProfileController implements IProfileController {
   public getProfile = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.id;
-      const user = await this.profileService.getProfile(userId);
+      const user = await this._profileService.getProfile(userId);
       res.status(HttpStatus.OK).json({ user, message: "User found successfully" });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -50,7 +50,7 @@ export class ProfileController implements IProfileController {
     try {
       const userId = req.params.id;
       const { about } = req.body;
-      const user = await this.profileService.editAbout(userId, about);
+      const user = await this._profileService.editAbout(userId, about);
       res.status(HttpStatus.OK).json({ user, message: "User about updated successfully" });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to update about section" });
@@ -61,7 +61,7 @@ export class ProfileController implements IProfileController {
     try {
       const userId = req.params.id;
       const data = req.body;
-      const user = await this.profileService.addExperience(userId, data);
+      const user = await this._profileService.addExperience(userId, data);
       res.status(HttpStatus.OK).json({ user, message: "Experience added successfully" });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add experience" });
@@ -72,7 +72,7 @@ export class ProfileController implements IProfileController {
     try {
       const userId = req.params.id;
       const { experienceId, ...data } = req.body;
-      const user = await this.profileService.editExperience(userId, data, experienceId);
+      const user = await this._profileService.editExperience(userId, data, experienceId);
       res.status(HttpStatus.OK).json({ user, message: "Experience updated successfully" });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to update experience" });
@@ -83,7 +83,7 @@ export class ProfileController implements IProfileController {
     try {
       const userId = req.params.id;
       const data = req.body;
-      const response = await this.profileService.addEducation(userId, data);
+      const response = await this._profileService.addEducation(userId, data);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add education" });
@@ -94,7 +94,7 @@ export class ProfileController implements IProfileController {
     try {
       const userId = req.params.id;
       const { educationId, ...data } = req.body;
-      const response = await this.profileService.editEducation(userId, data, educationId);
+      const response = await this._profileService.editEducation(userId, data, educationId);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to edit education: ${error}` });
@@ -105,7 +105,7 @@ export class ProfileController implements IProfileController {
     try {
       const userId = req.params.id;
       const { skills } = req.body;
-      const response = await this.profileService.addSkill(userId, skills);
+      const response = await this._profileService.addSkill(userId, skills);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add skills" });
@@ -120,7 +120,7 @@ export class ProfileController implements IProfileController {
        res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid resume URL" });
        return
       }
-      const response = await this.profileService.uploadResume(userId, resumeUrl);
+      const response = await this._profileService.uploadResume(userId, resumeUrl);
       res.json({ response });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to upload resume" });
@@ -130,7 +130,7 @@ export class ProfileController implements IProfileController {
   public deleteResume = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.id;
-      const response = await this.profileService.deleteResume(userId);
+      const response = await this._profileService.deleteResume(userId);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to delete resume" });
@@ -140,7 +140,7 @@ export class ProfileController implements IProfileController {
   public subscriptionHistory = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.id;
-      const response = await this.profileService.subscriptionHistory(userId);
+      const response = await this._profileService.subscriptionHistory(userId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to fetch subscription history" });

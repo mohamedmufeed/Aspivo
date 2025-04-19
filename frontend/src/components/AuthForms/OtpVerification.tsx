@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { resendOtp, verifyOtp } from "../../services/auth"
+import { resendotp, verifyOtp } from "../../services/auth"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../redux/store/store"
 import { login } from "../../redux/slice/authSlice"
@@ -58,7 +58,7 @@ const OtpVerification = () => {
         setResendbtn(false)
         setError("")
         try {
-            const response = await resendOtp({ email })
+            const response = await resendotp({ email })
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message)

@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { StripeRepositories } from "../repositories/stripeRepositories.js";
+import { StripeRepositories } from "../repositories/stripeRepositories";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-02-24.acacia",

@@ -33,13 +33,13 @@ const CompanyVideoCall: React.FC = () => {
       return;
     }
 
-    // Create peer connection
+
     const peer = new Peer(myPeerId, {
       host: "localhost",
       port: 9000,
       path: "/peerjs",
       secure: false,
-      debug: 3, // Add debug level to get more logs
+      debug: 3, 
     });
     
     peerRef.current = peer;
@@ -48,21 +48,19 @@ const CompanyVideoCall: React.FC = () => {
       console.log("Company peer connected with ID:", id);
       setConnectionStatus("Connected to signaling server. Accessing media...");
       
-      // Get user media
+
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then((stream) => {
           localStreamRef.current = stream;
           
-          // Display local video
+    
           if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream;
           }
           
           setConnectionStatus("Waiting for user to join...");
-          
-          // Wait a bit to make sure both peers are ready
+
           if (targetPeerId) {
-            // Try to call the other peer every few seconds
             callAttemptRef.current = window.setInterval(() => {
               if (!isCallInProgress) {
                 tryCallUser(peer, targetPeerId, stream);
@@ -76,21 +74,18 @@ const CompanyVideoCall: React.FC = () => {
         });
     });
 
-    // Handle incoming calls as well (in case the user initiates)
     peer.on("call", (call) => {
-      console.log("Received call from:", call.peer);
       setConnectionStatus("Incoming call...");
       if (callAttemptRef.current !== null) {
         window.clearInterval(callAttemptRef.current);
       }
       setIsCallInProgress(true);
       
-      // Answer the call with our stream
       if (localStreamRef.current) {
         call.answer(localStreamRef.current);
         setConnectionStatus("Call connected");
       } else {
-        // If we don't have our stream yet, get it and then answer
+
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
           .then((stream) => {
             localStreamRef.current = stream;
@@ -106,9 +101,8 @@ const CompanyVideoCall: React.FC = () => {
           });
       }
       
-      // Handle the incoming stream
+    
       call.on("stream", (remoteStream) => {
-        console.log("Received remote stream");
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
         }
@@ -132,7 +126,7 @@ const CompanyVideoCall: React.FC = () => {
       setConnectionStatus("Connection error: " + err.message);
     });
 
-    // Clean up
+   
     return () => {
       if (callAttemptRef.current !== null) {
         window.clearInterval(callAttemptRef.current);
@@ -152,7 +146,7 @@ const CompanyVideoCall: React.FC = () => {
       const call = peer.call(targetId, stream);
       
       call.on("stream", (remoteStream) => {
-        console.log("Received remote stream from user");
+       
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
         }
@@ -172,7 +166,6 @@ const CompanyVideoCall: React.FC = () => {
       call.on("error", (err) => {
         console.error("Call error:", err);
         setConnectionStatus("Call error: " + err.message);
-        // Don't clear the interval - we'll try again
       });
     } catch (err) {
       console.error("Error calling peer:", err);
@@ -182,7 +175,7 @@ const CompanyVideoCall: React.FC = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      // Implement socket message sending here
+      //  message stting  is pending
       console.log("Sending message:", newMessage);
       setNewMessage("");
     }
@@ -195,7 +188,7 @@ const CompanyVideoCall: React.FC = () => {
     if (peerRef.current) {
       peerRef.current.destroy();
     }
-    navigate("/messages");
+    navigate("/company-messages");
   };
 
   const toggleAudio = () => {
