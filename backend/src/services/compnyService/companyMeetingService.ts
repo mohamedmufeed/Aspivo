@@ -8,13 +8,13 @@ import { NotificationService } from "../notificationService.js";
 
 export class CompanyMeetingService implements IComapnyMeetingService {
   constructor(
-    private meetingRepositories: CompanyMeetingRepositories,
-    private notificationService: NotificationService
+    private _meetingRepositories: CompanyMeetingRepositories,
+    private _notificationService: NotificationService
   ) { }
 
   async scheduleMeeting(meetingData: IMeetingData): Promise<MeetinngRespose> {
     try {
-      const meeting = await this.meetingRepositories.createMeeting(meetingData);
+      const meeting = await this._meetingRepositories.createMeeting(meetingData);
       this.scheduleNotification(meeting);
       return {
         meeting,
@@ -39,12 +39,12 @@ export class CompanyMeetingService implements IComapnyMeetingService {
 
   private async notifyParticipants(meeting: IMeetingData) {
     const message = `Your meeting (${meeting.link}) starts in 3 minutes at ${new Date(meeting.startTime).toLocaleString()}`;
-    await this.notificationService.createNotification(
+    await this._notificationService.createNotification(
       meeting.initiatorId.toString(),
       message
     );
     sendNotification("company", meeting.initiatorId.toString(), message);
-    await this.notificationService.createNotification(
+    await this._notificationService.createNotification(
       meeting.targetId.toString(),
       message
     );
@@ -52,7 +52,7 @@ export class CompanyMeetingService implements IComapnyMeetingService {
 
   async getMeetings(companyId: string) {
     try {
-      const meeting = await this.meetingRepositories.findAllMeetings(companyId)
+      const meeting = await this._meetingRepositories.findAllMeetings(companyId)
       return { meeting, message: "Meetings fetched successfully" }
     } catch (error) {
       console.error("Error fetching meetings:", error);

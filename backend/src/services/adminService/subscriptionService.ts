@@ -1,16 +1,16 @@
 import { AdminRepostry } from "../../repositories/adminRepositories";
 
 export class SubscriptionService {
-  constructor(private subscriptionRepository: AdminRepostry) {}
+  constructor(private _subscriptionRepository: AdminRepostry) {}
   async getSubcriptions() {
     const subscription =
-      await this.subscriptionRepository.findSubscriptions();
+      await this._subscriptionRepository.findSubscriptions();
     return { subscription, message: "Subscription fetch sucess full" };
   }
 
   async updateSubscriptionStatus(subscriptionId: string, status: string) {
     const subscription =
-      await this.subscriptionRepository.findSubscriptionById(subscriptionId);
+      await this._subscriptionRepository.findSubscriptionById(subscriptionId);
     if (!subscription) throw new Error("Subscription not found");
     if (!status) throw new Error("Status not found");
     subscription.status = status || subscription.status;

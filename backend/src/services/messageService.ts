@@ -9,10 +9,10 @@ const redisClient = createClient({
 });
 redisClient.on("error", (err) => console.log("Redis client error", err));
 export class MessageService {
-  private messageRepositories: MessageRepostries;
+  private _messageRepositories: MessageRepostries;
 
   constructor() {
-    this.messageRepositories = new MessageRepostries();
+    this._messageRepositories = new MessageRepostries();
   }
 
   async initializeChat(
@@ -55,7 +55,7 @@ export class MessageService {
       console.warn("Socket.IO not initialized, falling back to Redis");
       await redisClient.publish(channel,JSON.stringify(payload));
     }
-    await this.messageRepositories.createChat(channel, senderId, message);
+    await this._messageRepositories.createChat(channel, senderId, message);
     await redisClient.disconnect();
   }
 
@@ -83,7 +83,7 @@ export class MessageService {
 
   async getHistory(channel: string) {
     await redisClient.connect();
-    const messages = await this.messageRepositories.findChat(channel);
+    const messages = await this._messageRepositories.findChat(channel);
     await redisClient.disconnect();
     return messages.map((msg) => ({
       senderId: msg.senderId,
@@ -92,7 +92,7 @@ export class MessageService {
     }));
   }
   async getConversations(userId: string, role: string) {
-    const conversations = await this.messageRepositories.getConversations(
+    const conversations = await this._messageRepositories.getConversations(
       userId,
       role
     );

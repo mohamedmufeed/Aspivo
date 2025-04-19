@@ -5,14 +5,14 @@ import IAdminService from "../../interface/service/admin/adminInterface.js";
 const notificationService = new NotificationService();
 
 export class AdminService   {
-  constructor(private adminRepository: AdminRepostry) {}
+  constructor(private _adminRepository: AdminRepostry) {}
 
   async getAllCompanies() {
-    return await this.adminRepository.findAllCompany();
+    return await this._adminRepository.findAllCompany();
   }
 
   async blockUser(id: string) {
-    const user = await this.adminRepository.findById(id);
+    const user = await this._adminRepository.findById(id);
     if (!user) throw new Error("User not found");
     user.isBlocked = !user.isBlocked;
     await user.save();
@@ -20,7 +20,7 @@ export class AdminService   {
   }
 
   async handleCompanyRequest(companyId: string, action: string) {
-    const company = await this.adminRepository.findComapny(companyId);
+    const company = await this._adminRepository.findComapny(companyId);
     if (!company) throw new Error("Company not found");
     if (action === "Approved") {
       company.status = action || "Approved";
@@ -40,7 +40,7 @@ export class AdminService   {
   }
 
   async approvedCompany() {
-    const company = await this.adminRepository.findApprovedCompany();
+    const company = await this._adminRepository.findApprovedCompany();
     if (!company) {
       throw new Error("Company not found");
     }

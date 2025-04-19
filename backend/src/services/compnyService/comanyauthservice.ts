@@ -4,18 +4,18 @@ import crypto from "crypto";
 import { sendOtpEmail } from "../../utils/sendOtp.js";
 
 export class CompanyAuthService {
-  constructor(private companyRepositories: CompanyRepostries) {}
+  constructor(private _companyRepositories: CompanyRepostries) {}
   async register(
     companyName: string,
     email: string,
     kyc: string,
     userId: string
   ) {
-    const existCompany = await this.companyRepositories.findByEmail(email);
+    const existCompany = await this._companyRepositories.findByEmail(email);
     if (existCompany) {
       throw { status: 404, message: "Company alredy exists" };
     }
-    const { company } = await this.companyRepositories.register(
+    const { company } = await this._companyRepositories.register(
       companyName,
       email,
       kyc,

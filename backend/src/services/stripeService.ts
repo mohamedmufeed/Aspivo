@@ -6,16 +6,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
 });
 
 export class StripeService {
-  private stripeRepositories: StripeRepositories;
+  private _stripeRepositories: StripeRepositories;
 
   constructor() {
-    this.stripeRepositories = new StripeRepositories();
+    this._stripeRepositories = new StripeRepositories();
   }
 
   async setupStripe(userId: string, companyId: string) {
     if (!userId) throw { status: 404, message: "User id is required" };
     if (companyId) {
-      await this.stripeRepositories.verifyCompany(userId, companyId);
+      await this._stripeRepositories.verifyCompany(userId, companyId);
     }
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -49,7 +49,7 @@ export class StripeService {
             console.log("Missing userId in checkout session metadata");
             return;
           }
-          await this.stripeRepositories.storeSubscription({
+          await this._stripeRepositories.storeSubscription({
             subscriptionId: session.subscription,
             userId: userIdSession,
             companyId: companyIdSession || null,
@@ -58,14 +58,14 @@ export class StripeService {
             plan: process.env.STRIPE_PRICE_ID || "",
           });
 
-          await this.stripeRepositories.updateUserSubscription(userIdSession, {
+          await this._stripeRepositories.updateUserSubscription(userIdSession, {
             subscriptionId: session.subscription,
             status: "active",
             amount: session.amount_total / 100,
           });
 
           if (companyIdSession) {
-            await this.stripeRepositories.updateCompanySubscription(
+            await this._stripeRepositories.updateCompanySubscription(
               companyIdSession,
               {
                 subscriptionId: session.subscription,
@@ -88,14 +88,14 @@ export class StripeService {
             return;
           }
 
-          await this.stripeRepositories.updateUserSubscription(userIdUpdated, {
+          await this._stripeRepositories.updateUserSubscription(userIdUpdated, {
             subscriptionId: updatedSubscription.id,
             status: updatedSubscription.status,
             plan: updatedSubscription.items.data[0].price.id,
           });
 
           if (companyIdUpdated) {
-            await this.stripeRepositories.updateCompanySubscription(
+            await this._stripeRepositories.updateCompanySubscription(
               companyIdUpdated,
               {
                 subscriptionId: updatedSubscription.id,
@@ -105,7 +105,7 @@ export class StripeService {
             );
           }
 
-          await this.stripeRepositories.updateSubscriptionStatus(
+          await this._stripeRepositories.updateSubscriptionStatus(
             updatedSubscription.id,
             updatedSubscription.status
           );
@@ -123,14 +123,14 @@ export class StripeService {
             return;
           }
 
-          await this.stripeRepositories.revokeUserFeatures(userIdDeleted);
+          await this._stripeRepositories.revokeUserFeatures(userIdDeleted);
 
           if (companyIdDeleted) {
-            await this.stripeRepositories.revokeCompanyFeatures(
+            await this._stripeRepositories.revokeCompanyFeatures(
               companyIdDeleted
             );
           }
-          await this.stripeRepositories.updateSubscriptionStatus(
+          await this._stripeRepositories.updateSubscriptionStatus(
             deletedSubscription.id,
             deletedSubscription.status
           );
@@ -150,9 +150,9 @@ export class StripeService {
             return;
           }
 
-          await this.stripeRepositories.grantUserFeatures(userIdPayment);
+          await this._stripeRepositories.grantUserFeatures(userIdPayment);
           if (companyIdPayment) {
-            await this.stripeRepositories.grantCompanyFeatures(
+            await this._stripeRepositories.grantCompanyFeatures(
               companyIdPayment
             );
           }

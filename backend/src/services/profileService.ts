@@ -5,12 +5,12 @@ import { SkillRepository } from "../repositories/skillREpositories";
 
 export class ProfileService {
   constructor(
-    private readonly authRepository: AuthRepostry,
-    private readonly skillRepository: SkillRepository
+    private readonly _authRepository: AuthRepostry,
+    private readonly _skillRepository: SkillRepository
   ) {}
 
   async editProfile(id: string, data: ProfileTypes) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     if (data.profileImage) {
@@ -27,13 +27,13 @@ export class ProfileService {
   }
 
   async getProfile(id: string) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
     return { user, message: "User found successfully" };
   }
 
   async editAbout(id: string, about: string) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
     user.about = about || user.about;
     await user.save();
@@ -41,7 +41,7 @@ export class ProfileService {
   }
 
   async addExperience(id: string, data: Experience) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     user.experiences.push({
@@ -55,7 +55,7 @@ export class ProfileService {
   }
 
   async editExperience(id: string, data: Experience, experienceId: string) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     const experience = user.experiences.id(experienceId);
@@ -68,7 +68,7 @@ export class ProfileService {
   }
 
   async addEducation(id: string, data: Education) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     user.education.push(data);
@@ -77,7 +77,7 @@ export class ProfileService {
   }
 
   async editEducation(id: string, data: Education, educationId: string) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     const education = user.education.id(educationId);
@@ -90,7 +90,7 @@ export class ProfileService {
   }
 
   async addSkill(id: string, skills: string[]) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     user.skills = user.skills || [];
@@ -111,9 +111,9 @@ export class ProfileService {
 
     for (const skill of newSkills) {
       try {
-        const exists = await this.skillRepository.findByName(skill);
+        const exists = await this._skillRepository.findByName(skill);
         if (!exists) {
-          await this.skillRepository.create({ name: skill });
+          await this._skillRepository.create({ name: skill });
         }
       } catch (error) {
         console.error(`Error saving skill "${skill}" to suggestions:`, error);
@@ -124,7 +124,7 @@ export class ProfileService {
   }
 
   async uploadResume(id: string, url: string) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     if (url) {
@@ -136,7 +136,7 @@ export class ProfileService {
   }
 
   async deleteResume(id: string) {
-    const user = await this.authRepository.findById(id);
+    const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
 
     if (user.resume) {
@@ -157,10 +157,10 @@ export class ProfileService {
   }
 
   async subscriptionHistory(userId: string) {
-    const user = await this.authRepository.findById(userId);
+    const user = await this._authRepository.findById(userId);
     if (!user) throw new Error("User not found");
 
-    const subscriptions = await this.authRepository.findSubscriptions(userId);
+    const subscriptions = await this._authRepository.findSubscriptions(userId);
     return { subscriptions, message: "Subscriptions found" };
   }
 }
