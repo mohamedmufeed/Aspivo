@@ -24,8 +24,8 @@ const router= express.Router()
 const companyRepository = new CompanyRepostries(Job,Company,JobApplication);
 const companyAuthService = new CompanyAuthService(companyRepository);
 const companyAuthController = new CompanyAuthController(companyAuthService);
-
-const companyJobService = new ComapnayJobService(companyRepository);
+const notificationRepository= new NotificationRepository()
+const companyJobService = new ComapnayJobService(companyRepository,notificationRepository);
 const companyJobController = new CompanyJobController(companyJobService);
 
 const companyRepo = new CompanyProfileRepositiories();
@@ -33,7 +33,7 @@ const companyService = new CompanyProfileService(companyRepo);
 const companyProfileController = new CompanyProfileController(companyService);
 
 
-const notificationService= new NotificationService()
+const notificationService= new NotificationService(notificationRepository)
 const meetingRepository= new CompanyMeetingRepositories()
 const meetingService= new CompanyMeetingService(meetingRepository,notificationService)
 const meetingController= new ComapnyMeetingController(meetingService)

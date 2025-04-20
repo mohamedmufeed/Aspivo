@@ -1,28 +1,34 @@
-import { SkillItemList, User ,ISubscription} from "./userTypes";
+import { SkillItemList, User } from "./userTypes";
 import { Company, IMeetingData, JobApplication, JobData } from "./companyTypes";
+import { IUser } from "../models/user";
+import { ICompany } from "../models/company";
+import { ISkill } from "../models/skills";
+import { ISubscription } from "../models/Subscription";
+import { IJob } from "../models/job";
+import { IJobApplication } from "../models/jobApplication";
 export interface UserServiceResponse {
-  user: User;
+  user: IUser;
   message: string;
 }
 
 export interface CompanySerivceResponse {
-  company: Company;
+  company: ICompany;
   message: string;
 }
 
 
 export  interface SkillServiceResponse{
-    skill:SkillItemList;
+    skill:ISkill[];
     message:string
 }
 
 export interface JobServiceResponse{
-    job:JobData;
+    job:IJob;
     message:string
 }
 
 export interface JobApplicationResponse{
-    applications:JobApplication
+  application:IJobApplication
     message:string
 }
 
@@ -44,3 +50,7 @@ export interface MessageResponse{
   meeting:IMeetingData[];
   message:string
  }
+ export interface SubscriptionHistoryResponse{
+  subscription:ISubscription[]
+  message:string
+}

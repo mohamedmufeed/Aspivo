@@ -9,7 +9,7 @@ import IAuthService from "../interface/service/user/authServiceInterface";
 
 
 
-export class AuthService  {
+export class AuthService implements IAuthService {
   constructor(private _authRepostry: AuthRepostry) {}
   async regitser(userName: string, email: string, password: string) {
     const existUser = await this._authRepostry.findByEmail(email);

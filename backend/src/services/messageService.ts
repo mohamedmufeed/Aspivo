@@ -1,19 +1,23 @@
 
-import { MessageRepostries } from "../repositories/messageRepostries";
+import { ConversationResponse, MessageRepostries } from "../repositories/messageRepostries";
 import { createClient } from "redis";
 import { io } from "../server";
 import Conversation from "../models/conversations";
+import IMessageService from "../interface/service/user/messageServiceInterface";
+import { IChatMessage } from "../models/chat";
 
 const redisClient = createClient({
   url: "redis://localhost:6379",
 });
 redisClient.on("error", (err) => console.log("Redis client error", err));
-export class MessageService {
-  private _messageRepositories: MessageRepostries;
 
-  constructor() {
-    this._messageRepositories = new MessageRepostries();
-  }
+export class MessageService  implements IMessageService{
+  // private _messageRepositories: MessageRepostries;
+
+  // constructor(messageRepositories:MessageRepostries) {
+  //   this._messageRepositories = messageRepositories
+  // }
+    constructor(private _messageRepositories: MessageRepostries) {}
 
   async initializeChat(
     initiatorId: string,
@@ -91,7 +95,7 @@ export class MessageService {
       timestamp: msg.timestamp.toISOString(),
     }));
   }
-  async getConversations(userId: string, role: string) {
+  async getConversations(userId: string, role: string):Promise<ConversationResponse[]>  {
     const conversations = await this._messageRepositories.getConversations(
       userId,
       role

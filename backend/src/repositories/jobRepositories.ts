@@ -1,6 +1,7 @@
 import path from "path";
 import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
+import { AppliedJobWithPopulatedData } from "../types/companyTypes";
 export class JobRepositories {
   async fetchJob(page: number, limit: number) {
     const skip = (page - 1) * limit;
@@ -48,7 +49,7 @@ async JobDetails(jobId: string) {
         select: "companyName logo location", 
       },
     })
-    .lean(); 
+
 
   }
 }

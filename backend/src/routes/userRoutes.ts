@@ -7,20 +7,19 @@ import {  Imageupload } from "../config/multer";
 import protect from "../middleware/authMiddlwware";
 import passport from "passport";
 import { JobController } from "../controllers/user/jobcontroller";
-import { createCheckoutSession } from "../controllers/user/stripeController";
 import { AuthService } from "../services/authService";
 import { AuthRepostry } from "../repositories/userRepositories";
 import { JobRepositories } from "../repositories/jobRepositories";
 import { JobService } from "../services/jobService";
-import { NotificationRepository } from "../repositories/notificationRepository";
 import { NotificationService } from "../services/notificationService";
 import { ProfileService } from "../services/profileService";
 import { SkillRepository } from "../repositories/skillREpositories";
+import { NotificationRepository } from "../repositories/notificationRepository";
 
 
 const router= express.Router()
 
-const authRepostry= new AuthRepostry()
+const authRepostry= new AuthRepostry();
 const authService = new AuthService(authRepostry);
 const authController = new AuthController(authService);
 
@@ -28,7 +27,8 @@ const jobRepositories = new JobRepositories();
 const jobService = new JobService(jobRepositories);
 const jobController = new JobController(jobService);
 
-const notificationService= new NotificationService()
+const notificationRepository= new NotificationRepository()
+const notificationService= new NotificationService(notificationRepository)
 const notificationController = new NotificationController(notificationService);
 
 const skillRepostry= new SkillRepository()

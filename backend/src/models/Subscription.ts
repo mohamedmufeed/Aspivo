@@ -1,5 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
+export interface ISubscription  {
+  userId: mongoose.Types.ObjectId;
+  companyId?: mongoose.Types.ObjectId;
+  subscriptionId: string;
+  plan: string;
+  amount: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 const subscriptionSchema = new Schema(
   {
     userId: {
@@ -32,5 +42,5 @@ const subscriptionSchema = new Schema(
   { timestamps: true }
 );
 
-const Subscription = mongoose.model("Subscription", subscriptionSchema);
+const Subscription = mongoose.model<ISubscription>("Subscription", subscriptionSchema);
 export default Subscription;

@@ -1,11 +1,12 @@
-import { Contact, Company, TeamMember } from "../../../types/companyTypes";
+import { ICompany } from "../../../models/company";
+import { Contact, Company, TeamMember, IComapny } from "../../../types/companyTypes";
 import { CompanySerivceResponse } from "../../../types/interfaceTypes";
 
 export default interface IProfileService{
-    getProfile(companyId:string):CompanySerivceResponse
-    editCompanyProfile(comapnyId:string,data:Company):CompanySerivceResponse
-    editCompanyDescription(comapnyId:string,data:string):CompanySerivceResponse
-    addTechStack(comapnyId:string,stack:string[]):CompanySerivceResponse
-    editTeam(comapnyId:string,members:TeamMember[]):CompanySerivceResponse
-    editContact(companyId:string,contact:Contact[]):CompanySerivceResponse
+    getProfile(companyId:string):Promise<CompanySerivceResponse>
+    editCompanyProfile(comapnyId:string,data:IComapny):Promise<CompanySerivceResponse>
+    editCompanyDescription(comapnyId:string,data:string):Promise<CompanySerivceResponse>
+    addTechStack(comapnyId:string,stack:string[]):Promise<CompanySerivceResponse>
+    editTeam(comapnyId:string,members:TeamMember[]):Promise<CompanySerivceResponse>
+    editContact(companyId:string,contact:Contact[]):Promise<CompanySerivceResponse>
 }

@@ -1,16 +1,18 @@
-import { Education, Experience, ProfileTypes } from "../../../types/userTypes";
-import { UserServiceResponse ,SubscriptionResponse} from "../../../types/interfaceTypes";
+import {   ProfileTypes } from "../../../types/userTypes";
+import { UserServiceResponse ,SubscriptionResponse, SubscriptionHistoryResponse} from "../../../types/interfaceTypes";
+import { Education, Experience } from "../../../models/user";
+import { ISubscription } from "../../../models/Subscription";
 
 export default interface IProfileService {
-editProfile(id:string,data:ProfileTypes):UserServiceResponse
-getProfile(id:string):UserServiceResponse
-editAbout(id:string,about:string):UserServiceResponse
-addExperience(id:string,data:Experience):UserServiceResponse
-editExperience(id:string, data:Experience, experienceId:string):UserServiceResponse
-addEducation(id:string,data:Education):UserServiceResponse
-editEducation(id:string,data:Education,educationId:string):UserServiceResponse
-addSkill(id:string,data:string[]):UserServiceResponse
-uploadResume(id:string,url:string):UserServiceResponse
-deleteResume(id:string):UserServiceResponse
-subscriptionHistory(id:string):SubscriptionResponse
+editProfile(id:string,data:ProfileTypes):Promise<UserServiceResponse>
+getProfile(id:string):Promise<UserServiceResponse>
+editAbout(id:string,about:string):Promise<UserServiceResponse>
+addExperience(id:string,data:Experience):Promise<UserServiceResponse>
+editExperience(id:string, data:Experience, experienceId:string):Promise<UserServiceResponse>
+addEducation(id:string,data:Education):Promise<UserServiceResponse>
+editEducation(id:string,data:Education,educationId:string):Promise<UserServiceResponse>
+addSkill(id:string,data:string[]):Promise<UserServiceResponse>
+uploadResume(id:string,url:string):Promise<UserServiceResponse>
+deleteResume(id:string):Promise<UserServiceResponse>
+subscriptionHistory(userIdd:string):Promise<SubscriptionHistoryResponse>
 }

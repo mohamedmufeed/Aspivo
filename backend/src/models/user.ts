@@ -1,5 +1,64 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Mongoose, Schema, Types } from "mongoose";
 
+import { ObjectId } from "mongodb";
+
+export interface IUser {
+  _id: ObjectId;
+  userName: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  email: string;
+  password?: string;
+  location?: string;
+  position?: string;
+  isAdmin: boolean;
+  about?: string;
+  verified: boolean;
+  experiences: Experience[];
+  education:Education[];
+  skills: string[];
+  profileImage: string;
+  resume: string;
+  isBlocked: boolean;
+  googleId?: string;
+  otp?: string;
+  otpExpires?: Date;
+  customerId?: string;
+  subscription?: {
+    subscriptionId?: string;
+    status?: string;
+    plan?: string;
+  };
+  features: {
+    resumeHighlighting: boolean;
+    unlimitedChat: boolean;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Education {
+  _id: Types.ObjectId;
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: Date;
+  endDate: Date;
+  grade: string;
+}
+
+export interface Experience {
+  _id: Types.ObjectId;
+  title: string;
+  company: string;
+  startDate: Date;
+  endDate: Date|null;
+  employmentType: "Full time" | "Part time" | "Remote" | "Intern" | "Contract";
+  location: string;
+  description: string;
+  currentlyWorking: boolean;
+}
 
 const userSchema = new Schema(
   {
@@ -140,6 +199,6 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
-
-const User = mongoose.model("User", userSchema);
+export type UserDocument = IUser & Document;
+const User = mongoose.model<UserDocument>("User", userSchema);
 export default User;

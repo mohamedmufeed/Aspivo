@@ -1,6 +1,8 @@
+import ISubscriptionSerice from "../../interface/service/admin/subscriptionInterface";
+import { ISubscription } from "../../models/Subscription";
 import { AdminRepostry } from "../../repositories/adminRepositories";
 
-export class SubscriptionService {
+export class SubscriptionService  implements ISubscriptionSerice{
   constructor(private _subscriptionRepository: AdminRepostry) {}
   async getSubcriptions() {
     const subscription =
@@ -8,7 +10,7 @@ export class SubscriptionService {
     return { subscription, message: "Subscription fetch sucess full" };
   }
 
-  async updateSubscriptionStatus(subscriptionId: string, status: string) {
+  async updateSubscriptionStatus(subscriptionId: string, status: string):Promise<{subscription:ISubscription,message:string}> {
     const subscription =
       await this._subscriptionRepository.findSubscriptionById(subscriptionId);
     if (!subscription) throw new Error("Subscription not found");

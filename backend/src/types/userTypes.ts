@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { Experience } from "../models/user";
 export interface ProfileTypes {
   profileImage: string;
   firstName: string;
@@ -30,16 +31,16 @@ export interface User {
     password?: string;
   }
 
-export interface Experience {
-  title: string;
-  company: string;
-  startDate: Date;
-  endDate: Date;
-  employmentType: "Full time" | "Part time" | "Remote" | "Intern" | "Contract";
-  location: string;
-  description: string;
-  currentlyWorking: boolean;
-}
+// export interface Experience {
+//   title: string;
+//   company: string;
+//   startDate: Date;
+//   endDate: Date|null;
+//   employmentType: "Full time" | "Part time" | "Remote" | "Intern" | "Contract";
+//   location: string;
+//   description: string;
+//   currentlyWorking: boolean;
+// }
 
 export interface Education {
   school: string;

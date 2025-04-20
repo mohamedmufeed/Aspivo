@@ -1,4 +1,23 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
+
+export interface IJobApplication extends Document {
+  jobId: Types.ObjectId;        
+  userId: Types.ObjectId;        
+  status: "pending" | "reviewed" | "accepted" | "rejected";
+  appliedAt: Date;
+}
+
+export interface PopulateIUser extends Document {
+  name: string;
+  email: string;
+}
+
+export interface PopulateIJob extends Document {
+  jobTitle: string;
+  typesOfEmployment: string[];
+  company: Types.ObjectId;
+}
+
 
 const JobApplicationSchema = new Schema({
   jobId: {
@@ -23,5 +42,5 @@ const JobApplicationSchema = new Schema({
 });
 
 
-const JobApplication= mongoose.model("JObApplication",JobApplicationSchema)
+const JobApplication= mongoose.model<IJobApplication>("JObApplication",JobApplicationSchema)
 export default JobApplication

@@ -69,7 +69,6 @@ export class CompanyRepostries {
       jobDescription,
       company: comapanyId,
     });
-
     const savedJob = await job.save();
     return { job: savedJob };
   }

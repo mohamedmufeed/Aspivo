@@ -1,12 +1,15 @@
 
-import { CompanyProfileRepositiories } from "../../repositories/companyProfileRepositories.js";
-import { IComapny } from "../../types/companyTypes.js";
-import HttpStatus from "../../utils/httpStatusCode.js";
-import { TeamMember } from "../../types/companyTypes.js";
-import { Contact } from "../../types/companyTypes.js";
-export class CompanyProfileService {
+import { CompanyProfileRepositiories } from "../../repositories/companyProfileRepositories";
+
+import HttpStatus from "../../utils/httpStatusCode";
+import { IComapny, TeamMember } from "../../types/companyTypes";
+import { Contact } from "../../types/companyTypes";
+import IProfileService from "../../interface/service/company/profileInterface";
+import { ICompany } from "../../models/company";
+export class CompanyProfileService  implements IProfileService{
   constructor(private _companyRepo: CompanyProfileRepositiories) {}
-  async getProfile(companyId: string) {
+
+  async getProfile(companyId: string):Promise<{company:ICompany, message:string}> {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
@@ -14,7 +17,8 @@ export class CompanyProfileService {
     return { company, message: "Company Profile updated successfully" };
   }
 
-  async editCompanyProfile(companyId: string, data: IComapny) {
+
+  async editCompanyProfile(companyId: string, data: IComapny):Promise<{company:ICompany, message:string}> {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
@@ -40,20 +44,20 @@ export class CompanyProfileService {
     return { company, message: "Comapny Profile updated sucsess fully" };
   }
 
-  async editCompanyDescription(companyId: string, data: string) {
-    const comapny = await this._companyRepo.findCompanyById(
+  async editCompanyDescription(companyId: string, data: string):Promise<{company:ICompany, message:string}> {
+    const company = await this._companyRepo.findCompanyById(
       companyId
     );
-    if (!comapny) throw new Error("Company not found");
+    if (!company) throw new Error("Company not found");
 
     if (data) {
-      comapny.description = data || comapny.description;
+      company.description = data || company.description;
     }
-    await comapny.save();
-    return { comapny, message: "Comapny description updated sucess fully" };
+    await company.save();
+    return { company, message: "Comapny description updated sucess fully" };
   }
 
-  async addTechStack(comapnyId: string, stack: string[]) {
+  async addTechStack(comapnyId: string, stack: string[]):Promise<{company:ICompany, message:string}> {
     const company = await this._companyRepo.findCompanyById(
       comapnyId
     );
@@ -74,7 +78,7 @@ export class CompanyProfileService {
     return { company, message: "Comapny stack addedd sucsessfilly" };
   }
 
-  async editTeam(companyId: string, members: TeamMember[]) {
+  async editTeam(companyId: string, members: TeamMember[]):Promise<{company:ICompany, message:string}> {
     const company = await this._companyRepo.findCompanyById(companyId);
     if (!company) throw new Error("Company not found");
 
@@ -100,7 +104,7 @@ export class CompanyProfileService {
     };
   }
 
-  async editContact(comapnyId: string, contact: Contact[]) {
+  async editContact(comapnyId: string, contact: Contact[]):Promise<{company:ICompany, message:string}> {
     const company = await this._companyRepo.findCompanyById(comapnyId)
     if (!company) throw new Error("Comapny not found")
     const existingContact = company.contact || []

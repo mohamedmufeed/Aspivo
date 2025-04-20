@@ -1,14 +1,23 @@
+import IJobService, { IPopulatedJobApplication } from "../../interface/service/company/jobInterface";
+import { ICompany } from "../../models/company";
+import { IJob } from "../../models/job";
+import { IJobApplication } from "../../models/jobApplication";
+import { IUser } from "../../models/user";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
+import { NotificationRepository } from "../../repositories/notificationRepository";
 import { sendNotification } from "../../server";
 import { JobData } from "../../types/companyTypes";
-import { NotificationService } from "../notificationService";
 
-const notificationService = new NotificationService();
 export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
-export class ComapnayJobService {
-  constructor(private _companyRepositories: CompanyRepostries) {}
-  async fetchCompany(userId: string) {
+export class ComapnayJobService implements IJobService {
+  constructor(private _companyRepositories: CompanyRepostries, private _notificationRepositories: NotificationRepository) { }
+
+  async fetchCompany(userId: string): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepositories.findByUserId(userId);
+
+    if (!company) {
+      throw new Error("Company not found");
+    }
     return { company, message: "comapany fetched sucsess fully" };
   }
 
@@ -16,9 +25,11 @@ export class ComapnayJobService {
     if (!data) {
       throw { message: "data not found" };
     }
-    const response = await this._companyRepositories.createJob(data);
-
-    return { response, message: "job created sucsess fully" };
+    const job = await this._companyRepositories.createJob(data);
+    if (!job) {
+      throw new Error("Job created failed")
+    }
+    return { job, message: "job created sucsess fully" };
   }
 
   async fetchJob(comapanyId: string) {
@@ -27,7 +38,7 @@ export class ComapnayJobService {
     return { jobs, message: "JOb fetched succsess fully" };
   }
 
-  async editJob(jobId: string, data: JobData) {
+  async editJob(jobId: string, data: JobData):Promise<{job:IJob, message:string}> {
     const job = await this._companyRepositories.findJob(jobId);
     if (!job) throw new Error("JOb not found");
     job.jobTitle = data.jobTitle || job.jobTitle;
@@ -49,14 +60,14 @@ export class ComapnayJobService {
     return { job, message: "Job edited sucsessfully" };
   }
 
-  async deleteJob(jobId: string) {
+  async deleteJob(jobId: string):Promise<{job:IJob, message:string}> {
     if (!jobId) throw new Error("Job id nor found");
     const job = await this._companyRepositories.deleteJob(jobId);
     if (!job) throw new Error("Somthing went wrong in job deleting");
     return { job, message: "job deletion sucsess fully" };
   }
 
-  async getApplicantsForJob(jobId: string, companyId: string) {
+  async getApplicantsForJob(jobId: string, companyId: string):Promise<{applications:IJobApplication[], message:string}> {
     if (!companyId) throw { status: 404, message: "Company id is required" };
     const job = await this._companyRepositories.findJob(jobId);
     if (!job) throw { status: 404, message: "JOb not found" };
@@ -66,22 +77,8 @@ export class ComapnayJobService {
         message: "You are not authorized to view applicants for this job",
       };
     }
+  
     const applications = await this._companyRepositories.findApplications(jobId);
-    // console.log("the applic", applications);
-    // if (applications && applications.length > 0) {
-    //   for (const application of applications) {
-    //     const user = application.userId;
-
-    //     if (!user?.firstName || !user?.lastName || !user?.profileImage) {
-    //       throw {
-    //         status: 400,
-    //         message: `Applicant ${user?.firstName || "Unknown"} ${
-    //           user?.lastName || "Unknown"
-    //         } needs to update their profile`,
-    //       };
-    //     }
-    //   }
-    // }
     return { applications, message: "Job application fetched sucsess" };
   }
 
@@ -96,19 +93,17 @@ export class ComapnayJobService {
     return { applicant, message: "Applicant found" };
   }
 
-  async updateStatus(applicantId: string, status: ApplicationStatus) {
+  async updateStatus(applicantId: string, status: ApplicationStatus):Promise<{application:IJobApplication, message:string}> {
     if (!applicantId) throw { status: 404, message: "Applicant ID required" };
     if (!status) throw { status: 404, message: "Status not found" };
-    const application = await this._companyRepositories.findApplicationAndUpdate(applicantId,status);
+    const application = await this._companyRepositories.findApplicationAndUpdate(applicantId, status);
     if (!application) throw { status: 404, message: "Application not found" };
     const job = await this._companyRepositories.findJob(application?.jobId.toString());
     const jobTitle = job?.jobTitle || "the job position";
     const message = status === "accepted"
-    ? `🎉 Your application for '${jobTitle}' was approved. The company will reach out soon.`
-    : `Your application for '${jobTitle}' was ${status}. Thanks for applying!`;
-  
-   
-    await notificationService.createNotification(
+      ? ` Your application for '${jobTitle}' was approved. The company will reach out soon.`
+      : `Your application for '${jobTitle}' was ${status}. Thanks for applying!`;
+    await this._notificationRepositories.createNotification(
       application.userId.toString(),
       message
     );

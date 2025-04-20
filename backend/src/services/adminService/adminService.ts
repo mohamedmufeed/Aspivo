@@ -1,17 +1,21 @@
 import { AdminRepostry } from "../../repositories/adminRepositories";
 import { NotificationService } from "../notificationService";
 import { sendNotification } from "../../server";
-import IAdminService from "../../interface/service/admin/adminInterface.js";
-const notificationService = new NotificationService();
+import IAdminService from "../../interface/service/admin/adminInterface";
+import { NotificationRepository } from "../../repositories/notificationRepository";
+import { Company } from "../../types/companyTypes";
+import { User } from "../../types/userTypes";
+import { IUser } from "../../models/user";
+import { ICompany } from "../../models/company";
 
-export class AdminService   {
-  constructor(private _adminRepository: AdminRepostry) {}
+export class AdminService  implements IAdminService  {
+  constructor(private _adminRepository: AdminRepostry, private _notificationRespository:NotificationRepository) {}
 
-  async getAllCompanies() {
+  async getAllCompanies():Promise<ICompany[]> {
     return await this._adminRepository.findAllCompany();
   }
 
-  async blockUser(id: string) {
+  async blockUser(id: string):Promise<{user:IUser, message:string}> {
     const user = await this._adminRepository.findById(id);
     if (!user) throw new Error("User not found");
     user.isBlocked = !user.isBlocked;
@@ -19,7 +23,7 @@ export class AdminService   {
     return { user, message: "User status changed successfully" };
   }
 
-  async handleCompanyRequest(companyId: string, action: string) {
+  async handleCompanyRequest(companyId: string, action: string):Promise<{company:ICompany, message:string}> {
     const company = await this._adminRepository.findComapny(companyId);
     if (!company) throw new Error("Company not found");
     if (action === "Approved") {
@@ -31,7 +35,7 @@ export class AdminService   {
     }
     await company.save();
     const message = `Your company '${company.companyName}' has been ${action}!`;
-    await notificationService.createNotification(
+    await this._notificationRespository.createNotification(
       company.userId.toString(),
       message
     );
@@ -39,7 +43,7 @@ export class AdminService   {
     return { company, message: "Company status changed successfully" };
   }
 
-  async approvedCompany() {
+  async approvedCompany():Promise<{company:ICompany[], message:string}> {
     const company = await this._adminRepository.findApprovedCompany();
     if (!company) {
       throw new Error("Company not found");

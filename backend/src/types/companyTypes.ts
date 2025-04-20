@@ -64,7 +64,7 @@ export interface Company {
   contact: string[];
   createdAt: Date;
   updatedAt: Date;
-  status: "Approved" | "Pending" | "Rejected";
+  status: "Pending"| "Approved"| "Declined";
   features: {
     accessToAnalytics: boolean;
     unlimitedJobPosting: boolean;
@@ -103,3 +103,25 @@ export interface IMeetingData {
   createdAt: Date; 
   updatedAt: Date;
 }
+
+ export type AppliedJobWithPopulatedData = {
+  _id: string;
+  userId: string;
+  jobId: {
+    _id: string;
+    jobTitle: string;
+    maximumSalary: number;
+    minimumSalary: number;
+    location: string;
+    typesOfEmployment: string[];
+    company: {
+      _id: string;
+      companyName: string;
+      logo: string;
+      location: string;
+    };
+  };
+  status: "pending" | "reviewed" | "accepted" | "rejected";
+  appliedAt: Date;
+  // other fields you need
+};

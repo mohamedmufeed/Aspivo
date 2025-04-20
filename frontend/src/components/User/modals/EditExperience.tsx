@@ -76,7 +76,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                             endDate: experience.endDate || "",
                             location: experience.location,
                             description: experience.description,
-                            _id: experience.experienceId,
+                            _id: experience._id,
                             currentlyWorking: experience.currentlyWorking || false,
                         });
                         setChecked(experience.currentlyWorking || false);
@@ -133,12 +133,10 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                 ...formData,
                 currentlyWorking: checked
             };
-
-
             const response = await editExperience(userId, experienceData)
 
             if (response) {
-                setProfileData(response.user.user)
+                setProfileData(response.user)
                 onClose();
             } else {
                 console.log("No response received");

@@ -1,11 +1,12 @@
 import { channel } from "diagnostics_channel";
 import mongoose, { Schema } from "mongoose";
 
-export interface ICaht {
-  channel: string;
-  senderId: string;
-  message: string;
-}
+export interface IChatMessage extends Document {
+    channel: string;
+    senderId: string;
+    message: string;
+    timestamp: Date;
+  }
 
 const ChatMessageSchema= new Schema({
     channel:{
@@ -27,5 +28,5 @@ const ChatMessageSchema= new Schema({
     }
 })
 
-const ChatMessage= mongoose.model("ChatMessage", ChatMessageSchema)
+const ChatMessage= mongoose.model<IChatMessage>("ChatMessage", ChatMessageSchema)
 export default ChatMessage

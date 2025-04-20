@@ -59,7 +59,7 @@ const EditCompanyDescriptionModal: React.FC<EditDescriptionModalProps> = ({ setC
     const onSubmit = async (data: FormData) => {
         try {
             const response = await editCompanyDescription(companyId, data)
-            setCompanyData(response.comapny)
+            setCompanyData(response.company)
             onClose()
         } catch (error) {
             console.error("Profile update error:", error);

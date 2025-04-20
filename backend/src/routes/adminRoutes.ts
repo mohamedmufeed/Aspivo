@@ -13,11 +13,12 @@ import { SkillRepository } from "../repositories/skillREpositories";
 import { SkillService } from "../services/adminService/skillService";
 import { SubscriptionService } from "../services/adminService/subscriptionService";
 import protect from "../middleware/authMiddlwware";
+import { NotificationRepository } from "../repositories/notificationRepository";
 const router= express.Router()
 
-
+const notificationRepository= new NotificationRepository()
 const adminRepository = new AdminRepostry(User,Company,Subscription);
-const adminService = new AdminService(adminRepository);
+const adminService = new AdminService(adminRepository,notificationRepository);
 const adminController = new AdminController(adminService);
 
 

@@ -1,13 +1,15 @@
 import Subscription from "../models/Subscription";
-import User from "../models/user";
+import User, { IUser, UserDocument } from "../models/user";
 import { generateRefreshToken,  } from "../utils/jwt";
 import { generateToken } from "../utils/jwt";
 import mongoose from "mongoose";
 import { BaseRepository } from "./baseRepository";
 import { User as UserType } from "../types/userTypes";
 
-export class AuthRepostry{
-  
+export class AuthRepostry extends BaseRepository<UserDocument> {
+  constructor(){
+    super(User);
+  }
   async register(
     userName: string,
     email: string,
@@ -33,10 +35,13 @@ export class AuthRepostry{
   async findByEmail(email: string) {
     return await User.findOne({ email, isBlocked: false });
   }
-  async findById(id: string) {
+  async findById(id: string){
     return await User.findById(new mongoose.Types.ObjectId(id));
   }
   async findSubscriptions(userId:string){
     return await Subscription.find({userId})
+  }
+  async findbyIdAndUpdate(id:string, data:Partial<IUser>){
+    return await User.findByIdAndUpdate(id, data, { new: true });
   }
 }

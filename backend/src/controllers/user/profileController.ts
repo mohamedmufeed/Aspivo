@@ -71,11 +71,13 @@ export class ProfileController implements IProfileController {
   public editExperience = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.id;
-      const { experienceId, ...data } = req.body;
-      const user = await this._profileService.editExperience(userId, data, experienceId);
-      res.status(HttpStatus.OK).json({ user, message: "Experience updated successfully" });
+      const { ...data } = req.body;
+      const response = await this._profileService.editExperience(userId, data);
+      res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to update experience" });
+      const err = error as Error;
+      console.log("the errorr is ",error)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
   };
 
@@ -93,9 +95,9 @@ export class ProfileController implements IProfileController {
   public editEducation = async (req: Request, res: Response): Promise<void> => {
     try {
       const userId = req.params.id;
-      const { educationId, ...data } = req.body;
-      const response = await this._profileService.editEducation(userId, data, educationId);
-      res.status(HttpStatus.OK).json({ response });
+      const { ...data } = req.body;
+      const response = await this._profileService.editEducation(userId, data);
+      res.status(HttpStatus.OK).json(response );
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to edit education: ${error}` });
     }

@@ -1,13 +1,20 @@
 import { AuthRepostry } from "../repositories/userRepositories";
-import { ProfileTypes, Experience, Education } from "../types/userTypes";
+import { ProfileTypes } from "../types/userTypes";
 import cloudinary from "../config/cloudinaryConfig";
 import { SkillRepository } from "../repositories/skillREpositories";
+import { Experience, Education, IUser, UserDocument } from "../models/user";
+import mongoose from "mongoose";
+import { use } from "passport";
+import IProfileService from "../interface/service/user/profileServiceInterface";
+import { ISubscription } from "../models/Subscription";
+import { SubscriptionHistoryResponse, SubscriptionResponse } from "../types/interfaceTypes";
 
-export class ProfileService {
+
+export class ProfileService implements IProfileService {
   constructor(
     private readonly _authRepository: AuthRepostry,
     private readonly _skillRepository: SkillRepository
-  ) {}
+  ) { }
 
   async editProfile(id: string, data: ProfileTypes) {
     const user = await this._authRepository.findById(id);
@@ -22,7 +29,7 @@ export class ProfileService {
     user.position = data.position || user.position;
     user.location = data.location || user.location;
 
-    await user.save();
+    await (user).save();
     return { user, message: "Profile updated successfully" };
   }
 
@@ -54,17 +61,21 @@ export class ProfileService {
     return { user, message: "Experience added successfully" };
   }
 
-  async editExperience(id: string, data: Experience, experienceId: string) {
+  async editExperience(id: string, data: Experience) {
     const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
-
-    const experience = user.experiences.id(experienceId);
-    if (!experience) throw new Error("Experience not found");
-
-    Object.assign(experience, data);
+    const experienceId = data._id;
+    const experienceIndex = user.experiences.findIndex(
+      (exp) => exp._id.toString() === experienceId.toString()
+    );
+    if (experienceIndex === -1) throw new Error("Experience not found");
+    user.experiences[experienceIndex] = {
+      ...user.experiences[experienceIndex],
+      ...data
+    };
     user.markModified("experiences");
-    await user.save();
-    return { user, message: "Experience edited successfully" };
+    const updatedUser = await user.save();
+    return { user: updatedUser, message: "Experience edited successfully" };
   }
 
   async addEducation(id: string, data: Education) {
@@ -76,17 +87,21 @@ export class ProfileService {
     return { user, message: "Education added successfully" };
   }
 
-  async editEducation(id: string, data: Education, educationId: string) {
+  async editEducation(id: string, data: Education,) {
     const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
+    const educationId = data._id
+    const ObjectId = new mongoose.Types.ObjectId(data._id)
+    const educationIndex = user.education.findIndex((edu) => edu._id.toString() === educationId.toString())
 
-    const education = user.education.id(educationId);
-    if (!education) throw new Error("Education not found");
-
-    Object.assign(education, data);
-    user.markModified("education");
-    await user.save();
-    return { user, message: "Education edited successfully" };
+    if (educationIndex === -1) throw new Error("Experience not found");
+    user.education[educationIndex] = {
+      ...user.education[educationIndex],
+      ...data
+    };
+    (user).markModified("education");
+    const updatedUser = await user.save();
+    return { user: updatedUser, message: "Education edited successfully" };
   }
 
   async addSkill(id: string, skills: string[]) {
@@ -156,11 +171,10 @@ export class ProfileService {
     return { user, message: "Resume deleted successfully" };
   }
 
-  async subscriptionHistory(userId: string) {
+  async subscriptionHistory(userId: string):Promise<SubscriptionHistoryResponse> {
     const user = await this._authRepository.findById(userId);
     if (!user) throw new Error("User not found");
-
-    const subscriptions = await this._authRepository.findSubscriptions(userId);
-    return { subscriptions, message: "Subscriptions found" };
+    const subscription = await this._authRepository.findSubscriptions(userId);
+    return { subscription, message: "Subscriptions found" };
   }
 }

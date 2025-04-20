@@ -8,11 +8,7 @@ import { IMessageController } from "../../interface/controller/user/messageContr
 import { ERROR_MESSAGES } from "../../constants/error";
 
 export class MessageController  implements IMessageController{
-  private _messageService: MessageService;
-
-  constructor() {
-    this._messageService = new MessageService();
-  }
+    constructor(private _messageService: MessageService) {}
 
   initializeChatController = async (req: Request, res: Response ): Promise<void> => {
     try {

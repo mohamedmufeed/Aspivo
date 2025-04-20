@@ -1,20 +1,25 @@
-import { use } from "passport";
+
+import INotificationService from "../interface/service/user/notificationService";
+import { INotification } from "../models/notification";
 import { NotificationRepository } from "../repositories/notificationRepository";
-import { INotificationRepository } from "../interface/repositories/NotifictatonRepository";
 
-const notificationRepository = new NotificationRepository();
 
-export class NotificationService {
 
-  async createNotification(userId: string, message: string) {
-    return await notificationRepository.createNotification(userId, message);
-  }
-  async getNotifications(userId: string) {
-    return await notificationRepository.getNotifications(userId);
+
+export class NotificationService  implements INotificationService{
+    constructor(private _notificationRepositories: NotificationRepository) {}
+
+  async createNotification(userId: string, message: string):Promise<INotification> {
+    return await this._notificationRepositories.createNotification(userId, message);
   }
 
-  async isRead(userId: string, notificationId: string) {
-    const userNotifications = await notificationRepository.getNotifications(userId);
+  async getNotifications(userId: string):Promise<INotification[]> {
+    return await this._notificationRepositories.getNotifications(userId);
+  }
+
+
+  async isRead(userId: string, notificationId: string):Promise<{updatedNotification:INotification[], message:string}> {
+    const userNotifications = await this._notificationRepositories.getNotifications(userId);
 
     const notificationToUpdate =  userNotifications.find(
       (notification) => notification.id === notificationId
@@ -23,8 +28,8 @@ export class NotificationService {
     if (!notificationToUpdate) {
       throw new Error("No notification foudn to update");
     }
-    await notificationRepository.updateNotification(notificationId,{isRead:true})
-    const updatedNotification=  await notificationRepository.getNotifications(userId)
+    await this._notificationRepositories.updateNotification(notificationId,{isRead:true})
+    const updatedNotification=  await this._notificationRepositories.getNotifications(userId)
     return { updatedNotification ,message:"Notification updated sucsess fully"};
   }
 }

@@ -1,17 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
-import connectDb from "./config/db.js";
+import connectDb from "./config/db";
 import cors from "cors";
-import userRoutes from "./routes/userRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import companyRoutes from "./routes/companyRoutes.js";
-import messageRoutes from "./routes/messageRoutes.js"
-import stripeRoutes from "./routes/stripeRoutes.js";
+import userRoutes from "./routes/userRoutes";
+import adminRoutes from "./routes/adminRoutes";
+import companyRoutes from "./routes/companyRoutes";
+import messageRoutes from "./routes/messageRoutes"
+import stripeRoutes from "./routes/stripeRoutes";
 import cookieParser from "cookie-parser";
-import passport from "./config/passport.js";
+import passport from "./config/passport";
 import session from "express-session";
 import http from "http";
-import setupSocket from "./config/socket.js";
+import setupSocket from "./config/socket";
 
 dotenv.config();
 connectDb();

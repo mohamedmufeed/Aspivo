@@ -75,7 +75,6 @@ export const addExprience = async (userId: string, data: Experience) => {
 export const editExperience = async (userId: string, data: Experience) => {
   try {
     const response = await api.put(`user/users/${userId}/experience`, data);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

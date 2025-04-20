@@ -3,6 +3,7 @@ import { JobService } from "../../services/jobService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { IJobController } from "../../interface/controller/user/jobControlerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import { error } from "console";
 
 export class JobController implements IJobController {
   private _jobService: JobService;
@@ -32,7 +33,9 @@ export class JobController implements IJobController {
       const response = await this._jobService.getJobDetails(jobId, userId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err=error as Error
+      console.log("the error",err.message)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
     }
   };
 

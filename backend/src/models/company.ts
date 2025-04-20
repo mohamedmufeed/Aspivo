@@ -1,4 +1,44 @@
 import mongoose, { Schema } from "mongoose";
+import { Company } from "../types/companyTypes";
+import { ObjectId } from "mongodb";
+
+export interface ICompany {
+  _id: ObjectId;
+  companyName: string;
+  email: string;
+  location?: string;
+  description?: string;
+  companyUrl?: string;
+  logo: string;
+  kyc: string;
+  userId: ObjectId;
+  status: "Pending" | "Approved" | "Declined";
+  stack: string[];
+  startDate?: Date;
+  industry?: string;
+  contact: {
+    name?: string;
+    url?: string;
+  }[];
+  employees?: string;
+  customerId?: string;
+  subscription?: {
+    subscriptionId?: string;
+    status?: string;
+    plan?: string;
+  };
+  features: {
+    unlimitedJobPosting: boolean;
+    accessToAnalytics: boolean;
+  };
+  team: {
+    position: string;
+    name: string;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 
 const companySchema = new Schema(
   {
@@ -93,5 +133,5 @@ const companySchema = new Schema(
   }
 );
 
-const Company = mongoose.model("Company", companySchema);
+const Company = mongoose.model<ICompany>("Company", companySchema);
 export default Company;

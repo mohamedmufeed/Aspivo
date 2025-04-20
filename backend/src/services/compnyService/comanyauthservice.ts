@@ -1,9 +1,8 @@
-import { CompanyRepostries } from "../../repositories/companyRepositories.js";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
-import { sendOtpEmail } from "../../utils/sendOtp.js";
+import ICompanySerive from "../../interface/service/company/authInterface";
+import { CompanyRepostries } from "../../repositories/companyRepositories";
 
-export class CompanyAuthService {
+
+export class CompanyAuthService implements ICompanySerive {
   constructor(private _companyRepositories: CompanyRepostries) {}
   async register(
     companyName: string,

@@ -1,10 +1,10 @@
 import { log } from "console";
-import IComapnyMeetingService from "../../interface/service/company/meetingInterface.js";
-import { CompanyMeetingRepositories } from "../../repositories/coampanyMeetingRepositories.js";
-import { sendNotification } from "../../server.js";
-import { IMeetingData } from "../../types/companyTypes.js";
-import { MeetinngRespose } from "../../types/interfaceTypes.js";
-import { NotificationService } from "../notificationService.js";
+import IComapnyMeetingService from "../../interface/service/company/meetingInterface";
+import { CompanyMeetingRepositories } from "../../repositories/coampanyMeetingRepositories";
+import { sendNotification } from "../../server";
+import { IMeetingData } from "../../types/companyTypes";
+import { MeetinngRespose } from "../../types/interfaceTypes";
+import { NotificationService } from "../notificationService";
 
 export class CompanyMeetingService implements IComapnyMeetingService {
   constructor(

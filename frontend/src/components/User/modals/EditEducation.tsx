@@ -33,7 +33,7 @@ const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
         startDate: "",
         endDate: "",
         grade: "",
-        educationId: educationId
+        _id: educationId
     });
 
     useEffect(() => {
@@ -86,17 +86,13 @@ const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                             startDate: education.startDate,
                             endDate: education.endDate,
                             grade: education.grade,
-                            educationId: education._id
+                            _id: education._id
                         });
                     }
                 }
-
-
-
-                console.log(" the resposen", user)
-
             } catch (error) {
-console.log("Errrpr ",error)
+                console.error("An unexpected error occurred:", error);
+
             }
         }
 
@@ -117,10 +113,9 @@ console.log("Errrpr ",error)
         }
         try {
             const response = await editEducation(userId, formData)
-
             if (response) {
-                console.log(" the response ", response.response.user)
-                setProfileData(response.response.user)
+                console.log(" the response after submit ", response.user)
+                setProfileData(response.user)
             }
 
             onClose();
