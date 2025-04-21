@@ -133,5 +133,6 @@ const companySchema = new Schema(
   }
 );
 
+export type CompanyDocument = ICompany & Document;
 const Company = mongoose.model<ICompany>("Company", companySchema);
 export default Company;

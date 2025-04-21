@@ -28,7 +28,6 @@ export class ProfileService implements IProfileService {
     user.phoneNumber = data.phoneNumber || user.phoneNumber;
     user.position = data.position || user.position;
     user.location = data.location || user.location;
-
     await (user).save();
     return { user, message: "Profile updated successfully" };
   }

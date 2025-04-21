@@ -108,7 +108,9 @@ const ForgotPasswordForm = () => {
       setOtpError("")
       setEmailError("")
       
-    } catch (error) {
+    } catch (error ) {
+      const err=error as Error
+      console.log(err.message)
       setError(" Error in resending  Otp")
     }
    }

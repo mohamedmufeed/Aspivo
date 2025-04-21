@@ -54,7 +54,6 @@ const JobDetails = () => {
         if (response.job) {
           setJobDetails(response.job)
         }
-
         setResponseUserId(response.job.company.userId)
         if (response.job.company.userId) {
           const userResponse = await getProfile(userId)

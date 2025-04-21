@@ -54,9 +54,12 @@ export class JobService implements IJobService {
     return { applications, message: "saved job fethced sucsess fully" };
   }
 
-  async isApplied(userId: string, jobId: string):Promise<{application:IJobApplication,message:string}> {
-    const application = await this._jobRepositories.findApplication(jobId, userId);
-    if (!application) throw { status: 404, message: "application not found" };
+  async isApplied(userId: string, jobId: string): Promise<{ application: IJobApplication|undefined, message: string }> {
+    const response = await this._jobRepositories.findApplication(jobId, userId);
+    let application
+    if (response) {
+      application = response
+    }
     return { application, message: "Application found sucsess fully" }
   }
 }

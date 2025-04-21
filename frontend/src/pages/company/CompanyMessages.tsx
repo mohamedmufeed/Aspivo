@@ -286,7 +286,7 @@ const CompanyMessages = () => {
         const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
 
         if (channel) {
-            const startTime = new Date(Date.now() + 10 * 60 * 1000);
+            const startTime = new Date(Date.now() + 1 * 60 * 1000);
             const meetingData = {
                 roomId: roomId,
                 peerId: userPeerId,

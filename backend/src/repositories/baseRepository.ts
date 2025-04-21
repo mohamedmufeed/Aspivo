@@ -24,6 +24,12 @@ export class BaseRepository<T> {
     return await this.model.findOne(filter);
   }
 
+async findByIdAndDelete(id:string):Promise<T|null>{
+return await this.model.findByIdAndDelete(id)
+}
 
+async findByIdAndSort(id:string):Promise<T|null>{
+  return await this.model.findById(id).sort({createdAt:-1})
+}
 
 }

@@ -7,6 +7,7 @@ export interface IJobApplication extends Document {
   appliedAt: Date;
 }
 
+
 export interface PopulateIUser extends Document {
   name: string;
   email: string;

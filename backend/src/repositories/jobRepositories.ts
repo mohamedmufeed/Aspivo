@@ -1,8 +1,12 @@
 import path from "path";
-import Job from "../models/job";
+import Job, { JobDocumnet } from "../models/job";
 import JobApplication from "../models/jobApplication";
 import { AppliedJobWithPopulatedData } from "../types/companyTypes";
-export class JobRepositories {
+import { BaseRepository } from "./baseRepository";
+export class JobRepositories extends BaseRepository<JobDocumnet> {
+  constructor (){
+    super(Job)
+  }
   async fetchJob(page: number, limit: number) {
     const skip = (page - 1) * limit;
     const totalJobs = await Job.countDocuments();
@@ -23,7 +27,7 @@ async JobDetails(jobId: string) {
 }
 
   async findJob(jobId: string) {
-    return await Job.findById(jobId);
+    return await this.findById(jobId);
   }
   async findApplication(jobId: string, userId: string) {
     return await JobApplication.findOne({ jobId, userId });

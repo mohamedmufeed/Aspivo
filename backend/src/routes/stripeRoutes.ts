@@ -1,7 +1,8 @@
 import  express from "express";
-import { createCheckoutSession, handleWebhook } from "../controllers/user/stripeController";
+import { StripeController } from "../controllers/user/stripeController";
 
 const router=express.Router()
-router.post("/create-checkout-session",createCheckoutSession)
-router.post("/webhook", express.raw({ type: "application/json" }),handleWebhook);
+const stripeController = new StripeController();
+router.post("/create-checkout-session",stripeController.createCheckoutSession)
+router.post("/webhook", express.raw({ type: "application/json" }),stripeController.handleWebhook);
 export default router

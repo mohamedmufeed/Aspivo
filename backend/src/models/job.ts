@@ -89,6 +89,6 @@ const jobSchema = new Schema({
     timestamps:true
   });
   
-
-const Job= mongoose.model<IJob & Document>("Job",jobSchema) 
+ export type JobDocumnet=IJob & Document
+const Job= mongoose.model<JobDocumnet>("Job",jobSchema) 
 export default Job

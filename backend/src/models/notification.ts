@@ -13,7 +13,7 @@ const NotificationSchema = new Schema<INotification>({
   isRead:{type:Boolean,default:false},
   createdAt: { type: Date, default: Date.now },
 });
-
+export type NotificationDocument= INotification& Document
 const Notification = mongoose.model<INotification>("Notification", NotificationSchema);
 
 export default Notification;
