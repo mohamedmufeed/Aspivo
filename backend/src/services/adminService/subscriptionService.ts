@@ -1,13 +1,12 @@
 import ISubscriptionSerice from "../../interface/service/admin/subscriptionInterface";
 import { ISubscription } from "../../models/Subscription";
 import { AdminRepostry } from "../../repositories/adminRepositories";
+import { GetPaginationQuery, GetSubscriptionResponse } from "../../types/userTypes";
 
 export class SubscriptionService  implements ISubscriptionSerice{
   constructor(private _subscriptionRepository: AdminRepostry) {}
-  async getSubcriptions() {
-    const subscription =
-      await this._subscriptionRepository.findSubscriptions();
-    return { subscription, message: "Subscription fetch sucess full" };
+  async getSubcriptions(query:GetPaginationQuery):Promise<GetSubscriptionResponse> {
+     return await this._subscriptionRepository.findSubscriptions(query);
   }
 
   async updateSubscriptionStatus(subscriptionId: string, status: string):Promise<{subscription:ISubscription,message:string}> {

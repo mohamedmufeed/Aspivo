@@ -42,6 +42,6 @@ const JobApplicationSchema = new Schema({
   },
 });
 
-
-const JobApplication= mongoose.model<IJobApplication>("JObApplication",JobApplicationSchema)
+ export type JobApplicationDocument= IJobApplication & Document
+const JobApplication= mongoose.model<JobApplicationDocument>("JObApplication",JobApplicationSchema)
 export default JobApplication

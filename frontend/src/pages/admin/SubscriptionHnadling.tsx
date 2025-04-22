@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import  { useEffect, useState, useRef, useCallback } from "react";
 import Sidebar from "../../components/Admin/Sidebar";
-import { IoChevronBackOutline } from "react-icons/io5";
-import Profile from "../../assets/person_1.jpg";
-import { ChevronDown, EllipsisVertical } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, EllipsisVertical } from "lucide-react";
 import { getSubcriptions } from "../../services/adminService";
 import { updateSubscriptionStatus } from "../../services/adminService";
 import AdminHeader from "../../components/Admin/AdminHeader";
+import _ from "lodash";
+import SearchBar from "../../components/Admin/SearchBar";
 
 interface Subscription {
     _id: string;
-    userId: {
+    user: {
         _id: string;
         email: string;
         firstName: string;
@@ -28,24 +28,64 @@ const SubscriptionHandling = () => {
     const [selected, setSelectedMenu] = useState("Subscription");
     const [loading, setLoading] = useState(true);
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+    const [currentPage,setCurrentPage]=useState(1)
+    const subscriptionPerPage=6
+    const [totalPages,setTotalPages]=useState(1)
+    const [searchQuery,setSearchQuery]=useState("")
+    const [totalSubscription,setTotalSubscription]=useState(0)
+    const prevRequestRef = useRef<AbortController | null>(null)
     const [dropdownOpen, setDropdownOpen] = useState<string | null>(null); 
     const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    useEffect(() => {
-        const fetchSubscriptions = async () => {
-            setLoading(true);
-            try {
-                const response = await getSubcriptions();
-                console.log(" the repsonse",response.subscription);
+ const fetchSubscriptions = async (page = 1, query = "") => {
+        if (prevRequestRef.current) {
+            prevRequestRef.current.abort()
+        }
+        const abortController = new AbortController()
+        prevRequestRef.current = abortController
+        setLoading(true)
+        try {
+            const response = await getSubcriptions(page, subscriptionPerPage, query, abortController.signal);
+            console.log("the response",response)
+            if (prevRequestRef.current === abortController) {
                 setSubscriptions(response.subscription);
-            } catch (error) {
-                console.log("Error fetching subscriptions:", error);
-            } finally {
+                setTotalSubscription(response.totalSubscription
+                )
+                setTotalPages(response.totalPages)
+            }
+        } catch (error) {
+            if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                console.error("Error fetching Companies:", error);
+            }
+        } finally {
+            if (prevRequestRef.current === abortController) {
                 setLoading(false);
             }
-        };
-        fetchSubscriptions();
-    }, []);
+        }
+    }
+
+      const debouncedFetch = useCallback(
+        _.debounce((page: number, query: string) => {
+            fetchSubscriptions(page, query);
+        }, 300),
+        []
+    );
+
+    useEffect(() => {
+        if (searchQuery) {
+            debouncedFetch(currentPage, searchQuery)
+        } else {
+            fetchSubscriptions(currentPage, searchQuery)
+        }
+
+    }, [currentPage, searchQuery, location])
+
+    const handleSeach = (query: string) => {
+        setSearchQuery(query)
+        if (currentPage !== 1) setCurrentPage(1)
+        debouncedFetch(1, query)
+    }
+
 
 
     useEffect(() => {
@@ -96,9 +136,9 @@ const SubscriptionHandling = () => {
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
                       <AdminHeader heading="Subscription Management"/>
-              
+              <SearchBar placeholder="Search Subscriptions.." onSearch={handleSeach}/>
 
-                <hr className="border-black border-1.5" />
+            
 
                 <div className="w-full p-5">
                     <div className="grid grid-cols-5 items-center font-medium bg-gray-100 p-3 rounded-md">
@@ -121,9 +161,9 @@ const SubscriptionHandling = () => {
                                 className="grid grid-cols-5 items-center bg-white shadow-lg p-4 rounded-md my-2"
                             >
                                 <h1 className="text-center">
-                                    {subscription.userId.firstName} {subscription.userId.lastName}
+                                    {subscription.user.firstName} {subscription.user.lastName}
                                 </h1>
-                                <h1 className="text-center text-sm">{subscription.userId.email}</h1>
+                                <h1 className="text-center text-sm">{subscription.user.email}</h1>
                                 <h1 className="text-center">
                                     {new Date(subscription.createdAt).toLocaleDateString()}
                                 </h1>
@@ -168,6 +208,35 @@ const SubscriptionHandling = () => {
                             </div>
                         ))
                     )}
+                </div>
+                <div className="flex items-center justify-center space-x-4 mt-8">
+                    <button
+                        className="p-3 rounded-md hover:bg-gray-200 disabled:opacity-50"
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft size={18} />
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, page) => (
+                        <button
+                            key={page}
+                            className={`p-3 w-8 h-8 rounded-sm flex items-center justify-center font-bold ${
+                                currentPage === page + 1 ? "bg-orange-600 text-white" : "bg-gray-200"
+                            }`}
+                            onClick={() => setCurrentPage(page + 1)}
+                        >
+                            {page + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        className="p-3 rounded-md hover:bg-gray-200 disabled:opacity-50"
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronRight size={18} />
+                    </button>
                 </div>
             </div>
         </div>

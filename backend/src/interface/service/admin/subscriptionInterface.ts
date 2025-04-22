@@ -1,6 +1,7 @@
 import { ISubscription } from "../../../models/Subscription";
 import { SubscriptionResponse } from "../../../types/interfaceTypes";
+import { GetPaginationQuery, GetSubscriptionResponse } from "../../../types/userTypes";
 export default interface ISubscriptionSerice{
-    getSubcriptions():Promise<{subscription:ISubscription[], message:string}>
+    getSubcriptions(query:GetPaginationQuery):Promise<GetSubscriptionResponse>
     updateSubscriptionStatus(subscriptionId:string,status:string):Promise<SubscriptionResponse>
 }

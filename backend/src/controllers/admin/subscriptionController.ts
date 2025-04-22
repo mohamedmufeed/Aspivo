@@ -3,19 +3,33 @@ import { SubscriptionService } from "../../services/adminService/subscriptionSer
 import HttpStatus from "../../utils/httpStatusCode";
 import ISubscriptionController from "../../interface/controller/admin/subscriptionControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import { GetPaginationQuery } from "../../types/userTypes";
 
-export class SubscriptionController  implements ISubscriptionController{
-  constructor(private _subscriptionService: SubscriptionService) {}
+export class SubscriptionController implements ISubscriptionController {
+  constructor(private _subscriptionService: SubscriptionService) { }
 
   getSubscriptions = async (req: Request, res: Response) => {
     try {
-      const response = await this._subscriptionService.getSubcriptions();
-      res.status(HttpStatus.OK).json(response);
+      const { page = 1, limit = 1, q = "" } = req.query
+      const query: GetPaginationQuery = {
+        page: Number(page),
+        limit: Number(limit),
+        searchQuery: String(q)
+
+      }
+      const result = await this._subscriptionService.getSubcriptions(query);
+      res.status(HttpStatus.OK).json({
+        sucsess: true,
+        subscription: result.subscription,
+        totalSubscription: result.totalSubscription,
+        totalPages: result.totalPages,
+        message: "Subscription fetching successful"
+      });
     } catch (error) {
       console.log("Error fetching subscriptions:", error);
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR});
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -32,7 +46,7 @@ export class SubscriptionController  implements ISubscriptionController{
       console.log("Error updating subscription status:", error);
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message:ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 }

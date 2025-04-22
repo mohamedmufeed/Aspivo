@@ -20,21 +20,6 @@ const setupSocket = (server: HttpServer) => {
     const meetingRooms = new Map<string, Set<string>>();
     const onlineUsers = new Map();
     io.on("connection", (socket) => {
-        console.log("A user conccets", socket.id)
-        // regitser user
-        // socket.on("registerUser", (role: string, userId: string) => {
-        //     if (!userSockets.has(role)) {
-        //         userSockets.set(role, new Map<string, string>())
-        //     }
-        //     userSockets.get(role)?.set(userId, socket.id)
-        //     if (userId) {
-        //         onlineUsers.set(userId, socket.id);
-        //         socket.broadcast.emit("user-online", { targetId: userId, isOnline: true }); // Consistent payload
-        //         // Send initial online users to the newly connected client
-        //         socket.emit("online-users", Array.from(onlineUsers.keys()).map((id) => ({ targetId: id, isOnline: true })));
-        //       }
-
-        // })
         socket.on("registerUser", (role: string, userId: string) => {
             // console.log(`User ${userId} registered as ${role}`);
             
@@ -46,12 +31,7 @@ const setupSocket = (server: HttpServer) => {
             
             if (userId) {
                 onlineUsers.set(userId, socket.id);
-                // console.log(`User ${userId} is now online`);
-                
-                // Broadcast to all clients that this user is online
                 socket.broadcast.emit("user-online", { targetId: userId, isOnline: true });
-                
-                // Send current online users to newly connected client
                 const onlineUsersList = Array.from(onlineUsers.keys()).map(id => ({
                     targetId: id,
                     isOnline: true
@@ -156,6 +136,9 @@ const setupSocket = (server: HttpServer) => {
                 callback({ success: false });
             }
         })
+
+
+
         socket.on("disconnect", (reason: string) => {
             console.log("User disconnected:", socket.id, "Reason:", reason);
             for (const [role, users] of userSockets.entries()) {

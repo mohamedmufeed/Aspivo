@@ -1,6 +1,7 @@
+import { ISkillRepository } from "../interface/repositories/skillRepositories";
 import Skill, { SkillDocument } from "../models/skills";
 import { BaseRepository } from "./baseRepository";
-export class SkillRepository extends BaseRepository<SkillDocument>{
+export class SkillRepository extends BaseRepository<SkillDocument> implements ISkillRepository{
     constructor(){
         super(Skill)
     }

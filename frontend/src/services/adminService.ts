@@ -1,16 +1,54 @@
-import  { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import api from "./api";
 
-export const fetchUsers = async () => {
+export const fetchUsers = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/users`);
+    const response = await api.get(`admin/users`, {
+      params: {
+        page,
+        limit,
+        q: searchQuery
+      },
+      signal // This allows the request to be aborted if needed
+    });
     return response.data;
   } catch (error) {
+    // Don't throw errors for aborted requests
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+
     if (error instanceof AxiosError) {
       console.error("Fetching Error:", error);
       throw new Error(
         error.response?.data?.message ||
-          "Something went wrong. Please try again."
+        "Something went wrong. Please try again."
+      );
+    }
+    throw new Error("Something went wrong. Please try again.");
+  }
+};
+export const getAllCompany = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
+  try {
+    const response = await api.get(`admin/companies`, {
+      params: {
+        page,
+        limit,
+        q: searchQuery
+      },
+      signal
+    });
+    return response.data;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+
+    if (error instanceof AxiosError) {
+      console.error("Fetching Error:", error);
+      throw new Error(
+        error.response?.data?.message ||
+        "Something went wrong. Please try again."
       );
     }
     throw new Error("Something went wrong. Please try again.");
@@ -26,23 +64,14 @@ export const blockUser = async (userId: string) => {
       console.error("Blocking the user:", error);
       throw new Error(
         error.response?.data?.message ||
-          "Something went wrong. Please try again."
+        "Something went wrong. Please try again."
       );
     }
     throw new Error("Something went wrong. Please try again.");
   }
 };
 
-export const getAllCompany = async () => {
-  try {
-    const response = await api.get(`admin/companies`);
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Fetch company:", error.response?.data);
-    }
-  }
-};
+
 
 export const updateCompanyStatus = async (
   comapnyId: string,
@@ -59,9 +88,16 @@ export const updateCompanyStatus = async (
   }
 };
 
-export const approvedCompany = async () => {
+export const approvedCompany = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/companies/approved`);
+    const response = await api.get(`admin/companies/approved`, {
+      params: {
+        page,
+        limit,
+        q: searchQuery
+      },
+      signal
+    });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -103,9 +139,16 @@ export const removeSkill = async (skillId: string) => {
   }
 };
 
-export const getSubcriptions=async()=>{
+export const getSubcriptions = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response=await api.get(`admin/subscriptions`)
+    const response = await api.get(`admin/subscriptions`,{
+      params: {
+        page,
+        limit,
+        q: searchQuery
+      },
+      signal
+    })
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -113,13 +156,13 @@ export const getSubcriptions=async()=>{
     }
   }
 }
-export const updateSubscriptionStatus = async (subscriptionId: string, { status }: { status: "active" | "inactive" | "cancelled" })=>{
+export const updateSubscriptionStatus = async (subscriptionId: string, { status }: { status: "active" | "inactive" | "cancelled" }) => {
   try {
-    const response=await api.patch(`admin/subscriptions/${subscriptionId}/status`,{status})
+    const response = await api.patch(`admin/subscriptions/${subscriptionId}/status`, { status })
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error("updating subscription status subscriptions:", error.response?.data);
     }
   }
- }
+}

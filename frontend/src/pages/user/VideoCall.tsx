@@ -6,7 +6,7 @@ import { RxExit } from "react-icons/rx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
-
+import type { DataConnection } from 'peerjs';
 const VideoCall = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -21,10 +21,22 @@ const VideoCall = () => {
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const peerRef = useRef<Peer | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
+  const dataConnectionRef = useRef<DataConnection | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  
   const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState<Array<{sender: string, text: string, timestamp: number}>>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("Waiting for media access...");
+  const [remotePeerId, setRemotePeerId] = useState<string | null>(null);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!peerId) {
@@ -46,12 +58,19 @@ const VideoCall = () => {
       console.log("User peer connected with ID:", id);
       setConnectionStatus("Connected. Waiting for call...");
       
+      // Set up data connection handler
+      peer.on("connection", (dataConn) => {
+        console.log("Received data connection from:", dataConn.peer);
+        setRemotePeerId(dataConn.peer);
+        dataConnectionRef.current = dataConn;
+        
+        setupDataConnectionHandlers(dataConn);
+      });
  
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then((stream) => {
           localStreamRef.current = stream;
           
-        
           if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream;
           }
@@ -64,10 +83,10 @@ const VideoCall = () => {
         });
     });
 
-
     peer.on("call", (call) => {
       console.log("Received call from:", call.peer);
       setConnectionStatus("Incoming call...");
+      setRemotePeerId(call.peer);
     
       if (localStreamRef.current) {
         call.answer(localStreamRef.current);
@@ -93,11 +112,20 @@ const VideoCall = () => {
           remoteVideoRef.current.srcObject = remoteStream;
         }
         setConnectionStatus("Call in progress");
+        
+        // Establish data connection for chat if we haven't already
+        if (call.peer && !dataConnectionRef.current) {
+          connectForChat(call.peer);
+        }
       });
       
       call.on("error", (err) => {
         console.error("Call error:", err);
         setConnectionStatus("Call error: " + err.message);
+      });
+      
+      call.on("close", () => {
+        setConnectionStatus("Call ended");
       });
     });
 
@@ -111,14 +139,86 @@ const VideoCall = () => {
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
       }
+      if (dataConnectionRef.current) {
+        dataConnectionRef.current.close();
+      }
       peer.destroy();
     };
   }, [peerId]);
 
+  const setupDataConnectionHandlers = (dataConn:DataConnection) => {
+    dataConn.on("open", () => {
+      console.log("Data connection opened with:", dataConn.peer);
+    });
+    
+    dataConn.on("data", (data:any) => {
+      console.log("Received data:", data);
+      if (typeof data === "object" && data?.type === "chat") {
+        setMessages(prev => [...prev, {
+          sender: "remote",
+          text: data.message,
+          timestamp: Date.now()
+        }]);
+      }
+    });
+    
+    dataConn.on("error", (err:Error) => {
+      console.error("Data connection error:", err);
+    });
+    
+    dataConn.on("close", () => {
+      console.log("Data connection closed");
+      dataConnectionRef.current = null;
+    });
+  };
+
+  const connectForChat = (targetPeerId: string) => {
+    if (!peerRef.current || dataConnectionRef.current) return;
+    
+    console.log("Establishing data connection with:", targetPeerId);
+    const dataConn = peerRef.current.connect(targetPeerId);
+    dataConnectionRef.current = dataConn;
+    
+    setupDataConnectionHandlers(dataConn);
+  };
+
   const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      console.log("Sending message:", newMessage);
+    if (newMessage.trim() && dataConnectionRef.current) {
+      // Send message through data connection
+      dataConnectionRef.current.send({
+        type: "chat",
+        message: newMessage.trim()
+      });
+      
+      // Add message to local state
+      setMessages(prev => [...prev, {
+        sender: "local",
+        text: newMessage.trim(),
+        timestamp: Date.now()
+      }]);
+      
       setNewMessage("");
+    } else if (newMessage.trim() && remotePeerId && peerRef.current) {
+      // If we don't have a data connection yet but do have the remote peer ID
+      connectForChat(remotePeerId);
+      
+      // We'll add a small delay to allow the connection to establish
+      setTimeout(() => {
+        if (dataConnectionRef.current) {
+          dataConnectionRef.current.send({
+            type: "chat",
+            message: newMessage.trim()
+          });
+          
+          setMessages(prev => [...prev, {
+            sender: "local",
+            text: newMessage.trim(),
+            timestamp: Date.now()
+          }]);
+          
+          setNewMessage("");
+        }
+      }, 1000);
     }
   };
 
@@ -147,6 +247,13 @@ const VideoCall = () => {
       });
       setIsVideoOff(!isVideoOff);
     }
+  };
+
+  const formatTime = (timestamp: number) => {
+    return new Date(timestamp).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
   };
 
   return (
@@ -205,8 +312,31 @@ const VideoCall = () => {
       <div className="w-1/3 bg-white shadow-lg rounded-l-2xl p-4 flex flex-col">
         <h1 className="text-xl font-semibold p-3">Messages</h1>
         <hr className="text-gray-300" />
-        <div className="flex-1 overflow-y-auto space-y-3 pt-4">
-          {/* Messages will go here */}
+        <div className="flex-1 overflow-y-auto space-y-3 p-4">
+          {messages.length === 0 ? (
+            <p className="text-gray-400 text-center italic">No messages yet</p>
+          ) : (
+            messages.map((msg, index) => (
+              <div 
+                key={index} 
+                className={`flex ${msg.sender === "local" ? "justify-end" : "justify-start"}`}
+              >
+                <div 
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    msg.sender === "local" 
+                      ? "bg-orange-500 text-white" 
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  {msg.text}
+                  <div className="text-xs mt-1 opacity-70">
+                    {formatTime(msg.timestamp)}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={messagesEndRef} />
         </div>
         <div className="mt-4 flex gap-3">
           <input
@@ -217,7 +347,10 @@ const VideoCall = () => {
             className="w-full p-2 bg-white shadow-xl border border-gray-100 pl-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          <div onClick={handleSendMessage} className="bg-orange-600 rounded-lg p-5 cursor-pointer">
+          <div 
+            onClick={handleSendMessage} 
+            className={`rounded-lg p-5 cursor-pointer ${newMessage.trim() ? 'bg-orange-600' : 'bg-gray-300'}`}
+          >
             <LuSend className="text-white w-5 h-5" />
           </div>
         </div>

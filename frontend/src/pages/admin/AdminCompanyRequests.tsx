@@ -1,10 +1,11 @@
 import Sidebar from "../../components/Admin/Sidebar";
-import { useEffect, useState } from "react";
-import { IoChevronBackOutline } from "react-icons/io5";
-import profile from "../../assets/person_1.jpg";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { EllipsisVertical, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { getAllCompany, updateCompanyStatus } from "../../services/adminService";
 import AdminHeader from "../../components/Admin/AdminHeader";
+import SearchBar from "../../components/Admin/SearchBar";
+import _ from "lodash";
+import { useLocation } from "react-router-dom";
 
 interface Company {
     _id: string;
@@ -16,16 +17,63 @@ interface Company {
 }
 
 const AdminCompanyRequests = () => {
+    const location = useLocation();
     const [selected, setSelectedMenu] = useState("Dashboard");
     const [companyDetail, setCompanyDetail] = useState<Company[]>([]);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [companiesPerPage] = useState(7);
-    const totalPages = Math.ceil((companyDetail?.length || 0) / companiesPerPage);
-    const indexOfLastCompany = currentPage * companiesPerPage;
-    const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
-    const currentCompanies = companyDetail?.slice(indexOfFirstCompany, indexOfLastCompany) || [];
+    const companiesPerPage = 6;
+    const [totalPages, setTotalPages] = useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [totalCompanies, setTotalCompanies] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const prevRequestRef = useRef<AbortController | null>(null);
 
+    const fetchCompanyData = async (page = 1, query = "") => {
+        if (prevRequestRef.current) {
+            prevRequestRef.current.abort();
+        }
+        const abortController = new AbortController();
+        prevRequestRef.current = abortController;
+        setLoading(true);
+        try {
+            const response = await getAllCompany(page, companiesPerPage, query, abortController.signal);
+            if (prevRequestRef.current === abortController) {
+                setCompanyDetail(response.companies);
+                setTotalPages(response.totalPages);
+                setTotalCompanies(response.totalRequest);
+            }
+        } catch (error) {
+            if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                console.error("Error fetching Companies:", error);
+            }
+        } finally {
+            if (prevRequestRef.current === abortController) {
+                setLoading(false);
+            }
+        }
+    };
+
+    const debouncedFetch = useCallback(
+        _.debounce((page: number, query: string) => {
+            fetchCompanyData(page, query);
+        }, 300),
+        []
+    );
+
+    useEffect(() => {
+        if (searchQuery) {
+            debouncedFetch(currentPage, searchQuery);
+        } else {
+            fetchCompanyData(currentPage, searchQuery);
+        }
+    }, [currentPage, searchQuery, location]);
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        if (currentPage !== 1) setCurrentPage(1);
+        debouncedFetch(1, query);
+    };
 
     const handleStatusChange = async (companyId: string, newStatus: string) => {
         try {
@@ -35,7 +83,7 @@ const AdminCompanyRequests = () => {
                     company._id === companyId ? { ...company, status: newStatus } : company
                 )
             );
-            setCurrentPage(1); 
+            setCurrentPage(1);
             setOpenDropdown(null);
         } catch (error) {
             console.error("Error updating company status:", error);
@@ -43,25 +91,20 @@ const AdminCompanyRequests = () => {
     };
 
     useEffect(() => {
-        const fetchCompany = async () => {
-            try {
-                const response = await getAllCompany();
-                console.log(" thre reposen",response.companies
-                );
-                setCompanyDetail(response.companies);
-                setCurrentPage(1); 
-            } catch (error) {
-                console.log("error in fetching company");
+        return () => {
+            debouncedFetch.cancel();
+            if (prevRequestRef.current) {
+                prevRequestRef.current.abort();
             }
         };
-        fetchCompany();
     }, []);
 
     return (
         <div className="flex">
             <Sidebar setSelected={setSelectedMenu} />
             <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                <AdminHeader heading="Requests"/>
+                <AdminHeader heading="Requests" />
+                <SearchBar placeholder="Search Requests..." onSearch={handleSearch} />
                 <div className="w-full p-5">
                     {/* Header Row */}
                     <div className="grid grid-cols-7 items-center font-semibold bg-gray-100 p-3 rounded-md">
@@ -75,8 +118,10 @@ const AdminCompanyRequests = () => {
                     </div>
                     <hr className="border-gray-600 my-3" />
 
-                    {currentCompanies && currentCompanies.length > 0 ? (
-                        currentCompanies.map((company) => (
+                    {loading ? (
+                        <p className="text-center text-gray-500 mt-5">Loading...</p>
+                    ) : companyDetail && companyDetail.length > 0 ? (
+                        companyDetail.map((company) => (
                             <div key={company._id} className="grid grid-cols-7 items-center bg-white shadow-md p-4 rounded-lg my-2">
                                 <h1 className="text-center font-medium">{company.companyName}</h1>
                                 <h1 className="text-center text-sm text-gray-600">{company.email}</h1>

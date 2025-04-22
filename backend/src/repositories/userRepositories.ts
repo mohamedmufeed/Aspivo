@@ -4,9 +4,10 @@ import { generateRefreshToken,  } from "../utils/jwt";
 import { generateToken } from "../utils/jwt";
 import mongoose from "mongoose";
 import { BaseRepository } from "./baseRepository";
-import { User as UserType } from "../types/userTypes";
+import { IAuthRepository } from "../interface/repositories/userRepositories";
 
-export class AuthRepostry extends BaseRepository<UserDocument> {
+
+export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuthRepository{
   constructor(){
     super(User);
   }

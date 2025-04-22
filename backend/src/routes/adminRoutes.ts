@@ -31,7 +31,7 @@ const subscriptionService = new SubscriptionService(adminRepository);
 const subscriptionController = new SubscriptionController(subscriptionService);
 
 
-const userController = new UserManagementController(adminService,adminRepository);
+const userController = new UserManagementController(adminService);
 
 // router.get("/admin-userManagement",userController.getUsers)
 // router.patch("/block-user/:id",userController.blockUser)

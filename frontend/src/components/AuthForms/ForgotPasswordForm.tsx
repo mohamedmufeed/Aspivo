@@ -94,6 +94,8 @@ const ForgotPasswordForm = () => {
         navigate("/")
       }
     } catch (error) {
+      const err=error as Error
+      console.log(err.message)
       setError("Something Went Wrong")
     }
   }

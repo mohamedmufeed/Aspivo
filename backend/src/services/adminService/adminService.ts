@@ -4,18 +4,21 @@ import { sendNotification } from "../../server";
 import IAdminService from "../../interface/service/admin/adminInterface";
 import { NotificationRepository } from "../../repositories/notificationRepository";
 import { Company } from "../../types/companyTypes";
-import { User } from "../../types/userTypes";
+import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersResponse, User } from "../../types/userTypes";
 import { IUser } from "../../models/user";
-import { ICompany } from "../../models/company";
+import { CompanyDocument, ICompany } from "../../models/company";
 
-export class AdminService  implements IAdminService  {
-  constructor(private _adminRepository: AdminRepostry, private _notificationRespository:NotificationRepository) {}
+export class AdminService implements IAdminService {
+  constructor(private _adminRepository: AdminRepostry, private _notificationRespository: NotificationRepository) { }
 
-  async getAllCompanies():Promise<ICompany[]> {
-    return await this._adminRepository.findAllCompany();
+  async getAllCompanies(query:GetPaginationQuery): Promise<GetCompanyResponse> {
+    return await this._adminRepository.findAllCompany(query);
+  }
+  async getAllUsers(query: GetPaginationQuery): Promise<GetUsersResponse> {
+    return await this._adminRepository.getAllUsers(query);
   }
 
-  async blockUser(id: string):Promise<{user:IUser, message:string}> {
+  async blockUser(id: string): Promise<{ user: IUser, message: string }> {
     const user = await this._adminRepository.findById(id);
     if (!user) throw new Error("User not found");
     user.isBlocked = !user.isBlocked;
@@ -23,17 +26,19 @@ export class AdminService  implements IAdminService  {
     return { user, message: "User status changed successfully" };
   }
 
-  async handleCompanyRequest(companyId: string, action: string):Promise<{company:ICompany, message:string}> {
-    const company = await this._adminRepository.findComapny(companyId);
-    if (!company) throw new Error("Company not found");
+  async handleCompanyRequest(companyId: string, action: string): Promise<{ company: CompanyDocument, message: string }> {
+    const existingcompany = await this._adminRepository.findComapny(companyId);
+    if (!existingcompany) throw new Error("Company not found");
+    let status = ""
     if (action === "Approved") {
-      company.status = action || "Approved";
+      status = action || "Approved";
     } else if (action === "Declined") {
-      company.status = action || "Declined";
+      status = action || "Declined";
     } else {
-      company.status = "Pending";
+      status = "Pending";
     }
-    await company.save();
+    const company= await this._adminRepository.findByIdAndUpdateStatus(companyId, status)
+    if(!company) throw new Error("Comapny Not found or Eror in updaing status")
     const message = `Your company '${company.companyName}' has been ${action}!`;
     await this._notificationRespository.createNotification(
       company.userId.toString(),
@@ -43,11 +48,10 @@ export class AdminService  implements IAdminService  {
     return { company, message: "Company status changed successfully" };
   }
 
-  async approvedCompany():Promise<{company:ICompany[], message:string}> {
-    const company = await this._adminRepository.findApprovedCompany();
-    if (!company) {
-      throw new Error("Company not found");
-    }
-    return { company, message: "Approved company found successfully" };
+  async approvedCompany(query:GetPaginationQuery): Promise<GetApprovedCompanyResponse> {
+     return  await this._adminRepository.findApprovedCompany(query);
+  
   }
+
+
 }

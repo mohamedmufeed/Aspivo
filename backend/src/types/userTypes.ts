@@ -1,5 +1,7 @@
 import { ObjectId } from "mongodb";
-import { Experience } from "../models/user";
+import { Experience, IUser } from "../models/user";
+import {  ICompany } from "../models/company";
+import { ISubscription as ISubscriptionType } from "../models/Subscription";
 export interface ProfileTypes {
   profileImage: string;
   firstName: string;
@@ -69,3 +71,32 @@ export interface ISubscription extends Document {
   amount: number;
   status: string;
 }
+
+export interface GetPaginationQuery {
+  page: number;
+  limit: number;
+  searchQuery: string;
+}
+
+export interface GetUsersResponse {
+  users: IUser[];
+  totalUsers: number;
+  totalPages: number;
+}
+
+export interface GetCompanyResponse{
+  companies:ICompany[]
+  totalRequest: number;
+  totalPages: number;
+}
+ export interface GetApprovedCompanyResponse{
+  company:ICompany[]
+  totalCompany:number
+  totalPages:number
+ }
+
+ export interface GetSubscriptionResponse{
+  subscription:ISubscriptionType[]
+  totalSubscription:number
+  totalPages:number
+ }

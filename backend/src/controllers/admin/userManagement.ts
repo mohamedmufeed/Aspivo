@@ -4,26 +4,35 @@ import { AdminService } from "../../services/adminService/adminService";
 import HttpStatus from "../../utils/httpStatusCode";
 import IUserManagementController from "../../interface/controller/admin/userManagementInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import { GetPaginationQuery } from "../../types/userTypes";
 
 export class UserManagementController  implements IUserManagementController{
-  constructor(
-    private _adminService: AdminService,
-    private adminRepostry: AdminRepostry
-  ) {}
+  constructor(private _adminService: AdminService,) {}
 
   getUsers = async (req: Request, res: Response): Promise<void> => {
     try {
-      const users = await this.adminRepostry.getAllUsers();
-      res.status(HttpStatus.OK).json({
+      const { page = 1, limit = 10, q = "" } = req.query;
+  
+      const query: GetPaginationQuery = {
+        page: Number(page),
+        limit: Number(limit),
+        searchQuery: String(q),
+      };
+  
+      const result = await this._adminService.getAllUsers(query);
+  
+      res.status(200).json({
         success: true,
-        users,
+        users: result.users,
+        totalUsers: result.totalUsers,
+        totalPages: result.totalPages,
         message: "User fetching successful",
       });
     } catch (error) {
       console.log("Error fetching users:", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      res.status(500).json({
         success: false,
-        message: ERROR_MESSAGES.SERVER_ERROR,
+        message: "Internal Server Error",
       });
     }
   };

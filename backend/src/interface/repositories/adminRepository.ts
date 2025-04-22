@@ -1,15 +1,16 @@
-import { Document } from "mongoose";
-import Subscription from "../../models/Subscription";
-import { User } from "../../types/userTypes";
-import { Company } from "../../types/companyTypes";
-import { ISubscription } from "../../types/userTypes";
+
+import  { ISubscription } from "../../models/Subscription";
+import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetSubscriptionResponse, GetUsersResponse } from "../../types/userTypes";
+import { IUser } from "../../models/user";
+import { CompanyDocument, ICompany } from "../../models/company";
 
 export default interface IAdminRepostry {
-  getAllUsers(): Promise<  User[]>;
-  findById(id: string): Promise<  User | null>;
-  findAllCompany(): Promise<  Company[]>;
-  findComapny(companyId: string): Promise<  Company | null>;
-  findApprovedCompany(): Promise<  Company[]>;
-  findSubscriptions(): Promise<  ISubscription[]>;
+  getAllUsers({ page, limit, searchQuery }: GetPaginationQuery): Promise<  GetUsersResponse>;
+  findById(id: string): Promise<  IUser | null>;
+  findAllCompany({page, limit, searchQuery}:GetPaginationQuery): Promise< GetCompanyResponse>;
+  findComapny(companyId: string): Promise<  CompanyDocument|null >;
+  findByIdAndUpdateStatus(companyId:string,status:string):Promise<CompanyDocument|null>
+  findApprovedCompany({page,limit,searchQuery}:GetPaginationQuery): Promise< GetApprovedCompanyResponse>;
+  findSubscriptions({page,limit,searchQuery}:GetPaginationQuery): Promise<  GetSubscriptionResponse>;
   findSubscriptionById(subscriptionId: string): Promise<  ISubscription | null>;
 }

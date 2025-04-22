@@ -6,7 +6,7 @@ import person from "../../assets/person_1.jpg";
 import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
-import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
+import { getConversations, getMessageHistory, sendMessage } from "../../services/messageService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
@@ -15,8 +15,7 @@ import { useSocket } from "../../hooks/socket";
 import axios from "axios";
 import { fetchCompany } from "../../services/company/compayJob";
 import { sheduleMeeting } from "../../services/company/companyMeeting";
-import { TimePickerModal } from "../../components/Company/Modals/TimePickerModal";
-import { time } from "framer-motion";
+
 
 interface ChatMessage {
     _id: string;

@@ -64,6 +64,7 @@ const jobSchema = new Schema({
     endDate: {
       type: Date,
       required: true,
+      index: { expires: 0 },
     },
     slot: {
       type: Number,

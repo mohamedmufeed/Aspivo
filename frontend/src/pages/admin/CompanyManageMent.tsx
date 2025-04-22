@@ -1,11 +1,11 @@
 import Sidebar from "../../components/Admin/Sidebar";
-import { useEffect, useState } from "react";
-import { IoChevronBackOutline } from "react-icons/io5";
-import profile from "../../assets/person_1.jpg";
-import { EllipsisVertical, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
-import { getAllCompany } from "../../services/adminService";
+import { useCallback, useEffect, useRef, useState } from "react"
+import { EllipsisVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import { approvedCompany } from "../../services/adminService";
 import AdminHeader from "../../components/Admin/AdminHeader";
+import _ from "lodash";
+import { useLocation } from "react-router-dom";
+import SearchBar from "../../components/Admin/SearchBar";
 
 interface Company {
     _id: string;
@@ -17,36 +17,74 @@ interface Company {
 }
 
 const AdminCompanyRequests = () => {
+    const location = useLocation()
     const [selected, setSelectedMenu] = useState("Companies");
     const [companyDetail, setCompanyDetail] = useState<Company[]>([]);
-    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [companiesPerPage] = useState(7);
-    const totalPages = Math.ceil((companyDetail?.length || 0) / companiesPerPage);
-    const indexOfLastCompany = currentPage * companiesPerPage;
-    const indexOfFirstCompany = indexOfLastCompany - companiesPerPage;
-    const currentCompanies = companyDetail?.slice(indexOfFirstCompany, indexOfLastCompany) || [];
+    const companiesPerPage = 6
+    const [totalPages, setTotalPages] = useState(1)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [totalCompanies, setTotalCompanies] = useState(0)
+    const [loading, setLoading] = useState(false)
+    const prevRequestRef = useRef<AbortController | null>(null)
 
+    const fetchCompany = async (page = 1, query = "") => {
+        if (prevRequestRef.current) {
+            prevRequestRef.current.abort()
+        }
+        const abortController = new AbortController()
+        prevRequestRef.current = abortController
+        setLoading(true)
+        try {
+            const response = await approvedCompany(page, companiesPerPage, query, abortController.signal);
+            console.log("the response",response)
+            if (prevRequestRef.current === abortController) {
+                setCompanyDetail(response.company);
+                setTotalCompanies(response.totalCompanies)
+                setTotalPages(response.totalPages)
+            }
+        } catch (error) {
+            if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                console.error("Error fetching Companies:", error);
+            }
+        } finally {
+            if (prevRequestRef.current === abortController) {
+                setLoading(false);
+            }
+        }
+    }
+
+    const debouncedFetch = useCallback(
+        _.debounce((page: number, query: string) => {
+            fetchCompany(page, query);
+        }, 300),
+        []
+    );
 
     useEffect(() => {
-        const fetchCompany = async () => {
-            try {
-                const response = await approvedCompany();
-                console.log(response.company);
-                setCompanyDetail(response.company);
-                setCurrentPage(1); 
-            } catch (error) {
-                console.log("error in fetching company");
-            }
-        };
-        fetchCompany();
-    }, []);
+        if (searchQuery) {
+            debouncedFetch(currentPage, searchQuery)
+        } else {
+            fetchCompany(currentPage, searchQuery)
+        }
+
+    }, [currentPage, searchQuery, location])
+
+
+    const handleSeach = (query: string) => {
+        setSearchQuery(query)
+        if (currentPage !== 1) setCurrentPage(1)
+        debouncedFetch(1, query)
+    }
+
+   
 
     return (
         <div className="flex">
             <Sidebar setSelected={setSelectedMenu} />
             <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                <AdminHeader heading="Companies"/>
+                <AdminHeader heading="Companies" />
+                <SearchBar placeholder="Serach Company..." onSearch={handleSeach} />
                 <div className="w-full p-5">
                     {/* Header Row */}
                     <div className="grid grid-cols-6 items-center font-semibold bg-gray-100 p-3 rounded-md">
@@ -58,9 +96,10 @@ const AdminCompanyRequests = () => {
                         <p className="text-center">Actions</p>
                     </div>
                     <hr className="border-gray-600 my-3" />
-
-                    {currentCompanies && currentCompanies.length > 0 ? (
-                        currentCompanies.map((company) => (
+                    {loading ? (
+                        <p className="text-center text-gray-500 mt-5">Loading...</p>
+                    ) : companyDetail && companyDetail.length > 0 ? (
+                        companyDetail.map((company) => (
                             <div key={company._id} className="grid grid-cols-6 items-center bg-white shadow-md p-4 rounded-lg my-2">
                                 <h1 className="text-center font-medium">{company.companyName}</h1>
                                 <h1 className="text-center text-sm text-gray-600">{company.email}</h1>
@@ -75,7 +114,7 @@ const AdminCompanyRequests = () => {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-gray-600 hover:text-blue-800 "
-                            
+
                                         >
                                             View KYC
                                         </a>
@@ -92,6 +131,7 @@ const AdminCompanyRequests = () => {
                     ) : (
                         <p className="text-center text-gray-500 mt-5">No company requests available.</p>
                     )}
+
                 </div>
 
                 <div className="flex items-center justify-center space-x-4 mt-8">

@@ -3,7 +3,8 @@ import Job, { JobDocumnet } from "../models/job";
 import JobApplication from "../models/jobApplication";
 import { AppliedJobWithPopulatedData } from "../types/companyTypes";
 import { BaseRepository } from "./baseRepository";
-export class JobRepositories extends BaseRepository<JobDocumnet> {
+import { IJobRepositories } from "../interface/repositories/jobRespositoires";
+export class JobRepositories extends BaseRepository<JobDocumnet>  implements IJobRepositories {
   constructor (){
     super(Job)
   }
@@ -43,7 +44,7 @@ async JobDetails(jobId: string) {
     return { application: savedApplication };
   }
 
-  async findAppliedJobs(userId: string) {
+  async findAppliedJobs(userId: string):Promise<any[]> {
     return await JobApplication.find({userId:userId})
     .populate({
       path: "jobId", 

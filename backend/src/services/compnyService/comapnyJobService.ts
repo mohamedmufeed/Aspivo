@@ -1,6 +1,6 @@
 import IJobService, { IPopulatedJobApplication } from "../../interface/service/company/jobInterface";
 import { ICompany } from "../../models/company";
-import { IJob } from "../../models/job";
+import Job, { IJob, JobDocumnet } from "../../models/job";
 import { IJobApplication } from "../../models/jobApplication";
 import { IUser } from "../../models/user";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
@@ -21,15 +21,15 @@ export class ComapnayJobService implements IJobService {
     return { company, message: "comapany fetched sucsess fully" };
   }
 
-  async postJob(data: JobData) {
+  async postJob(data: JobData):Promise<{job:JobDocumnet, message:string}> {
     if (!data) {
       throw { message: "data not found" };
     }
-    const job = await this._companyRepositories.createJob(data);
+    const {job} = await this._companyRepositories.createJob(data);
     if (!job) {
       throw new Error("Job created failed")
     }
-    return { job, message: "job created sucsess fully" };
+    return { job:job.toObject(), message: "job created sucsess fully" };
   }
 
   async fetchJob(comapanyId: string) {

@@ -1,7 +1,8 @@
 import Notification, { INotification, NotificationDocument } from "../models/notification";
 import mongoose from "mongoose";
 import { BaseRepository } from "./baseRepository";
-export class NotificationRepository extends BaseRepository<NotificationDocument> {
+import { INotificationRepository } from "../interface/repositories/NotifictatonRepository";
+export class NotificationRepository extends BaseRepository<NotificationDocument> implements INotificationRepository {
   constructor() {
     super(Notification)
   }
@@ -13,7 +14,7 @@ export class NotificationRepository extends BaseRepository<NotificationDocument>
     return await Notification.find({ userId }).sort({ createdAt: -1 })
   }
 
-  async updateNotification(notificationId: string, update: Partial<INotification>) {
+  async updateNotification(notificationId: string, update: Partial<INotification>):Promise<NotificationDocument|null> {
     return await Notification.findByIdAndUpdate(notificationId, update, { new: true })
   }
 }

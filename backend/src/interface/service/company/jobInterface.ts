@@ -1,3 +1,4 @@
+import { IJob, JobDocumnet } from "../../../models/job";
 import { IJobApplication, PopulateIJob, PopulateIUser } from "../../../models/jobApplication";
 import { IUser } from "../../../models/user";
 import { JobData } from "../../../types/companyTypes";
@@ -10,11 +11,11 @@ export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected"
 
 export default interface IJobService {
     fetchCompany(userId: string): Promise<CompanySerivceResponse>;
-    postJob(data: JobData): any;
+    postJob(data: JobData):Promise<{job:JobDocumnet, message:string}>;
     editJob(jobId: string, data: JobData):Promise< JobServiceResponse>;
     deleteJob(jobId: string):Promise< JobServiceResponse>;
     getApplicantsForJob(jobid: string, comapanyId: string): Promise<{applications:IJobApplication[], message:string}>;
-    getApplicantDetials(applicantId: string): any;
+    getApplicantDetials(applicantId: string):any;
     updateStatus(applicantId: string, status: ApplicationStatus): Promise<JobApplicationResponse>
 
 }

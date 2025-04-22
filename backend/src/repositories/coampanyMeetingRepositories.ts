@@ -13,7 +13,7 @@ export class CompanyMeetingRepositories extends BaseRepository<IMeetingData> {
   }
 
   async findAllMeetings(companyId:string){
-    return Meeting.find({initiatorId:companyId}).populate("targetId", " firstName lastName email profileImage")
+    return Meeting.find({initiatorId:companyId}).populate("targetId", " firstName lastName email profileImage").sort({createdAt:-1})
     // return this.findAll({ initiatorId: new Types.ObjectId(companyId) })
   }
 }

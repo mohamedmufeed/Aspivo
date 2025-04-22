@@ -4,7 +4,7 @@ import { JobData } from "../types/companyTypes";
 import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
 type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
-export class CompanyRepostries {
+export class CompanyRepostries implements CompanyRepostries {
   constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication) {}
   async register(
     companyName: string,

@@ -20,6 +20,7 @@
     "framer-motion": "^12.4.10",
     "gsap": "^3.12.7",
     "ldrs": "^1.1.5",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.479.0",
     "mongoose": "^8.13.2",
     "peerjs": "^1.5.4",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/gsap": "^1.20.2",
+    "@types/lodash": "^4.17.16",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/react-redux": "^7.1.34",

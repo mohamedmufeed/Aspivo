@@ -125,3 +125,5 @@ export interface IMeetingData {
   appliedAt: Date;
   // other fields you need
 };
+
+
