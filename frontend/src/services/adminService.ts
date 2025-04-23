@@ -9,11 +9,10 @@ export const fetchUsers = async (page = 1, limit = 5, searchQuery = "", signal?:
         limit,
         q: searchQuery
       },
-      signal // This allows the request to be aborted if needed
+      signal 
     });
     return response.data;
   } catch (error) {
-    // Don't throw errors for aborted requests
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw error;
     }
@@ -106,7 +105,7 @@ export const approvedCompany = async (page = 1, limit = 5, searchQuery = "", sig
   }
 };
 
-export const addSkill = async (skills: any) => {
+export const addSkill = async (skills: string[]) => {
   try {
     const response = await api.post(`admin/skills`, skills);
     return response.data;

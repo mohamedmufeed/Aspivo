@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import api from "../api";
 import { IComapny } from "../../types/types";
 import { FormData } from "../../components/Company/Modals/EditCompanyDescriptionModal";
-import { string } from "zod";
 import { TeamMember } from "../../components/Company/Modals/EditCompanyTeamModal";
 import { ContactUrl } from "../../components/Company/Modals/EditContactModal";
 export interface EditTeamPayload {

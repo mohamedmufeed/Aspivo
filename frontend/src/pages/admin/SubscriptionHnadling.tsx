@@ -112,6 +112,7 @@ const SubscriptionHandling = () => {
     const handleStatusChange = async (subscriptionId: string, newStatus: "active" | "inactive" | "cancelled") => {
         try {
             const response = await updateSubscriptionStatus(subscriptionId, {status:newStatus});
+            console.log(response)
             setSubscriptions((prev) =>
                 prev.map((sub) =>
                     sub._id === subscriptionId ? { ...sub, status: newStatus } : sub

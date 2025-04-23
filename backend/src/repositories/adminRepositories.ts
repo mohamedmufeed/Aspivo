@@ -1,10 +1,7 @@
-import User, { IUser } from "../models/user";
+import User from "../models/user";
 import Company, { CompanyDocument } from "../models/company";
-import Subscription, { ISubscription } from "../models/Subscription";
-import { generateToken } from "../utils/jwt";
-import mongoose from "mongoose";
+import Subscription from "../models/Subscription";
 import IAdminRepostry from "../interface/repositories/adminRepository";
-import { IComapny } from "../types/companyTypes";
 import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetSubscriptionResponse, GetUsersResponse } from "../types/userTypes";
 import { PipelineStage } from "mongoose";
 

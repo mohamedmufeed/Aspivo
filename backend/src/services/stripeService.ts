@@ -82,9 +82,7 @@ export class StripeService {
           const companyIdUpdated = updatedSubscription.metadata?.companyId;
 
           if (!userIdUpdated) {
-            console.log(
-              "Skipping customer.subscription.updated event: Missing userId in metadata"
-            );
+      
             return;
           }
 
@@ -117,9 +115,6 @@ export class StripeService {
           const companyIdDeleted = deletedSubscription.metadata?.companyId;
 
           if (!userIdDeleted) {
-            console.log(
-              "Skipping customer.subscription.deleted event: Missing userId in metadata"
-            );
             return;
           }
 
@@ -134,7 +129,6 @@ export class StripeService {
             deletedSubscription.id,
             deletedSubscription.status
           );
-          console.log("Subscription canceled:", deletedSubscription.id);
           break;
 
         case "invoice.payment_succeeded":
@@ -144,9 +138,6 @@ export class StripeService {
           const companyIdPayment = subscriptionDetails?.metadata?.companyId;
 
           if (!userIdPayment) {
-            console.log(
-              "Skipping invoice.payment_succeeded event: Missing userId in subscription metadata"
-            );
             return;
           }
 

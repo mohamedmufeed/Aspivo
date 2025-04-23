@@ -26,8 +26,9 @@ const CopmanyApplicants = () => {
         if (response.company?.company) {
           setCompanyId(response.company.company._id);
         }
-      } catch (err: any) {
-        console.error("Error fetching company:", err.message);
+      } catch (err) {
+        const error =err as Error
+        console.error("Error fetching company:", error.message);
       }
     };
     fetchCompanyId();
@@ -47,9 +48,10 @@ const CopmanyApplicants = () => {
       const response = await getApplicants(jobId, companyId);
       setDetails(response.applications);
       setHeading(`Applicants for ${response.applications[0]?.jobId.jobTitle || "Job"}`); 
-    } catch (error: any) {
+    } catch (err: any) {
+      const error =err as Error
       console.log("Error in fetching applicants:", error);
-      setError(error.response?.data?.message || "Failed to load applicants");
+      setError(error.message || "Failed to load applicants");
     } finally {
       setLoading(false);
     }

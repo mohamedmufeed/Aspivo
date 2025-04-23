@@ -1,4 +1,4 @@
-import { log } from "console";
+
 import IComapnyMeetingService from "../../interface/service/company/meetingInterface";
 import { CompanyMeetingRepositories } from "../../repositories/coampanyMeetingRepositories";
 import { sendNotification } from "../../server";
@@ -21,7 +21,6 @@ export class CompanyMeetingService implements IComapnyMeetingService {
         message: "Meeting scheduled successfully",
       };
     } catch (error) {
-      console.error("Error scheduling meeting:", error);
       throw new Error("Failed to schedule meeting");
     }
   }
@@ -55,7 +54,6 @@ export class CompanyMeetingService implements IComapnyMeetingService {
       const meeting = await this._meetingRepositories.findAllMeetings(companyId)
       return { meeting, message: "Meetings fetched successfully" }
     } catch (error) {
-      console.error("Error fetching meetings:", error);
       throw new Error("Failed to fetching meetings");
     }
   }

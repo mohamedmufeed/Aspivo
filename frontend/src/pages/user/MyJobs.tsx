@@ -61,9 +61,10 @@ const MyJobs = () => {
         setAppliedJob(mappedJobs);
         console.log(mappedJobs)
       }
-    } catch (error: any) {
+    } catch (err) {
+      const error= err as Error
       console.log("Error in fetching applied jobs", error);
-      setError(error.response?.data?.message || "Failed to load applied jobs");
+      setError(error.message || "Failed to load applied jobs");
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,7 @@ export class ProfileController implements IProfileController {
   // constructor() {
   //   this.profileService = new ProfileSerive();
   // }
-    constructor(private _profileService:ProfileService) {}
+  constructor(private _profileService: ProfileService) { }
 
   public editProfile = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -76,7 +76,7 @@ export class ProfileController implements IProfileController {
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       const err = error as Error;
-      console.log("the errorr is ",error)
+      console.log("the errorr is ", error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
   };
@@ -97,7 +97,7 @@ export class ProfileController implements IProfileController {
       const userId = req.params.id;
       const { ...data } = req.body;
       const response = await this._profileService.editEducation(userId, data);
-      res.status(HttpStatus.OK).json(response );
+      res.status(HttpStatus.OK).json(response);
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to edit education: ${error}` });
     }
@@ -119,8 +119,8 @@ export class ProfileController implements IProfileController {
       const userId = req.params.id;
       const resumeUrl = Object.keys(req.body)[0];
       if (!resumeUrl || !resumeUrl.startsWith("http")) {
-       res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid resume URL" });
-       return
+        res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid resume URL" });
+        return
       }
       const response = await this._profileService.uploadResume(userId, resumeUrl);
       res.json({ response });

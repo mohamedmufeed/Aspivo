@@ -1,5 +1,4 @@
 import axios, { AxiosError } from "axios";
-import { registerUserSocket } from "../socket";
 const COMPANY_URI = "http://localhost:5001/api/company";
 
 export const signup = async (

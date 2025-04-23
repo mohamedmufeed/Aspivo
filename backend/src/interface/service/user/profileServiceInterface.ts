@@ -1,7 +1,7 @@
 import {   ProfileTypes } from "../../../types/userTypes";
-import { UserServiceResponse ,SubscriptionResponse, SubscriptionHistoryResponse} from "../../../types/interfaceTypes";
+import { UserServiceResponse , SubscriptionHistoryResponse} from "../../../types/interfaceTypes";
 import { Education, Experience } from "../../../models/user";
-import { ISubscription } from "../../../models/Subscription";
+
 
 export default interface IProfileService {
 editProfile(id:string,data:ProfileTypes):Promise<UserServiceResponse>

@@ -7,6 +7,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 import type { DataConnection } from 'peerjs';
+
+
 const VideoCall = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -31,7 +33,6 @@ const VideoCall = () => {
   const [connectionStatus, setConnectionStatus] = useState("Waiting for media access...");
   const [remotePeerId, setRemotePeerId] = useState<string | null>(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -150,7 +151,7 @@ const VideoCall = () => {
     dataConn.on("open", () => {
       console.log("Data connection opened with:", dataConn.peer);
     });
-    
+
     dataConn.on("data", (data:any) => {
       console.log("Received data:", data);
       if (typeof data === "object" && data?.type === "chat") {

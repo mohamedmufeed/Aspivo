@@ -49,8 +49,8 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {
   ];
 
   const [skills, setSkills] = useState<string[]>(job.requiredSkills || [""]);
-  const company = useSelector((state: RootState) => state.companyauth.company);
-  const companyId = company?._id || "";
+
+
 
   const {
     register,
@@ -125,8 +125,6 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {
       console.error("Error updating job:", error);
     }
   };
-
-  console.log("Company:", company);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">

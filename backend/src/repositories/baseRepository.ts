@@ -1,5 +1,5 @@
 
-import { Model, FilterQuery, UpdateQuery } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 
 export class BaseRepository<T> {
   private model: Model<T>;

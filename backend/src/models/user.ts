@@ -1,4 +1,4 @@
-import mongoose, { Mongoose, Schema, Types } from "mongoose";
+import mongoose, {  Schema, Types } from "mongoose";
 
 import { ObjectId } from "mongodb";
 

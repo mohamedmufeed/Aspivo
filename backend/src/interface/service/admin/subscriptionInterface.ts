@@ -1,4 +1,4 @@
-import { ISubscription } from "../../../models/Subscription";
+
 import { SubscriptionResponse } from "../../../types/interfaceTypes";
 import { GetPaginationQuery, GetSubscriptionResponse } from "../../../types/userTypes";
 export default interface ISubscriptionSerice{

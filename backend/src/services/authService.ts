@@ -4,7 +4,7 @@ import {generateToken } from "../utils/jwt";
 import { generateRefreshToken } from "../utils/jwt";
 import crypto from "crypto";
 import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp";
-import jwt, { decode } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import IAuthService from "../interface/service/user/authServiceInterface";
 
 
@@ -153,7 +153,6 @@ export class AuthService implements IAuthService {
             process.env.REFRESH_JWT_SECRET as string,
             (err, decoded: any) => {
                 if (err) {
-                  console.log(err)
                     reject(new Error("Invalid Token"));
                     return;
                 }

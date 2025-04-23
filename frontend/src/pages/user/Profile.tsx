@@ -26,6 +26,7 @@ import 'ldrs/react/Bouncy.css'
 
 
 
+
 const Profile = () => {
     const location = useLocation()
     const [editModalOpen, setEditModal] = useState(false)
@@ -70,10 +71,9 @@ const Profile = () => {
         endDate: "",
         grade: "",
     });
-
+    console.log(formData)
     useEffect(() => {
         if (!currentEducationId || !profileData?.education) return;
-
         const education = profileData.education.find((edu: Education) => edu._id === currentEducationId);
         if (education) {
             setFormData({
@@ -86,10 +86,6 @@ const Profile = () => {
             });
         }
     }, [currentEducationId, profileData]);
-
-
-
-
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -115,7 +111,6 @@ const Profile = () => {
     return (
         <>
             <Navbar />
-
             {/* profile section */}
             <div
                 className="bg-[#F6F6F6] min-h-screen "

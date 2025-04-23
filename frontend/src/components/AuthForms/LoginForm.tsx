@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { RootState, AppDispatch } from "../../redux/store/store";
+import {  AppDispatch } from "../../redux/store/store";
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
 import { login as loginApi } from "../../services/auth";
 import { login } from "../../redux/slice/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { googleLogin } from "../../services/auth";
-import { fetchGoogleUser } from "../../services/auth";
 import { registerUserSocket } from "../../services/socket";
 const LoginForm = () => {
   const [email, setEmail] = useState<string>("")
@@ -18,10 +16,7 @@ const LoginForm = () => {
   const [loading,setloading]=useState(false)
   const [error, setError] = useState("")
   const dispatch = useDispatch<AppDispatch>()
-  const navigate = useNavigate()
-
-  const user = useSelector((state: RootState) => state.auth.user)
-  
+  const navigate = useNavigate()  
   const handeleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")

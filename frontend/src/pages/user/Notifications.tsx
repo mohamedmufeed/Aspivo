@@ -33,7 +33,7 @@ const Notifications = () => {
             }
         }
         handleNotifications()
-    }, [])
+    }, [userId])
 
 
     const handeUpdate = async (userId: string, notificationId: string) => {

@@ -1,5 +1,5 @@
-import { SkillItemList, User } from "./userTypes";
-import { Company, IMeetingData, JobApplication, JobData } from "./companyTypes";
+
+import {  IMeetingData, } from "./companyTypes";
 import { IUser } from "../models/user";
 import { ICompany } from "../models/company";
 import { ISkill } from "../models/skills";

@@ -9,7 +9,6 @@ import { JobData } from "../../types/types";
 import JobListDropDown from "../../components/Company/Modals/JobListDropDown";
 const CompanyJobListing = () => {
   const [selected, setSelected] = useState <string|undefined>("Dashboard");
-  const [heading, setHeading] = useState("All Jobs");
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); 
   const user = useSelector((state: RootState) => state.auth.user);
   const userId = user?._id || "";
@@ -23,7 +22,8 @@ const CompanyJobListing = () => {
           setCompanyId(response.company.company._id);
         }
       } catch (err: any) {
-        console.error("Error fetching company:", err.message);
+        const error=err as Error
+        console.error("Error fetching company:", error.message);
       }
     };
     fetchCompanyId();
@@ -53,7 +53,7 @@ const CompanyJobListing = () => {
         className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
-        <ComapanyHeader heading={heading} />
+        <ComapanyHeader heading="All Jobs" />
         <div>
           <div className="w-full p-5">
             {/* Header Row */}

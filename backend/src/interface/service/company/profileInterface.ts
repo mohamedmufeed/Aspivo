@@ -1,5 +1,5 @@
-import { ICompany } from "../../../models/company";
-import { Contact, Company, TeamMember, IComapny } from "../../../types/companyTypes";
+
+import { Contact, TeamMember, IComapny } from "../../../types/companyTypes";
 import { CompanySerivceResponse } from "../../../types/interfaceTypes";
 
 export default interface IProfileService{

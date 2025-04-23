@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+
 import { User } from "./userTypes";
 import { Types } from "mongoose";
 export interface JobData {
@@ -19,20 +19,6 @@ export interface JobData {
 }
 
 type ApplicationStatus = "pending" | "approved" | "rejected";
-
-interface Education {
-  degree: string;
-  school: string;
-  startDate: string;
-}
-
-interface Experience {
-  company: string;
-  position: string;
-  startDate: string;
-  endDate?: string;
-  description: string;
-}
 
 interface Job {
   _id: string;

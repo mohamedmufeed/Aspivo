@@ -5,7 +5,7 @@ import { getSubscriptionHistory } from "../../services/profile"
 import { useSelector } from "react-redux"
 import { RootState } from "../../redux/store/store"
 import { useEffect, useState } from "react"
-import { subscriptions } from "../../services/stripe"
+
 
 
 interface IHistory {

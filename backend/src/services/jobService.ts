@@ -1,4 +1,4 @@
-import { use } from "passport";
+
 import { JobRepositories } from "../repositories/jobRepositories";
 import Job, { IJob } from "../models/job";
 import IJobService from "../interface/service/user/jobServiceInterface";
@@ -12,10 +12,12 @@ export class JobService implements IJobService {
   constructor(jobRepositories: JobRepositories) {
     this._jobRepositories = jobRepositories;
   }
-  async fetchJob(page: number, limit: number): Promise<{ job: IJob[], total: number, page: number, totalPages: number, message: string }> {
-    const job = await this._jobRepositories.fetchJob(page, limit);
-    if (!job || job.length === 0) throw new Error("Job not found");
-    const total = await Job.countDocuments();
+  async fetchJob(page: number, limit: number, searchWord?: string, category?: string): Promise<{ job: IJob[], total: number, page: number, totalPages: number, message: string }> {
+    const query = this.buildSearchQuery(searchWord, category);
+    
+    const job = await this._jobRepositories.fetchJob(page, limit, query);
+    const total = await this._jobRepositories.countJobs(query);
+    
     return {
       job: job,
       total,
@@ -24,7 +26,25 @@ export class JobService implements IJobService {
       message: "Job fetched successfully",
     };
   }
-  async getJobDetails(jobId: string, userId: string): Promise<{ job: IJob, message: string }> {
+  
+  private buildSearchQuery(searchWord?: string, category?: string) {
+    const query: any = {};
+    
+    if (searchWord) {
+      query['$or'] = [
+        { jobTitle: { $regex: searchWord, $options: 'i' } },
+        { 'company.companyName': { $regex: searchWord, $options: 'i' } },
+        { 'company.location': { $regex: searchWord, $options: 'i' } }
+      ];
+    }
+    
+    if (category) {
+      query.category = { $regex: category, $options: 'i' };
+    }
+    
+    return query;
+  }
+  async getJobDetails(jobId: string, ): Promise<{ job: IJob, message: string }> {
     const job = await this._jobRepositories.JobDetails(jobId);
     // const application = await this._jobRepositories.findApplication(jobId, userId);
     if (!job) throw new Error("Job not found");

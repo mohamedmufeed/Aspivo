@@ -42,7 +42,6 @@ export class StripeController {
       await this.stripeService.handleWebhookEvent(event);
       res.status(HttpStatus.OK).json({ received: true });
     } catch (error) {
-      console.error("Webhook signature verification failed:", error);
       res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${error}`);
     }
   };

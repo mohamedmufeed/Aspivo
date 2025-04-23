@@ -1,6 +1,4 @@
-import { ICompany } from "../../../models/company";
-import { IUser } from "../../../models/user";
-import { Company } from "../../../types/companyTypes";
+
 import { CompanySerivceResponse, UserServiceResponse } from "../../../types/interfaceTypes";
 import {  GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersResponse } from "../../../types/userTypes";
 

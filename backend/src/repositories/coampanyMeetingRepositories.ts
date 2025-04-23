@@ -1,7 +1,7 @@
 import { BaseRepository } from "./baseRepository";
 import { IMeetingData } from "../types/companyTypes";
 import Meeting from "../models/meeting";
-import { Mongoose, Types } from "mongoose";
+
 
 export class CompanyMeetingRepositories extends BaseRepository<IMeetingData> {
   constructor() {

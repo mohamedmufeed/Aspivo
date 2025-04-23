@@ -1,5 +1,4 @@
 import Notification, { INotification, NotificationDocument } from "../models/notification";
-import mongoose from "mongoose";
 import { BaseRepository } from "./baseRepository";
 import { INotificationRepository } from "../interface/repositories/NotifictatonRepository";
 export class NotificationRepository extends BaseRepository<NotificationDocument> implements INotificationRepository {

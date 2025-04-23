@@ -31,7 +31,7 @@ const CompanyDashboard = () => {
     handleCompany();
   }, [userId, location]);
   const [selected, setSelectedMenu] = useState <string|undefined>("Dashboard");
-  const [heading, setHeading] = useState("Dashboard")
+
   return (
     <div className="flex">
       <CompanySidebar setSelected={setSelectedMenu} />
@@ -40,7 +40,7 @@ const CompanyDashboard = () => {
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
         {/* header */}
-        <ComapanyHeader heading={heading} />
+        <ComapanyHeader heading="Dashboard" />
 
         <div className="flex justify-center items-center ">
           <h1 className="font-bold text-center ">Hello Welcome 🫶🏻</h1>

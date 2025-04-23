@@ -1,4 +1,4 @@
-import { channel } from "diagnostics_channel";
+
 import mongoose, { Schema } from "mongoose";
 
 export interface IChatMessage extends Document {

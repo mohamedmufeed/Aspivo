@@ -22,7 +22,7 @@ const ProfileDropdown = () => {
                 navigate("/login");
             }
         } catch (error) {
-            console.log("Error logut user")
+            console.log("Error logut user",error)
         }
 
     };

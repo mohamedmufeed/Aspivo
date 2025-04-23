@@ -2,7 +2,6 @@ import { Response, Request, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/user";
-import { use } from "passport";
 dotenv.config();
 
 interface AuthenticatedRequest extends Request {
@@ -38,7 +37,8 @@ const protect = async (
     req.user = { id: user._id.toString(), isAdmin: user.isAdmin, };
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token or expires" });
+    const err= error as Error
+    res.status(401).json({ message: `Invalid token or expires${err.message}`});
   }
 };
 export default protect;

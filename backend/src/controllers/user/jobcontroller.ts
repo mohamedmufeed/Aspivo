@@ -11,15 +11,17 @@ export class JobController implements IJobController {
     this._jobService = jobService;
   }
 
-   fetchJob = async (req: Request, res: Response): Promise<void> => {
+  fetchJob = async (req: Request, res: Response): Promise<void> => {
     try {
       const rawPage = req.query.page as string | undefined;
       const rawLimit = req.query.limit as string | undefined;
-
+      const searchWord = req.query.search as string | undefined;
+      const category = req.query.category as string | undefined;
+  
       const page = rawPage && !isNaN(parseInt(rawPage)) ? parseInt(rawPage) : 1;
-      const limit = rawLimit && !isNaN(parseInt(rawLimit)) ? parseInt(rawLimit) : 5;
-
-      const response = await this._jobService.fetchJob(page, limit);
+      const limit = rawLimit && !isNaN(parseInt(rawLimit)) ? parseInt(rawLimit) : 9;
+  
+      const response = await this._jobService.fetchJob(page, limit, searchWord, category);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
@@ -29,8 +31,7 @@ export class JobController implements IJobController {
    getJobDetails = async (req: Request, res: Response): Promise<void> => {
     try {
       const jobId = req.params.id;
-      const userId = req.query.userId as string;
-      const response = await this._jobService.getJobDetails(jobId, userId);
+      const response = await this._jobService.getJobDetails(jobId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       const err=error as Error

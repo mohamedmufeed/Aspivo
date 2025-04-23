@@ -2,12 +2,12 @@ import { AuthRepostry } from "../repositories/userRepositories";
 import { ProfileTypes } from "../types/userTypes";
 import cloudinary from "../config/cloudinaryConfig";
 import { SkillRepository } from "../repositories/skillREpositories";
-import { Experience, Education, IUser, UserDocument } from "../models/user";
+import { Experience, Education, } from "../models/user";
 import mongoose from "mongoose";
-import { use } from "passport";
+
 import IProfileService from "../interface/service/user/profileServiceInterface";
-import { ISubscription } from "../models/Subscription";
-import { SubscriptionHistoryResponse, SubscriptionResponse } from "../types/interfaceTypes";
+
+import { SubscriptionHistoryResponse } from "../types/interfaceTypes";
 
 
 export class ProfileService implements IProfileService {
@@ -90,7 +90,6 @@ export class ProfileService implements IProfileService {
     const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
     const educationId = data._id
-    const ObjectId = new mongoose.Types.ObjectId(data._id)
     const educationIndex = user.education.findIndex((edu) => edu._id.toString() === educationId.toString())
 
     if (educationIndex === -1) throw new Error("Experience not found");
@@ -129,8 +128,10 @@ export class ProfileService implements IProfileService {
         if (!exists) {
           await this._skillRepository.create({ name: skill });
         }
-      } catch (error) {
-        console.error(`Error saving skill "${skill}" to suggestions:`, error);
+      } catch (err) {
+        const error= err as Error
+        throw new Error(`Error saving skill "${skill}" to suggestions:`, error)
+   
       }
     }
 
@@ -159,8 +160,8 @@ export class ProfileService implements IProfileService {
         try {
           await cloudinary.uploader.destroy(publicId);
         } catch (err) {
-          console.error("Error deleting resume from Cloudinary:", err);
-          throw new Error("Failed to delete resume from Cloudinary");
+          const error = err as Error
+          throw new Error("Failed to delete resume from Cloudinary",error);
         }
       }
       user.resume = "";

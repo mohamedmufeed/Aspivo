@@ -245,27 +245,27 @@ const Messages = () => {
     }
   }, [location.state, companyId, userId, conversations, isInitialized]);
 
-  const handleInitializeChat = async (employeeId: string, employeeName: string, employeeProfile: string) => {
-    if (companyId && !conversations.some((conv) => conv.employeeId === employeeId)) {
-      try {
-        const data = await InitializeChat(companyId, employeeId, "employee");
-        setConversations((prev) => [
-          ...prev,
-          {
-            employeeProfile,
-            employeeId,
-            employeeName,
-            lastMessage: "Chat started",
-            timestamp: new Date().toISOString(),
-            channel: data.channel,
-          },
-        ]);
-        setSelectedEmployeeId(employeeId);
-      } catch (error) {
-        console.error("Error initializing chat:", error);
-      }
-    }
-  };
+  // const handleInitializeChat = async (employeeId: string, employeeName: string, employeeProfile: string) => {
+  //   if (companyId && !conversations.some((conv) => conv.employeeId === employeeId)) {
+  //     try {
+  //       const data = await InitializeChat(companyId, employeeId, "employee");
+  //       setConversations((prev) => [
+  //         ...prev,
+  //         {
+  //           employeeProfile,
+  //           employeeId,
+  //           employeeName,
+  //           lastMessage: "Chat started",
+  //           timestamp: new Date().toISOString(),
+  //           channel: data.channel,
+  //         },
+  //       ]);
+  //       setSelectedEmployeeId(employeeId);
+  //     } catch (error) {
+  //       console.error("Error initializing chat:", error);
+  //     }
+  //   }
+  // };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -291,6 +291,7 @@ const Messages = () => {
     } catch (error) {
       console.error("Error uploading image:", error);
       setImageError("Failed to upload image. Please try again.");
+      console.log(imageError)
       return null;
     } finally {
       setImageLoading(false)

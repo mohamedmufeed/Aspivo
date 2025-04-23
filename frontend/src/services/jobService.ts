@@ -4,17 +4,44 @@ import api from "./api";
 export const fetchJob = async ({
   page,
   limit,
+  search,
+  category,
 }: {
   page: number;
   limit: number;
+  search?: string;
+  category?: string;
 }) => {
   try {
-    const response = await api.get("user/jobs", { params: { page, limit } });
+    const params: {
+      page: number;
+      limit: number;
+      search?: string;
+      category?: string;
+    } = { page, limit };
+    
+
+    if (search) {
+      params.search = search;
+    }
+    
+    if (category) {
+      params.category = category;
+    }
+    
+    const response = await api.get("user/jobs", { params });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error("Job fethcing :", error.response?.data);
+      console.error("Job fetching error:", error.response?.data);
     }
+    return {
+      job: [],
+      total: 0,
+      page: 1,
+      totalPages: 0,
+      message: "Error fetching jobs"
+    };
   }
 };
 

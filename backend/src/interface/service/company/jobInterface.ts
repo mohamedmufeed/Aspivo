@@ -1,6 +1,6 @@
-import { IJob, JobDocumnet } from "../../../models/job";
+import {  JobDocumnet } from "../../../models/job";
 import { IJobApplication, PopulateIJob, PopulateIUser } from "../../../models/jobApplication";
-import { IUser } from "../../../models/user";
+
 import { JobData } from "../../../types/companyTypes";
 import { CompanySerivceResponse, JobApplicationResponse, JobServiceResponse } from "../../../types/interfaceTypes";
 export interface IPopulatedJobApplication extends Omit<IJobApplication, "userId" | "jobId"> {

@@ -19,8 +19,6 @@ import { getConversations, InitializeChat } from "../../services/messageService"
 
 const CompanyApplicantDetails = () => {
     const [selected, setSelected] = useState<string | undefined>("Job Listing");
-    const [heading, setHeading] = useState("Application");
-    const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState<JobApplication>();
     const [status, setStatus] = useState<ApplicationStatus>("pending")
     const { applicationId } = useParams();
@@ -34,7 +32,7 @@ const CompanyApplicantDetails = () => {
         } catch (error) {
             console.log("Error in fetching the applicant details ", error);
         } finally {
-            setLoading(true);
+    
         }
     };
 
@@ -43,6 +41,7 @@ const CompanyApplicantDetails = () => {
             const newStatus = e.target.value as ApplicationStatus
             setStatus(newStatus)
             const response = await updateStatus(applicationId || "", newStatus);
+            console.log(response)
         } catch (error) {
             console.error("Error updating status:", error);
         }
@@ -110,7 +109,7 @@ const CompanyApplicantDetails = () => {
                 className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
-                <ComapanyHeader heading={heading} />
+                <ComapanyHeader heading="Application" />
                 <div className="flex">
                     <div className="w-full md:w-1/2 p-6">
                         <div className="bg-white shadow-lg rounded-xl p-6">
@@ -228,7 +227,7 @@ const CompanyApplicantDetails = () => {
                                 <div key={index} className="flex items-start space-x-4 mt-4">
                                     <FcGoogle className="w-8 h-8" />
                                     <div>
-                                        <h1 className="font-bold text-lg">{exp.position || "No position specified"}</h1>
+                                        <h1 className="font-bold text-lg">{exp.currentlyWorking || "No position specified"}</h1>
                                         <p className="text-md text-gray-700">{exp.company || "No company specified"}</p>
                                         <p className="text-sm text-gray-600">
                                             {exp.startDate

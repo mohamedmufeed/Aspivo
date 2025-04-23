@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { logout } from "./authSlice";
-
 interface Company {
   _id: string;
   companyName: string;

@@ -12,7 +12,6 @@ export class StripeRepositories {
       }
       return company;
     } catch (error: any) {
-      console.error("Error verifying company:", error.message);
       throw new Error(`Error verifying company: ${error.message}`);
     }
   }
@@ -31,7 +30,6 @@ export class StripeRepositories {
         throw new Error(`User with ID ${userId} not found`);
       }
     } catch (error: any) {
-      console.error("Error updating user subscription:", error.message);
       throw new Error(`Error updating user subscription: ${error.message}`);
     }
   }
@@ -50,7 +48,6 @@ export class StripeRepositories {
         throw new Error(`Company with ID ${companyId} not found`);
       }
     } catch (error: any) {
-      console.error("Error updating company subscription:", error.message);
       throw new Error(`Error updating company subscription: ${error.message}`);
     }
   }
@@ -59,7 +56,6 @@ export class StripeRepositories {
       const newSubscription = await Subscription.create(subscriptionData);
       return newSubscription;
     } catch (error: any) {
-      console.error("Error storing subscription:", error);
       throw new Error(`Error storing subscription: ${error.message}`);
     }
   }
@@ -75,7 +71,6 @@ export class StripeRepositories {
         throw new Error(`Subscription with ID ${subscriptionId} not found`);
       }
     } catch (error: any) {
-      console.error("Error updating subscription status:", error.message);
       throw new Error(`Error updating subscription status: ${error.message}`);
     }
   }
@@ -99,7 +94,6 @@ export class StripeRepositories {
         throw new Error(`User with ID ${userId} not found`);
       }
     } catch (error: any) {
-      console.error("Error revoking user features:", error.message);
       throw new Error(`Error revoking user features: ${error.message}`);
     }
   }
@@ -123,7 +117,6 @@ export class StripeRepositories {
         throw new Error(`Company with ID ${companyId} not found`);
       }
     } catch (error: any) {
-      console.error("Error revoking company features:", error.message);
       throw new Error(`Error revoking company features: ${error.message}`);
     }
   }
@@ -146,7 +139,6 @@ export class StripeRepositories {
         throw new Error(`User with ID ${userId} not found`);
       }
     } catch (error: any) {
-      console.error("Error granting user features:", error.message);
       throw new Error(`Error granting user features: ${error.message}`);
     }
   }
@@ -169,7 +161,6 @@ export class StripeRepositories {
         throw new Error(`Company with ID ${companyId} not found`);
       }
     } catch (error: any) {
-      console.error("Error granting company features:", error.message);
       throw new Error(`Error granting company features: ${error.message}`);
     }
   }

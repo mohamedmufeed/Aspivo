@@ -7,7 +7,7 @@ import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
 import { getConversations, getMessageHistory, sendMessage } from "../../services/messageService";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { format } from 'date-fns';
@@ -45,14 +45,12 @@ interface Conversation {
 
 const CompanyMessages = () => {
     const [selected, setSelected] = useState<string | undefined>("Messages");
-    const [heading, setHeading] = useState("Messages");
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [companyId, setCompanyId] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate()
     const location = useLocation();
     const socket = useSocket();
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -62,8 +60,8 @@ const CompanyMessages = () => {
     const [loading, setLoading] = useState(false)
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
-    const [showTimeModal, setShowTimeModal] = useState(false)
-    const [meetingTime, setMeetingTime] = useState<Date | null>()
+    // const [showTimeModal, setShowTimeModal] = useState(false)
+    // const [meetingTime, setMeetingTime] = useState<Date | null>()
 
     useEffect(() => {
         const fetchCompanie = async () => {
@@ -350,6 +348,7 @@ const CompanyMessages = () => {
         } catch (error) {
             console.error("Error uploading image:", error);
             setImageError("Failed to upload image. Please try again.");
+            console.log(imageError)
             return null;
         } finally {
             setLoading(false)
@@ -387,7 +386,7 @@ const CompanyMessages = () => {
         <div className="flex min-h-screen ">
             <CompanySidebar setSelected={setSelected} />
             <div className="bg-[#F6F6F6] w-full flex flex-col" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                <ComapanyHeader heading={heading} />
+                <ComapanyHeader heading="Messages" />
                 <div className="flex flex-1">
                     {/* Contact Section */}
                     <div className="bg-white w-full sm:w-1/3 p-4 border-r border-gray-200">

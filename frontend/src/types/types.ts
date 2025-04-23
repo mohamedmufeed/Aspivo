@@ -1,5 +1,5 @@
-import Types from "mongoose"
-import mongoose from "mongoose";
+import {Types} from "mongoose"
+import { ObjectId } from "mongodb";
 interface PopulatedUser {
   _id: string;
   firstName: string;
@@ -29,19 +29,19 @@ export type ApplicationStatus =
   | "accepted"
   | "rejected";
 
-interface Education {
-  degree: string;
-  school: string;
-  startDate: string;
-}
+// interface Education {
+//   degree: string;
+//   school: string;
+//   startDate: string;
+// }
 
-interface Experience {
-  company: string;
-  position: string;
-  startDate: string;
-  endDate?: string;
-  description: string;
-}
+// interface Experience {
+//   company: string;
+//   position: string;
+//   startDate: string;
+//   endDate?: string;
+//   description: string;
+// }
 
 export interface User {
   _id: string;
@@ -159,4 +159,62 @@ export interface IMeetingData {
   initiatorId: string;
   targetId: string;
   link: string; 
+}
+
+export interface IUser {
+  _id: ObjectId;
+  userName: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  email: string;
+  password?: string;
+  location?: string;
+  position?: string;
+  isAdmin: boolean;
+  about?: string;
+  verified: boolean;
+  experiences: Experience[];
+  education:Education[];
+  skills: string[];
+  profileImage: string;
+  resume: string;
+  isBlocked: boolean;
+  googleId?: string;
+  otp?: string;
+  otpExpires?: Date;
+  customerId?: string;
+  subscription?: {
+    subscriptionId?: string;
+    status?: string;
+    plan?: string;
+  };
+  features: {
+    resumeHighlighting: boolean;
+    unlimitedChat: boolean;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Education {
+  _id: Types.ObjectId;
+  school: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: Date;
+  endDate: Date;
+  grade: string;
+}
+
+export interface Experience {
+  _id: Types.ObjectId;
+  title: string;
+  company: string;
+  startDate: Date;
+  endDate: Date|null;
+  employmentType: "Full time" | "Part time" | "Remote" | "Intern" | "Contract";
+  location: string;
+  description: string;
+  currentlyWorking: boolean;
 }

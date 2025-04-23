@@ -49,6 +49,7 @@ const OtpVerification = () => {
                 throw new Error("Invalid OTP ");
             }
         } catch (error) {
+            console.log("error on sending otp",error)
             setError("Invalid  Otp")
         }
     }
@@ -59,6 +60,7 @@ const OtpVerification = () => {
         setError("")
         try {
             const response = await resendotp({ email })
+            console.log(response)
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message)

@@ -5,7 +5,6 @@ import {  SkillController } from "../controllers/admin/skillController";
 import {  SubscriptionController } from "../controllers/admin/subscriptionController";
 import Company from "../models/company";
 import User from "../models/user";
-import Skill from "../models/skills";
 import Subscription from "../models/Subscription";
 import { AdminRepostry } from "../repositories/adminRepositories";
 import { AdminService } from "../services/adminService/adminService";

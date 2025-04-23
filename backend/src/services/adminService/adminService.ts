@@ -1,12 +1,12 @@
 import { AdminRepostry } from "../../repositories/adminRepositories";
-import { NotificationService } from "../notificationService";
+
 import { sendNotification } from "../../server";
 import IAdminService from "../../interface/service/admin/adminInterface";
 import { NotificationRepository } from "../../repositories/notificationRepository";
-import { Company } from "../../types/companyTypes";
+
 import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersResponse, User } from "../../types/userTypes";
 import { IUser } from "../../models/user";
-import { CompanyDocument, ICompany } from "../../models/company";
+import { CompanyDocument } from "../../models/company";
 
 export class AdminService implements IAdminService {
   constructor(private _adminRepository: AdminRepostry, private _notificationRespository: NotificationRepository) { }

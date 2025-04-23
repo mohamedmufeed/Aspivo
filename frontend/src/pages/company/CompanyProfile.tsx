@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import CompanySidebar from "../../components/Company/ComapnySidebar"
 import { GoPencil } from "react-icons/go";
 import { GoPlus } from "react-icons/go";
-import { FaInstagram, FaLinkedin, FaFacebook } from "react-icons/fa";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import EditCompanyProfileModal from "../../components/Company/Modals/EditCompanyProfile";
 import { useSelector } from "react-redux";
@@ -19,7 +18,6 @@ import { fetchCompany } from "../../services/company/compayJob";
 const CompanyProfile = () => {
 
   const [selected, setSelectedMenu] = useState<string | undefined>("C Profile")
-  const [heading, setHeading] = useState("Company Profile")
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editDescriptionModalOpen, setEditDescriptionModalOpen] = useState(false)
   const [addTeachStackModalOpen, setAddTeachStackModalOpen]=useState(false)
@@ -36,7 +34,7 @@ const CompanyProfile = () => {
       console.log("the rs", response.company.company
       )
     } catch (error) {
-      console.log("Error on fetching company")
+      console.log("Error on fetching company",error)
     }
   }
 
@@ -50,11 +48,6 @@ const CompanyProfile = () => {
   };
 
 
-  const socialLinks = [
-    { name: "Instagram", icon: <FaInstagram className="text-pink-500 w-6 h-6" />, link: "https://instagram.com" },
-    { name: "LinkedIn", icon: <FaLinkedin className="text-blue-600 w-6 h-6" />, link: "https://linkedin.com" },
-    { name: "Facebook", icon: <FaFacebook className="text-blue-500 w-6 h-6" />, link: "https://facebook.com" },
-  ];
 
 
 
@@ -65,7 +58,7 @@ const CompanyProfile = () => {
         <div className="bg-[#F6F6F6] w-full  overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
 
           {/* header */}
-          <ComapanyHeader heading={heading} />
+          <ComapanyHeader heading="Company Profile" />
 
           {/* headerr ends */}
 

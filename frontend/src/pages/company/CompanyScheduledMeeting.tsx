@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
-import { EllipsisVertical } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { fetchCompany } from "../../services/company/compayJob";
@@ -29,7 +28,6 @@ interface IMeetingsDetails {
 
 const CompanyScheduledMeeting = () => {
   const [selected, setSelectedMenu] = useState<string | undefined>("Scheduled Meetings");
-  const [heading, setHeading] = useState("Scheduled Meetings")
   const [companyId, setCompanyId] = useState("")
   const [meetings, setMeetings] = useState<IMeetingsDetails[] | null>()
   const [error, setError] = useState<string | null>(null)
@@ -46,7 +44,7 @@ const CompanyScheduledMeeting = () => {
         setCompanyId(response?.company?.company?._id)
       } catch (error) {
 
-        console.log("Error fetching the company details. Please try again later")
+        console.log("Error fetching the company details. Please try again later",error)
         setError("Error fetching the company details. Please try again later")
       }
     }
@@ -61,7 +59,7 @@ const CompanyScheduledMeeting = () => {
         const response = await getMeetings(companyId)
         setMeetings(response.meeting)
       } catch (error) {
-        console.log("Error fetching the scheduled meeting. Please try again later")
+        console.log("Error fetching the scheduled meeting. Please try again later",error)
         setError("Error fetching the scheduled meeting. Please try again later")
       }
     }
@@ -95,7 +93,7 @@ const CompanyScheduledMeeting = () => {
         className="bg-[#F6F6F6] w-full  overflow-x-hidden relative"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
-        <ComapanyHeader heading={heading} />
+        <ComapanyHeader heading="Scheduled Meetings" />
         <div className="flex justify-center">
           {error ? <ToastError message={error} onClose={() => setError(null)} /> : ""}
         </div>

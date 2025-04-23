@@ -2,7 +2,7 @@
 import  { ISubscription } from "../../models/Subscription";
 import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetSubscriptionResponse, GetUsersResponse } from "../../types/userTypes";
 import { IUser } from "../../models/user";
-import { CompanyDocument, ICompany } from "../../models/company";
+import { CompanyDocument } from "../../models/company";
 
 export default interface IAdminRepostry {
   getAllUsers({ page, limit, searchQuery }: GetPaginationQuery): Promise<  GetUsersResponse>;

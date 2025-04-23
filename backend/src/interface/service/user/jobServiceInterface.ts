@@ -1,6 +1,5 @@
 import { IJob } from "../../../models/job";
 import { IJobApplication } from "../../../models/jobApplication";
-import { JobServiceResponse } from "../../../types/interfaceTypes";
 
 export default interface IJobService{
     fetchJob(page:number,limit:number):Promise<{job:IJob[],total:number,page:number,totalPages:number, message:string}>

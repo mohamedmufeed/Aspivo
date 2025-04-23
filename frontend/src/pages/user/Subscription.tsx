@@ -25,8 +25,9 @@ const Subscription = () => {
         if (response.company?.company) {
           setCompanyId(response.company.company._id);
         }
-      } catch (err: any) {
-        console.error("Error fetching company:", err.message);
+      } catch (err) {
+        const error=err as Error
+        console.error("Error fetching company:", error.message);
         setError("Failed to fetch company details");
       }
     };
@@ -58,7 +59,8 @@ const Subscription = () => {
         throw new Error("No checkout URL received");
       }
     } catch (err: any) {
-      setError(err.message || "Failed to create subscription");
+      const error=err as Error
+      setError(error.message || "Failed to create subscription");
       console.log("Error on subscription:", err);
     } finally {
       setIsProcessing(false);

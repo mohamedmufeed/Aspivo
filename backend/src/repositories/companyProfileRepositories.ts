@@ -1,7 +1,5 @@
 import { ICompanyProfileRepositories } from "../interface/repositories/companyProfileRepostries";
-import Company, { CompanyDocument } from "../models/company";
-import { BaseRepository } from "./baseRepository";
-
+import Company from "../models/company";
 export class CompanyProfileRepositiories implements ICompanyProfileRepositories {
     async findCompanyById(companyId: string) {
         return await Company.findById(companyId)

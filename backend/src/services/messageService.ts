@@ -4,7 +4,6 @@ import { createClient } from "redis";
 import { io } from "../server";
 import Conversation from "../models/conversations";
 import IMessageService from "../interface/service/user/messageServiceInterface";
-import { IChatMessage } from "../models/chat";
 
 const redisClient = createClient({
   url: "redis://localhost:6379",
@@ -56,7 +55,6 @@ export class MessageService  implements IMessageService{
     if(io){
       io.to(channel).emit("receiveMessage",payload)
     }else{
-      console.warn("Socket.IO not initialized, falling back to Redis");
       await redisClient.publish(channel,JSON.stringify(payload));
     }
     await this._messageRepositories.createChat(channel, senderId, message);

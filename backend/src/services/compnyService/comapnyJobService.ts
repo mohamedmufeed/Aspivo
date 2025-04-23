@@ -1,8 +1,7 @@
-import IJobService, { IPopulatedJobApplication } from "../../interface/service/company/jobInterface";
+import IJobService from "../../interface/service/company/jobInterface";
 import { ICompany } from "../../models/company";
-import Job, { IJob, JobDocumnet } from "../../models/job";
+import  { IJob, JobDocumnet } from "../../models/job";
 import { IJobApplication } from "../../models/jobApplication";
-import { IUser } from "../../models/user";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
 import { NotificationRepository } from "../../repositories/notificationRepository";
 import { sendNotification } from "../../server";

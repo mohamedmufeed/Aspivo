@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Admin/Sidebar";
-import { IoChevronBackOutline, IoClose } from "react-icons/io5";
-import profile from "../../assets/person_1.jpg";
 import { addSkill, getSkills } from "../../services/adminService";
 import ToastError from "../../components/Tost/ErrorToast";
 import { removeSkill } from "../../services/adminService";
@@ -29,7 +27,7 @@ const SkillManagement = () => {
         console.log(" the response", response.response)
         setSkills(response.response)
       } catch (error) {
-
+        console.log("Erro fetching skills", error)
       }
     }
     fetchSkills()
@@ -60,7 +58,9 @@ const SkillManagement = () => {
         setSkills((prevSkills) => prevSkills.filter((skill) => skill.name !== name));
       }
 
-    } catch (error) {
+    } catch (err) {
+      const error= err as Error
+      console.log("Error removing skilll",error.message)
       setError("Error on removing skill")
     }
   };
@@ -68,7 +68,7 @@ const SkillManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const newSkills = skills.filter((skill) => !skill._id); 
+    const newSkills = skills.filter((skill) => !skill._id);
 
     if (newSkills.length === 0) {
       setError("No new skills to save.");
@@ -84,11 +84,11 @@ const SkillManagement = () => {
       const response = await addSkill(requestData);
       console.log("Add skill response:", response);
 
-        if (response.addeddSkill) {
+      if (response.addeddSkill) {
         setSkills((prev) =>
           prev
-            .filter((skill) => skill._id) 
-            .concat(response.addeddSkill) 
+            .filter((skill) => skill._id)
+            .concat(response.addeddSkill)
         );
       }
     } catch (error) {
@@ -103,8 +103,8 @@ const SkillManagement = () => {
     <div className="flex">
       <Sidebar setSelected={setSelectedMenu} />
       <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
-      <AdminHeader heading="Skill Management"/>
-       
+        <AdminHeader heading="Skill Management" />
+
 
         <hr className="border-gray-300" />
         <div className="flex justify-center">

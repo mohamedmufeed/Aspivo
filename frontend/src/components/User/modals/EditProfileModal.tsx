@@ -28,9 +28,6 @@ const [loading,setLoading]=useState(false)
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [imageErorr, setImageErorr] = useState("")
-
-
-
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<EditProfileForm>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
@@ -97,6 +94,7 @@ const [loading,setLoading]=useState(false)
     } catch (error) {
       console.error("Error uploading image:", error);
       setImageErorr("Failed to upload image");
+      console.log(imageErorr)
       return null;
     }
   };

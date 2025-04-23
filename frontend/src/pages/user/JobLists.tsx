@@ -1,10 +1,10 @@
-
 import { IoIosSearch } from "react-icons/io";
 import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate } from "react-router-dom";
 import { fetchJob } from "../../services/jobService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { JobData } from "../../types/types";
+import _ from "lodash";
 
 const formatSalary = (amount: number): string => {
     if (amount >= 10000000) {
@@ -20,71 +20,107 @@ const formatSalary = (amount: number): string => {
 
 const JobLists = () => {
     const navigate = useNavigate();
-    const categoryItems = ["Developer", "UI Design", "Product Designer", "Finance", "Sales"];
+    const categoryItems = ["All","Developer", "UI Design", "Product Designer", "Finance", "Sales"];
     const [jobs, setJobs] = useState<JobData[]>([]);
     const [searchWord, setSearchWord] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [filteredJobs, setFilteredJobs] = useState<JobData[]>([]);
     const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const limit = 9;
+    const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(true);
+    const limit = 9;
 
-    const loadJobs = async () => {
-        if (!hasMore || loading) return;
+    const loadJobs = useCallback(async (newSearch = false) => {
+        if (loading) return;
+        
         setLoading(true);
+        
         try {
-            const response = await fetchJob({ page, limit });
-            console.log("res", response);
-            const newJobs = response.job || [];
-            console.log("newJobs:", newJobs);
-
-
-            setJobs((prevJobs) => {
-                const existingIds = new Set(prevJobs.map((job) => job._id));
-                const uniqueNewJobs = newJobs.filter((job:any) => !existingIds.has(job._id));
-                const updatedJobs = [...prevJobs, ...uniqueNewJobs];
-                console.log("Updated jobs:", updatedJobs);
-                return updatedJobs;
+            const currentPage = newSearch ? 1 : page;
+            if (newSearch) {
+                setPage(1);
+            }
+            
+            const response = await fetchJob({ 
+                page: currentPage, 
+                limit, 
+                search: searchWord, 
+                category: selectedCategory || undefined 
             });
-            setHasMore(page < response.totalPages);
-
-            setPage((prevPage) => prevPage + 1);
+            
+            if (!response) {
+                console.error("No response from server");
+                return;
+            }
+            
+            const newJobs = response.job || [];
+            
+            if (newSearch) {
+                setJobs(newJobs);
+            } else {
+                setJobs(prevJobs => [...prevJobs, ...newJobs]);
+            }
+            
+            setTotalPages(response.totalPages || 0);
         } catch (error) {
-            console.log("Error in fetching jobs", error);
-            setHasMore(false);
+            console.error("Error fetching jobs:", error);
         } finally {
             setLoading(false);
+            setInitialLoad(false);
         }
+    }, [page, searchWord, selectedCategory, loading]);
+
+
+    const debouncedSearch = useCallback(
+        _.debounce(() => {
+            loadJobs(true);
+        }, 500),
+        [loadJobs]
+    );
+
+ 
+    useEffect(() => {
+        if (initialLoad) {
+            loadJobs();
+        }
+    }, [initialLoad, loadJobs]);
+
+
+    useEffect(() => {
+        if (!initialLoad) {
+            debouncedSearch();
+        }
+        return () => {
+            debouncedSearch.cancel();
+        };
+    }, [searchWord, debouncedSearch, initialLoad]);
+
+
+    useEffect(() => {
+        if (!initialLoad) {
+            loadJobs(true);
+        }
+    }, [selectedCategory, loadJobs, initialLoad]);
+
+    
+    const handleLoadMore = () => {
+        setPage(prevPage => prevPage + 1);
     };
 
-    useEffect(() => {
-        loadJobs();
-    }, []);
 
     useEffect(() => {
-        console.log("Filtering jobs:", jobs);
-        if (!jobs) return;
-
-        let result = [...jobs];
-        if (searchWord) {
-            const lowerSearch = searchWord.toLowerCase();
-            result = result.filter((job) =>
-                (job.jobTitle?.toLowerCase() || "").includes(lowerSearch) ||
-                (job.company?.companyName?.toLowerCase() || "").includes(lowerSearch) ||
-                (job.company?.location?.toLowerCase() || "").includes(lowerSearch)
-            );
+        if (page > 1) {
+            loadJobs();
         }
+    }, [page, loadJobs]);
 
-        if (selectedCategory) {
-            result = result.filter((job) =>
-                (job.category?.toLowerCase() || "").includes(selectedCategory.toLowerCase())
-            );
-        }
+    const handleCategoryClick = (category: string) => {
+        setSelectedCategory(selectedCategory === category ? null : category);
+    };
 
-        console.log("Filtered jobs:", result);
-        setFilteredJobs(result);
-    }, [searchWord, selectedCategory, jobs]);
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchWord(e.target.value);
+    };
 
     return (
         <div className="bg-[#F6F6F6] min-h-screen pb-20" style={{ fontFamily: "DM Sans, sans-serif" }}>
@@ -99,7 +135,7 @@ const JobLists = () => {
                             placeholder="Search by job title, company, or location"
                             className="text-black w-full p-4 ml-5 outline-none font-extralight"
                             value={searchWord}
-                            onChange={(e) => setSearchWord(e.target.value)}
+                            onChange={handleSearchChange}
                         />
                         <button className="w-20 h-14 ml-auto mr-1 flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white cursor-pointer">
                             <IoIosSearch className="w-6 h-6" />
@@ -107,7 +143,7 @@ const JobLists = () => {
                     </div>
                 </div>
 
-                {/* Advanced Search */}
+                {/* Advanced Search - Categories */}
                 <div className="flex justify-center gap-6 mt-9">
                     {categoryItems.map((item, index) => (
                         <div key={index}>
@@ -115,7 +151,7 @@ const JobLists = () => {
                                 className={`bg-white shadow-lg rounded-xl p-3 px-5 font-medium cursor-pointer hover:bg-orange-500 hover:text-white ${
                                     selectedCategory === item ? "bg-orange-600 text-white" : ""
                                 }`}
-                                onClick={() => setSelectedCategory(selectedCategory === item ? null : item)}
+                                onClick={() => handleCategoryClick(item)}
                             >
                                 {item}
                             </button>
@@ -125,9 +161,14 @@ const JobLists = () => {
 
                 {/* Job Listing */}
                 <div className="px-20 mt-10 space-y-6">
-                    {filteredJobs ? (
-                        filteredJobs.length > 0 ? (
-                            filteredJobs.map((job) => (
+                    {loading && initialLoad ? (
+                        <div className="text-center py-10">
+                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent"></div>
+                            <p className="mt-2 text-gray-600">Loading jobs...</p>
+                        </div>
+                    ) : jobs.length > 0 ? (
+                        <>
+                            {jobs.map((job) => (
                                 <div
                                     key={job._id}
                                     className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 p-4 items-center hover:bg-gray-50"
@@ -172,32 +213,38 @@ const JobLists = () => {
                                         </button>
                                     </div>
                                 </div>
-                            ))
-                        ) : jobs.length > 0 ? (
-                            <div className="text-center text-gray-700">
-                                No jobs match your current filters. Try adjusting your search or category.
-                            </div>
-                        ) : (
-                            <div className="text-center text-gray-700">No jobs found</div>
-                        )
+                            ))}
+                        </>
                     ) : (
-                        <div className="text-center">Loading...</div>
+                        <div className="text-center py-10">
+                            <p className="text-xl text-gray-600">No jobs found matching your criteria</p>
+                            <p className="mt-2 text-gray-500">Try adjusting your search or category filter</p>
+                        </div>
                     )}
 
-                    {hasMore && filteredJobs.length > 0 && (
-                        <div className="flex justify-center mt-6">
+                    {/* Load More Button */}
+                    {jobs.length > 0 && page < totalPages && (
+                        <div className="flex justify-center mt-10">
                             <button
-                                className="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-orange-700 disabled:bg-gray-400"
-                                onClick={loadJobs}
+                                className="bg-orange-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-700 disabled:bg-gray-400"
+                                onClick={handleLoadMore}
                                 disabled={loading}
                             >
-                                {loading ? "Loading..." : "Load More"}
+                                {loading ? (
+                                    <>
+                                        <span className="inline-block mr-2 animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                                        Loading...
+                                    </>
+                                ) : (
+                                    "Load More"
+                                )}
                             </button>
                         </div>
                     )}
-                    {!hasMore && filteredJobs.length > 0 && (
-                        <div className="text-center mt-6 text-gray-700">
-                            No more jobs to load.
+                    
+                    {jobs.length > 0 && page >= totalPages && (
+                        <div className="text-center py-4 text-gray-600">
+                            No more jobs to load
                         </div>
                     )}
                 </div>

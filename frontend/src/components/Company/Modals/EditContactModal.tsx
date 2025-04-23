@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
-import { getProfile } from "../../../services/profile";
 import { GoPlus } from "react-icons/go";
 import { editContact, getComapny } from "../../../services/company/companyProfile";
 interface EditProfileModalProps {

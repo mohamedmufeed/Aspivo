@@ -66,7 +66,7 @@ const JobDetails = () => {
       }
     }
     fechDetails()
-  }, [id, responseUserId])
+  }, [userId,id, responseUserId])
 
 
 
