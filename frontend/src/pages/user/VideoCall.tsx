@@ -15,10 +15,7 @@ const VideoCall = () => {
   const roomId = params.get("room");
   const peerId = params.get("peerId");
   const navigate = useNavigate();
-  
-  console.log("Room ID:", roomId);
-  console.log("My Peer ID:", peerId);
-  
+  console.log("Room ID:", roomId);  
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const peerRef = useRef<Peer | null>(null);
@@ -58,8 +55,7 @@ const VideoCall = () => {
     peer.on("open", (id) => {
       console.log("User peer connected with ID:", id);
       setConnectionStatus("Connected. Waiting for call...");
-      
-      // Set up data connection handler
+    
       peer.on("connection", (dataConn) => {
         console.log("Received data connection from:", dataConn.peer);
         setRemotePeerId(dataConn.peer);
@@ -113,8 +109,7 @@ const VideoCall = () => {
           remoteVideoRef.current.srcObject = remoteStream;
         }
         setConnectionStatus("Call in progress");
-        
-        // Establish data connection for chat if we haven't already
+  
         if (call.peer && !dataConnectionRef.current) {
           connectForChat(call.peer);
         }
@@ -135,7 +130,7 @@ const VideoCall = () => {
       setConnectionStatus("Connection error: " + err.message);
     });
 
-    // Clean up
+
     return () => {
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
@@ -185,13 +180,11 @@ const VideoCall = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim() && dataConnectionRef.current) {
-      // Send message through data connection
       dataConnectionRef.current.send({
         type: "chat",
         message: newMessage.trim()
       });
       
-      // Add message to local state
       setMessages(prev => [...prev, {
         sender: "local",
         text: newMessage.trim(),
@@ -200,10 +193,7 @@ const VideoCall = () => {
       
       setNewMessage("");
     } else if (newMessage.trim() && remotePeerId && peerRef.current) {
-      // If we don't have a data connection yet but do have the remote peer ID
       connectForChat(remotePeerId);
-      
-      // We'll add a small delay to allow the connection to establish
       setTimeout(() => {
         if (dataConnectionRef.current) {
           dataConnectionRef.current.send({

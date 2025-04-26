@@ -14,11 +14,10 @@ import { format } from 'date-fns';
 import { useSocket } from "../../hooks/socket";
 import axios from "axios";
 import { fetchCompany } from "../../services/company/compayJob";
-import { sheduleMeeting } from "../../services/company/companyMeeting";
 import { TimePickerModal } from "../../components/Company/Modals/TimePickerModal";
 
 
-interface ChatMessage {
+export interface ChatMessage {
     _id: string;
     senderId: string;
     imageUrl?: string
@@ -33,7 +32,7 @@ interface RawSocketMessage {
     message: string;
     timeStamp: string;
 }
-interface Conversation {
+export interface Conversation {
 
     targetId: string;
     targetName: string;
@@ -61,7 +60,6 @@ const CompanyMessages = () => {
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
     const [showTimeModal, setShowTimeModal] = useState(false)
-    const [meetingTime, setMeetingTime] = useState<Date | null>()
 
     useEffect(() => {
         const fetchCompanie = async () => {
@@ -136,135 +134,71 @@ const CompanyMessages = () => {
     }, [companyId, location.state?.newConversation]);
 
 
-    // useEffect(() => {
-    //     if (!socket) return;
-    //     if (selectedUserId && conversations.length > 0) {
-    //         socket.connect();
-    //         socket.emit("registerUser", "company", companyId);
-    //         let channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-    //         const fetchHistory = async () => {
-    //             if (channel) {
-    //                 try {
-    //                     const data = await getMessageHistory(channel);
-    //                     if (data) setMessages(data);
-    //                 } catch (error) {
-    //                     console.error("Error fetching message history:", error);
-    //                 }
-    //             } else {
-    //                 console.log("No channel found for selectedUserId:", selectedUserId);
-    //             }
-    //         };
+    useEffect(() => {
+        if (!socket || !selectedUserId || conversations.length === 0) return;
 
-    //         fetchHistory();
-    //         if (channel) {
-    //             socket.emit("joinChannel", channel);
-    //             socket.on("receiveMessage", (message: RawSocketMessage) => {
-    //                 console.log("Received message:", message);
-    //                 const normalizedMessage: ChatMessage = {
-    //                     _id: message._id || `${message.senderId}-${message.timeStamp}`,
-    //                     senderId: message.senderId,
-    //                     message: message.message || "",
-    //                     timestamp: message.timeStamp || new Date().toISOString(),
-    //                 };
-    //                 if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
-    //                     setMessages((prev) => [...prev, normalizedMessage]);
-    //                 } else {
-    //                     console.warn("Invalid message received after normalization:", normalizedMessage);
-    //                 }
-    //             });
-    //         }
-
-    //         return () => {
-    //             if (channel) {
-    //                 socket.off("receiveMessage")
-    //             }
-    //         };
-    //     }
-    // }, [selectedUserId, conversations]);
-
-    // Inside your CompanyMessages component, update the socket effect:
-
-useEffect(() => {
-    if (!socket || !selectedUserId || conversations.length === 0) return;
-    
-    // Connect socket only if not connected
-    if (!socket.connected) {
-        socket.connect();
-        console.log('Socket connecting...');
-    }
-    
-    // Register user once when component mounts
-    socket.emit("registerUser", "company", companyId);
-    
-    // Find the channel for the selected user
-    const conversation = conversations.find((c) => c.targetId === selectedUserId);
-    const channel = conversation?.channel;
-    
-    if (!channel) {
-        console.log("No channel found for selectedUserId:", selectedUserId);
-        return;
-    }
-    
-    // Fetch message history
-    const fetchHistory = async () => {
-        try {
-            const data = await getMessageHistory(channel);
-            if (data) setMessages(data);
-        } catch (error) {
-            console.error("Error fetching message history:", error);
+        if (!socket.connected) {
+            socket.connect();
+            console.log('Socket connecting...');
         }
-    };
-    
-    fetchHistory();
-    
-    // Join the channel
-    console.log(`Joining channel: ${channel}`);
-    socket.emit("joinChannel", channel);
-    
-    // Define message handler
-    const handleReceiveMessage = (message: RawSocketMessage) => {
-        console.log("Received message:", message);
-        const normalizedMessage: ChatMessage = {
-            _id: message._id || `${message.senderId}-${message.timeStamp}`,
-            senderId: message.senderId,
-            message: message.message || "",
-            imageUrl: message.imageUrl,
-            timestamp: message.timeStamp || new Date().toISOString(),
-        };
-        
-        if (normalizedMessage.message || normalizedMessage.imageUrl) {
-            setMessages((prev) => [...prev, normalizedMessage]);
-        } else {
-            console.warn("Invalid message received after normalization:", normalizedMessage);
-        }
-    };
-    
-    // Add event listener
-    socket.on("receiveMessage", handleReceiveMessage);
-    
-    // Clean up function
-    return () => {
-        if (channel) {
-            console.log(`Leaving channel: ${channel}`);
-            socket.emit("leaveChannel", channel);
-            socket.off("receiveMessage", handleReceiveMessage);
-        }
-    };
-}, [selectedUserId, conversations, companyId, socket]);
 
-// Also update your componentWillUnmount cleanup
-useEffect(() => {
-    return () => {
-        // No need to disconnect the socket when component unmounts
-        // We'll reuse it across the app
-        if (socket) {
-            const currentChannel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-            if (currentChannel) {
-                socket.emit("leaveChannel", currentChannel);
+        socket.emit("registerUser", "company", companyId);
+
+        const conversation = conversations.find((c) => c.targetId === selectedUserId);
+        const channel = conversation?.channel;
+
+        if (!channel) {
+            console.log("No channel found for selectedUserId:", selectedUserId);
+            return;
+        }
+
+        const fetchHistory = async () => {
+            try {
+                const data = await getMessageHistory(channel);
+                if (data) setMessages(data);
+            } catch (error) {
+                console.error("Error fetching message history:", error);
             }
-        }
-    };
-}, [socket, conversations, selectedUserId]);
+        };
+
+        fetchHistory();
+        socket.emit("joinChannel", channel);
+        const handleReceiveMessage = (message: RawSocketMessage) => {
+            console.log("Received message:", message);
+            const normalizedMessage: ChatMessage = {
+                _id: message._id || `${message.senderId}-${message.timeStamp}`,
+                senderId: message.senderId,
+                message: message.message || "",
+                imageUrl: message.imageUrl,
+                timestamp: message.timeStamp || new Date().toISOString(),
+            };
+
+            if (normalizedMessage.message || normalizedMessage.imageUrl) {
+                setMessages((prev) => [...prev, normalizedMessage]);
+            } else {
+                console.warn("Invalid message received after normalization:", normalizedMessage);
+            }
+        };
+
+        socket.on("receiveMessage", handleReceiveMessage);
+        return () => {
+            if (channel) {
+                console.log(`Leaving channel: ${channel}`);
+                socket.emit("leaveChannel", channel);
+                socket.off("receiveMessage", handleReceiveMessage);
+            }
+        };
+    }, [selectedUserId, conversations, companyId, socket]);
+    useEffect(() => {
+        return () => {
+            if (socket) {
+                const currentChannel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
+                if (currentChannel) {
+                    socket.emit("leaveChannel", currentChannel);
+                }
+            }
+        };
+    }, [socket, conversations, selectedUserId]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -301,65 +235,6 @@ useEffect(() => {
         setMessages([]);
         console.log("Selected conversation:", targetId);
     };
-
-
-    const handleStartVideoCall = async () => {
-
-
-        if (!companyId || !selectedUserId) {
-            console.error("Company ID or Selected User ID is missing");
-            return;
-        }
-        const roomId = `meeting-${companyId}-${Date.now()}`;
-        // const companyPeerId = `company-${companyId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const userPeerId = `user-${selectedUserId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-        const meetingLink = `${window.location.origin}/video?room=${roomId}&peerId=${userPeerId}`;
-
-        const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-
-        if (channel) {
-            if (!socket) return
-            const startTime = meetingTime|| new Date(Date.now() + 1 * 60 * 1000);
-            const meetingData = {
-                roomId: roomId,
-                peerId: userPeerId,
-                startTime: startTime.toISOString(),
-                initiatorId: companyId,
-                targetId: selectedUserId,
-                link: meetingLink,
-            }
-
-            const formattedTime = new Date(startTime).toLocaleString();
-            const invitationMessage = ` You have a scheduled video call! \n Time: ${formattedTime}\n🔗 Join: ${meetingLink}`;
-
-            try {
-
-                const response = await sheduleMeeting(meetingData)
-                if (!response) {
-                    console.log("Failed to schedule meeting");
-                    return
-                }
-                await sendMessage(channel, invitationMessage, companyId);
-                const messageData = {
-                    channel,
-                    message: invitationMessage,
-                    imageUrl: imageUrl || undefined,
-                    senderId: companyId,
-                    timeStamp: new Date().toISOString(),
-                };
-                socket.emit("sendMessage", messageData);
-                const updatedMessages = await getMessageHistory(channel);
-                if (updatedMessages) setMessages(updatedMessages);
-            } catch (error) {
-                console.error("Error initiating video call:", error);
-            }
-        } else {
-            console.error("No channel found for the selected user");
-        }
-    };
-
-
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -400,15 +275,6 @@ useEffect(() => {
 
     const TimesheduleMeeting = () => {
         setShowTimeModal(true);
-    };
-
-    const handleTimeConfirm = () => {
-        console.log("the meeting time",meetingTime)
-        if (meetingTime) {
-            handleStartVideoCall();
-        } else {
-            console.log("No meeting time selected");
-        }
     };
 
     return (
@@ -494,11 +360,9 @@ useEffect(() => {
                                     {showTimeModal && (
                                         <TimePickerModal
                                             setShowTimeModal={setShowTimeModal}
-                                            onTimeSelect={(time) =>{
-                                                console.log("tje time inside ",time)
-                                                 setMeetingTime(time)}
-                                                }
-                                            onConfirm={handleTimeConfirm}
+                                            companyId={companyId}
+                                            selectedUserId={selectedUserId}
+                                            conversations={conversations}
                                         />
                                     )}
 
@@ -515,7 +379,7 @@ useEffect(() => {
                                                 <div
                                                     className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === companyId ? "bg-orange-200 text-black" : "bg-white text-black shadow-xl shadow-gray-200"}`}
                                                 >
-                                                
+
                                                     {msg.imageUrl && (
                                                         <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px]  h-auto mb-2 rounded" />
                                                     )}

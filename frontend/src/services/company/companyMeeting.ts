@@ -18,7 +18,6 @@ export const sheduleMeeting = async (meetingData: IMeetingData) => {
 export const getMeetings=async(companyId:string)=>{
     try {
         const response=await api.get(`company/meetings/${companyId}`)
-        console.log("the espo",response)
         return response.data
     } catch (error) {
         if (error instanceof AxiosError) {
