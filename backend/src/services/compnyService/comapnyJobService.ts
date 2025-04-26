@@ -15,7 +15,7 @@ export class ComapnayJobService implements IJobService {
     const company = await this._companyRepositories.findByUserId(userId);
 
     if (!company) {
-      throw new Error("Company not found");
+      throw {status:404 , message:"Comapny not found"}
     }
     return { company, message: "comapany fetched sucsess fully" };
   }

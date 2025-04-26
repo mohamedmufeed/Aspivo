@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ProfileService } from "../../services/profileService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { IProfileController } from "../../interface/controller/user/profileControllerInterface";
+import { ERROR_MESSAGES } from "../../constants/error";
 
 export class ProfileController implements IProfileController {
   // private profileService: ProfileSerive;
@@ -53,7 +54,8 @@ export class ProfileController implements IProfileController {
       const user = await this._profileService.editAbout(userId, about);
       res.status(HttpStatus.OK).json({ user, message: "User about updated successfully" });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to update about section" });
+      const err = error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `"Failed to update about section ${err.message}`, });
     }
   };
 
@@ -64,7 +66,8 @@ export class ProfileController implements IProfileController {
       const user = await this._profileService.addExperience(userId, data);
       res.status(HttpStatus.OK).json({ user, message: "Experience added successfully" });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add experience" });
+      const err = error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to add experience ${err.message}` });
     }
   };
 
@@ -148,4 +151,15 @@ export class ProfileController implements IProfileController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to fetch subscription history" });
     }
   };
+
+  public generateResumeFromProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id
+      const response = await this._profileService.generateResumeFromProfile(userId)
+      res.status(HttpStatus.OK).json(response)
+    } catch (error) {
+      console.log(error)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+    }
+  }
 }

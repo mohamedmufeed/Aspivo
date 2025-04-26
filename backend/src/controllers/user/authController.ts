@@ -57,6 +57,7 @@ export class AuthController  implements IAuthController{
 
       res.json({ user });
     } catch (error: any) {
+      console.log("the login error",error.message)
       res
         .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR });

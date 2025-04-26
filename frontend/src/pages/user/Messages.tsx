@@ -3,7 +3,6 @@ import { IoChevronBackOutline } from "react-icons/io5";
 import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
-import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink, IoIosSearch } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
 import { useSelector } from "react-redux";
@@ -13,7 +12,7 @@ import { format } from "date-fns";
 import avathar from "../../assets/user.png";
 import { useSocket } from "../../hooks/socket";
 import axios from "axios";
-import { User } from "../../types/types";
+
 
 
 interface ChatMessage {
@@ -45,7 +44,6 @@ interface Conversation {
 const Messages = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [userStatuses, setUserStatuses] = useState<Record<string, boolean>>({});
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -60,7 +58,7 @@ const Messages = () => {
   const socket = useSocket();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageLoading, setImageLoading] = useState(false)
-
+  const [timeLimitEnds, setTimeLimitEnds] = useState<boolean | undefined>(undefined)
 
   const user = useSelector((state: RootState) => state.auth.user);
   const authUserId = user?._id || "";
@@ -105,15 +103,17 @@ const Messages = () => {
     fetchData();
   }, [userId, loading]);
 
+  // In your Messages component
   useEffect(() => {
     if (!socket) return;
+
     if (selectedEmployeeId && userId && conversations.length > 0) {
       const conversation = conversations.find((c) => c.employeeId === selectedEmployeeId);
       const channel = conversation?.channel || `chat:${selectedEmployeeId}:${userId}`;
+
       const fetchHistory = async () => {
         try {
           const data = await getMessageHistory(channel);
-          console.log("Fetched messages:", data);
           if (data) setMessages(data);
         } catch (error) {
           console.error("Error fetching message history:", error);
@@ -121,33 +121,29 @@ const Messages = () => {
       };
 
       fetchHistory();
-
       socket.emit("joinChannel", channel);
-      if (channel) {
-        socket.emit("joinChannel", channel);
-        socket.on("receiveMessage", (message: RawSocketMessage) => {
-          console.log("Received message:", message);
-          const normalizedMessage: ChatMessage = {
-            _id: message._id || `${message.senderId}-${message.timeStamp}`,
-            senderId: message.senderId,
-            message: message.message || "",
-            imageUrl: message.imageUrl || undefined,
-            timestamp: message.timeStamp || new Date().toISOString(),
-          };
-          if (normalizedMessage.message || normalizedMessage.imageUrl) {
-            setMessages((prev) => [...prev, normalizedMessage]);
-          } else {
-            console.warn("Invalid message received after normalization:", normalizedMessage);
-          }
-        });
-      }
+      const handleMessage = (message: RawSocketMessage) => {
+        console.log("Received message:", message);
+        const normalizedMessage: ChatMessage = {
+          _id: message._id || `${message.senderId}-${message.timeStamp}`,
+          senderId: message.senderId,
+          message: message.message || "",
+          imageUrl: message.imageUrl || undefined,
+          timestamp: message.timeStamp || new Date().toISOString(),
+        };
 
+        if (normalizedMessage.message || normalizedMessage.imageUrl) {
+          setMessages((prev) => [...prev, normalizedMessage]);
+        }
+      };
+
+      socket.on("receiveMessage", handleMessage);
       return () => {
-        socket.off("receiveMessage");
+        socket.off("receiveMessage", handleMessage);
         socket.emit("leaveChannel", channel);
       };
     }
-  }, [selectedEmployeeId, userId, conversations]);
+  }, [selectedEmployeeId, userId, conversations, socket]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -165,12 +161,32 @@ const Messages = () => {
           imageUrl: imageUrl || undefined,
           senderId: userId,
         };
-        await sendMessage(channel, messageData.message, userId, messageData.imageUrl);
-        socket.emit("sendMessage", { ...messageData, timeStamp: new Date().toISOString() });
-        setNewMessage("");
-        setImageUrl(null);
-        const updatedMessages = await getMessageHistory(channel);
-        setMessages(updatedMessages);
+        
+        const response = await sendMessage(channel, messageData.message, userId, messageData.imageUrl);
+        
+        if (!response) {
+          setTimeLimitEnds(true);
+          const timeoutMessage: ChatMessage = {
+            _id: `timeout-${Date.now()}`,
+            message: "⚠️ SYSTEM NOTIFICATION: Chat limit reached. You cannot send more messages at this time. [UPGRADE_PLAN]",
+            senderId: "system",
+            timestamp: new Date().toISOString()
+          };
+          setMessages(prevMessages => [...prevMessages, timeoutMessage]);
+          setNewMessage("");
+          setImageUrl(null);
+        } else {
+          setTimeLimitEnds(false);
+          socket.emit("sendMessage", { ...messageData, timeStamp: new Date().toISOString() });
+          setNewMessage("");
+          setImageUrl(null);
+        try {
+            const updatedMessages = await getMessageHistory(channel);
+            setMessages(updatedMessages);
+          } catch (error) {
+            console.log("Error updating messages:", error);
+          }
+        }
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -182,39 +198,6 @@ const Messages = () => {
     setMessages([]);
   };
 
-  useEffect(() => {
-    if (!socket || !companyId) return;
-
-    socket.connect();
-    socket.emit("registerUser", "employee", userId);
-
-    const handleUserStatus = (data: any) => {
-      console.log("User status update:", data);
-      setUserStatuses(prev => ({
-        ...prev,
-        [data.targetId]: data.isOnline
-      }));
-    };
-
-    const handleOnlineUsers = (users: User[]) => {
-      console.log("Initial online users:", users);
-      const statuses = {};
-      users.forEach(user => {
-        statuses[user._id] = user.isOnline;
-      });
-      setUserStatuses(statuses);
-    };
-
-    socket.on("user-online", handleUserStatus);
-    socket.on("user-offline", handleUserStatus);
-    socket.on("online-users", handleOnlineUsers);
-
-    return () => {
-      socket.off("user-online", handleUserStatus);
-      socket.off("user-offline", handleUserStatus);
-      socket.off("online-users", handleOnlineUsers);
-    };
-  }, [socket, companyId]);
 
   useEffect(() => {
     const newConversation = location.state?.newConversation as Conversation | undefined;
@@ -245,27 +228,6 @@ const Messages = () => {
     }
   }, [location.state, companyId, userId, conversations, isInitialized]);
 
-  // const handleInitializeChat = async (employeeId: string, employeeName: string, employeeProfile: string) => {
-  //   if (companyId && !conversations.some((conv) => conv.employeeId === employeeId)) {
-  //     try {
-  //       const data = await InitializeChat(companyId, employeeId, "employee");
-  //       setConversations((prev) => [
-  //         ...prev,
-  //         {
-  //           employeeProfile,
-  //           employeeId,
-  //           employeeName,
-  //           lastMessage: "Chat started",
-  //           timestamp: new Date().toISOString(),
-  //           channel: data.channel,
-  //         },
-  //       ]);
-  //       setSelectedEmployeeId(employeeId);
-  //     } catch (error) {
-  //       console.error("Error initializing chat:", error);
-  //     }
-  //   }
-  // };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -335,7 +297,7 @@ const Messages = () => {
                 >
                   <div className="flex items-center">
                     <div className="bg-gray-200 rounded-full mr-2 sm:mr-3">
-                      <img src={conv.employeeProfile || avathar} alt="" className="w-12 h-12 rounded-full" />
+                      <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${conv.employeeProfile}` || avathar} alt="" className="w-12 h-12 rounded-full" />
                     </div>
                     <div>
                       <h1 className="text-sm sm:text-base">{conv.employeeName}</h1>
@@ -370,25 +332,24 @@ const Messages = () => {
                   <div className="flex items-center">
                     <div className="bg-gray-200 rounded-full mr-2 sm:mr-3">
                       <img
-                        src={conversations.find((c) => c.employeeId === selectedEmployeeId)?.employeeProfile || avathar}
-                        alt=""
+                        src={
+                          conversations.find((c) => c.employeeId === selectedEmployeeId)?.employeeProfile
+                            ? `https://res.cloudinary.com/do4wdvbcy/image/upload/c_fill,w_200,h_200/${conversations.find((c) => c.employeeId === selectedEmployeeId)?.employeeProfile}`
+                            : avathar
+                        }
+                        alt="Employee Profile"
                         className="w-13 h-13 rounded-full"
                       />
+
+
                     </div>
                     <div className="space-y-1">
                       <h1 className="font-bold text-sm sm:text-lg">
                         {conversations.find((c) => c.employeeId === selectedEmployeeId)?.employeeName || "Unknown"}
                       </h1>
-                      <p className="text-xs sm:text-sm text-gray-600 flex items-center">
-                        <span
-                          className={`inline-block w-2 h-2 rounded-full mr-1 ${userStatuses[userId||""] ? "bg-green-500" : "bg-gray-400"
-                            }`}
-                        ></span>
-                        {userStatuses[userId||""] ? "Online" : "Offline"}
-                      </p>
                     </div>
                   </div>
-                  <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+
                 </div>
                 <div className="h-px bg-gray-400 w-full mt-2" />
                 <div className="flex-1 overflow-y-auto p-2 sm:p-4" style={{ maxHeight: "calc(100vh - 300px)" }}>
@@ -402,7 +363,8 @@ const Messages = () => {
                           className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === userId ? "bg-orange-200 text-black" : "bg-white text-black shadow-xl shadow-gray-200"
                             }`}
                         >
-                          {/* Display uploaded image if available */}
+                          
+
                           {msg.imageUrl && (
                             <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px]  h-auto mb-2 rounded" />
                           )}
@@ -429,10 +391,25 @@ const Messages = () => {
                                 </a>
                               </>
                             ) :
+                      
 
 
                               (
-                                <p className="text-sm sm:text-base">{msg.message}</p>
+                                msg.senderId === "system" ? (
+                          
+                                  <div className="text-center">
+                                    <p className="text-sm sm:text-base font-medium mb-2">
+                                      {msg.message.replace("[UPGRADE_PLAN]", "")}
+                                    </p>
+                                    <button 
+                                      onClick={() => navigate('/subscription')} 
+                                      className="mt-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                                    >
+                                      Upgrade Plan
+                                    </button>
+                                  </div>
+                                ) :   <p className="text-sm sm:text-base">{msg.message}</p> 
+                              
                               )}
                           <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === userId ? "text-gray-500" : "text-black"}`}>
                             {format(new Date(msg.timestamp || Date.now()), "p")}
@@ -461,7 +438,7 @@ const Messages = () => {
                   <button
                     onClick={handleSendMessage}
                     className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
-                    disabled={(imageLoading || (!newMessage.trim() && !imageUrl))}
+                    disabled={(imageLoading || (!newMessage.trim() && !imageUrl) || timeLimitEnds)}
                   >
                     {imageLoading ? (
                       <svg

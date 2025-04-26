@@ -4,6 +4,7 @@ import { addSkill, getSkills } from "../../services/adminService";
 import ToastError from "../../components/Tost/ErrorToast";
 import { removeSkill } from "../../services/adminService";
 import AdminHeader from "../../components/Admin/AdminHeader";
+import { IoClose } from "react-icons/io5";
 interface SkillType {
   _id?: string;
   name: string,

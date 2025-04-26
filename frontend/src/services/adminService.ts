@@ -105,7 +105,7 @@ export const approvedCompany = async (page = 1, limit = 5, searchQuery = "", sig
   }
 };
 
-export const addSkill = async (skills: string[]) => {
+export const addSkill = async (skills: { skills: string[]; }) => {
   try {
     const response = await api.post(`admin/skills`, skills);
     return response.data;

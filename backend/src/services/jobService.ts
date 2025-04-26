@@ -1,6 +1,6 @@
 
 import { JobRepositories } from "../repositories/jobRepositories";
-import Job, { IJob } from "../models/job";
+import  { IJob } from "../models/job";
 import IJobService from "../interface/service/user/jobServiceInterface";
 import { IJobApplication } from "../models/jobApplication";
 

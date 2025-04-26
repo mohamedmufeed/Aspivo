@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { editExperience, getProfile } from "../../../services/profile";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import { experinceSchema } from "../../../validation/zod";
 
 

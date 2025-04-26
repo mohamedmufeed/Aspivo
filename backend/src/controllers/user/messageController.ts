@@ -75,8 +75,9 @@ export class MessageController  implements IMessageController{
       }
       await this._messageService.sendChatMessage(channel, message, senderId);
       res.status(HttpStatus.OK).json({ message: "Message sent" });
-    } catch (error: any) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message || ERROR_MESSAGES.SERVER_ERROR});
+    } catch (error) {
+      const err=error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 

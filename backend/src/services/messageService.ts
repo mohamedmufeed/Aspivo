@@ -10,13 +10,9 @@ const redisClient = createClient({
 });
 redisClient.on("error", (err) => console.log("Redis client error", err));
 
-export class MessageService  implements IMessageService{
-  // private _messageRepositories: MessageRepostries;
+export class MessageService implements IMessageService {
 
-  // constructor(messageRepositories:MessageRepostries) {
-  //   this._messageRepositories = messageRepositories
-  // }
-    constructor(private _messageRepositories: MessageRepostries) {}
+  constructor(private _messageRepositories: MessageRepostries) { }
 
   async initializeChat(
     initiatorId: string,
@@ -32,52 +28,78 @@ export class MessageService  implements IMessageService{
     const conversation = new Conversation({
       channel,
       participants: [
-          { userId: initiatorId, role: role },
-          { userId: targetId, role: role === "company" ? "employee" : "company" },
+        { userId: initiatorId, role: role },
+        { userId: targetId, role: role === "company" ? "employee" : "company" },
       ],
       lastMessage: "Chat initialized",
       timestamp: new Date(),
       unread: true,
-  });
-  await conversation.save();
+    });
+    await conversation.save();
     await redisClient.disconnect();
     return { channel, message: "Chat initialized" };
   }
-  
+
+
   async sendChatMessage(channel: string, message: string, senderId: string) {
     await redisClient.connect();
-    const payload = JSON.stringify({
-      senderId,
-      message,
-      timeStamp: new Date().toISOString(),
-    });
+    try {
+      const payload = JSON.stringify({
+        senderId,
+        message,
+        timeStamp: new Date().toISOString(),
+      });
+  
+      if (io) {
+        io.to(channel).emit("receiveMessage", payload);
+      } else {
+        await redisClient.publish(channel,  JSON.stringify(payload)); 
+      }
+  
+      const senderInfo = await this._messageRepositories.findSender(senderId);
 
-    if(io){
-      io.to(channel).emit("receiveMessage",payload)
-    }else{
-      await redisClient.publish(channel,JSON.stringify(payload));
+      if (!senderInfo) {
+        throw { status: 404, message: "Sender not found" };
+      }
+      const { type, data: sender } = senderInfo;
+
+      if(type === "user"){
+        if (sender?.features.unlimitedChat) {
+          await this._messageRepositories.createChat(channel, senderId, message);
+        } else if (sender!.chatLimit > 0) {
+          await this._messageRepositories.decrementChatLimit(senderId);
+          await this._messageRepositories.createChat(channel, senderId, message);
+        } else {
+          throw { status: 404, message: "Message Limit ends" };
+        }
+      }else if( type === "company"){
+        await this._messageRepositories.createChat(channel, senderId, message);
+      }
+   
+    } finally {
+      await redisClient.disconnect();
     }
-    await this._messageRepositories.createChat(channel, senderId, message);
-    await redisClient.disconnect();
   }
+  
+  
 
   async subscribeToChat(channel: string, callback: (message: string) => void) {
-    if(io){
-      io.on("connection",(socket)=>{
+    if (io) {
+      io.on("connection", (socket) => {
         socket.join(channel)
-        socket.on("receiveMessage",(data)=>callback(JSON.stringify(data)))
+        socket.on("receiveMessage", (data) => callback(JSON.stringify(data)))
       })
-    }else{
+    } else {
       redisClient.connect();
       redisClient.subscribe(channel, callback);
     }
-  
+
   }
 
   async unsubscribeFromChat(channel: string) {
-    if(io){
+    if (io) {
       io.socketsLeave(channel)
-    }else{
+    } else {
       redisClient.unsubscribe(channel);
     }
 
@@ -93,7 +115,7 @@ export class MessageService  implements IMessageService{
       timestamp: msg.timestamp.toISOString(),
     }));
   }
-  async getConversations(userId: string, role: string):Promise<ConversationResponse[]>  {
+  async getConversations(userId: string, role: string): Promise<ConversationResponse[]> {
     const conversations = await this._messageRepositories.getConversations(
       userId,
       role

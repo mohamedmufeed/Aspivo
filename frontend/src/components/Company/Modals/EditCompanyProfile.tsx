@@ -6,7 +6,7 @@ import { editCompanyProfileSchema, } from "../../../validation/zod";
 import axios from "axios";
 import { editCompanyProfile,getComapny } from "../../../services/company/companyProfile";
 import ToastError from "../../Tost/ErrorToast";
-
+const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 
 interface EditCompanyProfileForm {
     companyName: string;
@@ -80,8 +80,9 @@ const EditCompanyProfileModal: React.FC<EditProfileModalProps> = ({ setCompanyDa
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             const uploadedImageUrl = await uploadToCloudinary(file);
+            const afterUpload = uploadedImageUrl.slice(uploadedImageUrl.indexOf("upload/") + 7);
             if (uploadedImageUrl) {
-                setLogoUrl(uploadedImageUrl);
+                setLogoUrl(afterUpload);
                 setImageError(null);
             }
         }
@@ -162,7 +163,8 @@ const EditCompanyProfileModal: React.FC<EditProfileModalProps> = ({ setCompanyDa
                             <div className="relative bg-gray-300 rounded-full w-32 h-32 flex items-center justify-center overflow-hidden">
                                 {logoUrl ? (
                                     <img
-                                        src={logoUrl}
+        
+                                        src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${logoUrl}`}
                                         alt="Company Logo"
                                         className="w-full h-full object-cover rounded-full"
                                     />

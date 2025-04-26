@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { CiMenuFries } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch} from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../../redux/store/store";
 import ProfileDropdown from "./ProfileDropdown";
 import profileAvathar from "../../assets/user.png"
 import { Link } from "react-router-dom";
 import { fetchGoogleUser } from "../../services/auth";
-import { useDispatch } from "react-redux";
 import { login } from "../../redux/slice/authSlice";
 import { getNotifications } from "../../services/notificationService";
 
@@ -63,7 +62,7 @@ const Navbar = () => {
         }
         fetchNotification()
 
-    }, [])
+    }, [userId])
 
 
     const undreadNotification = notifications?.some((notification) => !notification.isRead)
@@ -95,7 +94,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <>
-            <div className="bg-[#F6F6F6] p-4 flex justify-between   items-center z-30" style={{ fontFamily: "DM Sans, sans-serif" }}>
+            <div className="bg-[#F6F6F6] p-4 flex justify-between   items-center z-50" style={{ fontFamily: "DM Sans, sans-serif" }}>
 
                 <div className="text-[30px] ps-8 font-bold flex items-center font-[Montserrat]">
                     <span className="w-9 h-10 md:w-9 md:h-10 bg-orange-600 text-white rounded-lg font-extrabold flex items-center justify-center mr-1">A</span>
@@ -146,7 +145,7 @@ const Navbar = () => {
             </div>
 
             {isOpen && (
-                <div className="md:hidden  w-full  items-center  absolute flex flex-col ps-6  gap-4 bg-white py-4 shadow-md " style={{ fontFamily: "DM Sans, sans-serif" }}>
+                <div className="flex flex-col gap-4 items-center py-4 bg-white w-full shadow-md z-30 md:hidden "  style={{ fontFamily: "DM Sans, sans-serif" }}>
                     {navItems.map((nav, index) => (
                         <div key={index} className="cursor-pointer font-extralight hover:text-orange-600">
                             {nav.icon ? nav.icon : nav.name}

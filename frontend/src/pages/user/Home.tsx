@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { getProfile } from "../../services/profile";
+import Review from "../../components/homecomponts/Review";
 
 const HeroSection = () => {
 
@@ -47,13 +48,14 @@ const HeroSection = () => {
   useEffect(() => {
     if (user) {
       navigate("/");
-    }
-  }, [navigate, user]);
-  
+    } 
+  }, [navigate, userId]);
+
   useEffect(() => {
     const handleUser = async () => {
       try {
         const response = await getProfile(userId);
+        console.log("first,",response.user.user)
         if(response.user.user.isAdmin){
           navigate("/admin-dashboard")
         }else{
@@ -146,6 +148,7 @@ const HeroSection = () => {
       </section>
       <Category />
       <JobCollections />
+      <Review/>
     </>
 
 

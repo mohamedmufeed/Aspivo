@@ -17,7 +17,8 @@ const CompanyDashboard = () => {
       try {
         if (!userId) return;
         const response = await fetchCompany(userId);
-        if (!response.company.company) {
+        console.log(response)
+        if (!response) {
           navigate("/company-signup");
         }
         if (response.company.company.status != "Approved") {

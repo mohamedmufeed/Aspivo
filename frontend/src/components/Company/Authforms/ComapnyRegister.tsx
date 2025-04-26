@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import { signup } from "../../../services/company/auth";
 import { useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "../../../redux/store/store";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { register } from "../../../redux/slice/comapnyAuthSlice";
+
 
 
 export interface NewUser {
@@ -32,9 +33,6 @@ const CompanySignupForm = () => {
 const dispatch=useDispatch<AppDispatch>()
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || "";
-
-  console.log("the  user  nnn",user?._id)
-
   const uploadToCloudinary = async (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
@@ -55,10 +53,11 @@ const dispatch=useDispatch<AppDispatch>()
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       const uploadedkycUrl = await uploadToCloudinary(file)
+      const afterUpload = uploadedkycUrl.slice(uploadedkycUrl.indexOf("upload/") + 7);
       setKyc(file)
       console.log("the uploded url", uploadedkycUrl)
       if (uploadedkycUrl) {
-        setKycUrl(uploadedkycUrl)
+        setKycUrl(afterUpload)
       }
     }
   }
@@ -163,6 +162,9 @@ const dispatch=useDispatch<AppDispatch>()
         </div>
 
       </form>
+      <p className="text-center pt-10">Not now -<span className="text-orange-600"> <Link to={"/"}> Back to Home</Link></span></p>
+
+
     </div>
   )
 }

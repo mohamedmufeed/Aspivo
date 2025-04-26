@@ -4,9 +4,10 @@ import { BsDownload } from 'react-icons/bs'
 import { CiStickyNote } from 'react-icons/ci'
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import { useDropzone } from "react-dropzone"
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { deleteResume, getProfile, uploadResume } from '../../../services/profile'
+import { useNavigate } from 'react-router-dom'
 interface ResumeModalProps {
     userId: string,
     setProfileData: (prev: any) => void,
@@ -17,7 +18,7 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
     const [uploading, setUploading] = useState(false)
     const [fileUrl, setFileUrl] = useState("")
     const [resumeurl, setResumeUrl] = useState("")
-
+    const navigate = useNavigate()
 
     const uploadToCloudinary = async (file: File) => {
         const formData = new FormData()
@@ -97,7 +98,14 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
             <div className="flex justify-between px-8">
                 <h1 className="font-medium text-2xl">Resume</h1>
             </div>
-
+            <div
+                className="flex justify-end mt-6 cursor-pointer"
+                onClick={() => navigate("/ai-resume")}
+            >
+                <h1 className="text-md font-medium hover:underline">
+                    Create Your AI-Optimized <span className="text-orange-600">Resume</span>
+                </h1>
+            </div>
 
             <div className="flex mx-auto w-3/4 bg-white h-[60px] items-center shadow-gray-200 shadow-lg rounded-md justify-between px-6 mt-4">
                 <div className="flex items-center space-x-4">
@@ -108,14 +116,15 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
                     <BsDownload className={`w-6 h-6 text-gray-600  hover:text-gray-800 ${resumeurl ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                         }`} onClick={(e) => {
                             if (!resumeurl) {
-                            e.preventDefault()
-                            return
-                        } window.open(getDownloadableLink(resumeurl), "_blank")
+                                e.preventDefault()
+                                return
+                            } window.open(getDownloadableLink(resumeurl), "_blank")
                         }} />
                     <AiOutlineDelete className={`w-6 h-6 text-gray-600  hover:text-gray-800 ${resumeurl ? " cursor-pointer" : "opacity-50 cursor-not-allowed"
                         }`} onClick={handleDelete} />
                 </div>
             </div>
+
 
 
             <div {...getRootProps()} className={`w-5/6 mx-auto mt-5 p-6 flex flex-col items-center justify-center cursor-pointer rounded-lg outline-1.5 px-6 outline-dashed ${isDragActive ? "bg-gray-100" : ""}`}>

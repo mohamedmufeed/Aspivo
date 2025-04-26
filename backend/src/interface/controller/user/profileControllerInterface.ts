@@ -12,4 +12,5 @@ export interface IProfileController {
   uploadResume(req: Request, res: Response): Promise<void>;
   deleteResume(req: Request, res: Response): Promise<void>;
   subscriptionHistory(req: Request, res: Response): Promise<void>;
+  generateResumeFromProfile(req: Request, res: Response): Promise<void>;
 }

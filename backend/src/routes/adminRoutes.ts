@@ -13,6 +13,7 @@ import { SkillService } from "../services/adminService/skillService";
 import { SubscriptionService } from "../services/adminService/subscriptionService";
 import protect from "../middleware/authMiddlwware";
 import { NotificationRepository } from "../repositories/notificationRepository";
+import adminOnly from "../middleware/adminOnly";
 const router= express.Router()
 
 const notificationRepository= new NotificationRepository()
@@ -45,24 +46,24 @@ const userController = new UserManagementController(adminService);
 
 
 router
-  .get("/users",protect,userController.getUsers)              
+  .get("/users",protect,adminOnly,userController.getUsers)              
   .patch("/users/:id/block", userController.blockUser); 
 
 
 router
-  .get("/companies",protect, adminController.getCompanies)               
-  .get("/companies/approved",protect, adminController.approvedCompanies) 
+  .get("/companies",protect ,adminOnly, adminController.getCompanies)               
+  .get("/companies/approved",protect , adminOnly, adminController.approvedCompanies) 
   .post("/companies/requests", adminController.handleCompanyRequest);
 
 
 router
   .post("/skills", skillController.addSkill)           
-  .get("/skills", protect,skillController.getSkills)            
+  .get("/skills", protect,adminOnly,skillController.getSkills)            
   .delete("/skills/:id", skillController.removeSkill); 
 
 
 router
-  .get("/subscriptions", protect,subscriptionController.getSubscriptions)          
+  .get("/subscriptions", protect,adminOnly,subscriptionController.getSubscriptions)          
   .patch("/subscriptions/:id/status", subscriptionController.updateSubscriptionStatus);
 
  export default router

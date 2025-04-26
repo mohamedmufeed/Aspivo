@@ -14,5 +14,6 @@ editEducation(id:string,data:Education,educationId:string):Promise<UserServiceRe
 addSkill(id:string,data:string[]):Promise<UserServiceResponse>
 uploadResume(id:string,url:string):Promise<UserServiceResponse>
 deleteResume(id:string):Promise<UserServiceResponse>
-subscriptionHistory(userIdd:string):Promise<SubscriptionHistoryResponse>
+subscriptionHistory(userId:string):Promise<SubscriptionHistoryResponse>
+generateResumeFromProfile(userId:string):Promise<{response:string|undefined, message:string}>
 }

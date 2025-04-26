@@ -11,7 +11,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSocket(newSocket);
 
         return () => {
-            newSocket.disconnect();
+      
         };
     }, []);
 

@@ -21,7 +21,8 @@ export class CompanyMeetingService implements IComapnyMeetingService {
         message: "Meeting scheduled successfully",
       };
     } catch (error) {
-      throw new Error("Failed to schedule meeting");
+      const err=error as Error
+      throw new Error(`Failed to schedule meetin${err.message}`);
     }
   }
 
@@ -54,7 +55,8 @@ export class CompanyMeetingService implements IComapnyMeetingService {
       const meeting = await this._meetingRepositories.findAllMeetings(companyId)
       return { meeting, message: "Meetings fetched successfully" }
     } catch (error) {
-      throw new Error("Failed to fetching meetings");
+      const err=error as Error
+      throw new Error(`Failed to fetching meetings${err.message}`);
     }
   }
 }

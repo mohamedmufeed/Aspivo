@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import User from "../models/user";
 dotenv.config();
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: any;
 }
 const protect = async (
@@ -41,4 +41,6 @@ const protect = async (
     res.status(401).json({ message: `Invalid token or expires${err.message}`});
   }
 };
-export default protect;
+
+
+export default protect ;

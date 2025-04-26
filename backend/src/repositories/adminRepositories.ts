@@ -41,7 +41,7 @@ export class AdminRepostry implements IAdminRepostry {
         ]
       }
       : {}
-    const companies = await this.companyModel.find(searchFilter).skip(skip).limit(limit)
+    const companies = await this.companyModel.find(searchFilter).skip(skip).limit(limit).sort({createdAt:-1})
     const totalRequest = await this.companyModel.countDocuments(searchFilter)
     const totalPages = Math.ceil(totalRequest / limit)
     return { companies, totalRequest, totalPages }

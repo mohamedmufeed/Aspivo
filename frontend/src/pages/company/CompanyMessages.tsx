@@ -15,6 +15,7 @@ import { useSocket } from "../../hooks/socket";
 import axios from "axios";
 import { fetchCompany } from "../../services/company/compayJob";
 import { sheduleMeeting } from "../../services/company/companyMeeting";
+import { TimePickerModal } from "../../components/Company/Modals/TimePickerModal";
 
 
 interface ChatMessage {
@@ -54,20 +55,18 @@ const CompanyMessages = () => {
     const location = useLocation();
     const socket = useSocket();
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [userStatuses, setUserStatuses] = useState<Record<string, boolean>>({});
     const [imageUrl, setImageUrl] = useState<string | null>(null)
     const [imageError, setImageError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const user = useSelector((state: RootState) => state.auth.user);
     const userId = user?._id || "";
-    // const [showTimeModal, setShowTimeModal] = useState(false)
-    // const [meetingTime, setMeetingTime] = useState<Date | null>()
+    const [showTimeModal, setShowTimeModal] = useState(false)
+    const [meetingTime, setMeetingTime] = useState<Date | null>()
 
     useEffect(() => {
         const fetchCompanie = async () => {
             try {
                 const response = await fetchCompany(userId);
-                console.log("the  comapny respose", response)
                 setCompanyId(response.company.company._id);
             } catch (error) {
                 console.error("Error fetching company:", error);
@@ -107,7 +106,7 @@ const CompanyMessages = () => {
 
                 const newConversation = location.state?.newConversation as Conversation | undefined;
                 if (newConversation) {
-                    const index = uniqueConversations.findIndex(conv => conv.targetId === newConversation.targetId);
+                    const index = uniqueConversations.findIndex((conv) => conv.targetId === newConversation.targetId);
 
                     if (index === -1) {
                         uniqueConversations.push(newConversation);
@@ -137,93 +136,135 @@ const CompanyMessages = () => {
     }, [companyId, location.state?.newConversation]);
 
 
-    useEffect(() => {
-        if (!socket) return;
-        if (selectedUserId && conversations.length > 0) {
-            socket.connect();
-            socket.emit("registerUser", "company", companyId);
-            let channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
-            const fetchHistory = async () => {
-                if (channel) {
-                    try {
-                        const data = await getMessageHistory(channel);
-                        if (data) setMessages(data);
-                    } catch (error) {
-                        console.error("Error fetching message history:", error);
-                    }
-                } else {
-                    console.log("No channel found for selectedUserId:", selectedUserId);
-                }
-            };
+    // useEffect(() => {
+    //     if (!socket) return;
+    //     if (selectedUserId && conversations.length > 0) {
+    //         socket.connect();
+    //         socket.emit("registerUser", "company", companyId);
+    //         let channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
+    //         const fetchHistory = async () => {
+    //             if (channel) {
+    //                 try {
+    //                     const data = await getMessageHistory(channel);
+    //                     if (data) setMessages(data);
+    //                 } catch (error) {
+    //                     console.error("Error fetching message history:", error);
+    //                 }
+    //             } else {
+    //                 console.log("No channel found for selectedUserId:", selectedUserId);
+    //             }
+    //         };
 
-            fetchHistory();
+    //         fetchHistory();
+    //         if (channel) {
+    //             socket.emit("joinChannel", channel);
+    //             socket.on("receiveMessage", (message: RawSocketMessage) => {
+    //                 console.log("Received message:", message);
+    //                 const normalizedMessage: ChatMessage = {
+    //                     _id: message._id || `${message.senderId}-${message.timeStamp}`,
+    //                     senderId: message.senderId,
+    //                     message: message.message || "",
+    //                     timestamp: message.timeStamp || new Date().toISOString(),
+    //                 };
+    //                 if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
+    //                     setMessages((prev) => [...prev, normalizedMessage]);
+    //                 } else {
+    //                     console.warn("Invalid message received after normalization:", normalizedMessage);
+    //                 }
+    //             });
+    //         }
 
-            // if (channel) {
-            //     socket.emit("joinChannel", channel);
-            //     socket.on("receiveMessage", (message: ChatMessage) => {
-            //         console.log(" from Received message:", message);
-            //         setMessages((prev) => [...prev, message]);
-            //     });
-            // }
-            if (channel) {
-                socket.emit("joinChannel", channel);
-                socket.on("receiveMessage", (message: RawSocketMessage) => {
-                    console.log("Received message:", message);
-                    const normalizedMessage: ChatMessage = {
-                        _id: message._id || `${message.senderId}-${message.timeStamp}`,
-                        senderId: message.senderId,
-                        message: message.message || "",
-                        timestamp: message.timeStamp || new Date().toISOString(),
-                    };
-                    if (normalizedMessage.message && normalizedMessage.senderId && normalizedMessage.timestamp) {
-                        setMessages((prev) => [...prev, normalizedMessage]);
-                    } else {
-                        console.warn("Invalid message received after normalization:", normalizedMessage);
-                    }
-                });
-            }
+    //         return () => {
+    //             if (channel) {
+    //                 socket.off("receiveMessage")
+    //             }
+    //         };
+    //     }
+    // }, [selectedUserId, conversations]);
 
-            return () => {
-                if (channel) {
-                    socket.off("receiveMessage")
-                }
-            };
-        }
-    }, [selectedUserId, conversations]);
+    // Inside your CompanyMessages component, update the socket effect:
 
-    useEffect(() => {
-        if (!socket || !companyId) return;
-
+useEffect(() => {
+    if (!socket || !selectedUserId || conversations.length === 0) return;
+    
+    // Connect socket only if not connected
+    if (!socket.connected) {
         socket.connect();
-        socket.emit("registerUser", "company", companyId);
-
-        const handleUserStatus = (data: any) => {
-            console.log("User status update:", data);
-            setUserStatuses(prev => ({
-                ...prev,
-                [data.targetId]: data.isOnline
-            }));
+        console.log('Socket connecting...');
+    }
+    
+    // Register user once when component mounts
+    socket.emit("registerUser", "company", companyId);
+    
+    // Find the channel for the selected user
+    const conversation = conversations.find((c) => c.targetId === selectedUserId);
+    const channel = conversation?.channel;
+    
+    if (!channel) {
+        console.log("No channel found for selectedUserId:", selectedUserId);
+        return;
+    }
+    
+    // Fetch message history
+    const fetchHistory = async () => {
+        try {
+            const data = await getMessageHistory(channel);
+            if (data) setMessages(data);
+        } catch (error) {
+            console.error("Error fetching message history:", error);
+        }
+    };
+    
+    fetchHistory();
+    
+    // Join the channel
+    console.log(`Joining channel: ${channel}`);
+    socket.emit("joinChannel", channel);
+    
+    // Define message handler
+    const handleReceiveMessage = (message: RawSocketMessage) => {
+        console.log("Received message:", message);
+        const normalizedMessage: ChatMessage = {
+            _id: message._id || `${message.senderId}-${message.timeStamp}`,
+            senderId: message.senderId,
+            message: message.message || "",
+            imageUrl: message.imageUrl,
+            timestamp: message.timeStamp || new Date().toISOString(),
         };
+        
+        if (normalizedMessage.message || normalizedMessage.imageUrl) {
+            setMessages((prev) => [...prev, normalizedMessage]);
+        } else {
+            console.warn("Invalid message received after normalization:", normalizedMessage);
+        }
+    };
+    
+    // Add event listener
+    socket.on("receiveMessage", handleReceiveMessage);
+    
+    // Clean up function
+    return () => {
+        if (channel) {
+            console.log(`Leaving channel: ${channel}`);
+            socket.emit("leaveChannel", channel);
+            socket.off("receiveMessage", handleReceiveMessage);
+        }
+    };
+}, [selectedUserId, conversations, companyId, socket]);
 
-        const handleOnlineUsers = (users: any) => {
-            console.log("Initial online users:", users);
-            const statuses = {};
-            // users.forEach(user => {
-            //     statuses[user.targetId] = user.isOnline;
-            // });
-            setUserStatuses(statuses);
-        };
-
-        socket.on("user-online", handleUserStatus);
-        socket.on("user-offline", handleUserStatus);
-        socket.on("online-users", handleOnlineUsers);
-
-        return () => {
-            socket.off("user-online", handleUserStatus);
-            socket.off("user-offline", handleUserStatus);
-            socket.off("online-users", handleOnlineUsers);
-        };
-    }, [socket, companyId]);
+// Also update your componentWillUnmount cleanup
+useEffect(() => {
+    return () => {
+        // No need to disconnect the socket when component unmounts
+        // We'll reuse it across the app
+        if (socket) {
+            const currentChannel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
+            if (currentChannel) {
+                socket.emit("leaveChannel", currentChannel);
+            }
+        }
+    };
+}, [socket, conversations, selectedUserId]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -259,16 +300,11 @@ const CompanyMessages = () => {
         setSelectedUserId(targetId);
         setMessages([]);
         console.log("Selected conversation:", targetId);
-        setTimeout(() => {
-            console.log("Selected user's online status:", userStatuses[targetId]);
-        }, 100);
     };
 
 
     const handleStartVideoCall = async () => {
-        console.log("Starting video call");
-        console.log("Company ID:", companyId);
-        console.log("Selected User ID:", selectedUserId);
+
 
         if (!companyId || !selectedUserId) {
             console.error("Company ID or Selected User ID is missing");
@@ -283,7 +319,8 @@ const CompanyMessages = () => {
         const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
 
         if (channel) {
-            const startTime = new Date(Date.now() + 1 * 60 * 1000);
+            if (!socket) return
+            const startTime = meetingTime|| new Date(Date.now() + 1 * 60 * 1000);
             const meetingData = {
                 roomId: roomId,
                 peerId: userPeerId,
@@ -292,6 +329,7 @@ const CompanyMessages = () => {
                 targetId: selectedUserId,
                 link: meetingLink,
             }
+
             const formattedTime = new Date(startTime).toLocaleString();
             const invitationMessage = ` You have a scheduled video call! \n Time: ${formattedTime}\n🔗 Join: ${meetingLink}`;
 
@@ -303,16 +341,16 @@ const CompanyMessages = () => {
                     return
                 }
                 await sendMessage(channel, invitationMessage, companyId);
+                const messageData = {
+                    channel,
+                    message: invitationMessage,
+                    imageUrl: imageUrl || undefined,
+                    senderId: companyId,
+                    timeStamp: new Date().toISOString(),
+                };
+                socket.emit("sendMessage", messageData);
                 const updatedMessages = await getMessageHistory(channel);
                 if (updatedMessages) setMessages(updatedMessages);
-                // navigate("/company-video", {
-                //     state: {
-                //         roomId,
-                //         myPeerId: companyPeerId,
-                //         targetPeerId: userPeerId
-                //     },
-                //     replace: true
-                // });
             } catch (error) {
                 console.error("Error initiating video call:", error);
             }
@@ -358,29 +396,20 @@ const CompanyMessages = () => {
     const handleFileChange = () => {
         fileInputRef.current?.click();
     };
-    // Add near the end of your component, before the return
-    useEffect(() => {
-        if (selectedUserId) {
-            console.log("Selected user status:",
-                selectedUserId,
-                userStatuses[selectedUserId] ? "Online" : "Offline");
+
+
+    const TimesheduleMeeting = () => {
+        setShowTimeModal(true);
+    };
+
+    const handleTimeConfirm = () => {
+        console.log("the meeting time",meetingTime)
+        if (meetingTime) {
+            handleStartVideoCall();
+        } else {
+            console.log("No meeting time selected");
         }
-    }, [selectedUserId, userStatuses]);
-
-//     const TimesheduleMeeting = () => {
-//         setShowTimeModal(true);
-//     };
-// console.log("meeting time ",meetingTime?.toLocaleDateString)
-// console.log("curent time",new Date().toLocaleString())
-//     const handleTimeConfirm = () => {
-//         if (meetingTime) {
-//             handleStartVideoCall();
-//             setShowTimeModal(false);
-//         } else {
-//             console.log("No meeting time selected");
-//         }
-
-//     };
+    };
 
     return (
         <div className="flex min-h-screen ">
@@ -457,26 +486,21 @@ const CompanyMessages = () => {
                                             <h1 className="font-bold text-sm sm:text-lg">
                                                 {conversations.find((c) => c.targetId === selectedUserId)?.targetName || "Unknown"}
                                             </h1>
-
-                                            <p className="text-xs sm:text-sm text-gray-600 flex items-center">
-                                                <span
-                                                    className={`inline-block w-2 h-2 rounded-full mr-1 ${userStatuses[companyId] ? "bg-green-500" : "bg-gray-400"
-                                                        }`}
-                                                ></span>
-                                                {userStatuses[companyId] ? "Online" : "Offline"}
-                                            </p>
                                         </div>
                                     </div>
-                                    <button onClick={handleStartVideoCall}>
-                                        <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 cursor-pointer" />
-                                        {/* {showTimeModal && (
-                                            <TimePickerModal
-                                                setShowTimeModal={setShowTimeModal}
-                                                onTimeSelect={(time) => setMeetingTime(time)}
-                                                onConfirm={handleTimeConfirm}
-                                            />
-                                        )} */}
-                                    </button>
+                                    <div onClick={TimesheduleMeeting} className="cursor-pointer">
+                                        <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                                    </div>
+                                    {showTimeModal && (
+                                        <TimePickerModal
+                                            setShowTimeModal={setShowTimeModal}
+                                            onTimeSelect={(time) =>{
+                                                console.log("tje time inside ",time)
+                                                 setMeetingTime(time)}
+                                                }
+                                            onConfirm={handleTimeConfirm}
+                                        />
+                                    )}
 
                                 </div>
                                 <div className="h-px bg-gray-400 w-full mt-2" />
@@ -489,13 +513,13 @@ const CompanyMessages = () => {
                                                 className={`flex mb-2 ${msg.senderId === companyId ? "justify-end" : "justify-start"}`}
                                             >
                                                 <div
-                                                    className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === companyId ? "bg-orange-200 text-black" : "bg-orange-600 text-white"}`}
+                                                    className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === companyId ? "bg-orange-200 text-black" : "bg-white text-black shadow-xl shadow-gray-200"}`}
                                                 >
-                                                    {/* Display uploaded image if available */}
+                                                
                                                     {msg.imageUrl && (
                                                         <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px]  h-auto mb-2 rounded" />
                                                     )}
-                                                    {/* Display preview if message starts with http */}
+
                                                     {msg.message && msg.message.startsWith("http") ? (
                                                         <img src={msg.message} alt="Preview" className="max-w-[200px]  h-auto mb-2 rounded" />
                                                     ) :
@@ -529,7 +553,7 @@ const CompanyMessages = () => {
 
 
 
-                                                    <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === companyId ? "text-gray-500" : "text-white"}`}>
+                                                    <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === companyId ? "text-gray-500" : "text-gray-900 "}`}>
                                                         {format(new Date(msg.timestamp || Date.now()), "p")}
                                                     </span>
                                                 </div>

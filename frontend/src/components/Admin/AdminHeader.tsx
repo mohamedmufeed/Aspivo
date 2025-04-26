@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoChevronBackOutline } from "react-icons/io5";
 import profile from "../../assets/user.png";
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,11 @@ const AdminHeader: React.FC<HeaderProps> = ({ heading }) => {
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || ""
   const dispatch = useDispatch<AppDispatch>()
+  useEffect(() => {
+    if (!user?.isAdmin) {
+      navigate("/")
+    }
+  },[userId])
   const handleLogout = async () => {
     try {
       const response = await logoutUser(userId)
@@ -62,7 +67,7 @@ const AdminHeader: React.FC<HeaderProps> = ({ heading }) => {
             </svg>
           </div>
 
-          <div className="bg-orange-600 w-13  border-orange-600 border-3 rounded-full" onClick={() => setProfileOpen(prev => !prev)}>
+          <div className="bg-orange-600 w-13  border-orange-600 border-3 rounded-full cursor-pointer" onClick={() => setProfileOpen(prev => !prev)}>
             <img
               className="w-11.5 h-11.5  p-1  bg-white rounded-full"
               src={profile}

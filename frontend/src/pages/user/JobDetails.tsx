@@ -1,11 +1,9 @@
 import Navbar from '../../components/homecomponts/Navbar'
 import bannerImage from "../../assets/Rectangle 38.png"
-import prfoileimage from "../../assets/person_1.jpg"
 import { CiBookmark } from "react-icons/ci";
 import { MdOutlineMail } from "react-icons/md";
 import { RiComputerLine } from "react-icons/ri";
 import { RiHomeOfficeLine } from "react-icons/ri";
-import { FcGoogle } from 'react-icons/fc';
 import { useParams } from 'react-router-dom';
 import { getJobDetails } from '../../services/jobService';
 import { useEffect, useState } from 'react';
@@ -51,6 +49,7 @@ const JobDetails = () => {
     const fechDetails = async () => {
       try {
         const response = await getJobDetails(id || "")
+        console.log("first",response)
         if (response.job) {
           setJobDetails(response.job)
         }
@@ -166,7 +165,7 @@ const JobDetails = () => {
             <div className="absolute bottom-35 left-8 w-32 h-32 rounded-full border-4 border-white shadow-md">
               <img
                 className="w-full h-full rounded-full object-cover"
-                src={prfoileimage}
+                src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${jobDetails?.company.logo}`}
                 alt="Company Profile"
               />
             </div>
@@ -318,18 +317,15 @@ const JobDetails = () => {
         <div className='bg-white shadow-lg rounded-xl flex mt-5'>
           <div className='p-5 '>
             <h1 className='font-semibold text-xl pl-4 pt-4 '>About the Company </h1>
-            <p className='text-sm text-gray-700 pl-4 pt-5'>{ } Google is a multinational technology company known for its powerful search engine, which helps users find information
-              quickly and efficiently. Founded in 1998, Google has grown to become one of the most influential tech companies in the world,
-              offering a wide range of products and services, including Gmail, Google Maps, YouTube, Google Drive, and the Android operating
-              system. It is renowned for its innovative approach to technology and its commitment to organizing the world's information, making
-              it universally accessible and useful.</p>
+            <p className='text-sm text-gray-700 pl-4 pt-5'>{jobDetails?.company.description}</p>
 
           </div>
 
           <div className="flex ">
-            <div className='p-20 mt-3  '>
-              <FcGoogle className='w-9 h-9 ml-2' />
-              <h1 className='font-semibold text-lg'>Google</h1>
+            <div className='p-20 mt-3'>
+              
+              <img  src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${jobDetails?.company.logo}`} alt="" className='w-9 h-9 ml-2 rounded-Full' />
+              <h1 className='font-semibold text-lg'>{jobDetails?.company.companyName}</h1>
             </div>
           </div>
 

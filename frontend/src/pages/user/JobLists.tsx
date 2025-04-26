@@ -2,7 +2,7 @@ import { IoIosSearch } from "react-icons/io";
 import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate } from "react-router-dom";
 import { fetchJob } from "../../services/jobService";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { JobData } from "../../types/types";
 import _ from "lodash";
 
@@ -20,7 +20,7 @@ const formatSalary = (amount: number): string => {
 
 const JobLists = () => {
     const navigate = useNavigate();
-    const categoryItems = ["All","Developer", "UI Design", "Product Designer", "Finance", "Sales"];
+    const categoryItems = ["All", "Developer", "UI Design", "Product Designer", "Finance", "Sales"];
     const [jobs, setJobs] = useState<JobData[]>([]);
     const [searchWord, setSearchWord] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -28,105 +28,92 @@ const JobLists = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
+    const isLoadingRef = useRef(false);
     const limit = 9;
 
-    const loadJobs = useCallback(async (newSearch = false) => {
-        if (loading) return;
-        
+    const loadJobs = useCallback(async (options: { resetPage?: boolean; newCategory?: boolean; newSearch?: boolean } = {}) => {
+        const { resetPage = false, newCategory = false, newSearch = false } = options;
+        if (isLoadingRef.current) return;
+        isLoadingRef.current = true;
         setLoading(true);
-        
+
         try {
-            const currentPage = newSearch ? 1 : page;
-            if (newSearch) {
+            const currentPage = resetPage ? 1 : page;
+            if (resetPage) {
                 setPage(1);
             }
-            
-            const response = await fetchJob({ 
-                page: currentPage, 
-                limit, 
-                search: searchWord, 
-                category: selectedCategory || undefined 
+            const categoryParam = selectedCategory === "All" || !selectedCategory ? undefined : selectedCategory;
+
+            console.log(`Fetching jobs: page=${currentPage}, category=${categoryParam}, search=${searchWord}`);
+
+            const response = await fetchJob({
+                page: currentPage,
+                limit,
+                search: searchWord,
+                category: categoryParam
             });
-            
+
             if (!response) {
                 console.error("No response from server");
                 return;
             }
-            
-            const newJobs = response.job || [];
-            
-            if (newSearch) {
-                setJobs(newJobs);
+            if (resetPage) {
+                setJobs(response.job || []);
             } else {
-                setJobs(prevJobs => [...prevJobs, ...newJobs]);
+                setJobs(prevJobs => [...prevJobs, ...(response.job || [])]);
             }
-            
+
             setTotalPages(response.totalPages || 0);
         } catch (error) {
             console.error("Error fetching jobs:", error);
         } finally {
             setLoading(false);
+            isLoadingRef.current = false;
             setInitialLoad(false);
         }
-    }, [page, searchWord, selectedCategory, loading]);
-
-
-    const debouncedSearch = useCallback(
+    }, [page, searchWord, selectedCategory]);
+    const debouncedSearch = useMemo(() =>
         _.debounce(() => {
-            loadJobs(true);
+            if (!initialLoad) {
+                loadJobs({ resetPage: true, newSearch: true });
+            }
         }, 500),
-        [loadJobs]
+        [loadJobs, initialLoad]
     );
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchWord(e.target.value);
+        debouncedSearch();
+    };
 
- 
-    useEffect(() => {
-        if (initialLoad) {
-            loadJobs();
-        }
-    }, [initialLoad, loadJobs]);
+    const handleCategoryClick = (category: string) => {
+        const newCategory = category === "All" ? null :
+            (selectedCategory === category ? null : category);
 
+        setSelectedCategory(newCategory);
 
-    useEffect(() => {
         if (!initialLoad) {
-            debouncedSearch();
+            debouncedSearch.cancel();
+            setTimeout(() => {
+                loadJobs({ resetPage: true, newCategory: true });
+            }, 0);
         }
+    };
+    const handleLoadMore = () => {
+        setPage(prevPage => prevPage + 1);
+        setTimeout(() => {
+            loadJobs();
+        }, 0);
+    };
+    useEffect(() => {
+        loadJobs({ resetPage: true });
         return () => {
             debouncedSearch.cancel();
         };
-    }, [searchWord, debouncedSearch, initialLoad]);
-
-
-    useEffect(() => {
-        if (!initialLoad) {
-            loadJobs(true);
-        }
-    }, [selectedCategory, loadJobs, initialLoad]);
-
-    
-    const handleLoadMore = () => {
-        setPage(prevPage => prevPage + 1);
-    };
-
-
-    useEffect(() => {
-        if (page > 1) {
-            loadJobs();
-        }
-    }, [page, loadJobs]);
-
-    const handleCategoryClick = (category: string) => {
-        setSelectedCategory(selectedCategory === category ? null : category);
-    };
-
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchWord(e.target.value);
-    };
-
+    }, []);
     return (
         <div className="bg-[#F6F6F6] min-h-screen pb-20" style={{ fontFamily: "DM Sans, sans-serif" }}>
             <Navbar />
             <div>
-                {/* Search Bar */}
                 <div className="flex justify-center mt-10">
                     <div className="bg-white shadow-lg w-1/2 rounded-lg p-2 flex items-center">
                         <input
@@ -143,23 +130,26 @@ const JobLists = () => {
                     </div>
                 </div>
 
-                {/* Advanced Search - Categories */}
+
                 <div className="flex justify-center gap-6 mt-9">
                     {categoryItems.map((item, index) => (
                         <div key={index}>
                             <button
-                                className={`bg-white shadow-lg rounded-xl p-3 px-5 font-medium cursor-pointer hover:bg-orange-500 hover:text-white ${
-                                    selectedCategory === item ? "bg-orange-600 text-white" : ""
-                                }`}
+                                className={`bg-orange-600 shadow-lg rounded-xl p-3 px-5 font-medium cursor-pointer hover:bg-orange-500 hover:text-white 
+                                    ${(item === "All" && selectedCategory === null) || selectedCategory === item
+                                        ? "bg-orange-600 text-white"
+                                        : "bg-white"
+                                    }`}
                                 onClick={() => handleCategoryClick(item)}
                             >
                                 {item}
                             </button>
+
                         </div>
                     ))}
                 </div>
 
-                {/* Job Listing */}
+
                 <div className="px-20 mt-10 space-y-6">
                     {loading && initialLoad ? (
                         <div className="text-center py-10">
@@ -174,9 +164,9 @@ const JobLists = () => {
                                     className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 p-4 items-center hover:bg-gray-50"
                                 >
                                     <div className="col-span-2 flex justify-center">
-                                        {job.company?.logo ? (
+                                        { job.company?.logo ? (
                                             <img
-                                                src={job.company.logo}
+                                                src={ `https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`}
                                                 alt={`${job.company.companyName || "Company"} logo`}
                                                 className="w-10 h-10 object-contain"
                                                 onError={(e) => (e.currentTarget.src = "/default-logo.png")}
@@ -222,7 +212,7 @@ const JobLists = () => {
                         </div>
                     )}
 
-                    {/* Load More Button */}
+
                     {jobs.length > 0 && page < totalPages && (
                         <div className="flex justify-center mt-10">
                             <button
@@ -230,7 +220,7 @@ const JobLists = () => {
                                 onClick={handleLoadMore}
                                 disabled={loading}
                             >
-                                {loading ? (
+                                {loading && page > 1 ? (
                                     <>
                                         <span className="inline-block mr-2 animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
                                         Loading...
@@ -241,7 +231,7 @@ const JobLists = () => {
                             </button>
                         </div>
                     )}
-                    
+
                     {jobs.length > 0 && page >= totalPages && (
                         <div className="text-center py-4 text-gray-600">
                             No more jobs to load

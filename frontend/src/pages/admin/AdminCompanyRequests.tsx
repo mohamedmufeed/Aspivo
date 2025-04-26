@@ -160,7 +160,7 @@ const AdminCompanyRequests = () => {
                                 <div className="text-center">
                                     {company.kyc ? (
                                         <a
-                                            href={company.kyc}
+                                            href={`https://res.cloudinary.com/do4wdvbcy/image/upload/${company.kyc}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-gray-600 hover:text-blue-800"

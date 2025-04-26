@@ -103,6 +103,8 @@ export interface JobData {
     logo?: string;
     location?: string;
     email?: string;
+    description?:string
+
   };
 }
 

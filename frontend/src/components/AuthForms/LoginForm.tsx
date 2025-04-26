@@ -37,7 +37,6 @@ const LoginForm = () => {
     try {
 
       const data = await loginApi({ email, password })
-
       dispatch(login(data.user))
       registerUserSocket("user", data.user.id);
       setloading(true)

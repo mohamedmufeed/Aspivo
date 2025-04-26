@@ -1,6 +1,9 @@
 
 import { User } from "./userTypes";
 import { Types } from "mongoose";
+import { ObjectId } from "mongodb";
+import { IUser } from "../models/user";
+import { ICompany } from "../models/company";
 export interface JobData {
   jobTitle: string;
   category: string;
@@ -35,7 +38,6 @@ export interface JobApplication {
   __v: number;
 }
 
-import { ObjectId } from "mongodb";
 
 export interface Company {
   _id: ObjectId;
@@ -113,3 +115,8 @@ export interface IMeetingData {
 };
 
 
+
+ export type SenderInfo =
+  | { type: "user"; data: IUser }
+  | { type: "company"; data: ICompany }
+  | null;

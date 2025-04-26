@@ -4,7 +4,7 @@ import { sendNotification } from "../../server";
 import IAdminService from "../../interface/service/admin/adminInterface";
 import { NotificationRepository } from "../../repositories/notificationRepository";
 
-import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersResponse, User } from "../../types/userTypes";
+import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersResponse } from "../../types/userTypes";
 import { IUser } from "../../models/user";
 import { CompanyDocument } from "../../models/company";
 

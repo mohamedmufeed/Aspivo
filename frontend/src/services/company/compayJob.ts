@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { ApplicationStatus, JobData } from "../../types/types";
+import api from "../api";
 const COMPANY_URI = "http://localhost:5001/api/company";
 
 export const fetchCompany = async (userId: string) => {

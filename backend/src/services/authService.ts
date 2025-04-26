@@ -111,7 +111,7 @@ export class AuthService implements IAuthService {
 
     await user.save();
 
-    const mailSent = await resendOtpMail(email, newOtp);
+    await resendOtpMail(email, newOtp);
 
     return { user, message:"User otp resnsed sucsess fully" };
   }

@@ -35,42 +35,6 @@ const skillRepostry= new SkillRepository()
 const profileService=new ProfileService(authRepostry,skillRepostry)
 const profileController = new ProfileController(profileService);
 
-
-// router.post("/signup",authController.register)
-// router.post("/login",authController.login)
-// router.post("/otp-verification",authController.verifyOtp)
-// router.post("/resend-otp",authController.resendOtp)
-// router.post("/forgot-password",authController.forgotPassword)
-// router.post("/reset-password",authController.resetPassword)
-// router.put("/edit-profile/:id", Imageupload.single("profileImage"), profileController.editProfile);
-// router.get("/profile/:id",protect,profileController.getProfile)
-// router.post("/logout/:id",authController.logout);
-// router.put("/edit-about/:id",profileController.editAbout)
-// router.post("/upload-resume/:id",profileController.uploadResume)
-// router.post("/add-experience/:id",profileController.addExperience)
-// router.put("/edit-experience/:id",profileController.editExperience)
-// router.post("/add-education/:id",profileController.addEducation)
-// router.put("/edit-education/:id",profileController.editEducation)
-// router.post("/add-skill/:id",profileController.addSkill)
-// router.post("/refresh",authController.refreshToken)
-
-// router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-// router.get("/google/callback", passport.authenticate("google"), authController.googleCallBack);
-// router.get("/google/success", authController.getGoogleUser);
-
-// router.delete("/delete-resume/:id",protect,profileController.deleteResume)
-// router.get("/notifications/:id",protect,notificationController.getNotifications)
-// router.patch("/markas-read/:id",protect,notificationController.isRead)
-// router.get("/jobs",jobController.fetchJob)
-// router.get("/job-details/:id",jobController.getJobDetails)
-// router.post("/applyjob/:id",protect,jobController.applyForJob)
-// router.get("/applyed-jobs/:id",protect,jobController.appliedJobs)
-// router.get("/is-applied/:id",jobController.isApplied)
-// router.get("/subscription-history/:id",profileController.subscriptionHistory)
-
-
-
-
 router
   .route("/auth/signup")
   .post(authController.register);
@@ -144,11 +108,16 @@ router
   .route("/users/:id/subscription-history")
   .get(protect,profileController.subscriptionHistory);
 
+  router
+  .route("/users/:id/resume/auto-generate")
+  .get(profileController.generateResumeFromProfile)
 
 router
   .route("/users/:id/notifications")
   .get(protect, notificationController.getNotifications)
   .patch(protect, notificationController.isRead);
+
+ 
 
 
 router

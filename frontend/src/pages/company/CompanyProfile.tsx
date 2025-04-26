@@ -70,10 +70,8 @@ const CompanyProfile = () => {
 
 
               <div className="w-28 h-28 bg-white rounded-full shadow-lg flex items-center justify-center border mt-5 border-gray-300">
-                <img src={companyData?.logo} alt="Company Logo" className="w-24 h-24 rounded-full" />
+                <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${companyData?.logo}`} alt="Company Logo" className="w-24 h-24 rounded-full" />
               </div>
-
-
               <div>
                 <h2 className="text-2xl font-semibold">{companyData?.companyName}</h2>
                 <a href={`http://${companyData?.companyUrl}`} className="text-black hover:underline hover:text-orange-600">{companyData?.companyUrl}</a>
@@ -177,23 +175,10 @@ const CompanyProfile = () => {
                 </div>
                 <EditCompanyContact isOpen={editContactModalOpen} companyId={companyData?._id||""} onClose={()=>setEditConatactModalOpen(false)}  setCompanyData={setCompanyData}/>
               </div>
-
-
             </div>
-
-
-
-
           </div>
-
-
-
         </div>
       </div>
-
-
-
-
     </div>
   )
 }

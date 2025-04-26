@@ -69,7 +69,7 @@ try {
 }
 }
 
-export const editTeam=async(companyId:string,data:EditTeamPayload)=>{
+export const editTeam=async(companyId:string,data:TeamMember[])=>{
 try {
   const response=await api.put(`company/profile/${companyId}/team`,data)
   return response.data

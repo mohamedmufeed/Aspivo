@@ -11,7 +11,7 @@ interface Experience {
   currentlyWorking?: boolean;
 }
 interface Usertype {
-  user: { _id: string; userName: string; profileImage: string ,experiences:Experience[]} | null;
+  user: { _id: string; userName: string; profileImage: string ,experiences:Experience[],isAdmin:boolean} | null;
   email: string | null;
   isAdmin: boolean;
   token: string | null;
@@ -28,6 +28,7 @@ const authSlice = createSlice({
          userName: action.payload.userName ,
           profileImage: action.payload.profileImage ,
           experiences: action.payload.experiences || [],
+          isAdmin:action.payload.isAdmin
           } ;
       state.email = action.payload.email;
       state.isAdmin = action.payload.isAdmin;

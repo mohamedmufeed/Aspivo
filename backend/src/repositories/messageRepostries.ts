@@ -1,7 +1,9 @@
 
 import ChatMessage from "../models/chat";
+import Company from "../models/company";
 import Conversation from "../models/conversations";
 import User from "../models/user";
+import { SenderInfo } from "../types/companyTypes";
  export  interface ConversationResponse {
     targetId: string | undefined;
     targetName: string;
@@ -11,6 +13,7 @@ import User from "../models/user";
     unread: boolean;
     channel: string;
 }
+
 export class MessageRepostries {
   async createChat(channel: string, senderId: string, message: string) {
     const chat= new ChatMessage({
@@ -72,4 +75,25 @@ export class MessageRepostries {
     return enhancedConversations;
 }
 
+
+
+async findSender(id: string):Promise<SenderInfo> {
+    const user = await User.findById(id);
+    if (user) return { type: "user", data: user };
+  
+    const company = await Company.findById(id);
+    if (company) return { type: "company", data: company };
+  
+    return null;
+  }
+  
+
+async decrementChatLimit(id: string) {
+    return await User.findByIdAndUpdate(
+      id,
+      { $inc: { chatLimit: -1 } },
+      { new: true } 
+    );
+  }
+  
 }

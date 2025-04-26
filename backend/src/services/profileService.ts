@@ -2,12 +2,13 @@ import { AuthRepostry } from "../repositories/userRepositories";
 import { ProfileTypes } from "../types/userTypes";
 import cloudinary from "../config/cloudinaryConfig";
 import { SkillRepository } from "../repositories/skillREpositories";
-import { Experience, Education, } from "../models/user";
-import mongoose from "mongoose";
+import { Experience, Education, IUser, } from "../models/user";
+import { ai } from "../config/openai";
 
 import IProfileService from "../interface/service/user/profileServiceInterface";
 
 import { SubscriptionHistoryResponse } from "../types/interfaceTypes";
+import { generateResumePrompt } from "../utils/resumePrompt";
 
 
 export class ProfileService implements IProfileService {
@@ -129,9 +130,9 @@ export class ProfileService implements IProfileService {
           await this._skillRepository.create({ name: skill });
         }
       } catch (err) {
-        const error= err as Error
+        const error = err as Error
         throw new Error(`Error saving skill "${skill}" to suggestions:`, error)
-   
+
       }
     }
 
@@ -161,7 +162,7 @@ export class ProfileService implements IProfileService {
           await cloudinary.uploader.destroy(publicId);
         } catch (err) {
           const error = err as Error
-          throw new Error("Failed to delete resume from Cloudinary",error);
+          throw new Error("Failed to delete resume from Cloudinary", error);
         }
       }
       user.resume = "";
@@ -171,10 +172,21 @@ export class ProfileService implements IProfileService {
     return { user, message: "Resume deleted successfully" };
   }
 
-  async subscriptionHistory(userId: string):Promise<SubscriptionHistoryResponse> {
+  async subscriptionHistory(userId: string): Promise<SubscriptionHistoryResponse> {
     const user = await this._authRepository.findById(userId);
     if (!user) throw new Error("User not found");
     const subscription = await this._authRepository.findSubscriptions(userId);
     return { subscription, message: "Subscriptions found" };
+  }
+  async generateResumeFromProfile(userId: string) {
+    const user = await this._authRepository.findById(userId)
+    if (!user) throw new Error("User not found")
+    const propmt = generateResumePrompt(user)
+    const aiResponse = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: propmt,
+    })
+    const response = aiResponse.text
+    return { response, message: "resume generate successfully" }
   }
 }

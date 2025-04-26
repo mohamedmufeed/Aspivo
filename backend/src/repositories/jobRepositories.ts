@@ -25,7 +25,8 @@ async JobDetails(jobId: string) {
     const jobDetails = await Job.findById(jobId).populate("company")
     return jobDetails;
   } catch (error) {
-    throw new Error("Failed to fetch job details.");
+    const err=error as Error
+    throw new Error(`Failed to fetch job details ${err.message}.`);
   }
 }
 

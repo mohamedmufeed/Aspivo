@@ -36,17 +36,40 @@ const Category = () => {
             </div>
 
             {/* booting poster */}
+            <div className="mt-12 sm:mt-16 md:mt-20 max-w-6xl mx-auto">
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="flex flex-col sm:flex-row items-center p-4 sm:p-6 md:p-8">
+            
+                        <div className="w-full sm:w-auto mb-4 sm:mb-0 flex justify-center">
+                            <img 
+                                className="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 object-contain" 
+                                src={HiringImage} 
+                                alt="Hiring poster" 
+                            />
+                        </div>
 
-            <div className="bg-white flex gap-7 max-w-6xl p-5 pl-18 h-50 shadow-lg rounded-lg mt-30 ml-24 ">
-                <img className="w-40 h-40" src={HiringImage} alt="" />
-                <div className="p-2 mt-5">
-                    <p className="text-2xl text-[#7D7D7D] font-normal">we are</p>
-                    <h1 className="font-semibold text-7xl">HIRING</h1>
+         
+                        <div className="text-center sm:text-left sm:ml-6 md:ml-8">
+                            <p className="text-xl sm:text-2xl text-[#7D7D7D] font-normal">we are</p>
+                            <h1 className="font-semibold text-4xl sm:text-5xl md:text-6xl lg:text-7xl">HIRING</h1>
+                        </div>
+
+                    
+                        <div className="mt-4 sm:mt-0 sm:ml-6 md:ml-8 lg:ml-12 text-center sm:text-left">
+                            <h1 className="text-base sm:text-lg text-[#7D7D7D]">
+                                Let's <b className="text-black">work</b> Together <br />&  
+                                <b className="text-black">Explore</b> Opportunities
+                            </h1>
+                        </div>
+
+                        
+                        <div className="mt-4 sm:mt-0 sm:ml-auto flex justify-center">
+                            <button className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition duration-300">
+                                Apply Now
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div className="p-6 mt-8 ml-15">
-                    <h1  className=" text-[#7D7D7D] text-lg">Let’s <b className="text-black"> work</b> Together <br />&  <b className="text-black">Explore</b>  Opportunities</h1>
-                </div>
-                <button className="bg-orange-600 text-white font-bold w-fit h-fit p-3.5 rounded-lg mt-14 ml-20 cursor-pointer"> Apply Now</button>
             </div>
         </div>
     );

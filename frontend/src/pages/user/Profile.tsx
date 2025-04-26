@@ -1,9 +1,7 @@
 import Navbar from "../../components/homecomponts/Navbar";
 import bannerImage from "../../assets/Rectangle 38.png";
-import profileImage from "../../assets/person_1.jpg";
 import { EllipsisVertical } from "lucide-react";
 import { GoPencil } from "react-icons/go";
-import { FcGoogle } from "react-icons/fc";
 import { GoPlus } from "react-icons/go";
 import EditProileModal from "../../components/User/modals/EditProfileModal";
 import EditAboutModal from "../../components/User/modals/EditAboutModal";
@@ -27,6 +25,7 @@ import 'ldrs/react/Bouncy.css'
 
 
 
+
 const Profile = () => {
     const location = useLocation()
     const [editModalOpen, setEditModal] = useState(false)
@@ -41,16 +40,11 @@ const Profile = () => {
     const [currentExperinceId, setCurrentExperinceId] = useState("")
     const user = useSelector((state: RootState) => state.auth.user)
     const [currentEducationId, setCurrentEducationId] = useState<string>("");
-
-
     if (!user) {
         console.error("User data is null!");
         return null;
     }
     const userId = user._id
-
-
-
     const handleEducationClick = (id: string) => {
 
         setCurrentEducationId(id);
@@ -58,7 +52,6 @@ const Profile = () => {
     }
 
     const handelExperienceClick = (id: string) => {
-
         setCurrentExperinceId(id)
         setEditExperience(true);
     }
@@ -71,7 +64,6 @@ const Profile = () => {
         endDate: "",
         grade: "",
     });
-    console.log(formData)
     useEffect(() => {
         if (!currentEducationId || !profileData?.education) return;
         const education = profileData.education.find((edu: Education) => edu._id === currentEducationId);
@@ -99,7 +91,6 @@ const Profile = () => {
 
         fetchProfile();
     }, [userId, location]);
-
     if (!profileData) {
         return (
             <div className="#bg-[#F6F6F6] flex justify-center items-center h-screen">
@@ -148,13 +139,13 @@ const Profile = () => {
                                             <h1 className="font-bold text-2xl">{profileData.lastName}</h1>
                                         </div>
                                     ) : (
-                                        <h1 className="font-bold text-2xl">{profileData?.userName}</h1>
+                                        <h1 className="font-bold text-2xl">{profileData.userName}</h1>
                                     )}
 
 
-                                    <p className="font-medium text-gray-700">{profileData.position}</p>
+                                    <p className="font-medium text-gray-700">{profileData.position || "Please update postion"}</p>
                                     <p className="text-gray-700 space-y-3.5">
-                                        {profileData.location}
+                                        {profileData.location||"No loacation details"}
                                     </p>
                                 </div>
 
@@ -165,11 +156,11 @@ const Profile = () => {
                                     </div>
 
                                     <div className=" mb-5 flex items-center space-x-4 ">
-                                        <img
+                                        {/* <img
                                             src={profileImage}
                                             className="w-12 h-12 rounded-full object-coverl border-white border-2"
                                             alt=""
-                                        />
+                                        /> */}
                                         <h1 className="text-lg font-semibold text-gray-800">
                                             {profileData.position}
                                         </h1>
@@ -201,7 +192,7 @@ const Profile = () => {
                         </div>
                         <div className=" font-light px-8 mt-3 p-3">
                             <p className="">
-                                {profileData.about}
+                                {profileData.about ? profileData.about : <p className="text-gray-500 text-md ml-10 mt-3">No about details available.</p>}
                             </p>
                         </div>
                     </div>
@@ -219,32 +210,34 @@ const Profile = () => {
                                 onClick={() => setAddExperience(true)}
                             />
                         </div>
+                        {profileData.experiences.length > 0 ? (
+                            profileData.experiences.map((experience: Experience, index: number) => (
+                                <div key={index} className="border-b ml-6 border-gray-100 pb-4 mt-3">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="px-10">
+                                                <h2 className="font-semibold text-lg">{experience.title}</h2>
+                                                <h3 className="text-md text-gray-700">{experience.company}</h3>
+                                                <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
+                                                <p className="text-gray-500 text-sm">{experience.location}</p>
+                                            </div>
+                                        </div>
 
-                        {profileData.experiences.map((experience: Experience, index: number) => (
-                            <div key={index} className="border-b ml-6 border-gray-100 pb-4 mt-3">
 
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center space-x-4">
-                                        <FcGoogle className="w-10 h-10" />
-                                        <div>
-                                            <h2 className="font-semibold text-lg">{experience.title}</h2>
-                                            <h3 className="text-md text-gray-700">{experience.company}</h3>
-                                            <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
-                                            <p className="text-gray-500 text-sm">{experience.location}</p>
+                                        <div className="flex space-x-3">
+
+                                            <GoPencil
+                                                className="font-extralight cursor-pointer w-5 h-5 text-gray-600 hover:text-gray-900 mr-8"
+                                                onClick={() => handelExperienceClick(experience._id || "")}
+                                            />
                                         </div>
                                     </div>
-
-
-                                    <div className="flex space-x-3">
-
-                                        <GoPencil
-                                            className="font-extralight cursor-pointer w-5 h-5 text-gray-600 hover:text-gray-900 mr-8"
-                                            onClick={() => handelExperienceClick(experience._id || "")}
-                                        />
-                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-gray-500 text-md ml-10 mt-3">No experience details available.</p>
+                        )}
+
                     </div>
 
                     {editExperience && profileData.experiences?.length > 0 && (
@@ -262,32 +255,34 @@ const Profile = () => {
                                 onClick={() => setAddEducation(true)}
                             />
                         </div>
+                        {profileData.education.length > 0 ? (
+                            profileData.education.map((education: Education, index: number) => (
+                                <div key={index} className="border-b border-gray-200 pb-4  ml-6 mt-3">
+
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center space-x-4">
+        
+                                            <div  className="px-10">
+                                                <h2 className="font-semibold text-lg">{education.school}</h2>
+                                                <h3 className="text-md text-gray-700">{education.degree}, {education.fieldOfStudy}</h3>
+                                                <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                            </div>
+                                        </div>
 
 
-                        {profileData.education.map((education: Education, index: number) => (
-                            <div key={index} className="border-b border-gray-200 pb-4  ml-6 mt-3">
+                                        <div className="flex space-x-3">
 
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center space-x-4">
-                                        <FcGoogle className="w-10 h-10" />
-                                        <div>
-                                            <h2 className="font-semibold text-lg">{education.school}</h2>
-                                            <h3 className="text-md text-gray-700">{education.degree}, {education.fieldOfStudy}</h3>
-                                            <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                            <GoPencil
+                                                className="font-extralight cursor-pointer w-5 h-5 text-gray-600 hover:text-gray-900 mr-8"
+                                                onClick={() => handleEducationClick(education._id || "")}
+                                            />
                                         </div>
                                     </div>
-
-
-                                    <div className="flex space-x-3">
-
-                                        <GoPencil
-                                            className="font-extralight cursor-pointer w-5 h-5 text-gray-600 hover:text-gray-900 mr-8"
-                                            onClick={() => handleEducationClick(education._id || "")}
-                                        />
-                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-gray-500 text-md ml-10 mt-3">No education details available.</p>
+                        )}
                     </div>
 
 
@@ -306,17 +301,22 @@ const Profile = () => {
 
                         </div>
                         <div className="mb-5 mt-9 ml-10 flex space-x-3 ">
-                            {profileData.skills.map((skill: string[], index: number) => (
-                                <span
-                                    key={index}
-                                    className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
-                                >
-                                    {skill}
-                                </span>
-                            ))}
+                            {profileData.skills.length > 0 ? (
+                                profileData.skills.map((skill: string[], index: number) => (
+                                    <span
+                                        key={index}
+                                        className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"
+                                    >
+                                        {skill}
+                                    </span>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 text-md ml-10 mt-3">No skills available.</p>
+                            )}
+
                         </div>
                     </div>
-                    {addSkill && <AddSkill  existingSkill={profileData.skills}  setProfileData={setProfileData} userId={userId} isOpen={addSkill} onClose={() => setAddSkill(false)} />}
+                    {addSkill && <AddSkill existingSkill={profileData.skills} setProfileData={setProfileData} userId={userId} isOpen={addSkill} onClose={() => setAddSkill(false)} />}
                     {editSkill && <EditSkill setProfileData={setProfileData} userId={userId} isOpen={editSkill} onClose={() => setEditSkill(false)} />}
 
                 </div>

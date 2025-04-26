@@ -53,7 +53,7 @@ const CompanyLogin = () => {
         ) : location.pathname === "/forgot-password" ? (
           <ForgotPasswordForm />
         ) : location.pathname === "/company-verification" ? (
-          <OtpVerification />
+         " <OtpVerification />"
         ) : (
           <SignupForm />
         )}
