@@ -40,6 +40,7 @@ const Profile = () => {
     const [currentExperinceId, setCurrentExperinceId] = useState("")
     const user = useSelector((state: RootState) => state.auth.user)
     const [currentEducationId, setCurrentEducationId] = useState<string>("");
+
     if (!user) {
         console.error("User data is null!");
         return null;

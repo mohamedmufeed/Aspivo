@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { deleteResume, getProfile, uploadResume } from '../../../services/profile'
 import { useNavigate } from 'react-router-dom'
+import GenerateResumeModal from '../modals/GenerateResumeModal'
 interface ResumeModalProps {
     userId: string,
     setProfileData: (prev: any) => void,
@@ -18,6 +19,7 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
     const [uploading, setUploading] = useState(false)
     const [fileUrl, setFileUrl] = useState("")
     const [resumeurl, setResumeUrl] = useState("")
+    const [generateResumeModal, setgenerateResumeModal]=useState(false)
     const navigate = useNavigate()
 
     const uploadToCloudinary = async (file: File) => {
@@ -100,12 +102,13 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
             </div>
             <div
                 className="flex justify-end mt-6 cursor-pointer"
-                onClick={() => navigate("/ai-resume")}
+                onClick={() => setgenerateResumeModal(true)}
             >
                 <h1 className="text-md font-medium hover:underline">
                     Create Your AI-Optimized <span className="text-orange-600">Resume</span>
                 </h1>
             </div>
+            {generateResumeModal?<GenerateResumeModal isOpen={generateResumeModal} onClose={()=>setgenerateResumeModal(false)}/>:""}
 
             <div className="flex mx-auto w-3/4 bg-white h-[60px] items-center shadow-gray-200 shadow-lg rounded-md justify-between px-6 mt-4">
                 <div className="flex items-center space-x-4">

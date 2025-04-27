@@ -58,7 +58,7 @@ router
 
 router
   .post("/skills", skillController.addSkill)           
-  .get("/skills", protect,adminOnly,skillController.getSkills)            
+  .get("/skills", protect,skillController.getSkills)            
   .delete("/skills/:id", skillController.removeSkill); 
 
 

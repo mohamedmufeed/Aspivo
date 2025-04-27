@@ -23,6 +23,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.4.10",
     "gsap": "^3.12.7",
+    "jspdf": "^3.0.1",
     "ldrs": "^1.1.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.479.0",

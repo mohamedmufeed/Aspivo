@@ -27,8 +27,8 @@ const Subscription = () => {
         }
       } catch (err) {
         const error=err as Error
-        console.error("Error fetching company:", error.message);
-        setError("Failed to fetch company details");
+        // console.error("Error fetching company:", error.message);
+        // setError("Failed to fetch company details");
       }
     };
     fetchCompanyId();
