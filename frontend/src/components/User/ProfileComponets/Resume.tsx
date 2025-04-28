@@ -7,8 +7,10 @@ import { useDropzone } from "react-dropzone"
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { deleteResume, getProfile, uploadResume } from '../../../services/profile'
-import { useNavigate } from 'react-router-dom'
 import GenerateResumeModal from '../modals/GenerateResumeModal'
+import ToastError from '../../Tost/ErrorToast'
+import { FaWandMagicSparkles } from "react-icons/fa6";
+
 interface ResumeModalProps {
     userId: string,
     setProfileData: (prev: any) => void,
@@ -19,9 +21,9 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
     const [uploading, setUploading] = useState(false)
     const [fileUrl, setFileUrl] = useState("")
     const [resumeurl, setResumeUrl] = useState("")
-    const [generateResumeModal, setgenerateResumeModal]=useState(false)
-    const navigate = useNavigate()
-
+    const [generateResumeModal, setgenerateResumeModal] = useState(false)
+    const [aiFeatures, setAiFeatures] = useState(false)
+     const [error,setError]=useState<string|null>(null)
     const uploadToCloudinary = async (file: File) => {
         const formData = new FormData()
         formData.append("file", file)
@@ -78,7 +80,11 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
         const fetchProfile = async () => {
             try {
                 const response = await getProfile(userId);
+                console.log("the user resposen", response.user.user.features)
                 setResumeUrl(response.user.user.resume)
+                if (response.user.user.features.unlockAiFeatures) {
+                    setAiFeatures(true)
+                }
             } catch (error) {
                 console.error("Error fetching profile:", error);
             }
@@ -94,21 +100,40 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
         setResumeUrl("")
     }
 
+    const handleAiFeature = () => {
+        if (aiFeatures) {
+            setgenerateResumeModal(true)
+        } else {
+            setError("Please subscribe to unlock AI features.")
+            return
+        }
+    }
+
 
     return (
         <div className="bg-white shadow-gray-100 shadow-lg w-full rounded-lg p-5 mt-5">
+            <div className='flex justify-center'>
+            {error?  <ToastError message={error||""} onClose={()=>setError(null)}/>:""}
+            </div>
+          
+          
             <div className="flex justify-between px-8">
                 <h1 className="font-medium text-2xl">Resume</h1>
             </div>
             <div
-                className="flex justify-end mt-6 cursor-pointer"
-                onClick={() => setgenerateResumeModal(true)}
+                className="flex justify-end mt-3 mr-5 cursor-pointer"
+                onClick={handleAiFeature}
             >
-                <h1 className="text-md font-medium hover:underline">
-                    Create Your AI-Optimized <span className="text-orange-600">Resume</span>
+                <h1
+                    className={`text-md font-medium hover:underline mr-12 flex space-x-2.5 ${aiFeatures ? 'text-black' : 'text-gray-400 cursor-not-allowed'}`}
+                    aria-disabled={!aiFeatures}
+                >
+                <FaWandMagicSparkles  className='w-5 h-5 '/> AI-Optimized  <span className={aiFeatures ? 'text-orange-600' : 'text-orange-200'}> Resume</span>
                 </h1>
+
+
             </div>
-            {generateResumeModal?<GenerateResumeModal isOpen={generateResumeModal} onClose={()=>setgenerateResumeModal(false)}/>:""}
+            {generateResumeModal ? <GenerateResumeModal setProfileData={setProfileData} onClose={() => setgenerateResumeModal(false)} /> : ""}
 
             <div className="flex mx-auto w-3/4 bg-white h-[60px] items-center shadow-gray-200 shadow-lg rounded-md justify-between px-6 mt-4">
                 <div className="flex items-center space-x-4">

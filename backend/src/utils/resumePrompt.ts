@@ -33,7 +33,9 @@ import { IUser } from "../models/user";
     const aboutSection = user.about || "Write a professional summary based on the above information.";
 
     return `
-    You are an expert resume writer and career consultant. Create a modern, ATS-optimized resume in professional tone with clear formatting (no images, use plain text).
+    You are an expert resume writer. ONLY generate the final resume based on the provided information. 
+DO NOT provide suggestions, notes, improvements, or any extra text.
+The output must directly start with the resume content. Use clean plain text formatting with clear section headers.
     
     Here is the user's profile:
     

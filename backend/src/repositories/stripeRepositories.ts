@@ -83,7 +83,7 @@ export class StripeRepositories {
           $unset: { subscription: "" },
           $set: {
             features: {
-              resumeHighlighting: false,
+              unlockAiFeatures: false,
               unlimitedChat: false,
             },
           },
@@ -128,7 +128,7 @@ export class StripeRepositories {
         {
           $set: {
             features: {
-              resumeHighlighting: true,
+              unlockAiFeatures: true,
               unlimitedChat: true,
             },
           },

@@ -139,7 +139,6 @@ export const addSkill = async (userId: string, skills: string[]) => {
 export const uploadResume = async (userid: string, data: string) => {
   try {
     const response = await api.post(`user/users/${userid}/resume`, data)
-    console.log(" the response data", response.data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -188,9 +187,18 @@ export const generateResume = async (userId: string) => {
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
-      console.error("Subscription History:", error.response?.data);
+      console.error("Error on Generating ai resume:", error.response?.data);
     }
   }
+}
 
-
+export  const textFormating=async(text: string, propmtKey: string, userId: string)=>{
+    try {
+      const response=await api.post(`user/users/${userId}/text-format`,{text,propmtKey})
+      return response.data
+    } catch (error) {
+      if(error instanceof AxiosError){
+        console.error("Error on Text formating", error.response?.data)
+      }
+    }
 }

@@ -31,16 +31,14 @@ const CompanyJobListing = () => {
   useEffect(() => {
     const handleFetchJob = async () => {
       try {
-     
         const response = await fetchJob(companyId||"");
-        console.log("the job response", response);
         setJobs(response.jobs);
       } catch (error) {
         console.log("Error in fetching Jobs", error); 
       }
     };
     handleFetchJob();
-  }, [userId,companyId]);
+  }, [companyId]);
 
   const toggleDropdown = (jobId: string) => {
     setOpenDropdownId(openDropdownId === jobId ? null : jobId); 

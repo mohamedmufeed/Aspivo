@@ -140,7 +140,7 @@ const setupSocket = (server: HttpServer) => {
 
 
         socket.on("disconnect", (reason: string) => {
-            console.log("User disconnected:", socket.id, "Reason:", reason);
+            // console.log("User disconnected:", socket.id, "Reason:", reason);
             for (const [role, users] of userSockets.entries()) {
               for (const [userId, socketId] of users.entries()) {
                 if (socketId === socket.id) {

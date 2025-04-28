@@ -1,6 +1,6 @@
 import IJobService from "../../interface/service/company/jobInterface";
 import { ICompany } from "../../models/company";
-import  { IJob, JobDocumnet } from "../../models/job";
+import { IJob, JobDocumnet } from "../../models/job";
 import { IJobApplication } from "../../models/jobApplication";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
 import { NotificationRepository } from "../../repositories/notificationRepository";
@@ -15,21 +15,40 @@ export class ComapnayJobService implements IJobService {
     const company = await this._companyRepositories.findByUserId(userId);
 
     if (!company) {
-      throw {status:404 , message:"Comapny not found"}
+      throw { status: 404, message: "Comapny not found" }
     }
     return { company, message: "comapany fetched sucsess fully" };
   }
 
-  async postJob(data: JobData):Promise<{job:JobDocumnet, message:string}> {
+  async postJob(data: JobData): Promise<{ job: JobDocumnet, message: string }> {
     if (!data) {
-      throw { message: "data not found" };
+      throw { message: "Data not found" };
     }
-    const {job} = await this._companyRepositories.createJob(data);
-    if (!job) {
-      throw new Error("Job created failed")
+  
+    const { company } = data;
+    const currentCompany = await this._companyRepositories.findById(company || "");
+    
+    if (!currentCompany) {
+      throw { message: "Company not found" };
     }
-    return { job:job.toObject(), message: "job created sucsess fully" };
+  
+    if (currentCompany.features.unlimitedJobPosting || currentCompany.jobLimit > 0) {
+      const { job } = await this._companyRepositories.createJob(data);
+      
+      if (!job) {
+        throw new Error("Job creation failed");
+      }
+      if (!currentCompany.features.unlimitedJobPosting && currentCompany.jobLimit > 0) {
+        const companyId :string=String(currentCompany.id)
+        await this._companyRepositories.decreaseJobLimit(companyId);
+      }
+  
+      return { job: job.toObject(), message: "Job created successfully" };
+    } else {
+      throw { message: "Job posting limit reached" };
+    }
   }
+  
 
   async fetchJob(comapanyId: string) {
     const jobs = await this._companyRepositories.findJobs(comapanyId);
@@ -37,7 +56,7 @@ export class ComapnayJobService implements IJobService {
     return { jobs, message: "JOb fetched succsess fully" };
   }
 
-  async editJob(jobId: string, data: JobData):Promise<{job:IJob, message:string}> {
+  async editJob(jobId: string, data: JobData): Promise<{ job: IJob, message: string }> {
     const job = await this._companyRepositories.findJob(jobId);
     if (!job) throw new Error("JOb not found");
     job.jobTitle = data.jobTitle || job.jobTitle;
@@ -59,14 +78,14 @@ export class ComapnayJobService implements IJobService {
     return { job, message: "Job edited sucsessfully" };
   }
 
-  async deleteJob(jobId: string):Promise<{job:IJob, message:string}> {
+  async deleteJob(jobId: string): Promise<{ job: IJob, message: string }> {
     if (!jobId) throw new Error("Job id nor found");
     const job = await this._companyRepositories.deleteJob(jobId);
     if (!job) throw new Error("Somthing went wrong in job deleting");
     return { job, message: "job deletion sucsess fully" };
   }
 
-  async getApplicantsForJob(jobId: string, companyId: string):Promise<{applications:IJobApplication[], message:string}> {
+  async getApplicantsForJob(jobId: string, companyId: string): Promise<{ applications: IJobApplication[], message: string }> {
     if (!companyId) throw { status: 404, message: "Company id is required" };
     const job = await this._companyRepositories.findJob(jobId);
     if (!job) throw { status: 404, message: "JOb not found" };
@@ -76,7 +95,7 @@ export class ComapnayJobService implements IJobService {
         message: "You are not authorized to view applicants for this job",
       };
     }
-  
+
     const applications = await this._companyRepositories.findApplications(jobId);
     return { applications, message: "Job application fetched sucsess" };
   }
@@ -92,7 +111,7 @@ export class ComapnayJobService implements IJobService {
     return { applicant, message: "Applicant found" };
   }
 
-  async updateStatus(applicantId: string, status: ApplicationStatus):Promise<{application:IJobApplication, message:string}> {
+  async updateStatus(applicantId: string, status: ApplicationStatus): Promise<{ application: IJobApplication, message: string }> {
     if (!applicantId) throw { status: 404, message: "Applicant ID required" };
     if (!status) throw { status: 404, message: "Status not found" };
     const application = await this._companyRepositories.findApplicationAndUpdate(applicantId, status);

@@ -13,4 +13,6 @@ export interface IProfileController {
   deleteResume(req: Request, res: Response): Promise<void>;
   subscriptionHistory(req: Request, res: Response): Promise<void>;
   generateResumeFromProfile(req: Request, res: Response): Promise<void>;
+  textFormating(req: Request, res: Response): Promise<void>;
+  
 }

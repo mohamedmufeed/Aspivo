@@ -97,8 +97,9 @@ const Subscription = () => {
             <div className="space-y-6 pl-10">
               <div className="space-y-3">
                 <div className="text-gray-500 text-sm">User</div>
-                <div className="font-medium">Resume highlighting</div>
                 <div className="font-medium">Unlimited chat with company</div>
+                <div className="font-medium">Unlock AI features</div>
+         
               </div>
               {companyId && (
                 <div className="space-y-3">

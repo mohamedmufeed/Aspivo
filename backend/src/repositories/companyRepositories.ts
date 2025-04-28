@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import Company from "../models/company";
+import Company, { CompanyDocument } from "../models/company";
 import { JobData } from "../types/companyTypes";
-import Job from "../models/job";
+import Job, { JobDocumnet } from "../models/job";
 import JobApplication from "../models/jobApplication";
+import { ICompanyRepostries } from "../interface/repositories/companyRepositories";
 type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class CompanyRepostries implements CompanyRepostries {
   constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication) {}
@@ -11,7 +12,7 @@ export class CompanyRepostries implements CompanyRepostries {
     email: string,
     kyc: string,
     userId: string
-  ) {
+  ){
     const userObjectId = new mongoose.Types.ObjectId(userId);
     const company = new this.companyModel({
       companyName,
@@ -25,10 +26,14 @@ export class CompanyRepostries implements CompanyRepostries {
     return { company: savedCompany };
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string):Promise<CompanyDocument|null> {
     return await this.companyModel.findOne({ email });
   }
-  async findByUserId(userId: string) {
+
+  async findById(id:string){
+    return await this.companyModel.findById(id)
+  }
+  async findByUserId(userId: string):Promise<CompanyDocument|null> {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw new Error('Invalid user ID format');
     }
@@ -72,6 +77,15 @@ export class CompanyRepostries implements CompanyRepostries {
     const savedJob = await job.save();
     return { job: savedJob };
   }
+
+
+  async decreaseJobLimit(id: string) {
+      return await this.companyModel.findByIdAndUpdate(
+        id,
+        { $inc: { jobLimit: -1 } },
+        { new: true } 
+      );
+    }
   async findJobs(comapanyId: string) {
     return await this.jobModel.find({company:comapanyId}).sort({createdAt:-1});
   }
@@ -82,7 +96,7 @@ export class CompanyRepostries implements CompanyRepostries {
   async deleteJob(jobId:string){
     return await this.jobModel.findByIdAndDelete(jobId)
   }
-  async findApplications(jobId:string){
+  async findApplications(jobId:string):Promise<any>{
     return await this.jobApplication.find({jobId})
     .populate("userId","firstName lastName profileImage")
     .populate("jobId","jobId jobTitle")

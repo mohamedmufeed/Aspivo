@@ -31,6 +31,7 @@ export interface ICompany {
     unlimitedJobPosting: boolean;
     accessToAnalytics: boolean;
   };
+  jobLimit:number,
   team: {
     position: string;
     name: string;
@@ -112,6 +113,10 @@ const companySchema = new Schema(
     features: {
       unlimitedJobPosting: { type: Boolean, default: false },
       accessToAnalytics: { type: Boolean, default: false },
+    },
+    jobLimit:{
+type:Number,
+default:5
     },
     team: [
       {

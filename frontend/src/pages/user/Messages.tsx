@@ -12,6 +12,10 @@ import { format } from "date-fns";
 import avathar from "../../assets/user.png";
 import { useSocket } from "../../hooks/socket";
 import axios from "axios";
+import { getProfile, textFormating } from "../../services/profile";
+import React from "react";
+import { FaWandMagicSparkles } from "react-icons/fa6";
+import ToastError from "../../components/Tost/ErrorToast";
 
 
 
@@ -59,6 +63,8 @@ const Messages = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageLoading, setImageLoading] = useState(false)
   const [timeLimitEnds, setTimeLimitEnds] = useState<boolean | undefined>(undefined)
+  const [aiFeatures, setAiFeatures] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const user = useSelector((state: RootState) => state.auth.user);
   const authUserId = user?._id || "";
@@ -103,7 +109,7 @@ const Messages = () => {
     fetchData();
   }, [userId, loading]);
 
-  // In your Messages component
+
   useEffect(() => {
     if (!socket) return;
 
@@ -161,9 +167,9 @@ const Messages = () => {
           imageUrl: imageUrl || undefined,
           senderId: userId,
         };
-        
+
         const response = await sendMessage(channel, messageData.message, userId, messageData.imageUrl);
-        
+
         if (!response) {
           setTimeLimitEnds(true);
           const timeoutMessage: ChatMessage = {
@@ -180,7 +186,7 @@ const Messages = () => {
           socket.emit("sendMessage", { ...messageData, timeStamp: new Date().toISOString() });
           setNewMessage("");
           setImageUrl(null);
-        try {
+          try {
             const updatedMessages = await getMessageHistory(channel);
             setMessages(updatedMessages);
           } catch (error) {
@@ -264,10 +270,58 @@ const Messages = () => {
     fileInputRef.current?.click();
   };
 
+
+  const aiTextFormating = async () => {
+    try {
+      setLoading(true)
+      console.log("the new message", newMessage)
+      if (!newMessage) return
+      const propmt = "makeChat"
+      const response = await textFormating(newMessage, propmt, userId || "")
+      console.log("the response from ai text", response)
+      setNewMessage(response.response)
+    } catch (error) {
+      console.error("Error on text formating")
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getProfile(userId || "");
+        const userData = response.user.user;
+        if (userData.features.unlockAiFeatures) {
+          setAiFeatures(true)
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch user profile", error);
+      }
+    };
+
+    fetchUserProfile()
+  }, [userId]);
+
+  const handleAitextFormting = async () => {
+
+    if (!aiFeatures) {
+      setError("Please subscribe to unlock AI features.")
+      return
+    } else {
+      aiTextFormating()
+    }
+  }
+
   return (
     <div className="bg-[#F6F6F6] min-h-screen">
       <Navbar />
       <div className="mx-4 sm:mx-8 md:mx-12 mt-6">
+        <div className="flex justify-center">
+        {error?  <ToastError message={error||""} onClose={()=>setError(null)}/>:""}
+        </div>
+
+      
         <div className="bg-white p-3 sm:p-4 shadow-lg rounded-lg flex items-center justify-between">
           <div className="flex items-center">
             <IoChevronBackOutline
@@ -363,7 +417,7 @@ const Messages = () => {
                           className={`p-2 rounded-lg max-w-xs sm:max-w-md ${msg.senderId === userId ? "bg-orange-200 text-black" : "bg-white text-black shadow-xl shadow-gray-200"
                             }`}
                         >
-                          
+
 
                           {msg.imageUrl && (
                             <img src={msg.imageUrl} alt="Uploaded" className="max-w-[200px]  h-auto mb-2 rounded" />
@@ -391,25 +445,25 @@ const Messages = () => {
                                 </a>
                               </>
                             ) :
-                      
+
 
 
                               (
                                 msg.senderId === "system" ? (
-                          
+
                                   <div className="text-center">
                                     <p className="text-sm sm:text-base font-medium mb-2">
                                       {msg.message.replace("[UPGRADE_PLAN]", "")}
                                     </p>
-                                    <button 
-                                      onClick={() => navigate('/subscription')} 
+                                    <button
+                                      onClick={() => navigate('/subscription')}
                                       className="mt-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
                                     >
                                       Upgrade Plan
                                     </button>
                                   </div>
-                                ) :   <p className="text-sm sm:text-base">{msg.message}</p> 
-                              
+                                ) : <p className="text-sm sm:text-base">{msg.message}</p>
+
                               )}
                           <span className={`text-xs sm:text-sm block mt-1 ${msg.senderId === userId ? "text-gray-500" : "text-black"}`}>
                             {format(new Date(msg.timestamp || Date.now()), "p")}
@@ -428,6 +482,10 @@ const Messages = () => {
                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleImageChange} />
                     <IoIosLink onClick={handleFileChange} className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
                   </div>
+                  <div>
+                    <FaWandMagicSparkles className="w-5 h-5" title="Enhance using AI" onClick={handleAitextFormting} />
+
+                  </div>
                   <input
                     type="text"
                     value={newMessage}
@@ -438,9 +496,9 @@ const Messages = () => {
                   <button
                     onClick={handleSendMessage}
                     className="bg-orange-600 text-white p-2 rounded-lg flex items-center justify-center disabled:bg-gray-400"
-                    disabled={(imageLoading || (!newMessage.trim() && !imageUrl) || timeLimitEnds)}
+                    disabled={(imageLoading || (!newMessage.trim() && !imageUrl) || timeLimitEnds || loading)}
                   >
-                    {imageLoading ? (
+                    {imageLoading || loading ? (
                       <svg
                         className="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-white"
                         xmlns="http://www.w3.org/2000/svg"

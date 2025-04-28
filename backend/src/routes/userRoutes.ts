@@ -112,6 +112,9 @@ router
   .route("/users/:id/resume/auto-generate")
   .get(profileController.generateResumeFromProfile)
 
+  router
+  .route("/users/:id/text-format")
+  .post(profileController.textFormating)
 router
   .route("/users/:id/notifications")
   .get(protect, notificationController.getNotifications)

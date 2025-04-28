@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { GoPlus } from "react-icons/go";
-import {  fetchCompany, postJob } from "../../services/company/compayJob";
-import { JobData } from "../../types/types";
+import { fetchCompany, postJob } from "../../services/company/compayJob";
 import { jobSchema } from "../../validation/zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
+import ToastError from "../Tost/ErrorToast";
 
 
 
 interface PostModalProps {
-    onClose: () => React.Dispatch<React.SetStateAction<JobData[] | undefined>>;
+    // onClose: () => React.Dispatch<React.SetStateAction<JobData[] | undefined>>;
+    onClose: () => void
 }
 
 const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
@@ -33,7 +34,9 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
     ];
 
     const [skills, setSkills] = useState<string[]>([""]);
-    const [companyId,setCompanyId]=useState()
+    const [companyId, setCompanyId] = useState()
+    const [error,setError]=useState<string|null>(null)
+
     const {
         register,
         handleSubmit,
@@ -69,36 +72,43 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
         setSkills([...skills, ""]);
         setValue("requiredSkills", [...skills, ""]);
     };
-const user=useSelector((state:RootState)=>state.auth.user)
-const userId=user?._id||""
-        useEffect(() => {
-            const fetchCompanie = async () => {
-                try {
-                    const response = await fetchCompany(userId);
-                    console.log("the  comapny respose", response)
-                    setCompanyId(response.company.company._id);
-                } catch (error) {
-                    console.error("Error fetching company:", error);
-                }
-            };
-            fetchCompanie();
-        }, [userId]);
-  
+    const user = useSelector((state: RootState) => state.auth.user)
+    const userId = user?._id || ""
+    useEffect(() => {
+        const fetchCompanie = async () => {
+            try {
+                const response = await fetchCompany(userId);
+                setCompanyId(response.company.company._id);
+            } catch (error) {
+                console.error("Error fetching company:", error);
+            }
+        };
+        fetchCompanie();
+    }, [userId]);
+
 
 
     const onSubmit = async (data: any) => {
         try {
-     
+
             const submitData = {
                 ...data,
                 minimumSalary: Number(data.minimumSalary),
                 maximumSalary: Number(data.maximumSalary),
                 slot: Number(data.slot)
             };
-            window.location.reload()
-          const response= await postJob(companyId||"",submitData)
-          console.log(response)
-            onClose();
+        
+            const response = await postJob(companyId || "", submitData)
+            console.log("the job repsosen",response)
+            if(!response){
+                setError("You've reached your job posting limit. Upgrade your plan to post more jobs")
+                return
+            }else{
+               window.location.reload()
+                onClose();
+            }
+        
+         
         } catch (error) {
             console.error("Error posting job:", error);
         }
@@ -116,6 +126,8 @@ const userId=user?._id||""
                 className="fixed inset-0 flex items-center justify-center z-50"
                 style={{ fontFamily: "DM Sans, sans-serif" }}
             >
+                {error ?  <ToastError message={error||""}  onClose={()=>setError(null)} />:""}
+               
                 <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg ">
                     <div className="flex justify-between mt-2 px-5 p-5">
                         <h1 className="text-2xl font-medium">Post Job</h1>
@@ -126,7 +138,7 @@ const userId=user?._id||""
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="flex mt-6 flex-col">
                                 <h3 className="font-medium">This information will be displayed publicly</h3>
-                                
+
                                 <div className="mt-5">
                                     <label className="text-gray-600">Job title*</label>
                                     <input

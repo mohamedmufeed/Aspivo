@@ -3,12 +3,12 @@ import { IJob, JobDocumnet } from "../../models/job";
 import { JobApplicationDocument } from "../../models/jobApplication";
 import { ApplicationStatus } from "../service/company/jobInterface";
 
-export interface CompanyRepostries {
+export interface ICompanyRepostries {
 
   register(companyName: string, email: string, kyc: string, userId: string): Promise<{ company: CompanyDocument }>;
 
 
-  findByEmail(email: string): Promise<CompanyDocument | null>;
+  findByEmail(email: string): Promise<CompanyDocument|null>;
 
 
   findByUserId(userId: string): Promise<CompanyDocument | null>;

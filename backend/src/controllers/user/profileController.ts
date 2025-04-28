@@ -5,11 +5,7 @@ import { IProfileController } from "../../interface/controller/user/profileContr
 import { ERROR_MESSAGES } from "../../constants/error";
 
 export class ProfileController implements IProfileController {
-  // private profileService: ProfileSerive;
 
-  // constructor() {
-  //   this.profileService = new ProfileSerive();
-  // }
   constructor(private _profileService: ProfileService) { }
 
   public editProfile = async (req: Request, res: Response): Promise<void> => {
@@ -162,4 +158,17 @@ export class ProfileController implements IProfileController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
     }
   }
+  public textFormating = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.id
+      const { text, propmtKey } = req.body
+      const response = await this._profileService.textFormating(text, propmtKey, userId)
+      res.status(HttpStatus.OK).json(response)
+    } catch (error) {
+      const err = error as Error
+      console.log("the erroro", err.message)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+    }
+  }
 }
+

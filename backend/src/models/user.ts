@@ -32,7 +32,7 @@ export interface IUser {
   };
   chatLimit:number
   features: {
-    resumeHighlighting: boolean;
+    unlockAiFeatures: boolean;
     unlimitedChat: boolean;
   };
   createdAt: Date;
@@ -192,7 +192,7 @@ const userSchema = new Schema(
       plan: { type: String },
     },
     features: {
-      resumeHighlighting: { type: Boolean, default: false },
+      unlockAiFeatures: { type: Boolean, default: false },
       unlimitedChat: { type: Boolean, default: false },
     },
     chatLimit: { type: Number, default: 5 },

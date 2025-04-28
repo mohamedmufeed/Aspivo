@@ -16,4 +16,5 @@ uploadResume(id:string,url:string):Promise<UserServiceResponse>
 deleteResume(id:string):Promise<UserServiceResponse>
 subscriptionHistory(userId:string):Promise<SubscriptionHistoryResponse>
 generateResumeFromProfile(userId:string):Promise<{response:string|undefined, message:string}>
+textFormating(text:string,propmtKey:string, userId:string):Promise<{response:string|undefined, message:string}>
 }

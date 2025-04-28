@@ -3,8 +3,6 @@ import { VscClose } from "react-icons/vsc";
 import { GoPlus } from "react-icons/go";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store/store";
 import { jobSchema } from "../../../validation/zod";
 import { editJob } from "../../../services/company/compayJob";
 
@@ -77,7 +75,6 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {
     },
   });
 
-  // Pre-populate form with job data on mount
   useEffect(() => {
     reset({
       jobTitle: job.jobTitle || "",

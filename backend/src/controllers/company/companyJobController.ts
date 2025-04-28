@@ -62,7 +62,6 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.postJob(data);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log("Error posting job", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
     }
   };

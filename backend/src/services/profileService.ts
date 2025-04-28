@@ -189,4 +189,29 @@ export class ProfileService implements IProfileService {
     const response = aiResponse.text
     return { response, message: "resume generate successfully" }
   }
+  async textFormating(text: string, propmtKey: string, userId: string) {
+    const user = await this._authRepository.findById(userId)
+    if (!user) throw new Error("User not found")
+    if (!user.features.unlockAiFeatures) throw new Error("User subscription is not done")
+    const promptTemplates: { [key: string]: string } = {
+      'makeAbout': `
+    The user has written a lengthy 'About' section for their resume. Refine and condense it into a concise, professional summary (100-150 words) while preserving the core professional details such as years of experience, industry/field, key skills, and significant achievements. Remove redundant phrases, unnecessary personal anecdotes, and non-professional content. Ensure the output is polished and suitable for a resume, no options need give only one:
+
+    Input: ${text}
+  `,
+      'makeChat': `
+    Convert the following casual chat message into a concise, professional version. Preserve the core meaning of the message, but adjust the tone and language to be formal and suitable for a professional context. Do not include any additional suggestions, options, or unrelated content—just the refined message:
+
+    Input: ${text}
+  `
+    };
+    const propmt = promptTemplates[propmtKey]
+    if (!propmt) throw new Error("Invalid prompt key provided");
+    const aiResponse = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: propmt,
+    })
+    const response = aiResponse.text
+    return { response, message: "Text formatted successfully" }
+  }
 }
