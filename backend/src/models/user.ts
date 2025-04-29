@@ -30,7 +30,8 @@ export interface IUser {
     status?: string;
     plan?: string;
   };
-  chatLimit:number
+  chatLimit:number,
+  savedJobs:ISavedJobs[]
   features: {
     unlockAiFeatures: boolean;
     unlimitedChat: boolean;
@@ -61,6 +62,11 @@ export interface Experience {
   currentlyWorking: boolean;
 }
 
+
+export interface ISavedJobs{
+  jobId:Types.ObjectId;
+  savedAt:Date
+}
 const userSchema = new Schema(
   {
     userName: {
@@ -196,6 +202,19 @@ const userSchema = new Schema(
       unlimitedChat: { type: Boolean, default: false },
     },
     chatLimit: { type: Number, default: 5 },
+    savedJobs:[
+      {
+        jobId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Job', 
+          required: true,
+        },
+        savedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      }
+    ]
   },
   {
     timestamps: true,

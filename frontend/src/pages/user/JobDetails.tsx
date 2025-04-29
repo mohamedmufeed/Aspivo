@@ -5,9 +5,9 @@ import { MdOutlineMail } from "react-icons/md";
 import { RiComputerLine } from "react-icons/ri";
 import { RiHomeOfficeLine } from "react-icons/ri";
 import { useParams } from 'react-router-dom';
-import { getJobDetails } from '../../services/jobService';
+import { getJobDetails, savedJobs, saveJob } from '../../services/jobService';
 import { useEffect, useState } from 'react';
-import { JobData } from '../../types/types';
+import { ISavedJobs, JobData } from '../../types/types';
 import { applyForJob } from '../../services/jobService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
@@ -15,6 +15,7 @@ import ToastError from '../../components/Tost/ErrorToast';
 import { User } from "../../types/types"
 import { getProfile } from '../../services/profile';
 import { isApplied } from '../../services/jobService';
+import { IoBookmark } from 'react-icons/io5';
 
 
 
@@ -41,6 +42,7 @@ const JobDetails = () => {
   const [hasApplied, setHasApplied] = useState(false);
   const [userDetails, setUserDetails] = useState<User | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [userSavedJobs, setUserSavedJobs] = useState<ISavedJobs[]>([])
 
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || ""
@@ -49,7 +51,6 @@ const JobDetails = () => {
     const fechDetails = async () => {
       try {
         const response = await getJobDetails(id || "")
-        console.log("first",response)
         if (response.job) {
           setJobDetails(response.job)
         }
@@ -65,7 +66,7 @@ const JobDetails = () => {
       }
     }
     fechDetails()
-  }, [userId,id, responseUserId])
+  }, [userId, id, responseUserId])
 
 
 
@@ -132,6 +133,40 @@ const JobDetails = () => {
     }
   }
 
+  const handleSavingJob = async (jobId: string | undefined) => {
+    if (!jobId) return
+    try {
+      const response = await saveJob(userId, jobId)
+      setUserSavedJobs(prevSaved => {
+        const alredySaved = prevSaved.find(saved => saved.jobId === jobId)
+        if (alredySaved) {
+          return prevSaved.filter(saved => saved.jobId != jobId)
+        } else {
+          return [...prevSaved, { jobId, savedAt: new Date().toISOString() }];
+        }
+      })
+  
+    } catch (error) {
+      console.error("Error on saving Job")
+    }
+  }
+
+
+  useEffect(() => {
+
+    const fetchSavedJobs = async () => {
+      try {
+        const response = await savedJobs(userId)
+        setUserSavedJobs(response.savedJobs)
+      } catch (error) {
+        console.error("Error on fethicing the saved jobs")
+      }
+    }
+    if (userId) {
+      fetchSavedJobs()
+    }
+  }, [userId])
+
 
   if (loading) {
     return (
@@ -189,8 +224,18 @@ const JobDetails = () => {
 
               <div className="flex mt-15 space-x-4">
                 <button className="bg-white shadow-md rounded-lg py-2 px-5 font-bold flex items-center gap-2 hover:bg-gray-100 transition cursor-pointer">
-                  <CiBookmark className="w-5 h-5" />
-                  Save
+                  {userSavedJobs.some((saved) => saved.jobId.toString() === jobDetails?._id?.toString()) ? (
+                    <div className='flex space-x-5 '>    <IoBookmark className="w-6 h-6" onClick={() => handleSavingJob(jobDetails?._id)} /> Saved</div>
+
+
+                  ) : (
+                    <div className='flex'>      <CiBookmark className="w-6 h-6" onClick={() => handleSavingJob(jobDetails?._id)} />
+                      Save
+                    </div>
+
+                  )
+                  }
+
                 </button>
                 <button
                   onClick={handleApplyJob}
@@ -323,8 +368,8 @@ const JobDetails = () => {
 
           <div className="flex ">
             <div className='p-20 mt-3'>
-              
-              <img  src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${jobDetails?.company.logo}`} alt="" className='w-9 h-9 ml-2 rounded-Full' />
+
+              <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${jobDetails?.company.logo}`} alt="" className='w-9 h-9 ml-2 rounded-Full' />
               <h1 className='font-semibold text-lg'>{jobDetails?.company.companyName}</h1>
             </div>
           </div>

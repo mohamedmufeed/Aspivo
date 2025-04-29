@@ -6,4 +6,6 @@ export interface IJobController {
   applyForJob(req: Request, res: Response): Promise<void>;
   appliedJobs(req: Request, res: Response): Promise<void>;
   isApplied(req: Request, res: Response): Promise<void>;
+  saveJob(req:Request,res:Response):Promise<void>
+  savedJobs(req:Request,res:Response):Promise<void>
 }

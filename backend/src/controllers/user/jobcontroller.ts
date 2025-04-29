@@ -77,4 +77,39 @@ export class JobController implements IJobController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
+
+  saveJob= async(req:Request,  res:Response):Promise<void>=>{
+   try {
+    const  userId= req.params.id
+    const {jobId}= req.body
+    if (!userId || !jobId) {
+      res.status(HttpStatus.BAD_REQUEST).json({ message: "User id or job id is required" });
+      return;
+    }
+    const response= await this._jobService.saveJob(userId,jobId)
+    res.status(HttpStatus.OK).json(response)
+   } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
+   }
+  }
+
+   savedJobs=async (req:Request,res:Response)=>{
+    try {
+      const userId=req.params.id
+      const response =await  this._jobService.savedJobs(userId)
+      res.status(HttpStatus.OK).json(response)
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
+    }
+   }
+
+    populatedSavedJobs= async (req:Request,res:Response)=>{
+      try {
+        const userId=req.params.id
+        const response=await this._jobService.populatedSavedJobs(userId)
+        res.status(HttpStatus.OK).json(response)
+      } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
+      }
+    }
 }

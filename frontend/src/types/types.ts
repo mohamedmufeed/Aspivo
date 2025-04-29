@@ -220,3 +220,8 @@ export interface Experience {
   description: string;
   currentlyWorking: boolean;
 }
+
+export interface ISavedJobs{
+  jobId:string;
+  savedAt:Date| string
+}

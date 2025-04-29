@@ -45,4 +45,18 @@ export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuth
   async findbyIdAndUpdate(id:string, data:Partial<IUser>){
     return await User.findByIdAndUpdate(id, data, { new: true });
   }
+
+  async findByIdAndPopulate(id: string) {
+    return await User.findById(new mongoose.Types.ObjectId(id))
+      .populate({
+        path: "savedJobs.jobId", 
+        select: "jobTitle maximumSalary minimumSalary location typesOfEmployment", 
+        populate: {
+          path: "company", 
+          select: "companyName logo location", 
+        },
+      })
+  }
+  
+  
 }

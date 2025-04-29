@@ -1,10 +1,14 @@
 import { IoIosSearch } from "react-icons/io";
 import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate } from "react-router-dom";
-import { fetchJob } from "../../services/jobService";
+import { fetchJob, savedJobs, saveJob } from "../../services/jobService";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { JobData } from "../../types/types";
+import { ISavedJobs, JobData } from "../../types/types";
 import _ from "lodash";
+import { CiBookmark } from "react-icons/ci";
+import { useSelector } from "react-redux";
+import { IoBookmark } from "react-icons/io5";
+import { RootState } from "../../redux/store/store";
 
 const formatSalary = (amount: number): string => {
     if (amount >= 10000000) {
@@ -29,6 +33,7 @@ const JobLists = () => {
     const [loading, setLoading] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
     const isLoadingRef = useRef(false);
+    const [userSavedJobs, setUserSavedJobs] = useState<ISavedJobs[]>([])
     const limit = 9;
 
     const loadJobs = useCallback(async (options: { resetPage?: boolean; newCategory?: boolean; newSearch?: boolean } = {}) => {
@@ -43,9 +48,6 @@ const JobLists = () => {
                 setPage(1);
             }
             const categoryParam = selectedCategory === "All" || !selectedCategory ? undefined : selectedCategory;
-
-            console.log(`Fetching jobs: page=${currentPage}, category=${categoryParam}, search=${searchWord}`);
-
             const response = await fetchJob({
                 page: currentPage,
                 limit,
@@ -110,6 +112,40 @@ const JobLists = () => {
             debouncedSearch.cancel();
         };
     }, []);
+    const user = useSelector((state: RootState) => state.auth.user)
+    const userId = user?._id || ""
+
+    const handleSavingJob = async (jobId: string | undefined) => {
+        if (!jobId) return
+        try {
+           await saveJob(userId, jobId)
+            setUserSavedJobs(prevSaved  => {
+                const alredySaved = prevSaved.find(saved => saved.jobId === jobId)
+                if (alredySaved) {
+                    return prevSaved.filter(saved => saved.jobId != jobId)
+                } else {
+                    return [...prevSaved, { jobId, savedAt: new Date().toISOString() }];
+                }
+            })
+        } catch (error) {
+            console.error("Error on saving Job")
+        }
+    }
+
+    useEffect(() => {
+
+        const fetchSavedJobs = async () => {
+            try {
+                const response = await savedJobs(userId)
+                setUserSavedJobs(response.savedJobs)
+            } catch (error) {
+                console.error("Error on fethicing the saved jobs")
+            }
+        }
+        if (userId) {
+            fetchSavedJobs()
+        }
+    }, [userId])
     return (
         <div className="bg-[#F6F6F6] min-h-screen pb-20" style={{ fontFamily: "DM Sans, sans-serif" }}>
             <Navbar />
@@ -164,9 +200,9 @@ const JobLists = () => {
                                     className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 p-4 items-center hover:bg-gray-50"
                                 >
                                     <div className="col-span-2 flex justify-center">
-                                        { job.company?.logo ? (
+                                        {job.company?.logo ? (
                                             <img
-                                                src={ `https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`}
+                                                src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`}
                                                 alt={`${job.company.companyName || "Company"} logo`}
                                                 className="w-10 h-10 object-contain"
                                                 onError={(e) => (e.currentTarget.src = "/default-logo.png")}
@@ -192,7 +228,12 @@ const JobLists = () => {
                                         <p className="text-sm text-gray-700">Yearly</p>
                                     </div>
                                     <div className="col-span-2 flex justify-center">
-                                        <span className="text-gray-700">save</span>
+                                        {userSavedJobs.some((saved) => saved.jobId.toString() === job._id?.toString()) ? (
+                                            <IoBookmark className="w-6 h-6" onClick={() => handleSavingJob(job._id)} />
+                                        ) : (
+                                            <CiBookmark className="w-6 h-6" onClick={() => handleSavingJob(job._id)} />
+                                        )
+                                        }
                                     </div>
                                     <div className="col-span-1 flex justify-center">
                                         <button

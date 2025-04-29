@@ -5,7 +5,7 @@ import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { appliedJobs } from "../../services/jobService";
+import { appliedJobs, populatedJobs } from "../../services/jobService";
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 
@@ -46,10 +46,9 @@ const MyJobs = () => {
     try {
       setLoading(true);
       const response = await appliedJobs(userId);
-     
+      console.log("the applies",response)
       if (response) {
-        console.log(response.data.applications)
-        const mappedJobs = response?.data.applications.map((app:any) => ({
+        const mappedJobs = response?.applications.map((app:any) => ({
           id: app.jobId._id,
           title: app.jobId.jobTitle,
           company: app.jobId.company.companyName,
@@ -70,39 +69,40 @@ const MyJobs = () => {
     }
   };
 
-  // const handleSavedJobs = async () => {
-  //   if (!userId) {
-  //     setError("User ID not found. Please log in.");
-  //     setLoading(false);
-  //     return;
-  //   }
+  const handleSavedJobs = async () => {
+    if (!userId) {
+      setError("User ID not found. Please log in.");
+      setLoading(false);
+      return;
+    }
 
-  //   try {
-  //     setLoading(true);
-  //     // const response = await savedJobs(userId);
-  //     const mappedJobs = response.jobs.map((saved: any) => ({
-  //       id: saved.jobId._id,
-  //       title: saved.jobId.jobTitle,
-  //       company: saved.jobId.company.companyName,
-  //       location: saved.jobId.location,
-  //       salaryRange: `$${saved.jobId.minimumSalary / 1000}k - $${saved.jobId.maximumSalary / 1000}k`,
-  //       status: "Saved",
-  //       logo: saved.jobId.company.logo,
-  //     }));
-  //     setSavedJob(mappedJobs);
-  //   } catch (error: any) {
-  //     console.log("Error in fetching saved jobs", error);
-  //     setError(error.response?.data?.message || "Failed to load saved jobs");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    try {
+      setLoading(true);
+       const response = await populatedJobs(userId);
+      const mappedJobs = response.savedJobs
+      .map((saved: any) => ({
+        id: saved.jobId._id,
+        title: saved.jobId.jobTitle,
+        company: saved.jobId.company.companyName,
+        location: saved.jobId.company.location,
+        salaryRange: `$${saved.jobId.minimumSalary / 1000}k - $${saved.jobId.maximumSalary / 1000}k`,
+        status: "Saved",
+        logo: saved.jobId.company.logo,
+      }));
+      setSavedJob(mappedJobs);
+    } catch (error: any) {
+      console.log("Error in fetching saved jobs", error);
+      setError(error.response?.data?.message || "Failed to load saved jobs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (activeTab === "Applied Jobs") {
       handleAppliedJobs();
     } else {
-      // handleSavedJobs();
+       handleSavedJobs();
     }
   }, [activeTab, userId]);
 
@@ -187,10 +187,10 @@ const MyJobs = () => {
                       <FcGoogle className="w-9 h-9 ml-5" />
                     ) : (
                       <img
-                        src={job.logo}
+                      src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.logo}`}
                         alt={`${job.company} logo`}
                         className="w-9 h-9 rounded-full object-contain ml-5"
-                        onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/36")}
+                      
                       />
                     )}
                   </div>

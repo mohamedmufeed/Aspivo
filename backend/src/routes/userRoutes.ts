@@ -24,7 +24,7 @@ const authService = new AuthService(authRepostry);
 const authController = new AuthController(authService);
 
 const jobRepositories = new JobRepositories();
-const jobService = new JobService(jobRepositories);
+const jobService = new JobService(jobRepositories, authRepostry);
 const jobController = new JobController(jobService);
 
 const notificationRepository= new NotificationRepository()
@@ -142,6 +142,18 @@ router
 router
   .route("/users/:id/applied-jobs")
   .get(protect, jobController.appliedJobs);
+
+  router
+  .route("/users/:id/save-job")
+  .post(jobController.saveJob)
+
+router 
+.route("/users/:id/saved-jobs")
+.get(jobController.savedJobs)
+
+router
+.route("/users/:id/saved-jobsdata")
+.get(jobController.populatedSavedJobs)
 
 
 
