@@ -83,16 +83,17 @@ const [errors,setErrors]=useState<Record<string,string>>({})
             return
         }
         try {
-            const experienceData: Education = {
+            const educationData: Education = {
                 ...formData,
 
             };
             const response = await addEducation(userId,formData)
+        
             if (response) {
 
                 setProfileData((prev: any) => ({
                     ...prev,
-                    experiences: [...(prev.experiences || []), experienceData]
+                    education: [...(prev.education || []), educationData]
                 }));
 
                 onClose();

@@ -1,6 +1,6 @@
-import { AiOutlineTeam } from "react-icons/ai";
+import { AiOutlineAudioMuted, AiOutlineTeam } from "react-icons/ai";
 import { LuSend } from "react-icons/lu";
-import { IoMicOutline } from "react-icons/io5";
+import { IoMicOutline, IoVideocamOffOutline } from "react-icons/io5";
 import { CiVideoOn } from "react-icons/ci";
 import { RxExit } from "react-icons/rx";
 import React, { useEffect, useRef, useState } from "react";
@@ -13,7 +13,7 @@ const CompanyVideoCall: React.FC = () => {
   console.log("Room ID:", roomId);
   console.log("My Peer ID:", myPeerId);
   console.log("Target Peer ID:", targetPeerId);
-  
+
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const peerRef = useRef<Peer | null>(null);
@@ -21,9 +21,9 @@ const CompanyVideoCall: React.FC = () => {
   const dataConnectionRef = useRef<DataConnection | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
-  
+
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState<Array<{sender: string, text: string, timestamp: number}>>([]);
+  const [messages, setMessages] = useState<Array<{ sender: string, text: string, timestamp: number }>>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("Initializing...");
@@ -48,30 +48,30 @@ const CompanyVideoCall: React.FC = () => {
       port: 9000,
       path: "/peerjs",
       secure: false,
-      debug: 3, 
+      debug: 3,
     });
-    
+
     peerRef.current = peer;
 
     peer.on("open", (id) => {
       console.log("Company peer connected with ID:", id);
       setConnectionStatus("Connected to signaling server. Accessing media...");
-      
+
       peer.on("connection", (dataConn) => {
         console.log("Received data connection from:", dataConn.peer);
         dataConnectionRef.current = dataConn;
-        
+
         setupDataConnectionHandlers(dataConn);
       });
 
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then((stream) => {
           localStreamRef.current = stream;
-          
+
           if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream;
           }
-          
+
           setConnectionStatus("Waiting for user to join...");
 
           if (targetPeerId) {
@@ -94,7 +94,7 @@ const CompanyVideoCall: React.FC = () => {
         window.clearInterval(callAttemptRef.current);
       }
       setIsCallInProgress(true);
-      
+
       if (localStreamRef.current) {
         call.answer(localStreamRef.current);
         setConnectionStatus("Call connected");
@@ -113,7 +113,7 @@ const CompanyVideoCall: React.FC = () => {
             setConnectionStatus("Error: Failed to access media during call");
           });
       }
-      
+
       call.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
@@ -123,12 +123,12 @@ const CompanyVideoCall: React.FC = () => {
           connectForChat(call.peer);
         }
       });
-      
+
       call.on("close", () => {
         setConnectionStatus("Call ended");
         setIsCallInProgress(false);
       });
-      
+
       call.on("error", (err) => {
         console.error("Call error:", err);
         setConnectionStatus("Call Making failed");
@@ -155,12 +155,12 @@ const CompanyVideoCall: React.FC = () => {
     };
   }, [myPeerId, targetPeerId]);
 
-  const setupDataConnectionHandlers = (dataConn:DataConnection) => {
+  const setupDataConnectionHandlers = (dataConn: DataConnection) => {
     dataConn.on("open", () => {
       console.log("Data connection opened with:", dataConn.peer);
     });
-    
-    dataConn.on("data", (data:any) => {
+
+    dataConn.on("data", (data: any) => {
       console.log("Received data:", data);
       if (typeof data === "object" && data?.type === "chat") {
         setMessages(prev => [...prev, {
@@ -170,11 +170,11 @@ const CompanyVideoCall: React.FC = () => {
         }]);
       }
     });
-    
-    dataConn.on("error", (err:Error) => {
+
+    dataConn.on("error", (err: Error) => {
       console.error("Data connection error:", err);
     });
-    
+
     dataConn.on("close", () => {
       console.log("Data connection closed");
       dataConnectionRef.current = null;
@@ -183,43 +183,43 @@ const CompanyVideoCall: React.FC = () => {
 
   const connectForChat = (remotePeerId: string) => {
     if (!peerRef.current || dataConnectionRef.current) return;
-    
+
     console.log("Establishing data connection with:", remotePeerId);
     const dataConn = peerRef.current.connect(remotePeerId);
     dataConnectionRef.current = dataConn;
-    
+
     setupDataConnectionHandlers(dataConn);
   };
 
   const tryCallUser = (peer: Peer, targetId: string, stream: MediaStream) => {
     console.log("Attempting to call user:", targetId);
     setConnectionStatus("Calling user...");
-    
+
     try {
       const call = peer.call(targetId, stream);
-      
+
       call.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
         }
         setConnectionStatus("Call connected");
         setIsCallInProgress(true);
-        
+
         if (callAttemptRef.current !== null) {
           window.clearInterval(callAttemptRef.current);
         }
-        
+
         // Establish data connection for chat if we haven't already
         if (!dataConnectionRef.current) {
           connectForChat(targetId);
         }
       });
-      
+
       call.on("close", () => {
         setConnectionStatus("Call ended");
         setIsCallInProgress(false);
       });
-      
+
       call.on("error", (err) => {
         console.error("Call error:", err);
         setConnectionStatus("Call error: " + err.message);
@@ -236,13 +236,13 @@ const CompanyVideoCall: React.FC = () => {
         type: "chat",
         message: newMessage.trim()
       });
-      
+
       setMessages(prev => [...prev, {
         sender: "local",
         text: newMessage.trim(),
         timestamp: Date.now()
       }]);
-      
+
       setNewMessage("");
     } else if (newMessage.trim() && targetPeerId && peerRef.current) {
       connectForChat(targetPeerId);
@@ -252,13 +252,13 @@ const CompanyVideoCall: React.FC = () => {
             type: "chat",
             message: newMessage.trim()
           });
-          
+
           setMessages(prev => [...prev, {
             sender: "local",
             text: newMessage.trim(),
             timestamp: Date.now()
           }]);
-          
+
           setNewMessage("");
         }
       }, 1000);
@@ -296,9 +296,9 @@ const CompanyVideoCall: React.FC = () => {
   };
 
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -329,14 +329,16 @@ const CompanyVideoCall: React.FC = () => {
         <div className="flex justify-center pt-6">
           <div className="bg-white flex justify-between items-center gap-10 px-10 py-4 shadow-lg w-[60%] max-w-xl rounded-2xl">
             <div className="flex flex-col items-center">
-              <div onClick={toggleAudio} className={`${isMuted ? 'bg-red-600' : 'bg-orange-600'} text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
-                <IoMicOutline className="w-6 h-6" />
+              <div onClick={toggleAudio} className={`bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
+                {isMuted ? <AiOutlineAudioMuted className="w-6 h-6" /> : <IoMicOutline className="w-6 h-6" />}
+
               </div>
               <p className="text-sm text-center pt-2">Mic</p>
             </div>
             <div className="flex flex-col items-center">
-              <div onClick={toggleVideo} className={`${isVideoOff ? 'bg-red-600' : 'bg-orange-600'} text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
-                <CiVideoOn className="w-6 h-6" />
+              <div onClick={toggleVideo} className={`bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
+                {isVideoOff ? <IoVideocamOffOutline className="w-6 h-6" /> : <CiVideoOn className="w-6 h-7" />}
+
               </div>
               <p className="text-sm text-center pt-2">Cam</p>
             </div>
@@ -358,16 +360,15 @@ const CompanyVideoCall: React.FC = () => {
             <p className="text-gray-400 text-center italic">No messages yet</p>
           ) : (
             messages.map((msg, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`flex ${msg.sender === "local" ? "justify-end" : "justify-start"}`}
               >
-                <div 
-                  className={`max-w-[80%] p-3 rounded-lg ${
-                    msg.sender === "local" 
-                      ? "bg-orange-500 text-white" 
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${msg.sender === "local"
+                      ? "bg-orange-500 text-white"
                       : "bg-gray-200 text-gray-800"
-                  }`}
+                    }`}
                 >
                   {msg.text}
                   <div className="text-xs mt-1 opacity-70">
@@ -388,8 +389,8 @@ const CompanyVideoCall: React.FC = () => {
             className="w-full p-2 bg-white shadow-xl border border-gray-100 pl-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          <div 
-            onClick={handleSendMessage} 
+          <div
+            onClick={handleSendMessage}
             className={`rounded-lg p-5 cursor-pointer ${newMessage.trim() ? 'bg-orange-600' : 'bg-gray-300'}`}
           >
             <LuSend className="text-white w-5 h-5" />

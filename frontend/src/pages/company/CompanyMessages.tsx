@@ -303,11 +303,15 @@ const CompanyMessages = () => {
                                     onClick={() => handleSelectConversation(conv.targetId)}
                                 >
                                     <div className="flex items-center">
-                                        <img
+                                        {conv.targetProfile ? <img
                                             src={conv.targetProfile}
                                             alt={conv.targetName}
                                             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3"
-                                        />
+                                        /> : <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3 text-white font-bold text-center flex items-center justify-center bg-gray-600">
+                                            {conv.targetName.slice(0, 1)}
+                                        </div>}
+
+
                                         <div>
                                             <h1 className="font-semibold text-sm sm:text-base">{conv.targetName}</h1>
                                             {conv.lastMessage && conv.lastMessage.startsWith("http") ? (
@@ -343,11 +347,20 @@ const CompanyMessages = () => {
                             <>
                                 <div className="flex justify-between items-center px-4 py-2">
                                     <div className="flex items-center">
-                                        <img
-                                            src={conversations.find((c) => c.targetId === selectedUserId)?.targetProfile || person}
-                                            alt="User"
-                                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3"
-                                        />
+
+                                        {conversations.find((c) => c.targetId === selectedUserId)?.targetProfile ? (
+                                            <img
+                                                src={conversations.find((c) => c.targetId === selectedUserId)?.targetProfile}
+                                                alt="User"
+                                                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3 text-white font-bold text-center flex items-center justify-center bg-gray-600">
+                                                {conversations.find((c) => c.targetId === selectedUserId)?.targetName.slice(0, 1) || "U"}
+                                            </div>
+                                        )}
+
+
                                         <div className="space-y-1">
                                             <h1 className="font-bold text-sm sm:text-lg">
                                                 {conversations.find((c) => c.targetId === selectedUserId)?.targetName || "Unknown"}

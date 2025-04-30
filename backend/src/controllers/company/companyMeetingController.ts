@@ -4,6 +4,7 @@ import { CompanyMeetingService } from "../../services/compnyService/companyMeeti
 import HttpStatus from "../../utils/httpStatusCode";
 import { assert, log } from "console";
 import { ERROR_MESSAGES } from "../../constants/error";
+import { GetPaginationQuery } from "../../types/userTypes";
 
 export class ComapnyMeetingController implements ICompanyMeetingController {
     constructor(private _companyMeetingService: CompanyMeetingService) { }

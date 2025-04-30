@@ -5,6 +5,8 @@ import { generateToken } from "../utils/jwt";
 import mongoose from "mongoose";
 import { BaseRepository } from "./baseRepository";
 import { IAuthRepository } from "../interface/repositories/userRepositories";
+import Review from "../models/review";
+import { IReviewData } from "../types/userTypes";
 
 
 export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuthRepository{
@@ -58,5 +60,12 @@ export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuth
       })
   }
   
+  async addReview(reviewData:IReviewData){
+    return await Review.create(reviewData)
+  }
+
+   async getReview(){
+    return await Review.find().populate("userId" , "profileImage firstName lastName position")
+   }
   
 }

@@ -100,3 +100,7 @@ export interface GetCompanyResponse{
   totalSubscription:number
   totalPages:number
  }
+  export interface IReviewData{
+     userId:string;
+     review:string
+ }

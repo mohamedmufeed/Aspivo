@@ -15,6 +15,8 @@ import { NotificationService } from "../services/notificationService";
 import { ProfileService } from "../services/profileService";
 import { SkillRepository } from "../repositories/skillREpositories";
 import { NotificationRepository } from "../repositories/notificationRepository";
+import { ReviewController } from "../controllers/user/reviewController";
+import { ReviewService } from "../services/reviewService";
 
 
 const router= express.Router()
@@ -34,6 +36,9 @@ const notificationController = new NotificationController(notificationService);
 const skillRepostry= new SkillRepository()
 const profileService=new ProfileService(authRepostry,skillRepostry)
 const profileController = new ProfileController(profileService);
+
+const reviewService = new ReviewService(authRepostry)
+const reviewController= new ReviewController(reviewService)
 
 router
   .route("/auth/signup")
@@ -155,8 +160,13 @@ router
 .route("/users/:id/saved-jobsdata")
 .get(jobController.populatedSavedJobs)
 
+router
+.route("/users/:id/add-review")
+.post(reviewController.addReview)
+.get(reviewController.getReview)
 
-
-
+router
+.route("/users/get-review")
+.get(reviewController.getReview)
 
 export default router

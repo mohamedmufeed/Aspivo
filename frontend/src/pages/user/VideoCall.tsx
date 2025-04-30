@@ -7,6 +7,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 import type { DataConnection } from 'peerjs';
+import { AiOutlineAudioMuted } from "react-icons/ai";
+import { IoVideocamOffOutline } from "react-icons/io5";
+
+
 
 
 const VideoCall = () => {
@@ -217,7 +221,7 @@ const VideoCall = () => {
     if (peerRef.current) {
       peerRef.current.destroy();
     }
-    navigate("/");
+    navigate("/messages");
   };
 
   const toggleAudio = () => {
@@ -246,6 +250,12 @@ const VideoCall = () => {
       minute: '2-digit' 
     });
   };
+
+  if(remoteVideoRef.current){
+    console.log("njan ivade ind",remoteVideoRef.current )
+  }else{
+    console.log("njan illa")
+  }
 
   return (
     <div
@@ -279,14 +289,16 @@ const VideoCall = () => {
         <div className="flex justify-center pt-6">
           <div className="bg-white flex justify-between items-center gap-10 px-10 py-4 shadow-lg w-[60%] max-w-xl rounded-2xl">
             <div className="flex flex-col items-center">
-              <div onClick={toggleAudio} className={`${isMuted ? 'bg-red-600' : 'bg-orange-600'} text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
-                <IoMicOutline className="w-6 h-6" />
+              <div onClick={toggleAudio} className={`bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
+                 {isMuted ?<AiOutlineAudioMuted className="w-6 h-6"/>:<IoMicOutline className="w-6 h-6" />}
+                
               </div>
               <p className="text-sm text-center pt-2">Mic</p>
             </div>
             <div className="flex flex-col items-center">
-              <div onClick={toggleVideo} className={`${isVideoOff ? 'bg-red-600' : 'bg-orange-600'} text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
-                <CiVideoOn className="w-6 h-6" />
+              <div onClick={toggleVideo} className={`bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
+                {isVideoOff ? <IoVideocamOffOutline className="w-6 h-6"/> :                <CiVideoOn className="w-6 h-7" />}
+
               </div>
               <p className="text-sm text-center pt-2">Cam</p>
             </div>

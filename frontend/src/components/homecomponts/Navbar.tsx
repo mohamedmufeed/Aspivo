@@ -148,15 +148,18 @@ const Navbar = () => {
                 <div className="flex flex-col gap-4 items-center py-4 bg-white w-full shadow-md z-30 md:hidden "  style={{ fontFamily: "DM Sans, sans-serif" }}>
                     {navItems.map((nav, index) => (
                         <div key={index} className="cursor-pointer font-extralight hover:text-orange-600">
-                            {nav.icon ? nav.icon : nav.name}
+                            <Link to={nav.path}>  {nav.icon ? nav.icon : nav.name}  </Link>
+                          
                         </div>
                     ))}
+                    <Link to={"/notifications"}>
                     <div className="cursor-pointer font-medium hover:text-orange-600 ">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 36 36">
                             <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M32.51 27.83A14.4 14.4 0 0 1 30 24.9a12.6 12.6 0 0 1-1.35-4.81v-4.94A10.81 10.81 0 0 0 19.21 4.4V3.11a1.33 1.33 0 1 0-2.67 0v1.31a10.81 10.81 0 0 0-9.33 10.73v4.94a12.6 12.6 0 0 1-1.35 4.81a14.4 14.4 0 0 1-2.47 2.93a1 1 0 0 0-.34.75v1.36a1 1 0 0 0 1 1h27.8a1 1 0 0 0 1-1v-1.36a1 1 0 0 0-.34-.75" />
                             <path fill="none" stroke="currentColor" strokeWidth="1.5" d="M18 34.28A2.67 2.67 0 0 0 20.58 32h-5.26A2.67 2.67 0 0 0 18 34.28" />
                         </svg>
-                    </div>
+                    </div></Link>
+                    
                     <button onClick={handeleLogginBtn} className="bg-orange-600 text-white rounded-md font-bold px-6 py-2 hover:bg-orange-500 transition-all">
                         Login
                     </button>

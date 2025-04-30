@@ -30,6 +30,7 @@ const CompanyMessages=lazy(()=>import("../pages/company/CompanyMessages"))
 const VideoCall=lazy(()=>import("../pages/user/VideoCall"))
 const CompanyVideoCall=lazy(()=>import("../pages/company/CompanyVideoCall"))
 const CompanyScheduledMeeting=lazy(()=>import("../pages/company/CompanyScheduledMeeting"))
+const AboutUs=lazy(()=>import("../pages/user/AboutUs"))
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 
@@ -60,6 +61,7 @@ const AppRoutes = () => {
         <Route path="/subscription-history" element={<SubscriptionHistory />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/video" element={<VideoCall />} />
+        <Route path="/about" element={<AboutUs />} />
     
 
         {/* admin  routes*/}

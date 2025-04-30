@@ -7,6 +7,8 @@ import { fetchCompany } from "../../services/company/compayJob";
 import { getMeetings } from "../../services/company/companyMeeting";
 import { useNavigate } from "react-router-dom";
 import ToastError from "../../components/Tost/ErrorToast";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 interface targetId {
   _id: string,
   profileImage: string;
@@ -36,6 +38,10 @@ const CompanyScheduledMeeting = () => {
   const userId = user?._id
 
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+
   useEffect(() => {
     if (!userId) return
     const getComapny = async () => {
@@ -43,8 +49,7 @@ const CompanyScheduledMeeting = () => {
         const response = await fetchCompany(userId || "")
         setCompanyId(response?.company?.company?._id)
       } catch (error) {
-
-        console.log("Error fetching the company details. Please try again later",error)
+        console.log("Error fetching the company details. Please try again later", error)
         setError("Error fetching the company details. Please try again later")
       }
     }
@@ -58,14 +63,19 @@ const CompanyScheduledMeeting = () => {
       try {
         const response = await getMeetings(companyId)
         setMeetings(response.meeting)
+        
+   
+        if (response.meeting) {
+          setTotalPages(Math.ceil(response.meeting.length / itemsPerPage));
+        }
       } catch (error) {
-        console.log("Error fetching the scheduled meeting. Please try again later",error)
+        console.log("Error fetching the scheduled meeting. Please try again later", error)
         setError("Error fetching the scheduled meeting. Please try again later")
       }
     }
     fetchSheduledMeeting()
 
-  }, [companyId])
+  }, [companyId, itemsPerPage])
 
   const handleVideoCall = (meeting: IMeetingsDetails) => {
     if (!meeting) return
@@ -86,11 +96,62 @@ const CompanyScheduledMeeting = () => {
     });
   }
 
+  
+  const getCurrentMeetings = () => {
+    if (!meetings) return [];
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return meetings.slice(indexOfFirstItem, indexOfLastItem);
+  };
+
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+
+  const getPaginationNumbers = () => {
+    const pages = [];
+    const maxPageNumbersToShow = 5;
+    
+    if (totalPages <= maxPageNumbersToShow) {
+ 
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+    
+      let startPage = Math.max(1, currentPage - Math.floor(maxPageNumbersToShow / 2));
+      let endPage = startPage + maxPageNumbersToShow - 1;
+      
+      if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = Math.max(1, endPage - maxPageNumbersToShow + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  };
+
+  const currentMeetings = getCurrentMeetings();
+
   return (
     <div className="flex">
       <CompanySidebar setSelected={setSelectedMenu} />
       <div
-        className="bg-[#F6F6F6] w-full  overflow-x-hidden relative"
+        className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
         <ComapanyHeader heading="Scheduled Meetings" />
@@ -112,7 +173,7 @@ const CompanyScheduledMeeting = () => {
             <hr className="border-gray-600 my-3" />
             {meetings ? (
               meetings.length > 0 ? (
-                meetings.map((meeting, index) => (
+                currentMeetings.map((meeting, index) => (
                   <div
                     key={meeting._id || index}
                     className="grid grid-cols-5 items-center bg-white shadow-lg p-4 rounded-md my-2"
@@ -150,6 +211,41 @@ const CompanyScheduledMeeting = () => {
 
           </div>
         </div>
+        
+        {/* Pagination controls */}
+        {meetings && meetings.length > 0 && (
+          <div className="flex justify-center items-center gap-2 my-4 pb-6">
+            <button 
+              onClick={prevPage} 
+              disabled={currentPage === 1}
+              className={`flex items-center justify-center bg-gray-200 rounded-lg w-8 h-8 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-300'}`}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            
+            {getPaginationNumbers().map(number => (
+              <button
+                key={number}
+                onClick={() => setCurrentPage(number)}
+                className={`flex items-center justify-center w-8 h-8 rounded-lg ${
+                  currentPage === number
+                    ? 'bg-orange-600 text-white font-bold'
+                    : 'bg-gray-200 hover:bg-gray-300'
+                }`}
+              >
+                {number}
+              </button>
+            ))}
+            
+            <button 
+              onClick={nextPage} 
+              disabled={currentPage === totalPages}
+              className={`flex items-center justify-center bg-gray-200 rounded-lg w-8 h-8 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-300'}`}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

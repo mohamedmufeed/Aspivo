@@ -116,7 +116,6 @@ const GenerateResumeModal: React.FC<Props> = ({ onClose, setProfileData }) => {
   }
   const handleSetAsProfile = async () => {
     if (!resumeData) return;
-
     setUploading(true);
 
     try {
@@ -226,9 +225,7 @@ const GenerateResumeModal: React.FC<Props> = ({ onClose, setProfileData }) => {
                   </>
                 ) : (
                   <>
-                    {/* <button className="bg-orange-600 text-white rounded-lg p-3" onClick={handleEdit}>Edit</button>
-                    <button className="bg-orange-600 text-white rounded-lg p-3" onClick={handleRegenerate}>Regenerate</button>
-                    <button className="bg-orange-600 text-white rounded-lg p-3" onClick={handleDownload}>Download PDF</button> */}
+                  
                     <button className="bg-orange-600 text-white  font-bold rounded-lg p-3" onClick={handleSetAsProfile}>Set as My Profile Resume</button>
                   </>
                 )}

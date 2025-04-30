@@ -289,7 +289,7 @@ const Messages = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await getProfile(userId || "");
+        const response = await getProfile(authUserId);
         const userData = response.user.user;
         if (userData.features.unlockAiFeatures) {
           setAiFeatures(true)
@@ -301,7 +301,7 @@ const Messages = () => {
     };
 
     fetchUserProfile()
-  }, [userId]);
+  }, [authUserId]);
 
   const handleAitextFormting = async () => {
 
