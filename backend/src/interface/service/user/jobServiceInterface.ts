@@ -10,4 +10,5 @@ export default interface IJobService{
     isApplied(userId:string,jobId:string):Promise<{application:IJobApplication|undefined, message:string}>
     saveJob(userId:string,jobId:string):Promise<{user:IUser, message:string}>
     savedJobs(userId:string):Promise<{savedJobs:ISavedJobs[], message:string}>
+    latestJobs():Promise<{jobs:IJob[], message:string}>
 }

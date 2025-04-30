@@ -67,5 +67,6 @@ export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuth
    async getReview(){
     return await Review.find().populate("userId" , "profileImage firstName lastName position")
    }
+
   
 }

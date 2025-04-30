@@ -112,4 +112,13 @@ export class JobController implements IJobController {
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
       }
     }
+
+    latestJobs=async(req:Request,res:Response)=>{
+      try {
+        const response=await this._jobService.latestJobs()
+        res.status(HttpStatus.OK).json(response)
+      } catch (error) {
+        res.status(HttpStatus.OK).json({message:ERROR_MESSAGES.SERVER_ERROR})
+      }
+    }
 }

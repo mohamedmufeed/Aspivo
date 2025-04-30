@@ -37,11 +37,11 @@ const Navbar = () => {
                         })
                     );
                 } else {
-                    console.log("Google Auth failed or no data received");
+                    // console.log("Google Auth failed or no data received");
                 }
 
             } catch (error) {
-                console.log("error in the fethcing goole user", error)
+                // console.log("error in the fethcing goole user", error)
             }
         }
         handelGoogleUser()

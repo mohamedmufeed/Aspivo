@@ -2,7 +2,7 @@ import { AuthRepostry } from "../repositories/userRepositories";
 import { ProfileTypes } from "../types/userTypes";
 import cloudinary from "../config/cloudinaryConfig";
 import { SkillRepository } from "../repositories/skillREpositories";
-import { Experience, Education, IUser, } from "../models/user";
+import { Experience, Education } from "../models/user";
 import { ai } from "../config/openai";
 
 import IProfileService from "../interface/service/user/profileServiceInterface";

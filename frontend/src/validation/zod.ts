@@ -27,14 +27,14 @@ export const experinceSchema = z
     employmentType: z.string().trim().nonempty("EmploymentType is required"),
     company: z.string().trim().min(3, "Company must be at least 3 characters"),
     startDate: z.string().nonempty("Start date is required"),
-    endDate: z.string().nonempty("End date is required").default(""),
+    endDate: z.string().nonempty("End date is required").optional(),
     location: z
       .string()
       .trim()
       .min(3, "Loaction must be at least 3 characters"),
     description: string()
       .trim()
-      .min(20, "About must be at least 20 characters"),
+      .min(20, "Description must be at least 20 characters"),
     currentlyWorking: z.boolean().optional(),
   })
   .refine(

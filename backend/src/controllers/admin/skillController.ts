@@ -13,10 +13,10 @@ export class SkillController implements ISkillController {
       const response = await this._skillService.addSkill(skills);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log("Error adding the skill:", error);
+      const err= error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR|| err.message });
     }
   };
 
@@ -25,10 +25,10 @@ export class SkillController implements ISkillController {
       const response = await this._skillService.getSkils();
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log("Error getting skills:", error);
+      const err= error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message:  ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message:  ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
 

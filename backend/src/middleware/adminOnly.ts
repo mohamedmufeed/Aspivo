@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import { AuthenticatedRequest } from "./authMiddlwware";
 dotenv.config();

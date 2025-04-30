@@ -14,7 +14,8 @@ export class ReviewController implements IReviewController {
             const response = await this._reviewService.addReview(userId, review)
             res.status(HttpStatus.OK).json(response)
         } catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+            const err= error as Error
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message })
         }
     }
     public getReview = async (req: Request, res: Response): Promise<void> => {
@@ -22,7 +23,8 @@ export class ReviewController implements IReviewController {
             const response = await this._reviewService.getReview()
             res.status(HttpStatus.OK).json(response)
         } catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+            const err= error as Error
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message})
         }
     }
 }

@@ -10,4 +10,5 @@ export interface IJobRepositories {
   findApplication(jobId: string, userId: string): Promise<JobApplicationDocument | null>;
   createApplication(jobId: string, userId: string): Promise<{ application: JobApplicationDocument }>;
   findAppliedJobs(userId: string): Promise<AppliedJobWithPopulatedData[]>;
+  latestJob():Promise<JobDocumnet[]>
 }

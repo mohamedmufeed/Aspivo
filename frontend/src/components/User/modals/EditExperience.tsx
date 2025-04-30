@@ -60,7 +60,6 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
         const fetchUserProfile = async () => {
             try {
                 const response = await getProfile(userId);
-                console.log("the  user",response.user.user)
                 const user=response.user.user
                 if (user && user.experiences) {
                     const experience = user.experiences.find((exp: Experience) => exp._id === experienceId);
@@ -234,7 +233,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                                         <input
                                             type="date"
                                             name="startDate"
-                                            value={formData.startDate}
+                                            value={formData.startDate ? formData.startDate.slice(0, 10) : ''}
                                             onChange={handleChange}
                                             className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                             placeholder="YYYY-MM-DD"
@@ -248,7 +247,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                                             <input
                                                 type="date"
                                                 name="endDate"
-                                                value={formData.endDate}
+                                                value={formData.endDate ? formData.endDate.slice(0, 10) : ''}
                                                 onChange={handleChange}
                                                 className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                                 placeholder="YYYY-MM-DD"

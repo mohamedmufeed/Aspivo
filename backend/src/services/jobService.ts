@@ -4,8 +4,7 @@ import { IJob } from "../models/job";
 import IJobService from "../interface/service/user/jobServiceInterface";
 import { IJobApplication } from "../models/jobApplication";
 import { AuthRepostry } from "../repositories/userRepositories";
-import { ISavedJobs } from "../models/user";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 
 export class JobService implements IJobService {
@@ -123,4 +122,9 @@ export class JobService implements IJobService {
     const savedJobs = user.savedJobs
     return { savedJobs, messsage: "User saved job  populated sucsess fully" }
   }
+
+   async latestJobs(){
+    const jobs=await this._jobRepositories.latestJob()
+    return {jobs , message:"latest job fetched sucsessfully"}
+   }
 }

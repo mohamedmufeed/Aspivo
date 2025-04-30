@@ -129,3 +129,16 @@ export const populatedJobs=async(userId:string)=>{
     return
   }
 }
+
+
+ export const latestJobs= async()=>{
+  try {
+    const response=await api.get("user/latest-jobs")
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error on fetching latest job details :", error.response?.data);
+    }
+    return
+  }
+ }

@@ -19,7 +19,8 @@ export class NotificationController implements INotificationController {
       const notification = await this._notificationService.createNotification(userId, message);
       res.status(HttpStatus.CREATED).json(notification);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: "Failed to create notification" });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: `Failed to create notification${err.message}` });
     }
   };
 
@@ -29,7 +30,8 @@ export class NotificationController implements INotificationController {
       const notifications = await this._notificationService.getNotifications(userId);
       res.status(HttpStatus.OK).json(notifications);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err=error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR|| err.message });
     }
   };
 
@@ -40,7 +42,8 @@ export class NotificationController implements INotificationController {
       const response = await this._notificationService.isRead(userId, notificationId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err=error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
     }
   };
 }

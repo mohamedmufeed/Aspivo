@@ -6,7 +6,6 @@ import { editCompanyProfileSchema, } from "../../../validation/zod";
 import axios from "axios";
 import { editCompanyProfile,getComapny } from "../../../services/company/companyProfile";
 import ToastError from "../../Tost/ErrorToast";
-const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 
 interface EditCompanyProfileForm {
     companyName: string;

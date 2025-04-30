@@ -24,7 +24,7 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, userId, setProfileData }) => {
-const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [imageErorr, setImageErorr] = useState("")
@@ -42,10 +42,8 @@ const [loading,setLoading]=useState(false)
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-       const response = await getProfile(userId);
+        const response = await getProfile(userId);
         const userData = response.user.user;
-
-         console.log("Fetched User Data:", userData);
         setValue("firstName", userData.firstName || "");
         setValue("lastName", userData.lastName || "");
         setValue("phoneNumber", userData.phoneNumber || "");
@@ -55,22 +53,22 @@ const [loading,setLoading]=useState(false)
         console.error("Failed to fetch user profile", error);
       }
     };
-  
+
     if (isOpen && userId) {
       fetchUserProfile();
     }
   }, [isOpen, userId, setValue]);
-  
-  
-  
+
+
+
 
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfileImage(file);
-  
-    
+
+
       const uploadedImageUrl = await uploadToCloudinary(file);
       console.log(uploadedImageUrl);
       if (uploadedImageUrl) {
@@ -78,19 +76,19 @@ const [loading,setLoading]=useState(false)
       }
     }
   };
-  
+
   const uploadToCloudinary = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "Aspivo");
-  
+
     try {
       const { data } = await axios.post(
         `https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`,
         formData
       );
       console.log("Image uploaded successfully:", data.secure_url);
-      return data.secure_url; 
+      return data.secure_url;
     } catch (error) {
       console.error("Error uploading image:", error);
       setImageErorr("Failed to upload image");
@@ -98,19 +96,19 @@ const [loading,setLoading]=useState(false)
       return null;
     }
   };
-  
+
   const onSubmit = async (data: EditProfileForm) => {
     try {
       const formData = new FormData()
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value);
       });
-  
+
       if (profileImage) {
         formData.append("profileImage", profileImage);
       }
       setLoading(true)
-      const response = await editProfile(userId, formData); 
+      const response = await editProfile(userId, formData);
       setLoading(false)
       console.log("Profile updated successfully:", response.updatedProfile.user);
       setProfileData(response.updatedProfile.user);
@@ -120,8 +118,8 @@ const [loading,setLoading]=useState(false)
       console.error("Profile update error:", error);
     }
   };
-  
-  
+
+
 
   if (!isOpen) return null;
 
@@ -138,13 +136,21 @@ const [loading,setLoading]=useState(false)
           <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
             <div className="flex bg-white shadow-lg rounded-lg w-5/6 mx-auto mt-5 p-9">
               <div className="relative bg-gray-300 rounded-full w-32 h-32 flex items-center justify-center overflow-hidden">
+                {imageUrl ? (
+                  <img
+
+                    src={imageUrl}
+                    alt="Company Logo"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <span className="text-sm text-gray-600">Upload</span>
+                )}
                 <input
                   type="file"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  name="profileImage"
                   onChange={handleImageChange}
                 />
-                <span className="text-sm text-gray-600">Upload</span>
               </div>
               <div className="flex flex-col items-start pl-8 mt-9">
                 <h3 className="font-semibold text-lg">Upload Photo</h3>
@@ -157,7 +163,7 @@ const [loading,setLoading]=useState(false)
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
                   <label htmlFor="firstName">First Name</label>
-                  <input   type="text" id="firstName" {...register("firstName")} className="border p-2 w-full rounded-lg" />
+                  <input type="text" id="firstName" {...register("firstName")} className="border p-2 w-full rounded-lg" />
                   {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
                 </div>
                 <div className="flex flex-col">
@@ -169,7 +175,7 @@ const [loading,setLoading]=useState(false)
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
                   <label htmlFor="phoneNumber">Phone Number</label>
-                  <input   type="text" id="phoneNumber"  {...register("phoneNumber")} className="border p-2 w-full rounded-lg" />
+                  <input type="text" id="phoneNumber"  {...register("phoneNumber")} className="border p-2 w-full rounded-lg" />
                   {errors.phoneNumber && <p className="text-red-500">{errors.phoneNumber.message}</p>}
                 </div>
                 <div className="flex flex-col">
@@ -187,7 +193,7 @@ const [loading,setLoading]=useState(false)
             <hr className="mt-9" />
             <div className="flex justify-end p-6">
               <button type="submit" className="p-3 px-5 bg-orange-600 rounded-lg text-white font-bold">
-               {loading?"Saving . . .":"Save Changes"} 
+                {loading ? "Saving . . ." : "Save Changes"}
               </button>
             </div>
           </form>

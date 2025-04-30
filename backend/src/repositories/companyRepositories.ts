@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import Company, { CompanyDocument } from "../models/company";
 import { JobData } from "../types/companyTypes";
-import Job, { JobDocumnet } from "../models/job";
+import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
-import { ICompanyRepostries } from "../interface/repositories/companyRepositories";
 type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class CompanyRepostries implements CompanyRepostries {
   constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication) {}

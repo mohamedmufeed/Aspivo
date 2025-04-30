@@ -20,6 +20,7 @@ const SignupForm = () => {
   const [emailError, setEmailError] = useState("")
   const [password, setPassword] = useState<string>("")
   const [passwordError, setPasswordError] = useState("")
+  const [lodaing, setLoading] =useState(false)
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,8 +50,8 @@ const SignupForm = () => {
     }
 
     try {
+      setLoading(true)
       const data = await signupApi({ userName, email, password })
-
       if (data) {
         navigate("/otp-verification", { state: { email } });
     } else {
@@ -65,6 +66,8 @@ const SignupForm = () => {
        setError("Invalid username and password")
       }
 
+    }finally{
+      setLoading(true)
     }
   }
 
@@ -100,7 +103,7 @@ const SignupForm = () => {
             <span className="font-bold">Google</span>
           </button>
 
-          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">Sign Up</button>
+          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">{lodaing?"Loding ...":"Sign Up"}</button>
         </div>
 
       </form>

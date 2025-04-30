@@ -56,7 +56,6 @@ const HeroSection = () => {
     const handleUser = async () => {
       try {
         const response = await getProfile(userId);
-        console.log("first,", response.user.user)
         if (response.user.user.isAdmin) {
           navigate("/admin-dashboard")
         } else {

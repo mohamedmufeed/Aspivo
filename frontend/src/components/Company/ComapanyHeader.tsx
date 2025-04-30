@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { IoChevronBackOutline } from "react-icons/io5";
+import { IoChevronBackOutline, IoHomeOutline } from "react-icons/io5";
 import profile from "../../assets/user.png";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PostJobModal from './PostJobModal';
 interface HeaderProps{
     heading:string
@@ -48,14 +48,12 @@ const ComapanyHeader:React.FC<HeaderProps> = ({heading}) => {
                 />
               </svg>
             </div>
-
-            <div className="bg-orange-600 w-13  border-orange-600 border-3 rounded-full">
-              <img
-                className="w-11.5 h-11.5  p-1  bg-white rounded-full"
-                src={profile}
-                alt=""
-              />
-            </div>
+            <Link to={"/"}> 
+             <div className=" w-11  border-orange-600 border-3 rounded-full flex justify-center items-center">
+              <IoHomeOutline className=' w-8 h-8 p-1  rounded-full'/>
+            
+            </div> </Link>
+          
           </div>
         </div>
         <hr className="border border-gray-700" />

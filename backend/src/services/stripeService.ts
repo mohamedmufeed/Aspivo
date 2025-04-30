@@ -52,7 +52,7 @@ export class StripeService {
           const companyIdSession = session.metadata?.companyId;
 
           if (!userIdSession) {
-            console.log("Missing userId in checkout session metadata");
+            console.error("Missing userId in checkout session metadata");
             return;
           }
           if (session.subscription) {
@@ -103,7 +103,7 @@ export class StripeService {
           const companyIdUpdated = updatedSubscription.metadata?.companyId;
 
           if (!userIdUpdated) {
-            console.log("Missing userId in subscription metadata during update");
+            console.error("Missing userId in subscription metadata during update");
             return;
           }
 
@@ -136,7 +136,7 @@ export class StripeService {
           const companyIdDeleted = deletedSubscription.metadata?.companyId;
 
           if (!userIdDeleted) {
-            console.log("Missing userId in subscription metadata during deletion");
+            console.error("Missing userId in subscription metadata during deletion");
             return;
           }
 
@@ -166,7 +166,7 @@ export class StripeService {
             }
 
             if (!userIdPayment) {
-              console.log("Metadata missing, retrying after 2 seconds...");
+              console.error("Metadata missing, retrying after 2 seconds...");
               await new Promise((resolve) => setTimeout(resolve, 2000)); 
               const retrySubscription = await stripe.subscriptions.retrieve(invoice.subscription);
               userIdPayment = retrySubscription.metadata?.userId;
@@ -175,7 +175,7 @@ export class StripeService {
           }
 
           if (!userIdPayment) {
-            console.log("Missing userId in both subscription and invoice metadata");
+            console.error("Missing userId in both subscription and invoice metadata");
             return;
           }
 

@@ -11,15 +11,16 @@ export class CompanyJobController implements ICompanyJobController {
     try {
       const userId = req.query.id;
       if (!userId || typeof userId !== 'string') {
-         res.status(HttpStatus.BAD_REQUEST).json({ 
-          message: "Company ID is required and must be a string" 
+        res.status(HttpStatus.BAD_REQUEST).json({
+          message: "Company ID is required and must be a string"
         });
         return
       }
       const company = await this._companyJobService.fetchCompany(userId);
       res.status(HttpStatus.OK).json({ company });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      const err = error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
 
@@ -62,7 +63,8 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.postJob(data);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      const err = error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
 
@@ -72,7 +74,9 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.fetchJob(comapanyId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      const err = error as Error
+
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
 
@@ -114,7 +118,7 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.editJob(jobId, data);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -124,7 +128,7 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.deleteJob(jobId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -140,7 +144,7 @@ export class CompanyJobController implements ICompanyJobController {
         res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid companyId" });
       }
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -151,7 +155,7 @@ export class CompanyJobController implements ICompanyJobController {
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       console.log("Error fetching applicant details", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -162,7 +166,7 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.updateStatus(applicantId, status);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 }

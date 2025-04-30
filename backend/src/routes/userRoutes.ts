@@ -169,4 +169,10 @@ router
 .route("/users/get-review")
 .get(reviewController.getReview)
 
+
+
+router
+.route("/latest-jobs")
+.get(jobController.latestJobs)
+
 export default router

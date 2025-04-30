@@ -62,7 +62,7 @@ const CompanyProfile = () => {
 
           {/* headerr ends */}
 
-          <div className="p-7 mt-4">
+          <div className="p-7">
 
             <div className="bg-white rounded-2xl shadow-md shadow-gray-100 p-6 w-full max-w-6xl mx-auto flex items-center gap-16 relative">
 
@@ -140,8 +140,8 @@ const CompanyProfile = () => {
               <AddTeachStack initialTechStack={companyData?.stack} companyId={companyData?._id||""} isOpen={addTeachStackModalOpen} onClose={()=>setAddTeachStackModalOpen(false)} setCompanyData={setCompanyData}/>
             </div>
 
-            <div className="flex gap-5">
-              <div className="bg-white  shadow-gray-100 shadow-lg w-2/4 rounded-lg  p-5 mt-5">
+            <div className=" ">
+              <div className="bg-white  shadow-gray-100 shadow-lg w-full rounded-lg  p-5 mt-5">
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Team</h1>
                   <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={()=>setEditTeamModalOpen(true)} />
@@ -159,7 +159,7 @@ const CompanyProfile = () => {
               </div>
 
 
-              <div className="bg-white  shadow-gray-100 shadow-lg w-2/4 rounded-lg  p-5 mt-5">
+              <div className="bg-white  shadow-gray-100 shadow-lg w-full rounded-lg  p-5 mt-5">
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Contact</h1>
                   <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={()=>setEditConatactModalOpen(true)} />

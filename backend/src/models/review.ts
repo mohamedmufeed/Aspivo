@@ -22,6 +22,6 @@ const ReviewSchema = new Schema({
 }, {
     timestamps: true
 })
-type ReviewDocumnet= IReview & Document
+ export type ReviewDocumnet= IReview & Document
 const Review= mongoose.model<ReviewDocumnet>("Review",ReviewSchema)
 export  default Review

@@ -308,7 +308,7 @@ const CompanyMessages = () => {
                                             alt={conv.targetName}
                                             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3"
                                         /> : <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3 text-white font-bold text-center flex items-center justify-center bg-gray-600">
-                                            {conv.targetName.slice(0, 1)}
+                                            {/* {conv.targetName.slice(0, 1)} */}
                                         </div>}
 
 

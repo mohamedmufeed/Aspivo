@@ -60,4 +60,8 @@ async JobDetails(jobId: string) {
 
 
   }
+
+   async latestJob(){
+    return await Job.find().populate("company" , "companyName logo location").sort({createdAt:-1}).limit(3)
+   }
 }

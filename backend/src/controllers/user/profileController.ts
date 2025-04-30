@@ -25,8 +25,9 @@ export class ProfileController implements IProfileController {
       const updatedProfile = await this._profileService.editProfile(userId, data);
       res.status(HttpStatus.OK).json({ message: "User profile updated successfully", updatedProfile });
     } catch (error) {
+      const err= error as Error
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        error: error instanceof Error ? error.message : "Failed to update user profile",
+        error: error instanceof Error ? error.message : `Failed to update user profile${err.message}` ,
       });
     }
   };
@@ -109,7 +110,8 @@ export class ProfileController implements IProfileController {
       const response = await this._profileService.addSkill(userId, skills);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add skills" });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to add skills${err.message}` });
     }
   };
 
@@ -124,7 +126,8 @@ export class ProfileController implements IProfileController {
       const response = await this._profileService.uploadResume(userId, resumeUrl);
       res.json({ response });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to upload resume" });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to upload resume ${err.message}` });
     }
   };
 
@@ -134,7 +137,8 @@ export class ProfileController implements IProfileController {
       const response = await this._profileService.deleteResume(userId);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to delete resume" });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message:` Failed to delete resume ${err.message}` });
     }
   };
 
@@ -144,7 +148,8 @@ export class ProfileController implements IProfileController {
       const response = await this._profileService.subscriptionHistory(userId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to fetch subscription history" });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to fetch subscription history ${err.message}`});
     }
   };
 
@@ -154,8 +159,8 @@ export class ProfileController implements IProfileController {
       const response = await this._profileService.generateResumeFromProfile(userId)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
-      console.log(error)
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message})
     }
   }
   public textFormating = async (req: Request, res: Response): Promise<void> => {
@@ -166,8 +171,7 @@ export class ProfileController implements IProfileController {
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
       const err = error as Error
-      console.log("the erroro", err.message)
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message})
     }
   }
 }

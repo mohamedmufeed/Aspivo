@@ -24,6 +24,7 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
     const [generateResumeModal, setgenerateResumeModal] = useState(false)
     const [aiFeatures, setAiFeatures] = useState(false)
      const [error,setError]=useState<string|null>(null)
+const [successMessage, setSuccessMessage]=useState("")
     const uploadToCloudinary = async (file: File) => {
         const formData = new FormData()
         formData.append("file", file)
@@ -56,6 +57,7 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
     });
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        setSuccessMessage("")
         e.preventDefault()
         if (!fileUrl) {
             console.error("No file uploaded yet");
@@ -65,9 +67,9 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
 
             const response = await uploadResume(userId, fileUrl)
             setProfileData(response.response?.user)
-            console.log("Resume uploaded successfully:", response.response.user)
-
+            setSuccessMessage("Resume uploaded successfully!");
         } catch (error) {
+            setSuccessMessage("Resume upload failed. Please try again.");
             console.error("Error submitting resume:", error);
         }
     }
@@ -164,9 +166,11 @@ const Resume: React.FC<ResumeModalProps> = ({ userId, setProfileData }) => {
                         Choose File
                     </span>
                 </h2>
+             
                 <p className="mt-2 text-sm text-gray-500">
                     Supported Formats: PDF, JPEG ,JPG ,PNG
                 </p>
+                <p className='text-gray-800 '>{successMessage}</p>
                 <div>
                     {selectedFile && (
                         <p className="mt-3 text-sm text-gray-700">{selectedFile.name}</p>

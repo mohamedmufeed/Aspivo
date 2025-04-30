@@ -24,8 +24,8 @@ export class AdminController implements IComapnyManagement {
         message: "Fetch company successful"
       });
     } catch (error) {
-      console.log("Error from fetching all companies", error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR|| err.message });
     }
   };
 
@@ -38,10 +38,10 @@ export class AdminController implements IComapnyManagement {
       );
       res.status(HttpStatus.OK).json(company);
     } catch (error) {
-      console.log("Error in handling request", error);
+const err= error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
     }
   };
 
@@ -62,10 +62,10 @@ export class AdminController implements IComapnyManagement {
         message: "Fetch approved company sucsessful"
       });
     } catch (error) {
-      console.log("Error in fetching approved companies", error);
+      const err= error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
     }
   };
 }

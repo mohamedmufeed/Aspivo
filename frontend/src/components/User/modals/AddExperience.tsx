@@ -82,13 +82,13 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
     }
 
 
-    const handleCheckboxChange = () => {
-        setChecked(!checked);
-        setFormData((prev) => ({
-            ...prev,
-            endDate: !checked ? "" : prev.endDate,
-        }));
-    };
+    // const handleCheckboxChange = () => {
+    //     setChecked(!checked);
+    //     setFormData((prev) => ({
+    //         ...prev,
+    //         endDate: !checked ? "" : prev.endDate,
+    //     }));
+    // };
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -192,7 +192,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                     />
                                 </div>
 
-                                <div className="mt-5">
+                                {/* <div className="mt-5">
                                     <label className="flex items-center space-x-3 cursor-pointer">
                                         <input
                                             type="checkbox"
@@ -202,7 +202,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                         />
                                         <span className="text-gray-700 font-medium">{checked ? "Currently Working Here" : "Not Working Here"}</span>
                                     </label>
-                                </div>
+                                </div> */}
 
                                 <div className="grid grid-cols-2 mt-5 gap-4">
                                     <div className="flex flex-col">
@@ -211,7 +211,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                         <input
                                             type="date"
                                             name="startDate"
-                                            value={formData.startDate}
+                                            value={formData.startDate ? formData.startDate.slice(0, 10) : ''}
                                             onChange={handleChange}
                                             className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                             placeholder="YYYY-MM-DD"
@@ -250,7 +250,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-gray-900">Description</label>
+                                    <label className="block text-gray-900">Description*</label>
                                     {errors.description && <p className="text-red-500">{errors.description}</p>}
                                     <textarea
                                         name="description"

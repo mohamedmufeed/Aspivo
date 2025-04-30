@@ -114,7 +114,6 @@ const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
         try {
             const response = await editEducation(userId, formData)
             if (response) {
-                console.log(" the response after submit ", response.user)
                 setProfileData(response.user)
             }
 
@@ -198,7 +197,7 @@ const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                         <input
                                             type="date"
                                             name="startDate"
-                                            value={formData.startDate}
+                                            value={formData.startDate ? formData.startDate.slice(0, 10) : ''}
                                             onChange={handleChange}
                                             className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                             placeholder="YYYY-MM-DD"
@@ -212,7 +211,7 @@ const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                         <input
                                             type="date"
                                             name="endDate"
-                                            value={formData.endDate}
+                                            value={formData.endDate ? formData.endDate.slice(0, 10) : ''}
                                             onChange={handleChange}
                                             className="border p-2 w-full rounded-lg focus:outline-orange-400"
                                             placeholder="YYYY-MM-DD"

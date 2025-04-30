@@ -82,7 +82,7 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
             console.log(response)
             setAbout(response.response)
         } catch (error) {
-            console.error("Error on text formating")
+            console.error("Error on text formating",error)
         } finally {
             setLoading(false)
         }
