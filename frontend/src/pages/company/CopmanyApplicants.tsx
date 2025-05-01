@@ -35,9 +35,7 @@ const CopmanyApplicants = () => {
   }, [userId]);
 
   const fetchApplicants = async (companyId:string) => {
-    console.log("e",jobId, companyId)
     if (!jobId || !companyId) {
-      console.log("eo",jobId, companyId)
       setError("Missing job ID or company ID");
       setLoading(false);
       return;
@@ -116,7 +114,7 @@ const CopmanyApplicants = () => {
               >
                 <div className="flex justify-center">
                   <img
-                    src={detail.userId.profileImage || profileImage} 
+                    src={detail.userId.profileImage} 
                     alt={`${detail.userId.firstName} ${detail.userId.lastName}`}
                     className="w-12 h-12 rounded-full object-cover"
                     onError={(e) => (e.currentTarget.src = profileImage)} 

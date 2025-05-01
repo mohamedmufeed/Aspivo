@@ -10,6 +10,14 @@ api.interceptors.response.use(
     async (error) => {
       console.error("Interceptor Error Triggered:", error);
       const originalRequest = error.config;
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.message === "Your account is blocked"
+      ) {
+        console.warn("User is blocked.");
+        window.location.href = "/login"; 
+        return Promise.reject(error);
+      }
   
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
@@ -22,7 +30,6 @@ api.interceptors.response.use(
           return api(originalRequest);
         } catch (Refresherror) {
           console.error("Refresh token failed:", Refresherror);
-          // window.location.href="/login"
         }
       }
       return Promise.reject(error);

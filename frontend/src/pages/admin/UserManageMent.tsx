@@ -8,7 +8,6 @@ import { blockUser } from "../../services/adminService";
 import profileAvathar from "../../assets/user.png";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store/store";
-import { logout } from "../../redux/slice/authSlice";
 import AdminHeader from "../../components/Admin/AdminHeader";
 import SearchBar from "../../components/Admin/SearchBar";
 import _ from "lodash";
@@ -96,7 +95,6 @@ const UserManageMent = () => {
         if (!isCurrentlyBlocked) {
           console.log(`User ${userId} has been logged out due to blocking.`);
         }
-        dispatch(logout());
       } else {
         console.error("Failed to block/unblock user:", response.message);
         fetchUsersData(currentPage, searchQuery);

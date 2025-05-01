@@ -47,6 +47,7 @@ const MyJobs = () => {
       setLoading(true);
       const response = await appliedJobs(userId);
       console.log("the applies",response)
+      
       if (response) {
         const mappedJobs = response?.applications.map((app:any) => ({
           id: app.jobId._id,
@@ -79,7 +80,9 @@ const MyJobs = () => {
     try {
       setLoading(true);
        const response = await populatedJobs(userId);
+       console.log("the rep",response)
       const mappedJobs = response.savedJobs
+
       .map((saved: any) => ({
         id: saved.jobId._id,
         title: saved.jobId.jobTitle,

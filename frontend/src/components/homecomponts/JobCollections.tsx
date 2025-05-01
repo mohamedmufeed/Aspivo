@@ -45,7 +45,7 @@ const JobCollections = () => {
               <div key={job._id} className="bg-white shadow-xl rounded-xl col-span-12 md:col-span-4 h-auto  mb-6  transform transition-all hover:shadow-2xl  hover:scale-105">
                 <div className="p-8">
                   <div className="flex space-x-3 ">
-                    <img      src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`} alt="logo"className="w-13 h-13"  />
+                    <img      src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`} alt="logo" className="w-13 h-13 rounded-lg"  />
                     {/* <FcGoogle className="w-13 h-13" /> */}
                     <div className="">
                       <h1 className="font-semibold text-xl">{job.company.companyName}</h1>

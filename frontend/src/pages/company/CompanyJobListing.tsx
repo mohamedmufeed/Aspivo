@@ -29,9 +29,10 @@ const CompanyJobListing = () => {
     fetchCompanyId();
   }, [userId]);
   useEffect(() => {
+    if(!companyId) return
     const handleFetchJob = async () => {
       try {
-        const response = await fetchJob(companyId||"");
+        const response = await fetchJob(companyId);
         setJobs(response.jobs);
       } catch (error) {
         console.log("Error in fetching Jobs", error); 

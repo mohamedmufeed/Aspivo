@@ -97,7 +97,7 @@ export class CompanyRepostries implements CompanyRepostries {
   }
   async findApplications(jobId:string):Promise<any>{
     return await this.jobApplication.find({jobId})
-    .populate("userId","firstName lastName profileImage")
+    .populate("userId"," firstName lastName profileImage")
     .populate("jobId","jobId jobTitle")
   }
   async findApplicationDetail(applicantId:string){

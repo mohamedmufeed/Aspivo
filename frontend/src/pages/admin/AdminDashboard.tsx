@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../../components/Admin/Sidebar";
 import AdminHeader from "../../components/Admin/AdminHeader";
 import { GoPeople, GoOrganization, GoBriefcase, GoDownload, GoCalendar } from "react-icons/go";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
+import { getDashboardStats } from "../../services/adminService";
 
+export interface IState{
+  diff:number;
+  direction:string;
+  lastWeek:number;
+  percentage:string;
+  total:number
+}
 const AdminDashboard = () => {
   const [selected, setSelectedMenu] = useState("Dashboard");
+  const [userData,setUserData]=useState<IState>()
+  const [companyData,setCompanyData]=useState<IState>()
+  const [jobData,setJobData]=useState<IState>()
   const [dateRange, setDateRange] = useState("Feb 20 - Feb 26");
 
   const applicationData = [
@@ -28,7 +39,23 @@ const AdminDashboard = () => {
     { name: "Jun", subscription: 9800 },
   ];
 
-  const userData = {
+  useEffect(()=>{
+    const fetchDashbordStats=async()=>{
+      try {
+        const response=  await getDashboardStats()
+        setUserData(response.users)
+        setCompanyData(response.companies)
+        setJobData(response.jobs)
+        console.log(response)
+      } catch (error) {
+        console.error("Error fetching on dashbord stats");
+        
+      }
+    }
+    fetchDashbordStats()
+  },[])
+
+  const userDataa = {
     name: "John Doe",
     role: "Admin",
     users: 876,
@@ -50,7 +77,7 @@ const AdminDashboard = () => {
           <div className="flex flex-col md:flex-row md:justify-between px-4 md:px-8 pt-6 md:pt-10">
             <div className="space-y-2 mb-4 md:mb-0">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                Good Morning, {userData.name}
+                Good Morning
               </h1>
               <p className="text-md font-normal text-gray-600">
                 Here's your admin dashboard overview for today
@@ -74,28 +101,29 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-4 md:px-8 pt-6 md:pt-8">
             <StatCarsComponent
               title="Active Users"
-              value={userData.users}
-              changeValue={userData.newUsers}
+              value={userData?.total}
+              changeValue={userData?.lastWeek}
               icon={<GoPeople className="w-6 h-6" />}
-              trend="up"
+              trend={userData?.direction}
             />
             <StatCarsComponent
               title="Companies"
-              value={userData.companies}
-              changeValue={userData.newCompanies}
+              value={companyData?.total}
+              changeValue={companyData?.lastWeek}
               icon={<GoOrganization className="w-6 h-6" />}
-              trend="up"
+              trend={companyData?.direction}
             />
             <StatCarsComponent
               title="Job Listings"
-              value={userData.jobs}
-              changeValue={userData.newJobs}
+              value={jobData?.total}
+              changeValue={jobData?.lastWeek}
               icon={<GoBriefcase className="w-6 h-6" />}
-              trend="up"
+              trend={jobData?.direction}
             />
           </div>
 
           {/* Charts */}
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 md:px-8 pt-8 pb-8">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-md">
               <div className="flex justify-between items-center mb-6">

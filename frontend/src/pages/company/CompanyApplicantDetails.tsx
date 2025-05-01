@@ -8,7 +8,7 @@ import { FaLinkedin } from "react-icons/fa";
 import { BsDownload } from "react-icons/bs";
 import { CiStickyNote } from "react-icons/ci";
 import { useParams } from "react-router-dom";
-import { getApplicantDetials } from "../../services/company/compayJob";
+import { getApplicantDetials } from "../../services/company/compayJob"
 import { JobApplication } from "../../types/types";
 import { MdArrowDropDown } from "react-icons/md";
 import { updateStatus } from "../../services/company/compayJob";
@@ -19,7 +19,7 @@ import { getConversations, InitializeChat } from "../../services/messageService"
 const CompanyApplicantDetails = () => {
     const [selected, setSelected] = useState<string | undefined>("Job Listing");
     const [details, setDetails] = useState<JobApplication>();
-    const [status, setStatus] = useState<ApplicationStatus>("pending");
+    const [status, setStatus] = useState<ApplicationStatus>();
     const { applicationId } = useParams();
 
     const navigate = useNavigate();
@@ -27,7 +27,12 @@ const CompanyApplicantDetails = () => {
     const handleDetails = async () => {
         try {
             const response = await getApplicantDetials(applicationId || "");
+            console.log("the pplication respoes", response.applicant.status)
             setDetails(response.applicant);
+            if(response.applicant.status){
+                setStatus(response.applicant.status)
+            }
+   
         } catch (error) {
             console.log("Error in fetching the applicant details ", error);
         }

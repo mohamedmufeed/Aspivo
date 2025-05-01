@@ -14,6 +14,9 @@ import { SubscriptionService } from "../services/adminService/subscriptionServic
 import protect from "../middleware/authMiddlwware";
 import { NotificationRepository } from "../repositories/notificationRepository";
 import adminOnly from "../middleware/adminOnly";
+import { DashboardController } from "../controllers/admin/dashboardController";
+import { DashboardService } from "../services/adminService/dashboardService";
+import { DashboardRepositories } from "../repositories/dasboardRespositories";
 const router= express.Router()
 
 const notificationRepository= new NotificationRepository()
@@ -30,25 +33,15 @@ const skillController = new SkillController(skillService);
 const subscriptionService = new SubscriptionService(adminRepository);
 const subscriptionController = new SubscriptionController(subscriptionService);
 
-
 const userController = new UserManagementController(adminService);
 
-// router.get("/admin-userManagement",userController.getUsers)
-// router.patch("/block-user/:id",userController.blockUser)
-// router.get("/companies",adminController.getCompanies)
-// router.post("/company-request",adminController.handleCompanyRequest)
-// router.get("/approved-company",adminController.approvedCompanies)
-// router.post("/add-skill",skillController.addSkill)
-// router.get("/get-skills",skillController.getSkills)
-// router.delete("/remove-skill/:id",skillController.removeSkill)
-// router.get("/subscriptions",subscriptionController.getSubscriptions)
-// router.patch("/update-subscriptionstatus/:id",subscriptionController.updateSubscriptionStatus)
-
+const dashboardRepositories= new DashboardRepositories()
+const dashboardService= new DashboardService(dashboardRepositories)
+const dashboardController= new DashboardController(dashboardService)
 
 router
   .get("/users",protect,adminOnly,userController.getUsers)              
   .patch("/users/:id/block", userController.blockUser); 
-
 
 router
   .get("/companies",protect ,adminOnly, adminController.getCompanies)               
@@ -61,10 +54,12 @@ router
   .get("/skills", protect,skillController.getSkills)            
   .delete("/skills/:id", skillController.removeSkill); 
 
-
 router
   .get("/subscriptions", protect,adminOnly,subscriptionController.getSubscriptions)          
   .patch("/subscriptions/:id/status", subscriptionController.updateSubscriptionStatus);
+
+  router 
+  .get('/dashbord-stats',protect,adminOnly,dashboardController.getStats)
 
  export default router
 

@@ -2,6 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/user";
+import HttpStatus from "../utils/httpStatusCode";
 dotenv.config();
 
 export interface AuthenticatedRequest extends Request {
@@ -15,7 +16,7 @@ const protect = async (
   const token = req.cookies?.access_token;
 
   if (!token) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(HttpStatus.UNAUTHORIZED).json({ message: "Unauthorized" });
     return;
   }
   try {
@@ -24,7 +25,7 @@ const protect = async (
     };
     const user = await User.findById(decode.id);
     if (!user) {
-      res.status(401).json({ success: false, message: "User not found" });
+      res.status(HttpStatus.UNAUTHORIZED).json({ success: false, message: "User not found" });
       return;
     }
  
@@ -32,7 +33,8 @@ const protect = async (
     if (user.isBlocked) {
       res.clearCookie("access_token");
       res.clearCookie("refresh_token");
-      res.status(401).json({ success: false, message: "User is blocked" });
+     res.status(HttpStatus.FORBIDDEN).json({ message: 'Your account is blocked' });
+     return
     }
     req.user = { id: user._id.toString(), isAdmin: user.isAdmin, };
     next();

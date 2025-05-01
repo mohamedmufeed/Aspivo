@@ -165,3 +165,14 @@ export const updateSubscriptionStatus = async (subscriptionId: string, { status 
     }
   }
 }
+
+export const getDashboardStats= async()=>{
+  try {
+    const response= await api.get("admin/dashbord-stats")
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error fetching dashbord stats:", error.response?.data);
+    }
+  }
+}
