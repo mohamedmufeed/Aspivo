@@ -6,6 +6,7 @@ import { ConversationResponse } from "../../repositories/messageRepostries";
 import Company from "../../models/company";
 import { IMessageController } from "../../interface/controller/user/messageControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import logger from "../../logger";
 
 export class MessageController  implements IMessageController{
     constructor(private _messageService: MessageService) {}
@@ -20,7 +21,7 @@ export class MessageController  implements IMessageController{
       const channel = await this._messageService.initializeChat(initiatorId, targetId, role);
       res.status(HttpStatus.OK).json(channel);
     } catch (error) {
-      console.log("Error from initializeChatController:", error);
+      logger.error("Error from initializeChatController:", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
@@ -49,7 +50,7 @@ export class MessageController  implements IMessageController{
               if (user) targetProfile = user.profileImage;
             }
           } catch (error) {
-            console.warn(`Failed to fetch name for ${conv.targetId} (role: ${role}):`, error);
+            logger.warn(`Failed to fetch name for ${conv.targetId} (role: ${role}):`, error);
           }
 
           return {
@@ -62,7 +63,8 @@ export class MessageController  implements IMessageController{
 
       res.status(HttpStatus.OK).json(enhancedConversations);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR});
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 
@@ -90,8 +92,9 @@ export class MessageController  implements IMessageController{
       }
       const history = await this._messageService.getHistory(channel as string);
       res.status(HttpStatus.OK).json(history);
-    } catch (error: any) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: error.message || ERROR_MESSAGES.SERVER_ERROR});
+    } catch (error) {
+      const err=error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 }

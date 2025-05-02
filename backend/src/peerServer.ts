@@ -1,5 +1,6 @@
 
 import { PeerServer } from "peer";
+import logger from "./logger";
 
 const peerServer = PeerServer({
   port: 9000,
@@ -9,5 +10,5 @@ const peerServer = PeerServer({
 });
 
 peerServer.on("connection", (client) => {
-  console.log("Peer connected:", client.getId());
+  logger.info("Peer connected:", client.getId());
 });

@@ -59,7 +59,13 @@ router
   .patch("/subscriptions/:id/status", subscriptionController.updateSubscriptionStatus);
 
   router 
-  .get('/dashbord-stats',protect,adminOnly,dashboardController.getStats)
+  .get('/dashboard-stats',protect,adminOnly,dashboardController.getStats)
+
+  router
+  .get("/dashboard-application-status", dashboardController.getWeeklyApplicationData);
+
+  router
+.get("/dashboard-revenue-status",dashboardController.getMonthlySubscriptionRevenue )
 
  export default router
 

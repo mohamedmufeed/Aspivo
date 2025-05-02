@@ -1,8 +1,8 @@
  export interface StatResult {
     total: number;
-    last: number;
+    lastWeek: number;
     diff: number;
-    direction: "↑" | "↓" | "→";
+    direction: string;
     percentage: string;
   }
   
@@ -11,4 +11,17 @@
     jobs: StatResult;
     companies: StatResult;
   }
+  
+   export interface WeeklyData {
+    name: string;
+    applications: number;
+    interviews: number;
+    pending: number;
+    rejected: number;
+  }
+
+   export interface MonthlyData{
+    name:string;
+    subscription:number
+   }
   

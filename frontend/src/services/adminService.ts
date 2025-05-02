@@ -168,7 +168,7 @@ export const updateSubscriptionStatus = async (subscriptionId: string, { status 
 
 export const getDashboardStats= async()=>{
   try {
-    const response= await api.get("admin/dashbord-stats")
+    const response= await api.get("admin/dashboard-stats")
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -176,3 +176,25 @@ export const getDashboardStats= async()=>{
     }
   }
 }
+
+ export const getWeeklyApplicationData=async()=>{
+  try {
+    const response=await api.get("admin/dashboard-application-status")
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error fetching weekly application data :", error.response?.data);
+    }
+  }
+ }
+
+  export const getMonthlySubscriptionRevenue = async()=>{
+    try {
+      const response= await  api.get("admin/dashboard-revenue-status")
+      return response.data
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("Error fetching Monthly Revenue data :", error.response?.data);
+      }
+    }
+  }

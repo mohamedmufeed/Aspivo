@@ -3,7 +3,8 @@ import { JobService } from "../../services/jobService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { IJobController } from "../../interface/controller/user/jobControlerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
-import { error } from "console";
+import logger from "../../logger";
+
 
 export class JobController implements IJobController {
   private _jobService: JobService;
@@ -24,6 +25,7 @@ export class JobController implements IJobController {
       const response = await this._jobService.fetchJob(page, limit, searchWord, category);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
+      logger.error("Error on fetching job",error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
@@ -46,7 +48,7 @@ export class JobController implements IJobController {
       const response = await this._jobService.applyForJOb(jobId, userId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
@@ -57,6 +59,7 @@ export class JobController implements IJobController {
       const response = await this._jobService.appliedjobs(userId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
+logger.error("Error on fetching applied jobs", error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
@@ -73,7 +76,7 @@ export class JobController implements IJobController {
       const response = await this._jobService.isApplied(userId, jobId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log(error);
+      logger.info(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
@@ -89,6 +92,7 @@ export class JobController implements IJobController {
     const response= await this._jobService.saveJob(userId,jobId)
     res.status(HttpStatus.OK).json(response)
    } catch (error) {
+    logger.error("Error on saving job", error)
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
    }
   }
@@ -99,6 +103,7 @@ export class JobController implements IJobController {
       const response =await  this._jobService.savedJobs(userId)
       res.status(HttpStatus.OK).json(response)
     } catch (error) {
+      logger.error("Error on  fetching saved jobs", error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
     }
    }
@@ -109,7 +114,8 @@ export class JobController implements IJobController {
         const response=await this._jobService.populatedSavedJobs(userId)
         res.status(HttpStatus.OK).json(response)
       } catch (error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
+        const err= error as Error
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR|| err.message})
       }
     }
 
@@ -118,6 +124,7 @@ export class JobController implements IJobController {
         const response=await this._jobService.latestJobs()
         res.status(HttpStatus.OK).json(response)
       } catch (error) {
+        logger.error("Error on fethcing latest jobs", error)
         res.status(HttpStatus.OK).json({message:ERROR_MESSAGES})
       }
     }

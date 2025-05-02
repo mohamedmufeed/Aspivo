@@ -1,4 +1,5 @@
 
+import logger from "../logger";
 import ChatMessage from "../models/chat";
 import Company from "../models/company";
 import Conversation from "../models/conversations";
@@ -59,7 +60,7 @@ export class MessageRepostries {
                     targetName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || targetName;
                 }
             } catch (fetchError) {
-                console.warn(`Failed to fetch name for ${otherParticipant?.userId}:`, fetchError);
+                logger.warn(`Failed to fetch name for ${otherParticipant?.userId}:`, fetchError);
             }
             return {
                 targetId: otherParticipant?.userId,

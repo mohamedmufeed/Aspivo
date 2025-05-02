@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CompanyAuthService } from "../../services/compnyService/comanyauthservice";
 import HttpStatus from "../../utils/httpStatusCode";
 import ICompanyAuthController from "../../interface/controller/company/companyAuthInterface";
+import logger from "../../logger";
 
 export class CompanyAuthController  implements ICompanyAuthController{
   constructor(private _companyService: CompanyAuthService) {}
@@ -20,7 +21,7 @@ export class CompanyAuthController  implements ICompanyAuthController{
 
       res.status(HttpStatus.OK).json(company);
     } catch (error) {
-      console.log("Error during company registration:", error);
+      logger.error("Error during company registration:", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: "Error on company signup",
         error,

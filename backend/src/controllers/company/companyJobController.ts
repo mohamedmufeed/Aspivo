@@ -3,6 +3,7 @@ import { ComapnayJobService } from "../../services/compnyService/comapnyJobServi
 import HttpStatus from "../../utils/httpStatusCode";
 import ICompanyJobController from "../../interface/controller/company/companyJobInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import logger from "../../logger";
 
 export class CompanyJobController implements ICompanyJobController {
   constructor(private _companyJobService: ComapnayJobService) { }
@@ -118,7 +119,8 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.editJob(jobId, data);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err=  error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message ||ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -128,7 +130,8 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.deleteJob(jobId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -144,7 +147,8 @@ export class CompanyJobController implements ICompanyJobController {
         res.status(HttpStatus.BAD_REQUEST).json({ message: "Invalid companyId" });
       }
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err=error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -154,7 +158,7 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.getApplicantDetials(applicantId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log("Error fetching applicant details", error);
+     logger.error("Error fetching applicant details", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
     }
   };
@@ -166,7 +170,8 @@ export class CompanyJobController implements ICompanyJobController {
       const response = await this._companyJobService.updateStatus(applicantId, status);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err=error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message:  err.message|| ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 }

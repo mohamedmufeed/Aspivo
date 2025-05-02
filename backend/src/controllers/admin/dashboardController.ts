@@ -12,7 +12,29 @@ export class DashboardController implements IDashboardController {
             const response = await this._dashboardService.getDashboardStats()
             res.status(HttpStatus.OK).json(response)
         } catch (error) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+            const err= error as Error
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message ||ERROR_MESSAGES.SERVER_ERROR })
+        }
+    }
+
+    getWeeklyApplicationData = async (req: Request, res: Response) => {
+        try {
+            const response = await this._dashboardService.getWeeklyApplicationData()
+            res.status(HttpStatus.OK).json(response)
+        } catch (error) {
+            const err= error as Error
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message ||ERROR_MESSAGES.SERVER_ERROR })
+        }
+    }
+
+
+    getMonthlySubscriptionRevenue= async (req:Request, res:Response)=>{
+        try {
+            const response= await this._dashboardService.getMonthlySubscriptionRevenue()
+            res.status(HttpStatus.OK).json({response, message:"Monthly Revenue Fetched sucsessfully"})
+        } catch (error) {
+            const err= error as Error
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:err.message||ERROR_MESSAGES.SERVER_ERROR})
         }
     }
 }

@@ -4,11 +4,12 @@ import { createClient } from "redis";
 import { io } from "../server";
 import Conversation from "../models/conversations";
 import IMessageService from "../interface/service/user/messageServiceInterface";
+import logger from "../logger";
 
 const redisClient = createClient({
   url: "redis://localhost:6379",
 });
-redisClient.on("error", (err) => console.log("Redis client error", err));
+redisClient.on("error", (err) =>  logger.info("Redis client error", err));
 
 export class MessageService implements IMessageService {
 

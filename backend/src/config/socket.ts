@@ -1,6 +1,7 @@
 
 import { Server as HttpServer } from "http";
 import { Server as SocketServer } from "socket.io";
+import logger from "../logger";
 declare module "socket.io" {
     interface Socket {
         roomId?: string;
@@ -21,7 +22,8 @@ const setupSocket = (server: HttpServer) => {
     const onlineUsers = new Map();
     io.on("connection", (socket) => {
         socket.on("registerUser", (role: string, userId: string) => {
-            // console.log(`User ${userId} registered as ${role}`);
+
+            logger.info(`User ${userId} registered as ${role}`);
             
             if (!userSockets.has(role)) {
                 userSockets.set(role, new Map<string, string>());
@@ -41,7 +43,6 @@ const setupSocket = (server: HttpServer) => {
 
         socket.on("joinChannel", (channel: string) => {
             socket.join(channel);
-            // console.log(`User ${socket.id} joined channel ${channel}`);
         })
         //send message 
         socket.on("sendMessage", (data: { channel: string, message: string, senderId: string,imageUrl?: string; }) => {
@@ -60,7 +61,7 @@ const setupSocket = (server: HttpServer) => {
                     if (typeof callback === "function") {
                         callback({ success: false, error: "Invalid room ID" });
                     } else {
-                        console.warn("No callback provided for joinMeeting with invalid roomId");
+                        logger.warn("No callback provided for joinMeeting with invalid roomId");
                     }
                     return;
                 }
@@ -85,52 +86,33 @@ const setupSocket = (server: HttpServer) => {
                         participants: Array.from(roomParticipants),
                     });
                 } else {
-                    console.warn("No callback provided for joinMeeting");
+                    logger.warn("No callback provided for joinMeeting");
                 }
             } catch (error) {
-                console.error(`Error joining meeting room ${roomId}:`, error);
+                logger.error(`Error joining meeting room ${roomId}:`, error);
                 if (typeof callback === "function") {
                     callback({ success: false, error: "Failed to join meeting room" });
                 } else {
-                    console.error("Error occurred but no callback to report it");
+                    logger.error("Error occurred but no callback to report it");
                 }
             }
         });
-
-        socket.on("offer", ({ roomId, offer }: { roomId: string; offer: RTCSessionDescriptionInit }) => {
-            if (!roomId || !offer) return
-            console.log(`Offer from ${socket.id} in room ${roomId}`);
-            socket.to(roomId).emit("offer", { offer, sender: socket.id })
-        })
-
-        socket.on("answer", ({ roomId, answer }: { roomId: string, answer: RTCSessionDescriptionInit }) => {
-            if (!roomId || !answer) return
-            console.log(`Answer from ${socket.id} in room ${roomId}`);
-            socket.to(roomId).emit("answer", { answer, sender: socket.id })
-        })
-
-        socket.on("iceCandidate", ({ roomId, candidate }: { roomId: string; candidate: RTCSessionDescriptionInit }) => {
-            if (!roomId || !candidate) return
-            console.log(`ICE candidate from ${socket.id} in room ${roomId}`);
-            socket.to(roomId).emit("iceCandidate", { candidate, sender: socket.id });
-        })
-
 
         socket.on("leaveMeeting", (roomId: string, callback: (response: { success: boolean }) => void) => {
             if (socket.roomId) {
                 socket.leave(socket.roomId)
                 meetingRooms.get(socket.roomId)?.delete(socket.id);
                 socket.to(socket.roomId).emit("userLeft", socket.id);
-                console.log(`${socket.id} left room ${socket.roomId}, Remaining: ${meetingRooms.get(socket.roomId)?.size || 0}`);
+                logger.info(`${socket.id} left room ${socket.roomId}, Remaining: ${meetingRooms.get(socket.roomId)?.size || 0}`);
                 if (meetingRooms.get(socket.roomId)?.size === 0) {
                     meetingRooms.delete(socket.roomId)
-                    console.log(`Room ${socket.roomId} deleted`);
+                    logger.info(`Room ${socket.roomId} deleted`);
                 }
                 delete socket.roomId;
                 if (typeof callback === "function") {
                     callback({ success: true });
                 } else {
-                    console.warn("No callback provided for leaveMeeting event");
+                    logger.warn("No callback provided for leaveMeeting event");
                 }
             } else if (typeof callback === "function") {
                 callback({ success: false });

@@ -3,6 +3,7 @@ import { ProfileService } from "../../services/profileService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { IProfileController } from "../../interface/controller/user/profileControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import logger from "../../logger";
 
 export class ProfileController implements IProfileController {
 
@@ -76,7 +77,7 @@ export class ProfileController implements IProfileController {
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       const err = error as Error;
-      console.log("the errorr is ", error)
+      logger.info("the errorr is ", error)
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
   };
@@ -88,7 +89,8 @@ export class ProfileController implements IProfileController {
       const response = await this._profileService.addEducation(userId, data);
       res.status(HttpStatus.OK).json({ response });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Failed to add education" });
+
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to add education ${error}`});
     }
   };
 

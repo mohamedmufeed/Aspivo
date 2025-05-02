@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { AdminRepostry } from "../../repositories/adminRepositories";
 import { AdminService } from "../../services/adminService/adminService";
 import HttpStatus from "../../utils/httpStatusCode";
 import IUserManagementController from "../../interface/controller/admin/userManagementInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import { GetPaginationQuery } from "../../types/userTypes";
+import logger from "../../logger";
 
 export class UserManagementController  implements IUserManagementController{
   constructor(private _adminService: AdminService,) {}
@@ -29,7 +29,7 @@ export class UserManagementController  implements IUserManagementController{
         message: "User fetching successful",
       });
     } catch (error) {
-      console.log("Error fetching users:", error);
+      logger.error("Error fetching users:", error);
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
@@ -47,7 +47,7 @@ export class UserManagementController  implements IUserManagementController{
         message: "User status changed successfully",
       });
     } catch (error) {
-      console.log("Error blocking user:", error);
+    logger.error("Error blocking user:", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: ERROR_MESSAGES.SERVER_ERROR,

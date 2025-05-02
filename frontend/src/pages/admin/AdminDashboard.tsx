@@ -4,67 +4,84 @@ import AdminHeader from "../../components/Admin/AdminHeader";
 import { GoPeople, GoOrganization, GoBriefcase, GoDownload, GoCalendar } from "react-icons/go";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
-import { getDashboardStats } from "../../services/adminService";
+import { getDashboardStats, getMonthlySubscriptionRevenue, getWeeklyApplicationData } from "../../services/adminService";
 
-export interface IState{
-  diff:number;
-  direction:string;
-  lastWeek:number;
-  percentage:string;
-  total:number
+export interface IState {
+  diff: number;
+  direction: string;
+  lastWeek: number;
+  percentage: string;
+  total: number
+}
+export interface IWeeklyApplicationDAta {
+  name: string;
+  applications: number
+  interviews: number;
+  pending: number;
+  rejected: number
+}
+export interface IMonthlyRevenueData {
+  name: string;
+  subscription: number
 }
 const AdminDashboard = () => {
   const [selected, setSelectedMenu] = useState("Dashboard");
-  const [userData,setUserData]=useState<IState>()
-  const [companyData,setCompanyData]=useState<IState>()
-  const [jobData,setJobData]=useState<IState>()
+  const [userData, setUserData] = useState<IState>()
+  const [companyData, setCompanyData] = useState<IState>()
+  const [jobData, setJobData] = useState<IState>()
   const [dateRange, setDateRange] = useState("Feb 20 - Feb 26");
+  const [applicationData, setApplicationData] = useState<IWeeklyApplicationDAta[]>()
+  const [revenueData, setRevenueData] = useState<IMonthlyRevenueData[]>()
+  // const revenueData = [
+  //   { name: "Jan", subscription: 5000 },
+  //   { name: "Feb", subscription: 6200 },
+  //   { name: "Mar", subscription: 7800 },
+  //   { name: "Apr", subscription: 8500 },
+  //   { name: "May", subscription: 9200 },
+  //   { name: "Jun", subscription: 9800 },
+  // ];
 
-  const applicationData = [
-    { name: "Mon", applications: 25, interviews: 10 },
-    { name: "Tue", applications: 35, interviews: 15 },
-    { name: "Wed", applications: 45, interviews: 20 },
-    { name: "Thu", applications: 30, interviews: 12 },
-    { name: "Fri", applications: 50, interviews: 25 },
-    { name: "Sat", applications: 20, interviews: 8 },
-    { name: "Sun", applications: 15, interviews: 5 },
-  ];
-
-  const revenueData = [
-    { name: "Jan", subscription: 5000 },
-    { name: "Feb", subscription: 6200 },
-    { name: "Mar", subscription: 7800 },
-    { name: "Apr", subscription: 8500 },
-    { name: "May", subscription: 9200 },
-    { name: "Jun", subscription: 9800 },
-  ];
-
-  useEffect(()=>{
-    const fetchDashbordStats=async()=>{
+  useEffect(() => {
+    const fetchDashbordStats = async () => {
       try {
-        const response=  await getDashboardStats()
+        const response = await getDashboardStats()
         setUserData(response.users)
         setCompanyData(response.companies)
         setJobData(response.jobs)
         console.log(response)
       } catch (error) {
         console.error("Error fetching on dashbord stats");
-        
+
       }
     }
     fetchDashbordStats()
-  },[])
+  }, [])
 
-  const userDataa = {
-    name: "John Doe",
-    role: "Admin",
-    users: 876,
-    companies: 234,
-    jobs: 567,
-    newUsers: 25,
-    newCompanies: 12,
-    newJobs: 34,
-  };
+  useEffect(() => {
+    const fetchWeeklyApplicationData = async () => {
+      try {
+        const response = await getWeeklyApplicationData()
+        setApplicationData(response.response)
+      } catch (error) {
+        console.error("Error on fetching Weekly application data");
+
+      }
+    }
+    fetchWeeklyApplicationData()
+  }, [])
+
+  useEffect(() => {
+    const fetchMonthlyRevenueData = async () => {
+      try {
+        const response = await getMonthlySubscriptionRevenue()
+        setRevenueData(response.response)
+      } catch (error) {
+        console.error("Error fetching monthly revenue data");
+
+      }
+    }
+    fetchMonthlyRevenueData()
+  }, [])
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -123,8 +140,9 @@ const AdminDashboard = () => {
           </div>
 
           {/* Charts */}
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 md:px-8 pt-8 pb-8">
+            {/* Applicatoin  Chart */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-md">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-gray-800">Application Response</h2>
@@ -137,7 +155,7 @@ const AdminDashboard = () => {
                   <LineChart data={applicationData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="name" tick={{ fill: '#6b7280' }} />
-                    <YAxis tick={{ fill: '#6b7280' }} />
+                    <YAxis tick={{ fill: '#6b7280' }}  />
                     <Tooltip />
                     <Legend />
                     <Line
@@ -156,7 +174,25 @@ const AdminDashboard = () => {
                       strokeWidth={2}
                       dot={{ r: 4 }}
                       activeDot={{ r: 6 }}
-                      name="Interviews"
+                      name="Accepted"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="pending"
+                      stroke="#009EDB"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                      name="Pending"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="rejected"
+                      stroke="#FF0000"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6 }}
+                      name="Rejected"
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -174,16 +210,16 @@ const AdminDashboard = () => {
               <div className="w-full">
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={revenueData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="name" tick={{ fill: '#6b7280' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ECEBEB" />
+                    <XAxis dataKey="name" tick={{ fill: '#6b7280' }} fontSize={13} />
                     <YAxis tick={{ fill: '#6b7280' }} />
-                    <Tooltip formatter={(value) => [`$${value}`, "Revenue"]} />
-                    <Bar 
-                      dataKey="subscription" 
-                      fill="#EB5B00" 
-                      radius={[5, 5, 0, 0]} 
-                      name="Subscription Revenue" 
-                      barSize={40}
+                    <Tooltip formatter={(value) => [`₹${value}`, "Revenue"]} />
+                    <Bar
+                      dataKey="subscription"
+                      fill="#EB5B00"
+                      radius={[5, 5, 0, 0]}
+                      name="Subscription Revenue"
+                      barSize={15}
                     />
                   </BarChart>
                 </ResponsiveContainer>

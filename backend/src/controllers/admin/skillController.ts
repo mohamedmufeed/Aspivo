@@ -38,10 +38,10 @@ export class SkillController implements ISkillController {
       const response = await this._skillService.removeSkill(skillId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log("Error removing skill:", error);
+   const err=error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message:  ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message:  err.message|| ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 }

@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 import { StripeRepositories } from "../repositories/stripeRepositories";
+import logger from "../logger";
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-02-24.acacia",
@@ -52,7 +54,7 @@ export class StripeService {
           const companyIdSession = session.metadata?.companyId;
 
           if (!userIdSession) {
-            console.error("Missing userId in checkout session metadata");
+            logger.error("Missing userId in checkout session metadata")
             return;
           }
           if (session.subscription) {
@@ -65,7 +67,7 @@ export class StripeService {
               });
           
             } catch (error) {
-              console.error(`Failed to update subscription metadata for ${session.subscription}:`, error);
+              logger.error(`Failed to update subscription metadata for ${session.subscription}:`, error)
               throw new Error(`Failed to update subscription metadata: ${error}`);
             }
           }
@@ -103,7 +105,7 @@ export class StripeService {
           const companyIdUpdated = updatedSubscription.metadata?.companyId;
 
           if (!userIdUpdated) {
-            console.error("Missing userId in subscription metadata during update");
+            logger.error("Missing userId in subscription metadata during update")
             return;
           }
 
@@ -136,7 +138,7 @@ export class StripeService {
           const companyIdDeleted = deletedSubscription.metadata?.companyId;
 
           if (!userIdDeleted) {
-            console.error("Missing userId in subscription metadata during deletion");
+            logger.error("Missing userId in subscription metadata during deletion")
             return;
           }
 
@@ -160,13 +162,13 @@ export class StripeService {
             userIdPayment = subscription.metadata?.userId;
             companyIdPayment = subscription.metadata?.companyId;
             if (!userIdPayment) {
-              console.log("Falling back to invoice metadata...");
+              logger.info("Falling back to invoice metadata...")
               userIdPayment = invoice.metadata?.userId;
               companyIdPayment = invoice.metadata?.companyId;
             }
 
             if (!userIdPayment) {
-              console.error("Metadata missing, retrying after 2 seconds...");
+              logger.error("Metadata missing, retrying after 2 seconds...")
               await new Promise((resolve) => setTimeout(resolve, 2000)); 
               const retrySubscription = await stripe.subscriptions.retrieve(invoice.subscription);
               userIdPayment = retrySubscription.metadata?.userId;
@@ -175,7 +177,7 @@ export class StripeService {
           }
 
           if (!userIdPayment) {
-            console.error("Missing userId in both subscription and invoice metadata");
+            logger.error("Missing userId in both subscription and invoice metadata")
             return;
           }
 
@@ -186,15 +188,15 @@ export class StripeService {
           break;
 
         case "charge.succeeded":
-          console.log("Charge succeeded:", event.data.object.id);
+          logger.info("Charge succeeded:", event.data.object.id)
           break;
 
         case "charge.updated":
           const charge = event.data.object;
           if (charge.status === "succeeded") {
-            console.log("Charge succeeded for:", charge.payment_intent);
+            logger.info("Charge succeeded for:", charge.payment_intent)
           } else if (charge.status === "failed") {
-            console.log("Charge failed:", charge.payment_intent);
+            logger.info("Charge failed:", charge.payment_intent)
           }
           break;
 
@@ -243,7 +245,7 @@ export class StripeService {
         //   break;
 
         default:
-          console.log(`Unhandled event type ${event.type}`);
+          logger.info(`Unhandled event type ${event.type}`)
       }
     } catch (error) {
       throw new Error(`Error handling webhook event: ${error}\n${error}`);

@@ -4,6 +4,7 @@ import HttpStatus from "../../utils/httpStatusCode";
 import ISubscriptionController from "../../interface/controller/admin/subscriptionControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import { GetPaginationQuery } from "../../types/userTypes";
+import logger from "../../logger";
 
 export class SubscriptionController implements ISubscriptionController {
   constructor(private _subscriptionService: SubscriptionService) { }
@@ -26,7 +27,7 @@ export class SubscriptionController implements ISubscriptionController {
         message: "Subscription fetching successful"
       });
     } catch (error) {
-      console.log("Error fetching subscriptions:", error);
+   logger.error("Error fetching subscriptions:", error);
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: ERROR_MESSAGES.SERVER_ERROR });
@@ -43,7 +44,7 @@ export class SubscriptionController implements ISubscriptionController {
       );
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      console.log("Error updating subscription status:", error);
+      logger.error("Error updating subscription status:", error);
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: ERROR_MESSAGES.SERVER_ERROR });

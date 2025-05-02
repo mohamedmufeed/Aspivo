@@ -12,6 +12,8 @@ import passport from "./config/passport";
 import session from "express-session";
 import http from "http";
 import setupSocket from "./config/socket";
+import morgan from "morgan"
+import logger from "./logger";
 
 dotenv.config();
 connectDb();
@@ -28,6 +30,14 @@ app.post(
         next();
     }
 );
+
+app.use(
+    morgan('tiny', {
+      stream: {
+        write: (message:string) => logger.info(message.trim())
+      }
+    })
+  );
 
 
 app.use(express.json());
@@ -67,7 +77,7 @@ const { io, sendNotification } = setupSocket(server);
 
 const PORT = process.env.PORTNUMBER || 5001;
 server.listen(PORT, () => {
-    console.log(`Server is running at ${PORT}`);
+    logger.info(`Server is running at ${PORT}`)
 });
 
 export { io, sendNotification };

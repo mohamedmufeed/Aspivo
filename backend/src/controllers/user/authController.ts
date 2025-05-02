@@ -5,6 +5,7 @@ import { generateRefreshToken, generateToken } from "../../utils/jwt";
 import HttpStatus from "../../utils/httpStatusCode";
 import IAuthController from "../../interface/controller/user/authControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import logger from "../../logger";
 
 export class AuthController  implements IAuthController{
   constructor(private _authService: AuthService) {}
@@ -29,10 +30,11 @@ export class AuthController  implements IAuthController{
       });
 
       res.status(HttpStatus.OK).json(user);
-    } catch (error: any) {
+    } catch (error) {
+      const err= error as Error
       res
-        .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR});
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: err?.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
 
@@ -56,11 +58,12 @@ export class AuthController  implements IAuthController{
       });
 
       res.json({ user });
-    } catch (error: any) {
-      console.log("the login error",error.message)
+    } catch (error) {
+      const err= error as Error
+      logger.error("the login error",err.message)
       res
-        .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR });
+        .status( HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: err?.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -73,10 +76,11 @@ export class AuthController  implements IAuthController{
         message: "OTP validation success",
         user: user,
       });
-    } catch (error: any) {
+    } catch (error) {
+      const err= error as Error
       res
-        .status(error?.status || HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error?.message || ERROR_MESSAGES.SERVER_ERROR });
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: err?.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -99,9 +103,10 @@ export class AuthController  implements IAuthController{
 
       res.status(HttpStatus.OK).json({ message: "Forgot password OTP sent successfully" });
     } catch (error) {
+      const err= error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message: err.message|| ERROR_MESSAGES.SERVER_ERROR });
     }
   };
 
@@ -132,7 +137,8 @@ export class AuthController  implements IAuthController{
 
       res.status(HttpStatus.OK).json({ accessToken: newToken });
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      const err= error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
     }
   };
 
@@ -182,9 +188,10 @@ export class AuthController  implements IAuthController{
         token: req.cookies.access_token || null,
       });
     } catch (error) {
+      const err= error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: "Internal server error in Google auth" });
+        .json({ message: err.message ||"Internal server error in Google auth" });
     }
   };
 

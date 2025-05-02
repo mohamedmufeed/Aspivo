@@ -4,7 +4,7 @@ import cloudinary from "./cloudinaryConfig.js";
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: async (req, file) => {
+  params: async () => {
     return {
       folder: "profile_image",
       format: "png",

@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import { AuthenticatedRequest } from "./authMiddlwware";
+import HttpStatus from "../utils/httpStatusCode";
 dotenv.config();
 
 export const adminOnly = (
@@ -9,7 +10,7 @@ export const adminOnly = (
     next: NextFunction
   ) => {
     if (!req.user?.isAdmin) {
-       res.status(403).json({ 
+       res.status(HttpStatus.FORBIDDEN).json({ 
         success: false, 
         message: "Access denied. Admin privileges required" 
       });
