@@ -19,7 +19,7 @@ const menuItems = [
     { icon: <TbHelp className="w-6 h-6" />, label: "Help", path: "/help" },
 ];
 
-const CompanySidebar = ({ setSelected }: { setSelected: (label: string) => void }) => {
+const CompanySidebar = () => {
     const [selected, setLocalSelected] = useState<string | undefined>("Dashboard");
     const navigate = useNavigate()
     const location = useLocation()
@@ -27,14 +27,12 @@ const CompanySidebar = ({ setSelected }: { setSelected: (label: string) => void 
     useEffect(() => {
         const currentItem = menuItems.find((item) => item.path === location.pathname)
         if (currentItem) {
-            setLocalSelected(currentItem.label);
-            setSelected(currentItem.label||"");
+            setLocalSelected(currentItem.label)
         }
     }, [location])
     const handleSelect = (label?: string, path?: string) => {
         if (label && path) {
             setLocalSelected(label);
-            setSelected(label);
             navigate(path);
         }
 

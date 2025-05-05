@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
 import { IoIosSearch } from "react-icons/io";
-import person from "../../assets/person_1.jpg";
 import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
@@ -44,7 +43,6 @@ export interface Conversation {
 }
 
 const CompanyMessages = () => {
-    const [selected, setSelected] = useState<string | undefined>("Messages");
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -87,7 +85,7 @@ const CompanyMessages = () => {
                     return;
                 }
 
-                let uniqueConversations = data.reduce((unique: Conversation[], current: any) => {
+                const uniqueConversations = data.reduce((unique: Conversation[], current: any) => {
                     if (!unique.some((conv) => conv.targetId === current.targetId)) {
                         unique.push({
                             targetId: current.targetId,
@@ -279,7 +277,7 @@ const CompanyMessages = () => {
 
     return (
         <div className="flex min-h-screen ">
-            <CompanySidebar setSelected={setSelected} />
+            <CompanySidebar />
             <div className="bg-[#F6F6F6] w-full flex flex-col" style={{ fontFamily: "DM Sans, sans-serif" }}>
                 <ComapanyHeader heading="Messages" />
                 <div className="flex flex-1">

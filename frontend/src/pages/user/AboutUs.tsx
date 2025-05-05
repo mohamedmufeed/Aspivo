@@ -22,10 +22,10 @@ const AboutUs = () => {
             return
         }
         try {
-            const response = await addReview(userId, review)
+            await addReview(userId, review)
             console.log(" the revew resoponse", review)
         } catch (error) {
-            console.error("Error on adding Review");
+            console.error("Error on adding Review",error);
 
         }
 

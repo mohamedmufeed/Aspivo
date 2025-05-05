@@ -41,7 +41,7 @@ const Navbar = () => {
                 }
 
             } catch (error) {
-                // console.log("error in the fethcing goole user", error)
+                 console.log( error)
             }
         }
         handelGoogleUser()
@@ -75,6 +75,7 @@ const Navbar = () => {
         { name: "Home", path: "/" },
         { name: "About", path: "/about" },
         { name: "Jobs", path: "/jobs" },
+        
         { name: "Post job", path: "/company-dashboard" },
         {
             name: "Messages",

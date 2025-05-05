@@ -5,6 +5,7 @@ import { z } from "zod";
 import { addTechStack, getComapny } from "../../../services/company/companyProfile";
 
 
+
 const techStackSchema = z.object({
     stack: z.array(z.string().min(1, "Tech stack item cannot be empty")),
 });
@@ -91,15 +92,16 @@ const AddTechStackModal: React.FC<AddTechStackModalProps> = ({
 
             const response = await addTechStack(companyId, updatedData);
             console.log("Tech stack updated successfully:", response);
-            setCompanyData((prev: any) => ({
+            setCompanyData((prev: any):any => ({
                 ...prev,
                 stack: techStack,
             }));
 
             onClose();
-        } catch (error: any) {
+        } catch (error) {
+            const err= error as Error
             console.error("Error updating tech stack:", error);
-            setError(error.response?.data?.message || "Failed to update tech stack. Please try again.");
+            setError(err.message || "Failed to update tech stack. Please try again.");
         } finally {
             setIsSaving(false);
         }

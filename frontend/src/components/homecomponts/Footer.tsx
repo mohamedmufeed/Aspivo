@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import SubscriptionBox from "./SubscriptionBox"
 
 
@@ -18,13 +19,14 @@ const Footer = () => {
 
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
-                        <h1 className="hover:text-orange-600 cursor-pointer">About</h1>
-                        <h1 className="hover:text-orange-600 cursor-pointer">Jobs</h1>
+                        <Link to={"/about"}><h1 className="hover:text-orange-600 cursor-pointer">About</h1></Link>
+                        <Link to={"/jobs"}><h1 className="hover:text-orange-600 cursor-pointer">Jobs</h1></Link>
+                        <Link to={"/contact"}><h1 className="hover:text-orange-600 cursor-pointer">Help</h1></Link>
                         <h1 className="hover:text-orange-600 cursor-pointer">Careers</h1>
                         <h1 className="hover:text-orange-600 cursor-pointer">Terms</h1>
                         <h1 className="hover:text-orange-600 cursor-pointer">Blog</h1>
                         <h1 className="hover:text-orange-600 cursor-pointer">Job Referral</h1>
-                        <h1 className="hover:text-orange-600 cursor-pointer">Help</h1>
+                     
                     </div>
                 </div>
                 <div className="flex justify-end pt-5">

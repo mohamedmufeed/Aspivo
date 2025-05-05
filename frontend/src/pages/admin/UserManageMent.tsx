@@ -6,8 +6,6 @@ import { fetchUsers } from "../../services/adminService";
 import { useLocation } from "react-router-dom";
 import { blockUser } from "../../services/adminService";
 import profileAvathar from "../../assets/user.png";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store/store";
 import AdminHeader from "../../components/Admin/AdminHeader";
 import SearchBar from "../../components/Admin/SearchBar";
 import _ from "lodash";
@@ -23,7 +21,6 @@ type User = {
 
 const UserManageMent = () => {
   const location = useLocation();
-  const [selected, setSelectedMenu] = useState("Users");
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -31,15 +28,9 @@ const UserManageMent = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const userPerPage = 5;
-  const dispatch = useDispatch<AppDispatch>();
   const prevRequestRef = useRef<AbortController | null>(null);
 
-  const debouncedFetch = useCallback(
-    _.debounce((page: number, query: string) => {
-      fetchUsersData(page, query);
-    }, 300),
-    []
-  );
+
 
   const fetchUsersData = async (page = 1, query = "") => {
     if (prevRequestRef.current) {
@@ -66,6 +57,12 @@ const UserManageMent = () => {
       }
     }
   };
+  const debouncedFetch = useCallback(
+    _.debounce((page: number, query: string) => {
+      fetchUsersData(page, query);
+    }, 300),
+    [fetchUsersData]
+  );
 
   useEffect(() => {
     if (searchQuery) {
@@ -115,7 +112,7 @@ const UserManageMent = () => {
 
   return (
     <div className="flex">
-      <Sidebar setSelected={setSelectedMenu} />
+      <Sidebar  />
       <div
         className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
         style={{ fontFamily: "DM Sans, sans-serif" }}

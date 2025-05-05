@@ -17,7 +17,6 @@ import { useNavigate } from "react-router-dom";
 import { getConversations, InitializeChat } from "../../services/messageService";
 
 const CompanyApplicantDetails = () => {
-    const [selected, setSelected] = useState<string | undefined>("Job Listing");
     const [details, setDetails] = useState<JobApplication>();
     const [status, setStatus] = useState<ApplicationStatus>();
     const { applicationId } = useParams();
@@ -109,16 +108,16 @@ const CompanyApplicantDetails = () => {
     return (
         <div className="flex h-screen overflow-hidden">
 
-            <CompanySidebar setSelected={setSelected} />
+            <CompanySidebar  />
 
             <div className="flex-1  w-full flex flex-col overflow-hidden">
 
                 <ComapanyHeader heading="Application" />
                 <div
-                    className="bg-[#F6F6F6] pt-16 pb-6 px-6 overflow-y-auto"
+                    className="bg-[#F6F6F6] pt-3 pb-6 px-6 overflow-y-auto"
                     style={{ height: "calc(100vh - 64px)", fontFamily: "DM Sans, sans-serif" }}
                 >
-                    <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-6">
+                    <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
                         <div className="w-full md:w-1/2 p-6">
                             <div className="bg-white shadow-lg rounded-xl p-6">
                                 <div className="flex items-center">
@@ -230,7 +229,7 @@ const CompanyApplicantDetails = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row space-y-5 md:space-y-0 md:space-x-6 p-2 px-6">
+                    <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6 p-2 px-6">
                         <div className="w-full md:w-1/2 bg-white shadow-lg rounded-xl p-6">
                             <h1 className="font-semibold text-xl mb-4">Employment Experience</h1>
                             {details?.userId?.experiences && details.userId.experiences.length > 0 ? (

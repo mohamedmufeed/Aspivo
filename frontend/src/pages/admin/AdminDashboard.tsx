@@ -5,6 +5,7 @@ import { GoPeople, GoOrganization, GoBriefcase, GoDownload, GoCalendar } from "r
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
 import { getDashboardStats, getMonthlySubscriptionRevenue, getWeeklyApplicationData } from "../../services/adminService";
+import { getLastNWeeks } from "../../utils/dasboardUtils";
 
 export interface IState {
   diff: number;
@@ -25,21 +26,13 @@ export interface IMonthlyRevenueData {
   subscription: number
 }
 const AdminDashboard = () => {
-  const [selected, setSelectedMenu] = useState("Dashboard");
   const [userData, setUserData] = useState<IState>()
   const [companyData, setCompanyData] = useState<IState>()
   const [jobData, setJobData] = useState<IState>()
   const [dateRange, setDateRange] = useState("Feb 20 - Feb 26");
   const [applicationData, setApplicationData] = useState<IWeeklyApplicationDAta[]>()
   const [revenueData, setRevenueData] = useState<IMonthlyRevenueData[]>()
-  // const revenueData = [
-  //   { name: "Jan", subscription: 5000 },
-  //   { name: "Feb", subscription: 6200 },
-  //   { name: "Mar", subscription: 7800 },
-  //   { name: "Apr", subscription: 8500 },
-  //   { name: "May", subscription: 9200 },
-  //   { name: "Jun", subscription: 9800 },
-  // ];
+  const weekOptions = getLastNWeeks(4);
 
   useEffect(() => {
     const fetchDashbordStats = async () => {
@@ -50,7 +43,7 @@ const AdminDashboard = () => {
         setJobData(response.jobs)
         console.log(response)
       } catch (error) {
-        console.error("Error fetching on dashbord stats");
+        console.error("Error fetching on dashbord stats",error);
 
       }
     }
@@ -63,7 +56,7 @@ const AdminDashboard = () => {
         const response = await getWeeklyApplicationData()
         setApplicationData(response.response)
       } catch (error) {
-        console.error("Error on fetching Weekly application data");
+        console.error("Error on fetching Weekly application data",error);
 
       }
     }
@@ -76,17 +69,20 @@ const AdminDashboard = () => {
         const response = await getMonthlySubscriptionRevenue()
         setRevenueData(response.response)
       } catch (error) {
-        console.error("Error fetching monthly revenue data");
+        console.error("Error fetching monthly revenue data",error);
 
       }
     }
     fetchMonthlyRevenueData()
   }, [])
 
+
+
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <div className="flex flex-col md:flex-row">
-        <Sidebar setSelected={setSelectedMenu} />
+        <Sidebar  />
         <div className="bg-gray-50 w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
           <AdminHeader heading="Dashboard" />
 
@@ -100,19 +96,23 @@ const AdminDashboard = () => {
                 Here's your admin dashboard overview for today
               </p>
             </div>
-            <div className="border rounded-lg shadow-sm  flex items-center px-3 h-12 self-start">
-              <GoCalendar className="text-gray-500 mr-2" />
-              <select
-                className="bg-transparent focus:outline-none py-2 text-gray-700 cursor-pointer"
-                value={dateRange}
-                onChange={(e) => setDateRange(e.target.value)}
-              >
-                <option value="Feb 20 - Feb 26">Feb 20 - Feb 26</option>
-                <option value="Feb 27 - Mar 5">Feb 27 - Mar 5</option>
-                <option value="Mar 6 - Mar 12">Mar 6 - Mar 12</option>
-              </select>
-            </div>
+              <div className="border rounded-lg shadow-sm flex items-center px-3 h-12 self-start">
+            <GoCalendar className="text-gray-500 mr-2" />
+            <select
+              className="bg-transparent focus:outline-none py-2 text-gray-700 cursor-pointer"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+            >
+              {weekOptions.map((range, idx) => (
+                <option key={idx} value={range}>
+                  {range}
+                </option>
+              ))}
+            </select>
+          </div> 
           </div>
+
+
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-4 md:px-8 pt-6 md:pt-8">
@@ -126,7 +126,7 @@ const AdminDashboard = () => {
             <StatCarsComponent
               title="Companies"
               value={companyData?.total}
-              changeValue={companyData?.lastWeek}
+              changeValue={10}
               icon={<GoOrganization className="w-6 h-6" />}
               trend={companyData?.direction}
             />

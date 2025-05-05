@@ -15,6 +15,8 @@ api.interceptors.response.use(
         error.response?.data?.message === "Your account is blocked"
       ) {
         console.warn("User is blocked.");
+        localStorage.clear();
+        sessionStorage.clear();
         window.location.href = "/login"; 
         return Promise.reject(error);
       }

@@ -16,13 +16,11 @@ import { fetchCompany } from "../../services/company/compayJob";
 
 
 const CompanyProfile = () => {
-
-  const [selected, setSelectedMenu] = useState<string | undefined>("C Profile")
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [editDescriptionModalOpen, setEditDescriptionModalOpen] = useState(false)
-  const [addTeachStackModalOpen, setAddTeachStackModalOpen]=useState(false)
-  const [editTeamModalOpen,setEditTeamModalOpen]=useState(false)
-  const [editContactModalOpen,setEditConatactModalOpen]=useState(false)
+  const [addTeachStackModalOpen, setAddTeachStackModalOpen] = useState(false)
+  const [editTeamModalOpen, setEditTeamModalOpen] = useState(false)
+  const [editContactModalOpen, setEditConatactModalOpen] = useState(false)
   const [companyData, setCompanyData] = useState<IPopulatedCompany>()
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || ""
@@ -34,7 +32,7 @@ const CompanyProfile = () => {
       console.log("the rs", response.company.company
       )
     } catch (error) {
-      console.log("Error on fetching company",error)
+      console.log("Error on fetching company", error)
     }
   }
 
@@ -42,7 +40,8 @@ const CompanyProfile = () => {
     fetchcomapny()
   }, [userId])
 
-  const formatDate = (date: any): string => {
+  const formatDate = (date: string|undefined): string => {
+    if (!date) return "Invalid date";
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
     return new Date(date).toLocaleDateString('en-US', options);
   };
@@ -53,18 +52,19 @@ const CompanyProfile = () => {
 
   return (
     <div>
-      <div className="flex">
-        <CompanySidebar setSelected={setSelectedMenu} />
-        <div className="bg-[#F6F6F6] w-full  overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
+      <div className="flex h-screen overflow-hidden">
+        <CompanySidebar />
+        <div className="bg-[#F6F6F6] w-full  overflow-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
 
           {/* header */}
           <ComapanyHeader heading="Company Profile" />
 
-          {/* headerr ends */}
+          <div
+            className="bg-[#F6F6F6] pt-16 pb-15 px-6 overflow-y-auto"
+            style={{ height: "calc(100vh - 64px)", fontFamily: "DM Sans, sans-serif" }}
+          >
 
-          <div className="p-7">
-
-            <div className="bg-white rounded-2xl shadow-md shadow-gray-100 p-6 w-full max-w-6xl mx-auto flex items-center gap-16 relative">
+            <div className="bg-white rounded-2xl shadow-md shadow-gray-100 p-6 w-full max-w-6xl mx-auto flex items-center gap-16 relative overflow-y-auto">
 
               <GoPencil className="absolute top-7 right-8 w-6 h-6 text-gray-900 cursor-pointer hover:text-gray-700" onClick={() => setEditModalOpen(true)} />
 
@@ -107,7 +107,7 @@ const CompanyProfile = () => {
                 </div>
                 <div className=" font-light px-8 mt-3 p-3">
                   <p className="">
-                   {companyData?.description}
+                    {companyData?.description}
                   </p>
                 </div>
               </div>
@@ -118,7 +118,7 @@ const CompanyProfile = () => {
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Tech Stack</h1>
                   <div className="flex gap-5">
-                    <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={()=>setAddTeachStackModalOpen(true)} />
+                    <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddTeachStackModalOpen(true)} />
 
                   </div>
 
@@ -137,14 +137,14 @@ const CompanyProfile = () => {
                 </div>
 
               </div>
-              <AddTeachStack initialTechStack={companyData?.stack} companyId={companyData?._id||""} isOpen={addTeachStackModalOpen} onClose={()=>setAddTeachStackModalOpen(false)} setCompanyData={setCompanyData}/>
+              <AddTeachStack initialTechStack={companyData?.stack} companyId={companyData?._id || ""} isOpen={addTeachStackModalOpen} onClose={() => setAddTeachStackModalOpen(false)} setCompanyData={setCompanyData} />
             </div>
 
             <div className=" ">
               <div className="bg-white  shadow-gray-100 shadow-lg w-full rounded-lg  p-5 mt-5">
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Team</h1>
-                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={()=>setEditTeamModalOpen(true)} />
+                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditTeamModalOpen(true)} />
                 </div>
 
                 <div className="px-6 mt-4 flex items-center gap-4 overflow-x-auto">
@@ -155,25 +155,24 @@ const CompanyProfile = () => {
                     </div>
                   ))}
                 </div>
-        <EditCompanyTeam isOpen={editTeamModalOpen} onClose={()=>setEditTeamModalOpen(false)} companyId={companyData?._id||""} setCompanyData={setCompanyData}/>
+                <EditCompanyTeam isOpen={editTeamModalOpen} onClose={() => setEditTeamModalOpen(false)} companyId={companyData?._id || ""} setCompanyData={setCompanyData} />
               </div>
 
 
               <div className="bg-white  shadow-gray-100 shadow-lg w-full rounded-lg  p-5 mt-5">
                 <div className="flex justify-between px-3">
                   <h1 className="font-medium text-2xl">Contact</h1>
-                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={()=>setEditConatactModalOpen(true)} />
+                  <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditConatactModalOpen(true)} />
                 </div>
                 <div className="flex gap-4 p-4 rounded-lg ">
                   {companyData?.contact.map((social, index) => (
-                    <a key={index} href={social.url} target="_blank" rel="noopener noreferrer"
+                    <a key={index} href={`https://${social.url}`} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 p-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
                       {social.name}
-                      {/* <span className="text-gray-700 font-medium">{social.name}</span> */}
                     </a>
                   ))}
                 </div>
-                <EditCompanyContact isOpen={editContactModalOpen} companyId={companyData?._id||""} onClose={()=>setEditConatactModalOpen(false)}  setCompanyData={setCompanyData}/>
+                <EditCompanyContact isOpen={editContactModalOpen} companyId={companyData?._id || ""} onClose={() => setEditConatactModalOpen(false)} setCompanyData={setCompanyData} />
               </div>
             </div>
           </div>

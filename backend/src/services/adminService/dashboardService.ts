@@ -1,6 +1,6 @@
 import { MONTHS, USD_TO_INR } from "../../constants/commen";
 import { IDashboardService } from "../../interface/service/admin/dashboardServiceInterface";
-import { DashboardRepositories } from "../../repositories/dasboardRespositories";
+import { DashboardRepositories } from "../../repositories/adminDasboardRespositories";
 import { startOfWeek, endOfWeek, subWeeks } from "date-fns";
 
 export class DashboardService implements IDashboardService {

@@ -9,7 +9,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Application } from "../../types/types";
 
 const CopmanyApplicants = () => {
-  const [selected, setSelected] = useState <string|undefined>("Applicants");
   const [heading, setHeading] = useState("Applicants");
   const [details, setDetails] = useState<Application[]>([]); 
   const [loading, setLoading] = useState(true); 
@@ -46,7 +45,7 @@ const CopmanyApplicants = () => {
       const response = await getApplicants(jobId, companyId);
       setDetails(response.applications);
       setHeading(`Applicants for ${response.applications[0]?.jobId.jobTitle || "Job"}`); 
-    } catch (err: any) {
+    } catch (err) {
       const error =err as Error
       console.log("Error in fetching applicants:", error);
       setError(error.message || "Failed to load applicants");
@@ -68,7 +67,7 @@ const CopmanyApplicants = () => {
   if (loading) {
     return (
       <div className="flex">
-        <CompanySidebar setSelected={setSelected} />
+        <CompanySidebar  />
         <div className="bg-[#F6F6F6] w-full p-6" style={{ fontFamily: "DM Sans, sans-serif" }}>
           <ComapanyHeader heading={heading} />
           <div className="text-center text-gray-600">Loading applicants...</div>
@@ -80,7 +79,7 @@ const CopmanyApplicants = () => {
   if (error) {
     return (
       <div className="flex">
-        <CompanySidebar setSelected={setSelected} />
+        <CompanySidebar/>
         <div className="bg-[#F6F6F6] w-full p-6" style={{ fontFamily: "DM Sans, sans-serif" }}>
           <ComapanyHeader heading={heading} />
           <div className="text-center text-red-500">{error}</div>
@@ -91,7 +90,7 @@ const CopmanyApplicants = () => {
 
   return (
     <div className="flex">
-      <CompanySidebar setSelected={setSelected} />
+      <CompanySidebar  />
       <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
         <ComapanyHeader heading={heading} />
         <div className="w-full p-5">

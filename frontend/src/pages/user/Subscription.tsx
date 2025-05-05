@@ -58,7 +58,7 @@ const Subscription = () => {
       } else {
         throw new Error("No checkout URL received");
       }
-    } catch (err: any) {
+    } catch (err) {
       const error=err as Error
       setError(error.message || "Failed to create subscription");
       console.log("Error on subscription:", err);

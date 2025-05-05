@@ -18,7 +18,7 @@ const menuItems = [
     { icon: <IoSettingsOutline className="w-6 h-6" />, label: "Settings", path: "/settings" },
 ];
 
-const Sidebar = ({ setSelected }: { setSelected: (label: string) => void }) => {
+const Sidebar = () => {
     const [selected, setLocalSelected] = useState<string | undefined>("Dashboard");
     const location = useLocation()
     const navigate = useNavigate()
@@ -27,13 +27,11 @@ const Sidebar = ({ setSelected }: { setSelected: (label: string) => void }) => {
         const currentItem = menuItems.find((item) => item.path === location.pathname)
         if (currentItem) {
             setLocalSelected(currentItem.label);
-            setSelected(currentItem.label || "");
         }
     }, [location])
     const handleSelect = (label?: string, path?: string) => {
         if (label && path) {
             setLocalSelected(label);
-            setSelected(label);
             navigate(path);
         }
 

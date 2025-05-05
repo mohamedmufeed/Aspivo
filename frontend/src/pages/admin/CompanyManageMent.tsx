@@ -18,7 +18,7 @@ interface Company {
 
 const AdminCompanyRequests = () => {
     const location = useLocation()
-    const [selected, setSelectedMenu] = useState("Companies");
+
     const [companyDetail, setCompanyDetail] = useState<Company[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const companiesPerPage = 6
@@ -81,7 +81,7 @@ const AdminCompanyRequests = () => {
 
     return (
         <div className="flex">
-            <Sidebar setSelected={setSelectedMenu} />
+            <Sidebar  />
             <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
                 <AdminHeader heading="Companies" />
                 <SearchBar placeholder="Serach Company..." onSearch={handleSeach} />

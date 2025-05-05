@@ -11,6 +11,11 @@
     jobs: StatResult;
     companies: StatResult;
   }
+   export interface CompanyDashboardStats {
+    applications: StatResult;
+    jobs: StatResult;
+    numberOfHirings: StatResult;
+  }
   
    export interface WeeklyData {
     name: string;
@@ -25,3 +30,8 @@
     subscription:number
    }
   
+
+   export type ApplicationStatusStats = {
+    _id: "pending" | "reviewed" | "accepted" | "rejected";
+    count: number;
+  };

@@ -29,7 +29,6 @@ interface IMeetingsDetails {
 
 
 const CompanyScheduledMeeting = () => {
-  const [selected, setSelectedMenu] = useState<string | undefined>("Scheduled Meetings");
   const [companyId, setCompanyId] = useState("")
   const [meetings, setMeetings] = useState<IMeetingsDetails[] | null>()
   const [error, setError] = useState<string | null>(null)
@@ -149,7 +148,7 @@ const CompanyScheduledMeeting = () => {
 
   return (
     <div className="flex">
-      <CompanySidebar setSelected={setSelectedMenu} />
+      <CompanySidebar/>
       <div
         className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
         style={{ fontFamily: "DM Sans, sans-serif" }}

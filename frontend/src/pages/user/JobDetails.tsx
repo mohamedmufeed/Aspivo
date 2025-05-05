@@ -16,6 +16,7 @@ import { User } from "../../types/types"
 import { getProfile } from '../../services/profile';
 import { isApplied } from '../../services/jobService';
 import { IoBookmark } from 'react-icons/io5';
+import Footer from '../../components/homecomponts/Footer';
 
 
 
@@ -136,7 +137,7 @@ const JobDetails = () => {
   const handleSavingJob = async (jobId: string | undefined) => {
     if (!jobId) return
     try {
-      const response = await saveJob(userId, jobId)
+      await saveJob(userId, jobId)
       setUserSavedJobs(prevSaved => {
         const alredySaved = prevSaved.find(saved => saved.jobId === jobId)
         if (alredySaved) {
@@ -147,7 +148,7 @@ const JobDetails = () => {
       })
   
     } catch (error) {
-      console.error("Error on saving Job")
+      console.error("Error on saving Job",error)
     }
   }
 
@@ -159,7 +160,7 @@ const JobDetails = () => {
         const response = await savedJobs(userId)
         setUserSavedJobs(response.savedJobs)
       } catch (error) {
-        console.error("Error on fethicing the saved jobs")
+        console.error("Error on fethicing the saved jobs",error)
       }
     }
     if (userId) {
@@ -197,7 +198,7 @@ const JobDetails = () => {
             />
 
 
-            <div className="absolute bottom-35 left-8 w-32 h-32 rounded-full border-4 border-white shadow-md">
+            <div className="absolute top-32 sm:top-22 bottom-0 sm:bottom-35 left-8 w-22 h-22 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-md">
               <img
                 className="w-full h-full rounded-full object-cover"
                 src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${jobDetails?.company.logo}`}
@@ -206,7 +207,7 @@ const JobDetails = () => {
             </div>
 
 
-            <div className="mt-20 px-10 pb-6 flex justify-between items-center">
+            <div className="mt-20 px-10 pb-6 sm:flex sm:justify-between items-center">
               <div className="space-y-3">
                 <div>
                   <h1 className="font-bold text-2xl">{jobDetails?.jobTitle}</h1>
@@ -222,7 +223,7 @@ const JobDetails = () => {
               </div>
 
 
-              <div className="flex mt-15 space-x-4">
+              <div className="flex mt-9 sm:mt-15 space-x-4">
                 <button className="bg-white shadow-md rounded-lg py-2 px-5 font-bold flex items-center gap-2 hover:bg-gray-100 transition cursor-pointer">
                   {userSavedJobs.some((saved) => saved.jobId.toString() === jobDetails?._id?.toString()) ? (
                     <div className='flex space-x-5 '>    <IoBookmark className="w-6 h-6" onClick={() => handleSavingJob(jobDetails?._id)} /> Saved</div>
@@ -252,6 +253,8 @@ const JobDetails = () => {
                         : "Apply"}
                 </button>
               </div>
+
+
             </div>
           </div>
         </div>
@@ -359,7 +362,7 @@ const JobDetails = () => {
         </div>
 
 
-        <div className='bg-white shadow-lg rounded-xl flex mt-5'>
+        <div className='bg-white shadow-lg rounded-xl sm:flex mt-5'>
           <div className='p-5 '>
             <h1 className='font-semibold text-xl pl-4 pt-4 '>About the Company </h1>
             <p className='text-sm text-gray-700 pl-4 pt-5'>{jobDetails?.company.description}</p>
@@ -367,7 +370,7 @@ const JobDetails = () => {
           </div>
 
           <div className="flex ">
-            <div className='p-20 mt-3'>
+            <div className=' sm:p-20 mt-3  hidden sm:block'>
 
               <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${jobDetails?.company.logo}`} alt="" className='w-9 h-9 ml-2 rounded-Full' />
               <h1 className='font-semibold text-lg'>{jobDetails?.company.companyName}</h1>
@@ -375,12 +378,8 @@ const JobDetails = () => {
           </div>
 
         </div>
-
-
-
-        {/* footer will adde in the last */}
-
       </div>
+      <Footer/>
     </div>
   )
 }

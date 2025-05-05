@@ -128,7 +128,7 @@ const JobLists = () => {
                 }
             })
         } catch (error) {
-            console.error("Error on saving Job")
+            console.error("Error on saving Job",error)
         }
     }
 
@@ -139,7 +139,7 @@ const JobLists = () => {
                 const response = await savedJobs(userId)
                 setUserSavedJobs(response.savedJobs)
             } catch (error) {
-                console.error("Error on fethicing the saved jobs")
+                console.error("Error on fethicing the saved jobs",error)
             }
         }
         if (userId) {
@@ -147,16 +147,16 @@ const JobLists = () => {
         }
     }, [userId])
     return (
-        <div className="bg-[#F6F6F6] min-h-screen pb-20" style={{ fontFamily: "DM Sans, sans-serif" }}>
+        <div className="bg-[#F6F6F6] min-h-screen sm:pb-20" style={{ fontFamily: "DM Sans, sans-serif" }}>
             <Navbar />
             <div>
                 <div className="flex justify-center mt-10">
-                    <div className="bg-white shadow-lg w-1/2 rounded-lg p-2 flex items-center">
+                    <div className="bg-white shadow-lg sm:w-1/2 rounded-lg p-2 flex items-center">
                         <input
                             type="text"
                             id="search"
                             placeholder="Search by job title, company, or location"
-                            className="text-black w-full p-4 ml-5 outline-none font-extralight"
+                            className="text-black w-full p-4 sm:ml-5 outline-none font-extralight"
                             value={searchWord}
                             onChange={handleSearchChange}
                         />
@@ -167,11 +167,11 @@ const JobLists = () => {
                 </div>
 
 
-                <div className="flex justify-center gap-6 mt-9">
+                <div className="flex justify-center  gap-2 sm:gap-6 mt-9 overflow-x-auto scrollbar-hide">
                     {categoryItems.map((item, index) => (
                         <div key={index}>
                             <button
-                                className={`bg-orange-600 shadow-lg rounded-xl p-3 px-5 font-medium cursor-pointer hover:bg-orange-500 hover:text-white 
+                                className={`bg-orange-600 shadow-lg rounded-xl text-sm sm:text-base p-2 sm:p-3 px-5 font-medium cursor-pointer hover:bg-orange-500 hover:text-white 
                                     ${(item === "All" && selectedCategory === null) || selectedCategory === item
                                         ? "bg-orange-600 text-white"
                                         : "bg-white"
@@ -183,10 +183,13 @@ const JobLists = () => {
 
                         </div>
                     ))}
-                </div>
+                </div> 
 
 
-                <div className="px-20 mt-10 space-y-6">
+
+
+
+                <div className="px-8 sm:px-20 mt-10 space-y-6">
                     {loading && initialLoad ? (
                         <div className="text-center py-10">
                             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent"></div>
@@ -195,11 +198,12 @@ const JobLists = () => {
                     ) : jobs.length > 0 ? (
                         <>
                             {jobs.map((job) => (
-                                <div
-                                    key={job._id}
-                                    className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 p-4 items-center hover:bg-gray-50"
-                                >
-                                    <div className="col-span-2 flex justify-center">
+                             <div
+                             key={job._id}
+                             className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 sm:p-4 p-3 items-center hover:bg-gray-50"
+                         >
+                         
+                         <div className="col-span-2 flex justify-center">
                                         {job.company?.logo ? (
                                             <img
                                                 src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`}
@@ -211,15 +215,17 @@ const JobLists = () => {
                                             <span className="text-gray-500">No logo</span>
                                         )}
                                     </div>
-                                    <div className="col-span-3">
-                                        <h1 className="font-semibold text-xl">{job.jobTitle || "N/A"}</h1>
-                                        <p className="text-sm text-gray-700">{job.company?.companyName || "N/A"}</p>
+                                    <div className="col-span-7 sm:col-span-3">
+                                        <h1 className="font-semibold text-md sm:text-xl">{job.jobTitle || "N/A"}</h1>
+                                        <p className=" text-xs sm:text-sm text-gray-700">{job.company?.companyName || "N/A"}</p>
                                     </div>
-                                    <div className="col-span-2">
+
+                                    <div className="hidden sm:block col-span-2">
                                         <h1 className="font-semibold text-xl">{job.company?.location || "N/A"}</h1>
                                         <p className="text-sm text-gray-700">Location</p>
                                     </div>
-                                    <div className="col-span-2">
+
+                           <div className="hidden sm:block col-span-2">
                                         <h1 className="font-semibold text-xl">
                                             {job.minimumSalary && job.maximumSalary
                                                 ? `${formatSalary(job.minimumSalary)} - ${formatSalary(job.maximumSalary)}`
@@ -227,7 +233,7 @@ const JobLists = () => {
                                         </h1>
                                         <p className="text-sm text-gray-700">Yearly</p>
                                     </div>
-                                    <div className="col-span-2 flex justify-center">
+                                    <div className="hidden sm:flex col-span-2 justify-center">
                                         {userSavedJobs.some((saved) => saved.jobId.toString() === job._id?.toString()) ? (
                                             <IoBookmark className="w-6 h-6" onClick={() => handleSavingJob(job._id)} />
                                         ) : (
@@ -235,9 +241,9 @@ const JobLists = () => {
                                         )
                                         }
                                     </div>
-                                    <div className="col-span-1 flex justify-center">
+                                    <div className="col-span-3 sm:col-span-1 flex justify-center">
                                         <button
-                                            className="bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg cursor-pointer hover:bg-orange-700"
+                                            className="bg-orange-600 text-white font-medium sm:font-semibold px-3 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg cursor-pointer hover:bg-orange-700"
                                             onClick={() => navigate(`/job-details/${job._id}`)}
                                         >
                                             More

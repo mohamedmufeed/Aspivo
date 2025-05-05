@@ -44,6 +44,29 @@ interface Conversation {
   unread?: boolean;
   channel?: string;
 }
+interface FormattedConversation {
+  employeeProfile: string;
+  employeeId: string;
+  employeeName: string;
+  lastMessage: string;
+  timestamp: string  
+  unread: boolean;
+  channel: string;
+}
+
+interface RawConversation {
+  targetProfile?: string;
+  targetId?: string;
+  companyId?: string;
+  targetName?: string;
+  companyName?: string;
+  lastMessage?: string;
+  timestamp: string | number | Date;
+  unread?: boolean;
+  channel?: string;
+}
+
+
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -92,7 +115,7 @@ const Messages = () => {
     const fetchData = async () => {
       try {
         const data = await getConversations(userId, "employee");
-        const formatted = data.map((conv: any) => ({
+        const formatted:FormattedConversation[] = data.map((conv:RawConversation) => ({
           employeeProfile: conv.targetProfile || "",
           employeeId: conv.targetId || conv.companyId,
           employeeName: conv.targetName || conv.companyName,
@@ -281,7 +304,7 @@ const Messages = () => {
       console.log("the response from ai text", response)
       setNewMessage(response.response)
     } catch (error) {
-      console.error("Error on text formating")
+      console.error("Error on text formating",error)
     } finally {
       setLoading(false)
     }
@@ -437,7 +460,6 @@ const Messages = () => {
                                 </p>
                                 <a
                                   href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
-                                  target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-400 underline break-all block mt-1 text-sm"
                                 >

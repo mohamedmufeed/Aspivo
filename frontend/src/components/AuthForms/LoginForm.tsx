@@ -37,13 +37,14 @@ const LoginForm = () => {
     try {
 
       const data = await loginApi({ email, password })
+      console.log("the user , data", data.user.isAdmin)
       dispatch(login(data.user))
       registerUserSocket("user", data.user.id);
       setloading(true)
-      if (data.user && data.user.isAdmin === true) {
+      if (data && data.user.isAdmin) {
         navigate("/admin-dashboard");
       } else {
-        navigate("/hello");
+        navigate("/");
       }
    
 

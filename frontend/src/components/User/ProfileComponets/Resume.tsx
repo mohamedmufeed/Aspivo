@@ -119,11 +119,11 @@ const [successMessage, setSuccessMessage]=useState("")
             </div>
           
           
-            <div className="flex justify-between px-8">
+            <div className="flex justify-between px-3 sm:px-8">
                 <h1 className="font-medium text-2xl">Resume</h1>
             </div>
             <div
-                className="flex justify-end mt-3 mr-5 cursor-pointer"
+                className="flex justify-end mt-5 sm:mt-3 mr-5 cursor-pointer"
                 onClick={handleAiFeature}
             >
                 <h1
@@ -137,11 +137,12 @@ const [successMessage, setSuccessMessage]=useState("")
             </div>
             {generateResumeModal ? <GenerateResumeModal setProfileData={setProfileData} onClose={() => setgenerateResumeModal(false)} /> : ""}
 
-            <div className="flex mx-auto w-3/4 bg-white h-[60px] items-center shadow-gray-200 shadow-lg rounded-md justify-between px-6 mt-4">
+            <div className="flex mx-auto w-3/3 sm:w-3/4 bg-white h-[60px] items-center shadow-gray-200 shadow-lg rounded-md justify-between px-4 sm:px-6 mt-4">
                 <div className="flex items-center space-x-4">
                     <CiStickyNote className="w-6 h-6 text-gray-600" />
                     <p className="text-gray-700">{resumeurl ? "Resume.pdf" : " Please Upload Resume"}</p>
                 </div>
+
                 <div className="flex space-x-6">
                     <BsDownload className={`w-6 h-6 text-gray-600  hover:text-gray-800 ${resumeurl ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                         }`} onClick={(e) => {
@@ -157,17 +158,18 @@ const [successMessage, setSuccessMessage]=useState("")
 
 
 
-            <div {...getRootProps()} className={`w-5/6 mx-auto mt-5 p-6 flex flex-col items-center justify-center cursor-pointer rounded-lg outline-1.5 px-6 outline-dashed ${isDragActive ? "bg-gray-100" : ""}`}>
+
+            <div {...getRootProps()} className={`w-7/8 sm:w-5/6 mx-auto mt-5 p-6 flex flex-col items-center justify-center cursor-pointer rounded-lg outline-1.5 px-6 outline-dashed ${isDragActive ? "bg-gray-100" : ""}`}>
                 <input {...getInputProps()} />
-                <IoCloudUploadOutline className="w-8 h-8 text-gray-900 mb-2 " />
-                <h2 className="font-bold text-md text-gray-700 text-center">
+                <IoCloudUploadOutline className=" w-6 h-6 sm:w-8 sm:h-8 text-gray-900 mb-2 " />
+                <h2 className="font-bold text-sm sm:text-base text-gray-700 text-center">
                     {isDragActive ? "Drop the file here" : "Drag and Drop file here or "}
                     <span className="text-orange-600 cursor-pointer">
                         Choose File
                     </span>
                 </h2>
              
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2  text-xs sm:text-sm text-gray-500">
                     Supported Formats: PDF, JPEG ,JPG ,PNG
                 </p>
                 <p className='text-gray-800 '>{successMessage}</p>
@@ -184,7 +186,7 @@ const [successMessage, setSuccessMessage]=useState("")
                 <button
                     onClick={handleSubmit}
                     disabled={uploading || !fileUrl}
-                    className={`font-semibold px-6 py-3 rounded-lg text-white transition-all 
+                    className={`font-semibold px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base rounded-lg text-white transition-all 
       ${uploading || !fileUrl ? "bg-gray-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}
     `}
                 >

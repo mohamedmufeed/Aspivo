@@ -12,7 +12,6 @@ import { IoVideocamOffOutline } from "react-icons/io5";
 
 
 
-
 const VideoCall = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);

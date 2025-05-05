@@ -15,6 +15,9 @@ import { CompanyMeetingService } from "../services/compnyService/companyMeetingS
 import { NotificationRepository } from "../repositories/notificationRepository";
 import { NotificationService } from "../services/notificationService";
 import { ComapnyMeetingController } from "../controllers/company/companyMeetingController";
+import { CompanyDasboradController } from "../controllers/company/companyDasboardController";
+import { CompanyDasboradService } from "../services/compnyService/companyDasboardService";
+import { ComapnyDasboardRepositories } from "../repositories/companyDasboardRespostries";
 
 
 
@@ -38,26 +41,9 @@ const meetingRepository= new CompanyMeetingRepositories()
 const meetingService= new CompanyMeetingService(meetingRepository,notificationService)
 const meetingController= new ComapnyMeetingController(meetingService)
 
-
-// router.post("/signup/:id",companyAuthController.register)
-// router.get("/company/:id",companyJobController.fetchCompany)
-// router.post("/postjob/:id",companyJobController.postJob)
-// router.get("/jobs/:id",companyJobController.fetchJob)
-// router.put("/edit-job/:id",companyJobController.editJob)
-// router.delete("/delete-job/:id",companyJobController.deleteJob)
-// router.get("/jobapplicants/:id",companyJobController. getApplicantsForJob);
-// router.get("/jobapplicants/details/:id",companyJobController.getApplicantDetails)
-// router.patch("/update-status/:id",companyJobController.updateStatus)
-// router.get("/company-profile/:id",companyProfileController.getProfile)
-// router.put("/edit-companyprofile/:id",companyProfileController.editCompanyProfile)
-// router.patch("/edit-comapnydescription/:id",companyProfileController.editCompanyDescription)
-// router.put("/add-comapnytechstack/:id",companyProfileController.addTechStack)
-// router.put("/edit-companyteam/:id",companyProfileController.editTeam)
-// router.put("/edit-company-contact/:id",companyProfileController.editContact)
-
-
-
-
+const companyDasboardRepository= new ComapnyDasboardRepositories()
+const companyDasboardService= new CompanyDasboradService(companyDasboardRepository)
+const companyDashboardController= new CompanyDasboradController(companyDasboardService)
 
 router.route("/auth/signup/:id").post(companyAuthController.register);
 
@@ -118,5 +104,14 @@ router
   router.route("/meetings/:id")
   .get(meetingController.getMeetings)
 
+
+
+  router
+  .route("/dashboard-status/:id")
+  .get(companyDashboardController.getDashboardStatus.bind(companyDashboardController))
+
+  router
+  .route("/dashboard/application-status/:id")
+  .get(companyDashboardController.getApplicationStatusByDate.bind(companyDashboardController))
 
 export default router

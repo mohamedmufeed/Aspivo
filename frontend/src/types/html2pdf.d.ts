@@ -1,4 +1,3 @@
-// Create this file at src/types/html2pdf.d.ts
 
 declare module 'html2pdf.js' {
     interface Html2PdfOptions {
@@ -10,24 +9,25 @@ declare module 'html2pdf.js' {
       };
       html2canvas?: {
         scale?: number;
-        [key: string]: any;
+        [key: string]: unknown;
       };
       jsPDF?: {
         unit?: string;
         format?: string;
         orientation?: 'portrait' | 'landscape';
-        [key: string]: any;
+        [key: string]: unknown;
       };
-      [key: string]: any;
+      [key: string]: unknown;
     }
   
     interface Html2PdfInstance {
       from(element: HTMLElement | string): Html2PdfInstance;
       set(options: Html2PdfOptions): Html2PdfInstance;
       save(): Promise<void>;
-      output(type: string, options?: any): Promise<any>;
-      then(callback: Function): Html2PdfInstance;
-      catch(callback: Function): Html2PdfInstance;
+      output(type: string, options?: object): Promise<Blob | string | ArrayBuffer>;
+      then(callback: () => void): Html2PdfInstance;
+      catch(callback: (error: unknown) => void): Html2PdfInstance;
+      
     }
   
     function html2pdf(): Html2PdfInstance;

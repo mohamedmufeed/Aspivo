@@ -6,7 +6,7 @@ const SubscriptionBox = () => {
             <div className=" bg-white  rounded-lg p-10 sm:p-15 flex flex-col sm:flex-row justify-between ">
                 <div className="space-y-3 "> 
                     <h1 className=" text-3xl sm:text-4xl font-semibold">Never want to Miss </h1>
-                       <h1 className=" text-3xl sm:text-4xl font-semibold text-orange-600"> Any Job News ?</h1>
+                       <h1 className=" text-3xl sm:text-4xl font-semibold text-orange-600"> Any Job Updates ?</h1>
                 </div>
                 <div>
                     <div className="flex   rounded-lg p-3 sm:p-4  items-center justify-between  sm:max-w-md  w- pt-10 ">

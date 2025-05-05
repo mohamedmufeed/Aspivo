@@ -25,7 +25,6 @@ interface Subscription {
 }
 
 const SubscriptionHandling = () => {
-    const [selected, setSelectedMenu] = useState("Subscription");
     const [loading, setLoading] = useState(true);
     const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
     const [currentPage,setCurrentPage]=useState(1)
@@ -131,7 +130,7 @@ const SubscriptionHandling = () => {
 
     return (
         <div className="flex">
-            <Sidebar setSelected={setSelectedMenu} />
+            <Sidebar />
             <div
                 className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
                 style={{ fontFamily: "DM Sans, sans-serif" }}

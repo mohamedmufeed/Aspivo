@@ -1,5 +1,6 @@
 
-import { UserCircle, Settings, Briefcase, LogOut } from "lucide-react";
+import { UserCircle, Briefcase, LogOut } from "lucide-react";
+
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import profileAvathar from "../../assets/user.png"
@@ -7,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slice/authSlice";
 import { logoutUser } from "../../services/auth";
+import { MdOutlineAttachMoney } from "react-icons/md";
 const ProfileDropdown = () => {
 
     const dispatch = useDispatch()
@@ -22,7 +24,7 @@ const ProfileDropdown = () => {
                 navigate("/login");
             }
         } catch (error) {
-            console.log("Error logut user",error)
+            console.log("Error logut user", error)
         }
 
     };
@@ -49,12 +51,7 @@ const ProfileDropdown = () => {
                         <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100">
                             <UserCircle size={20} />
                             <Link to={"/profile"}>
-                                <span>Profile</span></Link>
-
-                        </button>
-                        <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100">
-                            <Settings size={20} />
-                            <span>Settings</span>
+                            <span>Profile</span></Link>
                         </button>
                         <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100 cursor-pointer">
 
@@ -63,6 +60,17 @@ const ProfileDropdown = () => {
                                 <span>My Jobs</span>
                             </Link>
                         </button>
+
+                        <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100 cursor-pointer">
+                        
+                            <MdOutlineAttachMoney size={20} />
+                            <Link to={"/subscription-history"}>
+                            <span>Subscription History</span>
+                            </Link>
+                       
+                        </button>
+
+
                         <button className="flex items-center space-x-4 w-full p-2 rounded text-red-500 hover:bg-gray-100" onClick={handleLogout}>
                             <LogOut size={20} />
                             <span>Logout</span>

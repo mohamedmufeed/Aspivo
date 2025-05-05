@@ -12,7 +12,7 @@ interface SkillType {
 }
 
 const SkillManagement = () => {
-  const [selected, setSelectedMenu] = useState("Skills");
+
   const [skills, setSkills] = useState<SkillType[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -102,7 +102,7 @@ const SkillManagement = () => {
 
   return (
     <div className="flex">
-      <Sidebar setSelected={setSelectedMenu} />
+      <Sidebar  />
       <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
         <AdminHeader heading="Skill Management" />
 

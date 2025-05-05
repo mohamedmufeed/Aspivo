@@ -19,6 +19,22 @@ export interface Job {
   logo: string;
 }
 
+interface Application {
+  status: string;
+  jobId: {
+    _id: string;
+    jobTitle: string;
+    minimumSalary: number;
+    maximumSalary: number;
+    company: {
+      companyName: string;
+      location: string;
+      logo: string;
+    };
+  };
+}
+
+
 const MyJobs = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"Saved Jobs" | "Applied Jobs">("Saved Jobs");
@@ -49,7 +65,7 @@ const MyJobs = () => {
       console.log("the applies",response)
       
       if (response) {
-        const mappedJobs = response?.applications.map((app:any) => ({
+        const mappedJobs = response?.applications.map((app:Application) => ({
           id: app.jobId._id,
           title: app.jobId.jobTitle,
           company: app.jobId.company.companyName,
@@ -83,7 +99,7 @@ const MyJobs = () => {
        console.log("the rep",response)
       const mappedJobs = response.savedJobs
 
-      .map((saved: any) => ({
+      .map((saved: Application) => ({
         id: saved.jobId._id,
         title: saved.jobId.jobTitle,
         company: saved.jobId.company.companyName,
@@ -93,9 +109,10 @@ const MyJobs = () => {
         logo: saved.jobId.company.logo,
       }));
       setSavedJob(mappedJobs);
-    } catch (error: any) {
+    } catch (error) {
+      const err= error as Error
       console.log("Error in fetching saved jobs", error);
-      setError(error.response?.data?.message || "Failed to load saved jobs");
+      setError(err.message || "Failed to load saved jobs");
     } finally {
       setLoading(false);
     }

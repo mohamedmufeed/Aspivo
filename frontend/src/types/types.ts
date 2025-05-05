@@ -191,8 +191,10 @@ export interface IUser {
     status?: string;
     plan?: string;
   };
+  chatLimit:number,
+  savedJobs:ISavedJobs[]
   features: {
-    resumeHighlighting: boolean;
+    unlockAiFeatures: boolean;
     unlimitedChat: boolean;
   };
   createdAt: Date;
@@ -221,7 +223,46 @@ export interface Experience {
   currentlyWorking: boolean;
 }
 
+
 export interface ISavedJobs{
   jobId:string;
-  savedAt:Date| string
+  savedAt:string
+}
+
+export interface ICompanyType {
+  _id: ObjectId;
+  companyName: string;
+  email: string;
+  location?: string;
+  description?: string;
+  companyUrl?: string;
+  logo: string;
+  kyc: string;
+  userId: ObjectId;
+  status: "Pending" | "Approved" | "Declined";
+  stack: string[];
+  startDate?: Date;
+  industry?: string;
+  contact: {
+    name?: string;
+    url?: string;
+  }[];
+  employees?: string;
+  customerId?: string;
+  subscription?: {
+    subscriptionId?: string;
+    status?: string;
+    plan?: string;
+  };
+  features: {
+    unlimitedJobPosting: boolean;
+    accessToAnalytics: boolean;
+  };
+  jobLimit:number,
+  team: {
+    position: string;
+    name: string;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
 }

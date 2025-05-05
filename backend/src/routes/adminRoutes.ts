@@ -16,7 +16,7 @@ import { NotificationRepository } from "../repositories/notificationRepository";
 import adminOnly from "../middleware/adminOnly";
 import { DashboardController } from "../controllers/admin/dashboardController";
 import { DashboardService } from "../services/adminService/dashboardService";
-import { DashboardRepositories } from "../repositories/dasboardRespositories";
+import { DashboardRepositories } from "../repositories/adminDasboardRespositories";
 const router= express.Router()
 
 const notificationRepository= new NotificationRepository()
