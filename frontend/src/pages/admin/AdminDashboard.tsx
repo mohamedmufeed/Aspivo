@@ -4,7 +4,7 @@ import AdminHeader from "../../components/Admin/AdminHeader";
 import { GoPeople, GoOrganization, GoBriefcase, GoDownload, GoCalendar } from "react-icons/go";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
-import { getDashboardStats, getMonthlySubscriptionRevenue, getWeeklyApplicationData } from "../../services/adminService";
+import { downloadExcel, getDashboardStats, getMonthlySubscriptionRevenue, getWeeklyApplicationData } from "../../services/adminService";
 import { getGreeting, getLastNWeeks } from "../../utils/dasboardUtils";
 
 export interface IState {
@@ -32,7 +32,7 @@ const AdminDashboard = () => {
   const [dateRange, setDateRange] = useState("Feb 20 - Feb 26");
   const [applicationData, setApplicationData] = useState<IWeeklyApplicationDAta[]>()
   const [revenueData, setRevenueData] = useState<IMonthlyRevenueData[]>()
-  const weekOptions = getLastNWeeks(4);
+  const weekOptions = getLastNWeeks(7);
 
   useEffect(() => {
     const fetchDashbordStats = async () => {
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
         setJobData(response.jobs)
         console.log(response)
       } catch (error) {
-        console.error("Error fetching on dashbord stats",error);
+        console.error("Error fetching on dashbord stats", error);
 
       }
     }
@@ -53,15 +53,16 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchWeeklyApplicationData = async () => {
       try {
-        const response = await getWeeklyApplicationData()
+        const response = await getWeeklyApplicationData(dateRange)
+        console.log("the response af", response)
         setApplicationData(response.response)
       } catch (error) {
-        console.error("Error on fetching Weekly application data",error);
+        console.error("Error on fetching Weekly application data", error);
 
       }
     }
     fetchWeeklyApplicationData()
-  }, [])
+  }, [dateRange])
 
   useEffect(() => {
     const fetchMonthlyRevenueData = async () => {
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
         const response = await getMonthlySubscriptionRevenue()
         setRevenueData(response.response)
       } catch (error) {
-        console.error("Error fetching monthly revenue data",error);
+        console.error("Error fetching monthly revenue data", error);
 
       }
     }
@@ -77,12 +78,29 @@ const AdminDashboard = () => {
   }, [])
 
 
+  const handleWeeklyApplicationDownload = async () => {
+    try {
+      await downloadExcel(dateRange, "ApplicationData")
+    } catch (error) {
+      console.error("Error on Download execel of Weekly application data");
+
+    }
+  }
+  const handleRevenueDownload = async () => {
+    try {
+      await downloadExcel(dateRange, "RevenueData")
+    } catch (error) {
+      console.error("Error on Download execel of Revenue data");
+
+    }
+  }
+
 
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <div className="flex flex-col md:flex-row">
-        <Sidebar  />
+        <Sidebar />
         <div className="bg-gray-50 w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
           <AdminHeader heading="Dashboard" />
 
@@ -96,20 +114,20 @@ const AdminDashboard = () => {
                 Here's your admin dashboard overview for today
               </p>
             </div>
-              <div className="border rounded-lg shadow-sm flex items-center px-3 h-12 self-start">
-            <GoCalendar className="text-gray-500 mr-2" />
-            <select
-              className="bg-transparent focus:outline-none py-2 text-gray-700 cursor-pointer"
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-            >
-              {weekOptions.map((range, idx) => (
-                <option key={idx} value={range}>
-                  {range}
-                </option>
-              ))}
-            </select>
-          </div> 
+            <div className="border rounded-lg shadow-sm flex items-center px-3 h-12 self-start">
+              <GoCalendar className="text-gray-500 mr-2" />
+              <select
+                className="bg-transparent focus:outline-none py-2 text-gray-700 cursor-pointer"
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+              >
+                {weekOptions.map((range, idx) => (
+                  <option key={idx} value={range}>
+                    {range}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
 
@@ -147,7 +165,7 @@ const AdminDashboard = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-gray-800">Application Response</h2>
                 <button className="text-gray-500 hover:text-gray-700 transition-colors" title="Download Report">
-                  <GoDownload className="w-5 h-5" />
+                  <GoDownload className="w-5 h-5" onClick={handleWeeklyApplicationDownload} />
                 </button>
               </div>
               <div className="w-full">
@@ -155,7 +173,7 @@ const AdminDashboard = () => {
                   <LineChart data={applicationData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="name" tick={{ fill: '#6b7280' }} />
-                    <YAxis tick={{ fill: '#6b7280' }}  />
+                    <YAxis tick={{ fill: '#6b7280' }} />
                     <Tooltip />
                     <Legend />
                     <Line
@@ -204,7 +222,7 @@ const AdminDashboard = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-gray-800">Subscription Revenue</h2>
                 <button className="text-gray-500 hover:text-gray-700 transition-colors" title="Download Report">
-                  <GoDownload className="w-5 h-5" />
+                  <GoDownload className="w-5 h-5" onClick={handleRevenueDownload} />
                 </button>
               </div>
               <div className="w-full">

@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import api from "./api";
+import { parseWeekRange } from "../utils/dasboardUtils";
 
 export const fetchUsers = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
@@ -9,7 +10,7 @@ export const fetchUsers = async (page = 1, limit = 5, searchQuery = "", signal?:
         limit,
         q: searchQuery
       },
-      signal 
+      signal
     });
     return response.data;
   } catch (error) {
@@ -140,7 +141,7 @@ export const removeSkill = async (skillId: string) => {
 
 export const getSubcriptions = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/subscriptions`,{
+    const response = await api.get(`admin/subscriptions`, {
       params: {
         page,
         limit,
@@ -166,9 +167,9 @@ export const updateSubscriptionStatus = async (subscriptionId: string, { status 
   }
 }
 
-export const getDashboardStats= async()=>{
+export const getDashboardStats = async () => {
   try {
-    const response= await api.get("admin/dashboard-stats")
+    const response = await api.get("admin/dashboard-stats")
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -177,24 +178,50 @@ export const getDashboardStats= async()=>{
   }
 }
 
- export const getWeeklyApplicationData=async()=>{
+export const getWeeklyApplicationData = async (date: string) => {
+  const { startDate, endDate } = parseWeekRange(date)
   try {
-    const response=await api.get("admin/dashboard-application-status")
+    const response = await api.get("admin/dashboard-application-status", { params: { startDate, endDate } })
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
       console.error("Error fetching weekly application data :", error.response?.data);
     }
   }
- }
+}
 
-  export const getMonthlySubscriptionRevenue = async()=>{
-    try {
-      const response= await  api.get("admin/dashboard-revenue-status")
-      return response.data
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error("Error fetching Monthly Revenue data :", error.response?.data);
-      }
+export const getMonthlySubscriptionRevenue = async () => {
+  try {
+    const response = await api.get("admin/dashboard-revenue-status")
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error fetching Monthly Revenue data :", error.response?.data);
     }
   }
+}
+
+export const downloadExcel = async (date:string,type: "ApplicationData" | "RevenueData") => {
+  const { startDate, endDate } = parseWeekRange(date)
+  try {
+    const response = await api.get("/admin/dashboard/download-excel", {
+      params: { startDate, endDate, type },
+      responseType: "blob", 
+    });
+
+    const blob = new Blob([response.data], {
+      type: response.headers["content-type"],
+    });
+
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = `${type}-report.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error downloading Excel:", error.response?.data);
+    }
+  }
+};

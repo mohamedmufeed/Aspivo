@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { resendotp, verifyOtp } from "../../services/auth"
 import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../redux/store/store"
+import { AppDispatch, RootState } from "../../redux/store/store"
 import { login } from "../../redux/slice/authSlice"
+import { useSelector } from "react-redux"
 
 
 
@@ -43,8 +44,7 @@ const OtpVerification = () => {
                     email: data.user.user.email,
                     isAdmin: data.user.user.isAdmin || false
                 }));
-                navigate("/");
-
+                 navigate("/");
             } else {
                 throw new Error("Invalid OTP ");
             }
@@ -54,6 +54,8 @@ const OtpVerification = () => {
         }
     }
 
+    const user=useSelector((start:RootState)=>start.auth.user)
+    console.log("the user",user)
     const handleResendOtp = async () => {
         setTimer(60)
         setResendbtn(false)

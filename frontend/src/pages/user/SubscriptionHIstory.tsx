@@ -32,7 +32,7 @@ const SubscriptionHIstory = () => {
             try {
                 setLoading(true);
                 const response = await getSubscriptionHistory(userId);
-                console.log("the response",response)
+                console.log("the response", response)
                 const subscriptions = Array.isArray(response.subscription)
                     ? response.subscription
                     : [response.subscription];
@@ -48,6 +48,12 @@ const SubscriptionHIstory = () => {
             fetchHistory();
         }
     }, [userId]);
+
+    useEffect(() => {
+        if (history.length === 0) {
+            navigate("/subscription")
+        }
+    })
 
     const navigate = useNavigate();
     return (

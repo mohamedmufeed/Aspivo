@@ -19,7 +19,8 @@ export class DashboardController implements IDashboardController {
 
     getWeeklyApplicationData = async (req: Request, res: Response) => {
         try {
-            const response = await this._dashboardService.getWeeklyApplicationData()
+            const {startDate,endDate}=req.query
+            const response = await this._dashboardService.getWeeklyApplicationData(startDate as string,endDate as string)
             res.status(HttpStatus.OK).json(response)
         } catch (error) {
             const err= error as Error
@@ -35,6 +36,19 @@ export class DashboardController implements IDashboardController {
         } catch (error) {
             const err= error as Error
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:err.message||ERROR_MESSAGES.SERVER_ERROR})
+        }
+    }
+
+      downloadExcelFile=async(req:Request,res:Response)=>{
+        try {
+            const {startDate, endDate, type}=req.query
+            const workbook=await this._dashboardService.downloadExcel(startDate as string,endDate  as string, type as string)
+            res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            res.setHeader("Content-Disposition", `attachment; filename=${type}-report.xlsx`);
+            await workbook.xlsx.write(res);
+            res.end();
+        } catch (error) {
+            res.status(HttpStatus.NOT_FOUND).json({ message: "Failed to generate Excel file", error });
         }
     }
 }

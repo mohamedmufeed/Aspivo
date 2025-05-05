@@ -20,6 +20,7 @@ import EditEducation from "../../components/User/modals/EditEducation";
 import EditSkill from "../../components/User/modals/EditSkill";
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
+import Footer from "../../components/homecomponts/Footer";
 
 
 
@@ -325,7 +326,7 @@ const Profile = () => {
 
                 </div>
             </div>
-
+<Footer/>
         </>
     );
 };

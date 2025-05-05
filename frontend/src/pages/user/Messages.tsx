@@ -394,7 +394,7 @@ const Messages = () => {
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-xs sm:text-sm text-gray-400">{format(new Date(conv.timestamp), "p")}</span>
-                    {/* {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />} */}
+               {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />} 
                   </div>
                 </div>
               ))

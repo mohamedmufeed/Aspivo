@@ -20,32 +20,33 @@ const Navbar = () => {
     const [notifications, setNotifications] = useState<any[]>([]);
 
     useEffect(() => {
-
         const handelGoogleUser = async () => {
-            try {
-                const response = await fetchGoogleUser()
-                if (response) {
-                    dispatch(
-                        login({
-                            _id: response._id,
-                            userName: response.userName,
-                            profileImage: response.profileImage,
-                            email: response.email,
-                            isAdmin: response.isAdmin || false,
-                            token: response.token,
-                            experiences: response.experiences || [],
-                        })
-                    );
-                } else {
-                    // console.log("Google Auth failed or no data received");
-                }
-
-            } catch (error) {
-                 console.log( error)
+          try {
+            const response = await fetchGoogleUser();
+      
+            // Only dispatch if user is actually logged in via Google
+            if (response && response.token) {
+              dispatch(
+                login({
+                  _id: response._id,
+                  userName: response.userName,
+                  profileImage: response.profileImage,
+                  email: response.email,
+                  isAdmin: response.isAdmin || false,
+                  token: response.token,
+                  experiences: response.experiences || [],
+                })
+              );
             }
+          } catch (error) {
+            console.log("Error fetching Google user", error);
+          }
+        };
+        if (!user) {
+          handelGoogleUser();
         }
-        handelGoogleUser()
-    }, [])
+      }, []);
+      
 
     const user = useSelector((state: RootState) => state.auth.user)
     const userId = user?._id || ""

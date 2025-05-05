@@ -67,5 +67,8 @@ router
   router
 .get("/dashboard-revenue-status",dashboardController.getMonthlySubscriptionRevenue )
 
+router
+.get("/dashboard/download-excel",dashboardController.downloadExcelFile)
+
  export default router
 

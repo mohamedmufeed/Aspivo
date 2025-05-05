@@ -46,6 +46,7 @@ const CompanyDashboard = () => {
   const [jobData, setJobData] = useState<IState>()
   const [applicationChartData, setApplicationChartData] = useState<PieChartData[]>([])
   const [mostAppliedJobs, setMostAppliedJobs] = useState<IAppliedJobs[]>()
+  const [isSubscribed, setIsSubscribed] = useState(false)
   const userId = user?._id || "";
   useEffect(() => {
     if (!user) {
@@ -58,12 +59,17 @@ const CompanyDashboard = () => {
       try {
         if (!userId) return;
         const response = await fetchCompany(userId);
-        setCompanyId(response.company.company._id)
+        let company=response.company.company
+        console.log(company)
+        setCompanyId(company._id)
         if (!response) {
           navigate("/company-signup");
         }
-        if (response.company.company.status != "Approved") {
+        if (company.status != "Approved") {
           navigate("/success")
+        }
+        if(company.subscription.status ==="active" && company.features.accessToAnalytics){
+            setIsSubscribed(true)
         }
       } catch (error) {
         console.error("Error fetching company:", error);
@@ -163,7 +169,7 @@ const CompanyDashboard = () => {
         <div className="flex flex-col md:flex-row md:justify-between px-4 md:px-8 pt-6 md:pt-10">
           <div className="space-y-2 mb-4 md:mb-0">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-             {getGreeting()}
+              {getGreeting()}
             </h1>
             <p className="text-md font-normal text-gray-600">
               Here's your admin dashboard overview for today
@@ -232,15 +238,10 @@ const CompanyDashboard = () => {
         {/* job appliation deatails */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 md:px-8 pt-12 pb-8">
-          {/* Applicatoin  Chart */}
 
-
-          <div className="bg-white p-6 rounded-xl shadow-md w-full h-[400px] ">
+          <div className="relative bg-white p-6 rounded-xl shadow-md w-full h-[400px] overflow-hidden">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-800">Application Response</h2>
-              <button className="text-gray-500 hover:text-gray-700 transition-colors" title="Download Report">
-                <GoDownload className="w-5 h-5" />
-              </button>
             </div>
             <hr />
             <ResponsiveContainer width="100%" height="100%">
@@ -269,10 +270,18 @@ const CompanyDashboard = () => {
                 />
               </PieChart>
             </ResponsiveContainer>
+
+            {!isSubscribed && (
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20 rounded-xl">
+                <div className="text-center">
+                  <p className="text-gray-700 font-semibold">Subscribe to view full insights</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Subscription Revenue Chart */}
-          <div className="bg-white p-6 rounded-xl shadow-md w-full h-[400px] ">
+          <div className=" relative bg-white p-6 rounded-xl shadow-md w-full h-[400px] ">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-800">Top Performing Jobs</h2>
             </div>
@@ -281,7 +290,7 @@ const CompanyDashboard = () => {
             {mostAppliedJobs && mostAppliedJobs.length > 0 ?
               (
                 mostAppliedJobs.map((job) => (
-                  <div  key={job._id} className="p-7 flex space-x-3.5" >
+                  <div key={job._id} className="p-7 flex space-x-3.5" >
                     <div className="flex justify-center items-center">
                       <div className=" rounded-full p-1.5 bg-orange-400"></div>
                     </div>
@@ -289,8 +298,8 @@ const CompanyDashboard = () => {
                     <div>
                       <h1 className="font-bold ">{`${job.jobTitle} - ${job.count} Applications`}</h1>
                       <p className="text-sm text-gray-600">{job?.startDate
-                    ? `Posted ${new Date(job.startDate).toLocaleDateString()}`
-                    : "Date not available"}</p>
+                        ? `Posted ${new Date(job.startDate).toLocaleDateString()}`
+                        : "Date not available"}</p>
                     </div>
                   </div>
                 ))
@@ -301,7 +310,13 @@ const CompanyDashboard = () => {
                 <p>No jobs found</p>
               )
             }
-
+            {!isSubscribed && (
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-20 rounded-xl">
+                <div className="text-center">
+                  <p className="text-gray-700 font-semibold">Subscribe to view full insights</p>
+                </div>
+              </div>
+            )}
 
           </div>
 

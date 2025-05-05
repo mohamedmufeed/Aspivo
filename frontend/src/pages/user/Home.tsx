@@ -58,7 +58,8 @@ const HeroSection = () => {
         const response = await getProfile(userId);
         if (response.user.user.isAdmin) {
           navigate("/admin-dashboard")
-        } else {
+        } 
+        else {
           navigate("/")
         }
       } catch (error) {

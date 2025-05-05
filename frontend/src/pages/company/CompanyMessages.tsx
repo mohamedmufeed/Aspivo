@@ -160,9 +160,10 @@ const CompanyMessages = () => {
         };
 
         fetchHistory();
-        socket.emit("joinChannel", channel);
+    socket.emit("joinChannel", channel);
         const handleReceiveMessage = (message: RawSocketMessage) => {
             console.log("Received message:", message);
+        
             const normalizedMessage: ChatMessage = {
                 _id: message._id || `${message.senderId}-${message.timeStamp}`,
                 senderId: message.senderId,
@@ -170,13 +171,29 @@ const CompanyMessages = () => {
                 imageUrl: message.imageUrl,
                 timestamp: message.timeStamp || new Date().toISOString(),
             };
-
-            if (normalizedMessage.message || normalizedMessage.imageUrl) {
+            if (message.senderId === selectedUserId) {
                 setMessages((prev) => [...prev, normalizedMessage]);
             } else {
-                console.warn("Invalid message received after normalization:", normalizedMessage);
+                console.log(
+                    `Message from ${message.senderId} does not match selected user ${selectedUserId}`
+                );
+        
+             
+                setConversations((prev) =>
+                    prev.map((conv) =>
+                        conv.targetId === message.senderId
+                            ? {
+                                  ...conv,
+                                  lastMessage: normalizedMessage.message,
+                                  timestamp: new Date(normalizedMessage.timestamp).toISOString(),
+                                  unread: true,
+                              }
+                            : conv
+                    )
+                );
             }
         };
+        
 
         socket.on("receiveMessage", handleReceiveMessage);
         return () => {
@@ -187,6 +204,7 @@ const CompanyMessages = () => {
             }
         };
     }, [selectedUserId, conversations, companyId, socket]);
+
     useEffect(() => {
         return () => {
             if (socket) {
@@ -330,7 +348,9 @@ const CompanyMessages = () => {
                                         <span className="text-xs sm:text-sm text-gray-400">
                                             {format(new Date(conv.timestamp), 'p')}
                                         </span>
-                                        {/* {conv.unread && <div className="bg-orange-600 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full mt-1" />} */}
+
+                                        {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />} 
+
                                     </div>
                                 </div>
                             ))

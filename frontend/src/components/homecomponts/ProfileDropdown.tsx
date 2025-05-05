@@ -15,19 +15,20 @@ const ProfileDropdown = () => {
     const navigate = useNavigate()
     const user = useSelector((state: RootState) => state.auth.user)
     console.log(user)
-
     const handleLogout = async () => {
         try {
-            const response = await logoutUser(user?._id || "")
-            if (response) {
-                dispatch(logout());
-                navigate("/login");
-            }
+          const response = await logoutUser(user?._id || "");
+          if (response) {
+            dispatch(logout());
+            localStorage.clear(); 
+            sessionStorage.clear(); 
+            navigate("/login");
+          }
         } catch (error) {
-            console.log("Error logut user", error)
+          console.log("Error logout user", error);
         }
-
-    };
+      };
+      
 
 
     return (

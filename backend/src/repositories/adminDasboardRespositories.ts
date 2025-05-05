@@ -1,9 +1,11 @@
+import { lightFormat } from "date-fns";
 import { IDashboardRepositories } from "../interface/repositories/dashboardInterface";
 import Company from "../models/company";
 import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
 import Subscription from "../models/Subscription";
 import User from "../models/user";
+import { FilterQuery } from "mongoose";
 
 
 export class DashboardRepositories implements IDashboardRepositories {
@@ -36,8 +38,18 @@ export class DashboardRepositories implements IDashboardRepositories {
     return Company.countDocuments();
   }
 
-  async getWeeklyApplicationData(): Promise<{ name: string, applications: number, interviews: number, pending: number, rejected: number }[]> {
+  async getWeeklyApplicationData(startDate?:string,endDate?:string): Promise<{ name: string, applications: number, interviews: number, pending: number, rejected: number }[]> {
+    const matchCondition :FilterQuery<typeof JobApplication>= {};
+    if (startDate && endDate) {
+      matchCondition.appliedAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
     const result = await JobApplication.aggregate([
+      {
+        $match: matchCondition
+      },
       {
         $project: {
           day: { $dayOfWeek: "$appliedAt" },
@@ -60,17 +72,25 @@ export class DashboardRepositories implements IDashboardRepositories {
         }
       },
       { $sort: { _id: 1 } }
-    ])
+    ]);
+  
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    return result.map((item: any) => ({
-      name: daysOfWeek[item._id - 1],
-      applications: item.applications,
-      interviews: item.interviews,
-      pending: item.pending,
-      rejected: item.rejected,
-    }));
+    const resultMap = new Map(result.map(item => [item._id, item]));
+    const fullWeekData = daysOfWeek.map((dayName, index) => {
+      const dayNumber = index + 1;
+      const data = resultMap.get(dayNumber);
+      return {
+        name: dayName,
+        applications: data?.applications || 0,
+        interviews: data?.interviews || 0,
+        pending: data?.pending || 0,
+        rejected: data?.rejected || 0,
+      };
+    });
+  
+    return fullWeekData;
   }
-
+  
   async getMonthlySubscriptionRevenue() {
     return await Subscription.aggregate([
       { $match: { status: "active" } },
