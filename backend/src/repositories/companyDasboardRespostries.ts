@@ -3,6 +3,7 @@ import { ICompanyDashboardRepositories } from "../interface/repositories/company
 import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
 import { ApplicationStatusStats } from "../types/dashboardTypes";
+import { count } from "console";
 
 export class ComapnyDasboardRepositories implements ICompanyDashboardRepositories {
 
@@ -142,5 +143,37 @@ export class ComapnyDasboardRepositories implements ICompanyDashboardRepositorie
       }
     ])
     return stats
+  }
+
+  async getMostAppliedJobs(companyId:string){
+    const mostAppliedJobs=await JobApplication.aggregate([
+      {
+        $lookup:{
+          from:"jobs",
+          localField: "jobId",
+          foreignField: "_id",
+          as: "jobDetails"
+        }
+      },
+      {
+        $unwind:"$jobDetails"
+      },
+      {
+        $match:{
+          "jobDetails.company":new mongoose.Types.ObjectId(companyId)
+        }
+      },
+      {
+        $group:{
+          _id:"$jobId",
+          count:{$sum:1},
+          jobTitle: { $first: "$jobDetails.jobTitle" },
+          startDate:{ $first: "$jobDetails.startDate" }
+        }
+      },
+      {$sort:{count:-1}},
+      {$limit:4}
+    ])
+    return mostAppliedJobs
   }
 }

@@ -6,6 +6,7 @@ import { ERROR_MESSAGES } from "../../constants/error";
 
 
 
+
 export class CompanyDasboradController implements ICompanyDashboardController {
     constructor(private _companyDashboardService: CompanyDasboradService) { }
     async getDashboardStatus(req: Request, res: Response) {
@@ -29,6 +30,18 @@ export class CompanyDasboradController implements ICompanyDashboardController {
         } catch (error) {
             const err = error as Error
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR })
+        }
+    }
+
+
+    async getMostAppliedJobs(req:Request,res:Response){
+        try {
+            const companyId=req.params.id
+            const response=await this._companyDashboardService.getMostAppliedJobs(companyId)
+            res.status(HttpStatus.OK).json(response)
+        } catch (error) {
+            const err= error as Error
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:err.message||ERROR_MESSAGES.SERVER_ERROR})
         }
     }
 }

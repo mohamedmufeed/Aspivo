@@ -113,5 +113,9 @@ router
   router
   .route("/dashboard/application-status/:id")
   .get(companyDashboardController.getApplicationStatusByDate.bind(companyDashboardController))
+  
+  router
+  .route("/dashboard/most-appliedjobs/:id")
+  .get(companyDashboardController.getMostAppliedJobs.bind(companyDashboardController))
 
 export default router

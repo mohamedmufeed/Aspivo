@@ -9,7 +9,8 @@ import CompanySidebar from "../../components/Company/ComapnySidebar";
 import { GoBriefcase, GoDownload, } from "react-icons/go";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
 import { Legend, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from "recharts";
-import { getCompanyApplicationByDate, getCompanyDashboardStats } from "../../services/company/companyDashboard";
+import { getCompanyApplicationByDate, getCompanyDashboardStats, getMostAppliedJobs } from "../../services/company/companyDashboard";
+import { getGreeting } from "../../utils/dasboardUtils";
 
 export interface IState {
   diff: number;
@@ -26,6 +27,14 @@ type PieChartData = {
 };
 
 
+interface IAppliedJobs {
+  _id: string;
+  count: number
+  jobTitle: String
+  startDate: string
+}
+
+
 const CompanyDashboard = () => {
   const navigate = useNavigate();
   const [fromDate, setFromDate] = useState('');
@@ -36,6 +45,7 @@ const CompanyDashboard = () => {
   const [numberOfHiringData, setNumberOfHiringData] = useState<IState>()
   const [jobData, setJobData] = useState<IState>()
   const [applicationChartData, setApplicationChartData] = useState<PieChartData[]>([])
+  const [mostAppliedJobs, setMostAppliedJobs] = useState<IAppliedJobs[]>()
   const userId = user?._id || "";
   useEffect(() => {
     if (!user) {
@@ -106,12 +116,22 @@ const CompanyDashboard = () => {
 
   }, [companyId, fromDate, toDate])
 
+  useEffect(() => {
+    const fetchMostAppliedJobs = async () => {
+      try {
+        if (!companyId) return
+        const response = await getMostAppliedJobs(companyId)
+        setMostAppliedJobs(response.response)
+      } catch (error) {
+        console.error("Erron on fetching most applied jobs");
 
-  const data = [
-    { name: "Short Listed", value: 1120, fill: "#F4B942" },
-    { name: "Hired", value: 12423, fill: "#6592FD" },
-    { name: "Rejected", value: 12423, fill: "#0E1B25" },
-  ];
+      }
+    }
+    if (companyId) {
+      fetchMostAppliedJobs()
+    }
+  }, [companyId])
+
 
   const renderCustomLegend = () => {
     return (
@@ -143,26 +163,12 @@ const CompanyDashboard = () => {
         <div className="flex flex-col md:flex-row md:justify-between px-4 md:px-8 pt-6 md:pt-10">
           <div className="space-y-2 mb-4 md:mb-0">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-              Good Morning
+             {getGreeting()}
             </h1>
             <p className="text-md font-normal text-gray-600">
               Here's your admin dashboard overview for today
             </p>
           </div>
-          {/* <div className="border rounded-lg shadow-sm flex items-center px-3 h-12 self-start">
-            <GoCalendar className="text-gray-500 mr-2" />
-            <select
-              className="bg-transparent focus:outline-none py-2 text-gray-700 cursor-pointer"
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-            >
-              {weekOptions.map((range, idx) => (
-                <option key={idx} value={range}>
-                  {range}
-                </option>
-              ))}
-            </select>
-          </div> */}
 
           <div className="flex space-x-3.5">
             <div className="flex flex-col">
@@ -249,7 +255,7 @@ const CompanyDashboard = () => {
                   dataKey="value"
                   nameKey="name"
                 >
-                  {data.map((entry, index) => (
+                  {applicationChartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
@@ -271,17 +277,31 @@ const CompanyDashboard = () => {
               <h2 className="text-xl font-bold text-gray-800">Top Performing Jobs</h2>
             </div>
             <hr />
-            <div className="p-7 flex space-x-3.5">
-              <div className="flex justify-center items-center">
-                <div className=" rounded-full p-1.5 bg-orange-300"></div>
-              </div>
 
-              <div>
-                <h1 className="font-bold ">Frontend Developer - 3 Applications</h1>
-                <p className="text-sm text-gray-700">Posted on 2/03/2024</p>
-              </div>
+            {mostAppliedJobs && mostAppliedJobs.length > 0 ?
+              (
+                mostAppliedJobs.map((job) => (
+                  <div  key={job._id} className="p-7 flex space-x-3.5" >
+                    <div className="flex justify-center items-center">
+                      <div className=" rounded-full p-1.5 bg-orange-400"></div>
+                    </div>
 
-            </div>
+                    <div>
+                      <h1 className="font-bold ">{`${job.jobTitle} - ${job.count} Applications`}</h1>
+                      <p className="text-sm text-gray-600">{job?.startDate
+                    ? `Posted ${new Date(job.startDate).toLocaleDateString()}`
+                    : "Date not available"}</p>
+                    </div>
+                  </div>
+                ))
+
+              )
+              :
+              (
+                <p>No jobs found</p>
+              )
+            }
+
 
           </div>
 

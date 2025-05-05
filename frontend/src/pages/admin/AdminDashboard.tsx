@@ -5,7 +5,7 @@ import { GoPeople, GoOrganization, GoBriefcase, GoDownload, GoCalendar } from "r
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
 import { getDashboardStats, getMonthlySubscriptionRevenue, getWeeklyApplicationData } from "../../services/adminService";
-import { getLastNWeeks } from "../../utils/dasboardUtils";
+import { getGreeting, getLastNWeeks } from "../../utils/dasboardUtils";
 
 export interface IState {
   diff: number;
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
           <div className="flex flex-col md:flex-row md:justify-between px-4 md:px-8 pt-6 md:pt-10">
             <div className="space-y-2 mb-4 md:mb-0">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                Good Morning
+                {getGreeting()}
               </h1>
               <p className="text-md font-normal text-gray-600">
                 Here's your admin dashboard overview for today

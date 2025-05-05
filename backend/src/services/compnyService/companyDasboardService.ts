@@ -63,9 +63,11 @@ export class CompanyDasboradService implements ICompanyDashboardService {
             }
             return formatedStatus
         }
+    }
 
-
-
-
+    async getMostAppliedJobs(companyId: string) {
+        if (!companyId) throw new Error("Company id is requierd")
+        const response = await this._comapnyDasboardRepostries.getMostAppliedJobs(companyId)
+        return { response, message: "Most applied jobs found sucsessfull" }
     }
 }

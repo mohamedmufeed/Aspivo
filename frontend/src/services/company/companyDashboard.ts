@@ -1,6 +1,5 @@
 import { AxiosError } from "axios";
 import api from "../api"
-import { parseWeekRange } from "../../utils/dasboardUtils";
 
 export const getCompanyDashboardStats = async (comapnyId: string) => {
     try {
@@ -25,3 +24,15 @@ export const getCompanyApplicationByDate = async (comapnyId: string, startDate: 
         }
     }
 }
+
+
+ export const getMostAppliedJobs=async(companyId:string)=>{
+try {
+    const response=await api.get(`company/dashboard/most-appliedjobs/${companyId}`)
+    return response.data
+} catch (error) {
+    if (error instanceof AxiosError) {
+        console.error("Error fethching most applied jobs stats:", error.response?.data);
+    }
+}
+ }

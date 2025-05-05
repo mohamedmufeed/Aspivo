@@ -111,7 +111,6 @@ export interface IMeetingData {
   };
   status: "pending" | "reviewed" | "accepted" | "rejected";
   appliedAt: Date;
-  // other fields you need
 };
 
 
@@ -120,3 +119,11 @@ export interface IMeetingData {
   | { type: "user"; data: IUser }
   | { type: "company"; data: ICompany }
   | null;
+
+
+export interface IMostAppliedJobs{
+  _id:string;
+  count:number;
+  jobTitle:string;
+  startDate:string
+}
