@@ -57,72 +57,7 @@ const setupSocket = (server: HttpServer) => {
             })
         })
 
-        //join meeting
-        // socket.on("joinMeeting", (roomId: string, callback?: (response: { success: boolean; participants?: string[]; error?: string }) => void) => {
-        //     try {
-        //         if (!roomId || typeof roomId !== "string") {
-        //             if (typeof callback === "function") {
-        //                 callback({ success: false, error: "Invalid room ID" });
-        //             } else {
-        //                 logger.warn("No callback provided for joinMeeting with invalid roomId");
-        //             }
-        //             return;
-        //         }
-
-        //         socket.join(roomId);
-
-        //         if (!meetingRooms.has(roomId)) {
-        //             meetingRooms.set(roomId, new Set<string>());
-        //         }
-
-        //         const roomParticipants = meetingRooms.get(roomId)!;
-        //         if (!roomParticipants.has(socket.id)) {
-        //             roomParticipants.add(socket.id);
-        //         }
-
-        //         socket.roomId = roomId;
-        //         socket.to(roomId).emit("userJoined", socket.id);
-
-        //         if (typeof callback === "function") {
-        //             callback({
-        //                 success: true,
-        //                 participants: Array.from(roomParticipants),
-        //             });
-        //         } else {
-        //             logger.warn("No callback provided for joinMeeting");
-        //         }
-        //     } catch (error) {
-        //         logger.error(`Error joining meeting room ${roomId}:`, error);
-        //         if (typeof callback === "function") {
-        //             callback({ success: false, error: "Failed to join meeting room" });
-        //         } else {
-        //             logger.error("Error occurred but no callback to report it");
-        //         }
-        //     }
-        // });
-
-        // socket.on("leaveMeeting", (roomId: string, callback: (response: { success: boolean }) => void) => {
-        //     if (socket.roomId) {
-        //         socket.leave(socket.roomId)
-        //         meetingRooms.get(socket.roomId)?.delete(socket.id);
-        //         socket.to(socket.roomId).emit("userLeft", socket.id);
-        //         logger.info(`${socket.id} left room ${socket.roomId}, Remaining: ${meetingRooms.get(socket.roomId)?.size || 0}`);
-        //         if (meetingRooms.get(socket.roomId)?.size === 0) {
-        //             meetingRooms.delete(socket.roomId)
-        //             logger.info(`Room ${socket.roomId} deleted`);
-        //         }
-        //         delete socket.roomId;
-        //         if (typeof callback === "function") {
-        //             callback({ success: true });
-        //         } else {
-        //             logger.warn("No callback provided for leaveMeeting event");
-        //         }
-        //     } else if (typeof callback === "function") {
-        //         callback({ success: false });
-        //     }
-        // })
-
-
+       
 
         socket.on("disconnect", (reason: string) => {
             for (const [role, users] of userSockets.entries()) {

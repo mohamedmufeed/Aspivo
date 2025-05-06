@@ -97,4 +97,24 @@ export class MessageController  implements IMessageController{
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR});
     }
   };
+
+  markConversationRead = async (req: Request, res: Response): Promise<void> => {
+    try {
+      console.log("helllllllllooooooo")
+      const { channel, userId } = req.body;
+      
+      if (!channel || !userId) {
+        res.status(HttpStatus.BAD_REQUEST).json({ message: "Channel and userId are required" });
+        return;
+      }
+      
+      await this._messageService.markConversationAsRead(channel, userId);
+      res.status(HttpStatus.OK).json({ message: "Conversation marked as read" });
+    } catch (error) {
+      const err = error as Error;
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ 
+        message: err.message || ERROR_MESSAGES.SERVER_ERROR
+      });
+    }
+  };
 }

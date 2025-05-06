@@ -135,7 +135,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
           <hr className="mt-2" />
           <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
             <div className="flex bg-white shadow-lg rounded-lg w-5/6 mx-auto mt-5 p-9">
-              <div className="relative bg-gray-300 rounded-full w-32 h-32 flex items-center justify-center overflow-hidden">
+              <div className="relative bg-gray-300 rounded-full w-30 h-20 sm:w-32 sm:h-32 flex items-center justify-center overflow-hidden">
                 {imageUrl ? (
                   <img
 

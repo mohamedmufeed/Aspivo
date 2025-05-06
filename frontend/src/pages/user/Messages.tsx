@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getConversations, getMessageHistory, sendMessage, InitializeChat } from "../../services/messageService";
+import { getConversations, getMessageHistory, sendMessage, InitializeChat, markConversationAsRead } from "../../services/messageService";
 import { IoIosLink, IoIosSearch } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
 import { useSelector } from "react-redux";
@@ -33,6 +33,7 @@ interface RawSocketMessage {
   message: string;
   imageUrl?: string;
   timeStamp: string;
+  channel: string;
 }
 
 interface Conversation {
@@ -144,6 +145,18 @@ const Messages = () => {
         try {
           const data = await getMessageHistory(channel);
           if (data) setMessages(data);
+          if (conversation?.unread) {
+            await markConversationAsRead(channel, userId);
+            
+            setConversations(prev => 
+              prev.map(conv => 
+                conv.employeeId === selectedEmployeeId 
+                  ? { ...conv, unread: false } 
+                  : conv
+              )
+            );
+          }
+          
         } catch (error) {
           console.error("Error fetching message history:", error);
         }
@@ -161,11 +174,19 @@ const Messages = () => {
           timestamp: message.timeStamp || new Date().toISOString(),
         };
 
+        if (message.channel !== channel) {
+          console.warn("Message does not belong to current channel, skipping:", message.channel);
+          return;
+        }
         if (normalizedMessage.message || normalizedMessage.imageUrl) {
+    
           setMessages((prev) => [...prev, normalizedMessage]);
         }
+        if (message.senderId !== userId && selectedEmployeeId !== conversation?.employeeId) {
+         
+          
       };
-
+    }
       socket.on("receiveMessage", handleMessage);
       return () => {
         socket.off("receiveMessage", handleMessage);
@@ -225,6 +246,20 @@ const Messages = () => {
   const handleSelectConversation = (employeeId: string) => {
     setSelectedEmployeeId(employeeId);
     setMessages([]);
+    const conversation = conversations.find((c) => c.employeeId === employeeId);
+    if (conversation?.channel && userId) {
+      markConversationAsRead(conversation.channel, userId)
+        .then(() => {
+          setConversations(prevConversations => 
+            prevConversations.map(conv => 
+              conv.employeeId === employeeId 
+                ? { ...conv, unread: false } 
+                : conv
+            )
+          );
+        })
+        .catch(err => console.error("Failed to mark conversation as read:", err));
+    }
   };
 
 

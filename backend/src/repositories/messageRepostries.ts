@@ -96,5 +96,45 @@ async decrementChatLimit(id: string) {
       { new: true } 
     );
   }
+
+  async markConversationUnread(channel: string, senderId: string) {
+    try {
+      // Extract participant IDs from the channel
+      // Channel format: "chat:participantA:participantB"
+      const parts = channel.split(':');
+      if (parts.length !== 3) return;
+      
+      const participantA = parts[1];
+      const participantB = parts[2];
+      
+      // Determine which participant is the recipient (not the sender)
+      const recipientId = senderId === participantA ? participantB : participantA;
+      
+      // Find recipient's role
+      const conversation = await Conversation.findOne({ channel });
+      if (!conversation) return;
+      
+      const recipientParticipant = conversation.participants.find(p => p.userId === recipientId);
+      if (!recipientParticipant) return;
+
+      await Conversation.updateOne(
+        { channel },
+        { unread: true }
+      );
+    } catch (error) {
+      logger.error("Error marking conversation as unread:", error);
+    }
+  }
+
+  async markConversationRead(channel: string, userId: string) {
+    try {
+      await Conversation.updateOne(
+        { channel },
+        { unread: false }
+      );
+    } catch (error) {
+      logger.error("Error marking conversation as read:", error);
+    }
+  }
   
 }

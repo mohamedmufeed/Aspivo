@@ -5,7 +5,7 @@ import { IoIosSearch } from "react-icons/io";
 import { IoVideocamOutline } from "react-icons/io5";
 import { IoIosLink } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
-import { getConversations, getMessageHistory, sendMessage } from "../../services/messageService";
+import { getConversations, getMessageHistory, markConversationAsRead, sendMessage } from "../../services/messageService";
 import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
@@ -30,6 +30,7 @@ interface RawSocketMessage {
     imageUrl?: string;
     message: string;
     timeStamp: string;
+    channel: string;
 }
 export interface Conversation {
 
@@ -131,79 +132,79 @@ const CompanyMessages = () => {
         fetchConversations();
     }, [companyId, location.state?.newConversation]);
 
-
-    useEffect(() => {
-        if (!socket || !selectedUserId || conversations.length === 0) return;
-
-        if (!socket.connected) {
-            socket.connect();
-            console.log('Socket connecting...');
+useEffect(() => {
+    if (!socket) return;
+  
+    if (selectedUserId && userId && conversations.length > 0) {
+      const conversation = conversations.find((c) => c.targetId === selectedUserId);
+      const channel = conversation?.channel || `chat:${selectedUserId}:${userId}`;
+  
+      const fetchHistory = async () => {
+        try {
+          const data = await getMessageHistory(channel);
+          if (data) setMessages(data);
+          if (conversation?.unread) {
+            await markConversationAsRead(channel, userId);
+            setConversations(prev => 
+                prev.map(conv => 
+                    conv.targetId === selectedUserId 
+                    ? { ...conv, unread: false } 
+                    : conv
+                )
+            );
         }
-
-        socket.emit("registerUser", "company", companyId);
-
-        const conversation = conversations.find((c) => c.targetId === selectedUserId);
-        const channel = conversation?.channel;
-
-        if (!channel) {
-            console.log("No channel found for selectedUserId:", selectedUserId);
-            return;
+          
+        } catch (error) {
+          console.error("Error fetching message history:", error);
         }
-
-        const fetchHistory = async () => {
-            try {
-                const data = await getMessageHistory(channel);
-                if (data) setMessages(data);
-            } catch (error) {
-                console.error("Error fetching message history:", error);
-            }
+      };
+  
+      fetchHistory();
+      socket.emit("joinChannel", channel);
+      const handleMessage = (message: RawSocketMessage) => {
+        console.log("Received message:", message);
+        const normalizedMessage: ChatMessage = {
+          _id: message._id || `${message.senderId}-${message.timeStamp}`,
+          senderId: message.senderId,
+          message: message.message || "",
+          imageUrl: message.imageUrl || undefined,
+          timestamp: message.timeStamp || new Date().toISOString(),
         };
-
-        fetchHistory();
-    socket.emit("joinChannel", channel);
-        const handleReceiveMessage = (message: RawSocketMessage) => {
-            console.log("Received message:", message);
+  
         
-            const normalizedMessage: ChatMessage = {
-                _id: message._id || `${message.senderId}-${message.timeStamp}`,
-                senderId: message.senderId,
-                message: message.message || "",
-                imageUrl: message.imageUrl,
-                timestamp: message.timeStamp || new Date().toISOString(),
-            };
-            if (message.senderId === selectedUserId) {
-                setMessages((prev) => [...prev, normalizedMessage]);
-            } else {
-                console.log(
-                    `Message from ${message.senderId} does not match selected user ${selectedUserId}`
-                );
-        
-             
-                setConversations((prev) =>
-                    prev.map((conv) =>
-                        conv.targetId === message.senderId
-                            ? {
-                                  ...conv,
-                                  lastMessage: normalizedMessage.message,
-                                  timestamp: new Date(normalizedMessage.timestamp).toISOString(),
-                                  unread: true,
-                              }
-                            : conv
-                    )
-                );
-            }
-        };
-        
-
-        socket.on("receiveMessage", handleReceiveMessage);
-        return () => {
-            if (channel) {
-                console.log(`Leaving channel: ${channel}`);
-                socket.emit("leaveChannel", channel);
-                socket.off("receiveMessage", handleReceiveMessage);
-            }
-        };
-    }, [selectedUserId, conversations, companyId, socket]);
+        if (message.channel !== channel) {
+          console.warn("Message does not belong to current channel:", message.channel);
+          
+          setConversations(prev => 
+            prev.map(conv => {
+              const messageChannel = message.channel;
+              const convChannel = conv.channel;
+              
+              if (convChannel === messageChannel) {
+                return {
+                  ...conv,
+                  lastMessage: normalizedMessage.message || (normalizedMessage.imageUrl ? "Image" : ""),
+                  timestamp: new Date(normalizedMessage.timestamp).toISOString(),
+                  unread: true
+                };
+              }
+              return conv;
+            })
+          );
+          return;
+        }
+        if (normalizedMessage.message || normalizedMessage.imageUrl) {
+          setMessages((prev) => [...prev, normalizedMessage]);
+        }
+      };
+      
+      socket.on("receiveMessage", handleMessage);
+      return () => {
+        socket.off("receiveMessage", handleMessage);
+        socket.emit("leaveChannel", channel);
+      };
+    }
+  }, [selectedUserId, userId, conversations, socket]);
 
     useEffect(() => {
         return () => {
@@ -249,6 +250,20 @@ const CompanyMessages = () => {
     const handleSelectConversation = (targetId: string) => {
         setSelectedUserId(targetId);
         setMessages([]);
+        const conversation = conversations.find((c) => c.targetId === selectedUserId);
+        if (conversation?.channel && userId) {
+            markConversationAsRead(conversation.channel, userId)
+                .then(() => {
+                    setConversations(prevConversations =>
+                        prevConversations.map(conv =>
+                            conv.targetId === selectedUserId
+                                ? { ...conv, unread: false }
+                                : conv
+                        )
+                    );
+                })
+                .catch(err => console.error("Failed to mark conversation as read:", err));
+        }
         console.log("Selected conversation:", targetId);
     };
 
@@ -349,7 +364,7 @@ const CompanyMessages = () => {
                                             {format(new Date(conv.timestamp), 'p')}
                                         </span>
 
-                                        {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />} 
+                                        {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />}
 
                                     </div>
                                 </div>

@@ -9,18 +9,11 @@ const messageRepositories= new MessageRepostries()
 const messageService= new MessageService(messageRepositories)
 const messageController = new MessageController(messageService);
 
-// router.post("/initialize-chat",messageController. initializeChatController);
-// router.get("/approved-conversations", protect, messageController.getApprovedConversations);
-// router.post("/send-message",messageController. sendMessage);
-// router.get("/chat-history",protect, messageController.getChatHistoryController);
-
-
-
-
 router.post("/chats", protect, messageController.initializeChatController);
 router.get("/chats/approved", protect, messageController.getApprovedConversations);
 router.post("/chats/messages", protect, messageController.sendMessage);
 router.get("/chats/messages", protect, messageController.getChatHistoryController);
+router.post("/chats/markRead", protect, messageController.markConversationRead);
 
 
 export default router;

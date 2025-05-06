@@ -54,3 +54,14 @@ export const InitializeChat=async(initiatorId:string,targetId:string,role:string
         }
     }
 }
+
+
+export const markConversationAsRead = async (channel:string, userId:string) => {
+    try {
+      const response = await api.post('message/chats/markRead', { channel, userId });
+      return response.data;
+    } catch (error) {
+      console.error('Error marking conversation as read:', error);
+      throw error;
+    }
+  };

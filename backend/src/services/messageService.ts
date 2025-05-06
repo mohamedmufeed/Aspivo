@@ -63,7 +63,7 @@ export class MessageService implements IMessageService {
         throw { status: 404, message: "Sender not found" };
       }
       const { type, data: sender } = senderInfo;
-
+      await this._messageRepositories.markConversationUnread(channel, senderId);
       if(type === "user"){
         if (sender?.features.unlimitedChat) {
           await this._messageRepositories.createChat(channel, senderId, message);
@@ -122,5 +122,9 @@ export class MessageService implements IMessageService {
       role
     );
     return conversations;
+  }
+
+  async markConversationAsRead(channel: string, userId: string) {
+    await this._messageRepositories.markConversationRead(channel, userId);
   }
 }
