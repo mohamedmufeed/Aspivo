@@ -8,6 +8,7 @@ import { RootState } from "../../redux/store/store";
 import { useParams, useNavigate } from "react-router-dom";
 import { Application } from "../../types/types";
 
+
 const CopmanyApplicants = () => {
   const [heading, setHeading] = useState("Applicants");
   const [details, setDetails] = useState<Application[]>([]); 
@@ -58,7 +59,7 @@ const CopmanyApplicants = () => {
     if (companyId) {
       fetchApplicants(companyId);
     }
-  }, [jobId, companyId]);
+  }, [jobId, companyId,fetchApplicants]);
 
   const handleViewApplication = (applicationId: string) => {
     navigate(`/company/applicants/${applicationId}`, { state: { companyId } });
@@ -87,7 +88,7 @@ const CopmanyApplicants = () => {
       </div>
     );
   }
-
+console.log("the details",details)
   return (
     <div className="flex">
       <CompanySidebar  />

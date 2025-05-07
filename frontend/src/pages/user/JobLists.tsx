@@ -41,7 +41,8 @@ const JobLists = () => {
         if (isLoadingRef.current) return;
         isLoadingRef.current = true;
         setLoading(true);
-
+console.log(newCategory)
+console.log(newSearch)
         try {
             const currentPage = resetPage ? 1 : page;
             if (resetPage) {
@@ -111,7 +112,7 @@ const JobLists = () => {
         return () => {
             debouncedSearch.cancel();
         };
-    }, []);
+    }, [loadJobs,debouncedSearch]);
     const user = useSelector((state: RootState) => state.auth.user)
     const userId = user?._id || ""
 

@@ -61,7 +61,7 @@ const CompanyJobListing = () => {
               <p className="text-center">Start date</p>
               <p className="text-center">Due date</p>
               <p className="text-center">Type</p>
-              <p className="text-center">Applicants</p>
+              <p className="text-center">Slot</p>
               <p className="text-center">More</p>
             </div>
             <hr className="border-gray-600 my-3" />

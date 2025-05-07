@@ -116,6 +116,27 @@ export class ProfileController implements IProfileController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: `Failed to add skills${err.message}` });
     }
   };
+  
+  public editSkill = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const { oldSkillName, newSkillName } = req.body;
+    
+    if (!oldSkillName || !newSkillName) {
+      res.status(HttpStatus.BAD_REQUEST).json({ 
+        message: "Both oldSkillName and newSkillName are required" 
+      });
+      return;
+    }
+    
+    const response = await this._profileService.editSkill(userId, oldSkillName, newSkillName);
+    res.status(HttpStatus.OK).json({ response });
+  } catch (error) {
+    const err = error as Error & { status?: number };
+    const statusCode = err.status || HttpStatus.INTERNAL_SERVER_ERROR;
+    res.status(statusCode).json({ message: `Failed to edit skill: ${err.message}` });
+  }
+};
 
   public uploadResume = async (req: Request, res: Response): Promise<void> => {
     try {

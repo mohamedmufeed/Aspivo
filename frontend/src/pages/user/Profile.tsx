@@ -11,7 +11,7 @@ import { RootState } from "../../redux/store/store";
 import { getProfile } from "../../services/profile";
 import { useLocation } from "react-router-dom";
 import Resume from "../../components/User/ProfileComponets/Resume";
-import AddExperience, { Experience } from "../../components/User/modals/AddExperience";
+import AddExperience from "../../components/User/modals/AddExperience";
 import EditExperience from "../../components/User/modals/EditExperience";
 import AddEducation, { Education } from "../../components/User/modals/AddEducation";
 import AddSkill from "../../components/User/modals/AddSkill";
@@ -21,6 +21,8 @@ import EditSkill from "../../components/User/modals/EditSkill";
 import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 import Footer from "../../components/homecomponts/Footer";
+import { Experience, User } from "../../types/user";
+
 
 
 
@@ -38,7 +40,8 @@ const Profile = () => {
     const [editEducation, setEditEucation] = useState(false)
     const [addSkill, setAddSkill] = useState(false)
     const [editSkill, setEditSkill] = useState(false)
-    const [profileData, setProfileData] = useState<any|null>(null);
+    const [profileData, setProfileData] = useState<User|null>(null);
+    const [userName,setUserName]=useState("")
     const [currentExperinceId, setCurrentExperinceId] = useState("")
     const user = useSelector((state: RootState) => state.auth.user)
     const [currentEducationId, setCurrentEducationId] = useState<string>("");
@@ -87,6 +90,7 @@ const Profile = () => {
             try {
                 const response = await getProfile(userId);
                 setProfileData(response.user.user);
+                setUserName(response.user.user.userName)
             } catch (error) {
                 console.error("Error fetching profile:", error);
                 return
@@ -143,7 +147,7 @@ const Profile = () => {
                                             <h1 className="font-bold text-xl sm:text-2xl">{profileData.lastName}</h1>
                                         </div>
                                     ) : (
-                                        <h1 className="font-bold text-2xl">{profileData.userName}</h1>
+                                        <h1 className="font-bold text-2xl">{userName}</h1>
                                     )}
 
 
@@ -307,7 +311,7 @@ const Profile = () => {
                         </div>
                         <div className="mb-5 mt-9 ml-2 sm:ml-10 flex space-x-3 overflow-auto ">
                             {profileData.skills.length > 0 ? (
-                                profileData.skills.map((skill: string[], index: number) => (
+                                profileData.skills.map((skill: string, index: number) => (
                                     <span
                                         key={index}
                                         className="px-4 py-2 bg-orange-200 text-gray-700 rounded-full text-sm font-medium"

@@ -69,9 +69,7 @@ const EditSkill: React.FC<EditProfileModalProps> = ({
 
         try {
     
-            const response = await addSkill(userId, skills);
-
-            console.log("the response", response)
+             await addSkill(userId, skills);
             setProfileData((prev: any) => ({
                 ...prev,
                 skills: [...(prev.skills || []), ...skills],

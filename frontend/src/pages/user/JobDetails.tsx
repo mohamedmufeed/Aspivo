@@ -224,13 +224,12 @@ const JobDetails = () => {
 
 
               <div className="flex mt-9 sm:mt-15 space-x-4">
-                <button className="bg-white shadow-md rounded-lg py-2 px-5 font-bold flex items-center gap-2 hover:bg-gray-100 transition cursor-pointer">
+                <button className="bg-white shadow-md rounded-lg py-2 px-5 font-bold flex items-center gap-2 hover:bg-gray-100 transition cursor-pointer "  onClick={() => handleSavingJob(jobDetails?._id)}>
                   {userSavedJobs.some((saved) => saved.jobId.toString() === jobDetails?._id?.toString()) ? (
-                    <div className='flex space-x-5 '>    <IoBookmark className="w-6 h-6" onClick={() => handleSavingJob(jobDetails?._id)} /> Saved</div>
-
+                    <div className='flex space-x-5 '>    <IoBookmark className="w-6 h-6"  /> Saved</div>
 
                   ) : (
-                    <div className='flex'>      <CiBookmark className="w-6 h-6" onClick={() => handleSavingJob(jobDetails?._id)} />
+                    <div className='flex'>      <CiBookmark className="w-6 h-6" />
                       Save
                     </div>
 

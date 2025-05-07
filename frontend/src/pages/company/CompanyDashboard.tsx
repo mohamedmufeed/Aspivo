@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import { TfiStatsUp } from "react-icons/tfi";
 import CompanySidebar from "../../components/Company/ComapnySidebar";
-import { GoBriefcase, GoDownload, } from "react-icons/go";
+import { GoBriefcase,  } from "react-icons/go";
 import StatCarsComponent from "../../components/Admin/StatCarsComponent";
 import { Legend, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { getCompanyApplicationByDate, getCompanyDashboardStats, getMostAppliedJobs } from "../../services/company/companyDashboard";
@@ -30,7 +30,7 @@ type PieChartData = {
 interface IAppliedJobs {
   _id: string;
   count: number
-  jobTitle: String
+  jobTitle: string
   startDate: string
 }
 
@@ -59,13 +59,14 @@ const CompanyDashboard = () => {
       try {
         if (!userId) return;
         const response = await fetchCompany(userId);
-        let company=response.company.company
-        console.log(company)
-        setCompanyId(company._id)
-        if (!response) {
-          navigate("/company-signup");
+        const company = response?.company?.company;
+
+        if (!company) {
+          console.warn("No company found, redirecting to company signup.");
+          return navigate("/company-signup");
         }
-        if (company.status != "Approved") {
+        setCompanyId(company._id) 
+       if (response.company.company.status != "Approved") {
           navigate("/success")
         }
         if(company.subscription.status ==="active" && company.features.accessToAnalytics){
@@ -129,7 +130,7 @@ const CompanyDashboard = () => {
         const response = await getMostAppliedJobs(companyId)
         setMostAppliedJobs(response.response)
       } catch (error) {
-        console.error("Erron on fetching most applied jobs");
+        console.error("Erron on fetching most applied jobs",error);
 
       }
     }

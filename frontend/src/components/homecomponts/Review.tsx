@@ -21,14 +21,13 @@ const Review = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
   const [direction, setDirection] = useState<'next' | 'prev'>('next')
-  const SHOW_DOTS = 3
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await getReview()
         setReviews(response.review)
       } catch (error) {
-        console.error("Error on fetching Review");
+        console.error("Error on fetching Review",error);
 
       }
     }

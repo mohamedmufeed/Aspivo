@@ -99,18 +99,13 @@ async decrementChatLimit(id: string) {
 
   async markConversationUnread(channel: string, senderId: string) {
     try {
-      // Extract participant IDs from the channel
-      // Channel format: "chat:participantA:participantB"
       const parts = channel.split(':');
       if (parts.length !== 3) return;
       
       const participantA = parts[1];
       const participantB = parts[2];
-      
-      // Determine which participant is the recipient (not the sender)
+    
       const recipientId = senderId === participantA ? participantB : participantA;
-      
-      // Find recipient's role
       const conversation = await Conversation.findOne({ channel });
       if (!conversation) return;
       

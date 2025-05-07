@@ -2,7 +2,6 @@
 import { Server as HttpServer } from "http";
 import { Server as SocketServer } from "socket.io";
 import logger from "../logger";
-import Conversation from "../models/conversations";
 declare module "socket.io" {
     interface Socket {
         roomId?: string;

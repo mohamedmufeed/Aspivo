@@ -82,7 +82,7 @@ const AdminDashboard = () => {
     try {
       await downloadExcel(dateRange, "ApplicationData")
     } catch (error) {
-      console.error("Error on Download execel of Weekly application data");
+      console.error("Error on Download execel of Weekly application data",error);
 
     }
   }
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
     try {
       await downloadExcel(dateRange, "RevenueData")
     } catch (error) {
-      console.error("Error on Download execel of Revenue data");
+      console.error("Error on Download execel of Revenue data",error);
 
     }
   }

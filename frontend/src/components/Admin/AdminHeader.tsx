@@ -23,7 +23,7 @@ const AdminHeader: React.FC<HeaderProps> = ({ heading }) => {
     if (!user?.isAdmin) {
       navigate("/")
     }
-  },[userId])
+  },[user,navigate])
   const handleLogout = async () => {
     try {
       const response = await logoutUser(userId)

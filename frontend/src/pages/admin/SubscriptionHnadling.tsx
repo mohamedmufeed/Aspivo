@@ -50,6 +50,7 @@ const SubscriptionHandling = () => {
                 setSubscriptions(response.subscription);
                 setTotalSubscription(response.totalSubscription
                 )
+                console.log(totalSubscription)
                 setTotalPages(response.totalPages)
             }
         } catch (error) {

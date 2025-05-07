@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import CompanySidebar from "../../components/Company/ComapnySidebar"
 import { GoPencil } from "react-icons/go";
 import { GoPlus } from "react-icons/go";
@@ -6,13 +6,12 @@ import ComapanyHeader from "../../components/Company/ComapanyHeader";
 import EditCompanyProfileModal from "../../components/Company/Modals/EditCompanyProfile";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-
-import { IPopulatedCompany } from "../../types/types";
 import EditCompanyDescriptionModal from "../../components/Company/Modals/EditCompanyDescriptionModal";
 import AddTeachStack from "../../components/Company/Modals/AddTechStack";
 import EditCompanyTeam from "../../components/Company/Modals/EditCompanyTeamModal";
 import EditCompanyContact from "../../components/Company/Modals/EditContactModal";
 import { fetchCompany } from "../../services/company/compayJob";
+import { IPopulatedCompany } from "../../types/types";
 
 
 const CompanyProfile = () => {
@@ -25,20 +24,19 @@ const CompanyProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user)
   const userId = user?._id || ""
 
-  const fetchcomapny = async () => {
+  const fetchcomapny = useCallback(async () => {
     try {
       const response = await fetchCompany(userId)
       setCompanyData(response.company.company)
-      console.log("the rs", response.company.company
-      )
+      console.log("the rs", response.company.company)
     } catch (error) {
       console.log("Error on fetching company", error)
     }
-  }
-
+  }, [userId]);  
+  
   useEffect(() => {
     fetchcomapny()
-  }, [userId])
+  }, [fetchcomapny]);
 
   const formatDate = (date: string|undefined): string => {
     if (!date) return "Invalid date";

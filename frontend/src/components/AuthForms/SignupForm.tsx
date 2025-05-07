@@ -103,7 +103,7 @@ const SignupForm = () => {
             <span className="font-bold">Google</span>
           </button>
 
-          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">{lodaing?"Loding ...":"Sign Up"}</button>
+          <button type="submit" className=" w-full sm:w-35  h-12 font-bold py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">{lodaing?"Loading ...":"Sign Up"}</button>
         </div>
 
       </form>

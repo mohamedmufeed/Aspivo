@@ -100,7 +100,6 @@ export class MessageController  implements IMessageController{
 
   markConversationRead = async (req: Request, res: Response): Promise<void> => {
     try {
-      console.log("helllllllllooooooo")
       const { channel, userId } = req.body;
       
       if (!channel || !userId) {

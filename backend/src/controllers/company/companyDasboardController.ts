@@ -24,7 +24,6 @@ export class CompanyDasboradController implements ICompanyDashboardController {
         try {
             const companyId = req.params.id
             const {startDate,endDate}=req.query
-            console.log("prr",startDate,endDate)
             const response = await this._companyDashboardService.getApplicationStatusByDate(companyId, startDate as string, endDate as string)
             res.status(HttpStatus.OK).json({ response: response, message: "Company aplication data fetched sucsessfully" })
         } catch (error) {

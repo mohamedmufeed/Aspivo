@@ -9,6 +9,7 @@ import Peer from "peerjs";
 import type { DataConnection } from 'peerjs';
 import { AiOutlineAudioMuted } from "react-icons/ai";
 import { IoVideocamOffOutline } from "react-icons/io5";
+import { isPeerData } from "../../utils/tsUtlities";
 
 
 
@@ -150,14 +151,16 @@ const VideoCall = () => {
       console.log("Data connection opened with:", dataConn.peer);
     });
 
-    dataConn.on("data", (data:any) => {
+    dataConn.on("data", (data:unknown) => {
       console.log("Received data:", data);
-      if (typeof data === "object" && data?.type === "chat") {
+      if (isPeerData(data)) {
         setMessages(prev => [...prev, {
           sender: "remote",
           text: data.message,
           timestamp: Date.now()
         }]);
+      }else{
+        console.warn("Received unknown data format:", data);
       }
     });
     

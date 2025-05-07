@@ -3,7 +3,7 @@ import { ICompanyDashboardRepositories } from "../interface/repositories/company
 import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
 import { ApplicationStatusStats } from "../types/dashboardTypes";
-import { count } from "console";
+
 
 export class ComapnyDasboardRepositories implements ICompanyDashboardRepositories {
 

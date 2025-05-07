@@ -10,6 +10,7 @@ export const fetchCompany = async (userId: string) => {
         id: userId
       }
     });
+    console.log("response data",response.data)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

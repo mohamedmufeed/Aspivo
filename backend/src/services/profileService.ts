@@ -139,6 +139,39 @@ export class ProfileService implements IProfileService {
     return { user, message: "Skills added successfully" };
   }
 
+  async editSkill(userId: string, oldSkillName: string, newSkillName: string) {
+    const user = await this._authRepository.findById(userId);
+    if (!user) throw new Error("User not found");
+    user.skills = user.skills || [];
+    const skillIndex = user.skills.findIndex(
+      (skill) => skill.toLowerCase() === oldSkillName.toLowerCase()
+    );
+  
+    if (skillIndex === -1) {
+      throw { status: 404, message: "Skill not found in user profile" };
+    }
+    const newSkillExists = user.skills.some(
+      (skill) => skill.toLowerCase() === newSkillName.toLowerCase()
+    );
+  
+    if (newSkillExists) {
+      throw { status: 400, message: "New skill name already exists in your profile" };
+    }
+    user.skills[skillIndex] = newSkillName;
+    await user.save();
+    try {
+      const exists = await this._skillRepository.findByName(newSkillName);
+      if (!exists) {
+        await this._skillRepository.create({ name: newSkillName });
+      }
+    } catch (err) {
+      const error = err as Error;
+      throw new Error(`Error saving skill "${newSkillName}" to suggestions: ${error.message}`);
+    }
+  
+    return { user, message: "Skill updated successfully" };
+  }
+
   async uploadResume(id: string, url: string) {
     const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");

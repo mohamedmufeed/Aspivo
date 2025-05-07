@@ -137,7 +137,8 @@ const GenerateResumeModal: React.FC<Props> = ({ onClose, setProfileData }) => {
         </body>
         </html>
       `;
-      const pdfBlob: Blob = await html2pdf().from(element).output('blob');
+      // const pdfBlob: Blob = await html2pdf().from(element).output('blob');
+      const pdfBlob: Blob = await html2pdf().from(element).output('blob') as Blob;
       const pdfFile = new File([pdfBlob], "resume.pdf", { type: "application/pdf" });
       const resumeUrl = await uploadToCloudinary(pdfFile);
       const response = await uploadResume(userId, resumeUrl)

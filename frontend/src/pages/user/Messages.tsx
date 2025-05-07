@@ -182,10 +182,10 @@ const Messages = () => {
     
           setMessages((prev) => [...prev, normalizedMessage]);
         }
+
         if (message.senderId !== userId && selectedEmployeeId !== conversation?.employeeId) {
-         
-          
-      };
+          console.warn("Message is not correct")
+        };
     }
       socket.on("receiveMessage", handleMessage);
       return () => {
@@ -409,7 +409,7 @@ const Messages = () => {
                 >
                   <div className="flex items-center">
                     <div className="bg-gray-200 rounded-full mr-2 sm:mr-3">
-                      <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${conv.employeeProfile}` || avathar} alt="" className="w-12 h-12 rounded-full" />
+                      {conv.employeeProfile ?  <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${conv.employeeProfile}`} alt="" className="w-12 h-12 rounded-full" /> : <img src={avathar} alt="" className="w-12 h-12 rounded-full" />}
                     </div>
                     <div>
                       <h1 className="text-sm sm:text-base">{conv.employeeName}</h1>

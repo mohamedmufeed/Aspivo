@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { resendotp, verifyOtp } from "../../services/auth"
 import { useDispatch } from "react-redux"
-import { AppDispatch, RootState } from "../../redux/store/store"
+import { AppDispatch } from "../../redux/store/store"
 import { login } from "../../redux/slice/authSlice"
-import { useSelector } from "react-redux"
+
 
 
 
@@ -54,8 +54,6 @@ const OtpVerification = () => {
         }
     }
 
-    const user=useSelector((start:RootState)=>start.auth.user)
-    console.log("the user",user)
     const handleResendOtp = async () => {
         setTimer(60)
         setResendbtn(false)

@@ -13,7 +13,6 @@ export class CompanyDasboradService implements ICompanyDashboardService {
 
 
     async getComapnyDashboardStats(companyId: string) {
-        console.log("helo")
         const today = new Date();
         const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 });
         const thisWeekEnd = endOfWeek(today, { weekStartsOn: 1 });

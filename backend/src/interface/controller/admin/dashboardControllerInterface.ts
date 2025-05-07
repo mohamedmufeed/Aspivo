@@ -1,4 +1,4 @@
-import { promises } from "dns";
+
 import { Request, Response } from "express";
 
 export default interface IDashboardController{

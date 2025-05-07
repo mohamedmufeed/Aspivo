@@ -3,6 +3,7 @@ import { VscClose } from "react-icons/vsc";
 import ToastError from "../../Tost/ErrorToast";
 import { z } from "zod";
 import { addTechStack, getComapny } from "../../../services/company/companyProfile";
+import { ICompanyType } from "../../../types/types";
 
 
 
@@ -15,7 +16,7 @@ interface AddTechStackModalProps {
     onClose: () => void;
     companyId: string;
     initialTechStack: string[]|undefined;
-    setCompanyData: (data: any) => void;
+    setCompanyData: (data: any ) => void;
 }
 
 const AddTechStackModal: React.FC<AddTechStackModalProps> = ({
@@ -92,10 +93,15 @@ const AddTechStackModal: React.FC<AddTechStackModalProps> = ({
 
             const response = await addTechStack(companyId, updatedData);
             console.log("Tech stack updated successfully:", response);
-            setCompanyData((prev: any):any => ({
-                ...prev,
-                stack: techStack,
-            }));
+            setCompanyData((prev: ICompanyType | undefined) => {
+                if (!prev) return prev; 
+                
+                return {
+                    ...prev, 
+                    stack: techStack, 
+                };
+            });
+            
 
             onClose();
         } catch (error) {

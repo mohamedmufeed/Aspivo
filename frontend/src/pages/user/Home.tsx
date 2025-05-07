@@ -50,7 +50,7 @@ const HeroSection = () => {
     if (user) {
       navigate("/");
     }
-  }, [navigate, userId]);
+  }, [navigate, userId,user]);
 
   useEffect(() => {
     const handleUser = async () => {
@@ -98,12 +98,12 @@ const HeroSection = () => {
       <Navbar />
       <section className="flex h-screen  bg-[#F6F6F6]" style={{ fontFamily: "DM Sans, sans-serif" }}>
         {/*content Sction */}
-        <div className="mt-5">
-          <h1 ref={heroTextRef} className="font-[Montserrat] font-semibold text-7xl  ps-24  mt-36">Find Your <br /> Dream Job Here <br /> In one Place</h1>
-          <p ref={paragraphRef} className="ps-24 mt-8   font-extralight " >Explore thousands of job opportunities Find the perfect <br /> role that suits you.</p>
+        <div className=" mt-2 sm:mt-5">
+          <h1 ref={heroTextRef} className="font-[Montserrat] font-semibold text-6xl sm:text-7xl ps-15 sm:ps-24 mt-15 sm:mt-36">Find Your <br /> Dream Job Here <br /> In one Place</h1>
+          <p ref={paragraphRef} className="ps-15 sm:ps-24 mt-8   font-extralight " >Explore thousands of job opportunities Find the perfect <br /> role that suits you.</p>
 
           {/*serach bar*/}
-          <div ref={searchBoxRef} className="bg-white w-96  ml-24 mt-8  h-16 rounded-lg shadow-lg">
+          <div ref={searchBoxRef} className="bg-white w-90 sm:w-96  ml-5 sm:ml-24 mt-8  h-16 rounded-lg shadow-lg">
             <form className=" " action="">
               <div className="flex ">
                 <label htmlFor="serach" className="text-[#837F7F] whitespace-nowrap   p-5  ml-auto  font-extralight" >Job title or Keyword | Location</label>
@@ -121,7 +121,7 @@ const HeroSection = () => {
             <img className="w-96 h-96" src={bannerImage} alt="banner image" />
           </div>
           {/* jobBox */}
-          <div ref={jobbox} className="bg-black/5 backdrop-blur-md border absolute -mt-35 ml-40 border-white/30 rounded-2xl shadow-white-lg w-80  ps-4 h-80">
+          <div ref={jobbox} className=" hidden sm:block bg-black/5 backdrop-blur-md border absolute -mt-35 ml-40 border-white/30 rounded-2xl shadow-white-lg w-80  ps-4 h-80">
             <div ref={jobContent} className="opacity-0">
               <h1 className="font-bold p-4 text-xl flex">Find Job <IoMdArrowDropdown className="mt-1 " /> </h1>
               <hr />

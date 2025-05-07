@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import Navbar from "../../components/homecomponts/Navbar";
@@ -52,7 +52,7 @@ const MyJobs = () => {
     navigate(`/job-details/${jobId}`);
   };
 
-  const handleAppliedJobs = async () => {
+  const handleAppliedJobs = useCallback(async ()=>{
     if (!userId) {
       setError("User ID not found. Please log in.");
       setLoading(false);
@@ -84,9 +84,9 @@ const MyJobs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[userId]) 
 
-  const handleSavedJobs = async () => {
+  const handleSavedJobs = useCallback(async ()=>{
     if (!userId) {
       setError("User ID not found. Please log in.");
       setLoading(false);
@@ -116,7 +116,7 @@ const MyJobs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[userId])
 
   useEffect(() => {
     if (activeTab === "Applied Jobs") {
@@ -124,7 +124,7 @@ const MyJobs = () => {
     } else {
        handleSavedJobs();
     }
-  }, [activeTab, userId]);
+  }, [activeTab, userId ,handleAppliedJobs,handleSavedJobs]);
 
   if (loading) {
     return (
@@ -169,7 +169,7 @@ const MyJobs = () => {
   return (
     <div className="bg-[#F6F6F6] min-h-screen" style={{ fontFamily: "DM Sans, sans-serif" }}>
       <Navbar />
-      <div className="mx-12 mt-10">
+      <div className=" mx-5 sm:mx-12 mt-10">
         <div className="bg-white p-5 shadow-lg rounded-lg flex items-center">
           <IoChevronBackOutline
             className="w-8 h-8 ml-3 mr-6 cursor-pointer"
@@ -195,42 +195,42 @@ const MyJobs = () => {
             </h1>
           </div>
           <hr className="text-gray-300" />
-          <div className="p-5">
+          <div className=" p-2 sm:p-5">
             {jobs.length > 0 ? (
               jobs.map((job) => (
                 <div
                   key={job.id}
-                  className="bg-white shadow-md rounded-xl mx-4 md:mx-10 grid grid-cols-12 items-center p-5 mb-5"
+                  className="bg-white shadow-md rounded-xl mx-1 sm:mx-4 md:mx-10 grid grid-cols-12 items-center p-5 mb-5"
                 >
-                  <div className="col-span-2">
+                  <div className="col-span-3 sm:col-span-2">
                     {job.company === "Google .inc" ? (
                       <FcGoogle className="w-9 h-9 ml-5" />
                     ) : (
                       <img
                       src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.logo}`}
                         alt={`${job.company} logo`}
-                        className="w-9 h-9 rounded-full object-contain ml-5"
+                        className="w-9 h-9 rounded-full object-contain ml-1 sm:ml-5"
                       
                       />
                     )}
                   </div>
-                  <div className="col-span-3">
+                  <div className="col-span-5 sm:col-span-3">
                     <h1 className="font-semibold text-lg">{job.title}</h1>
                     <p className="text-sm text-gray-500">{job.company}</p>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-2 hidden sm:block">
                     <h1 className="font-semibold text-lg">{job.location || "N/A"}</h1>
                     <p className="text-sm text-gray-500">Location</p>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-2  hidden sm:block">
                     <h1 className="font-semibold text-lg">{job.salaryRange}</h1>
                     <p className="text-sm text-gray-500">Yearly</p>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-2  hidden sm:block">
                     <h1 className="font-semibold text-lg">{job.status}</h1>
                     <p className="text-sm text-gray-500">Status</p>
                   </div>
-                  <div className="col-span-1">
+                  <div className=" col-span-3 sm:col-span-1">
                     <button
                       className="bg-orange-600 text-white p-3 rounded-lg font-bold cursor-pointer hover:bg-orange-700"
                       onClick={() => handleConnect(job.id)}

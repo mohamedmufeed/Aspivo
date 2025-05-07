@@ -27,7 +27,7 @@ const AdminCompanyRequests = () => {
     const [totalCompanies, setTotalCompanies] = useState(0)
     const [loading, setLoading] = useState(false)
     const prevRequestRef = useRef<AbortController | null>(null)
-
+console.log(totalCompanies)
     const fetchCompany = async (page = 1, query = "") => {
         if (prevRequestRef.current) {
             prevRequestRef.current.abort()

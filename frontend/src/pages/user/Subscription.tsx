@@ -26,7 +26,7 @@ const Subscription = () => {
           setCompanyId(response.company.company._id);
         }
       } catch (err) {
-        const error=err as Error
+        const error = err as Error
         console.error("Error fetching company:", error.message);
         setError("Failed to fetch company details");
       }
@@ -59,7 +59,7 @@ const Subscription = () => {
         throw new Error("No checkout URL received");
       }
     } catch (err) {
-      const error=err as Error
+      const error = err as Error
       setError(error.message || "Failed to create subscription");
       console.log("Error on subscription:", err);
     } finally {
@@ -71,57 +71,64 @@ const Subscription = () => {
     <div>
       <Navbar />
       <div
-        className="bg-[#F6F6F6] pt-20 pb-40 flex  h-screen overflow-y-hidden justify-center items-center"
+        className="bg-[#F6F6F6] pt-20 pb-40 flex min-h-screen overflow-y-auto justify-center items-center px-4 sm:px-6"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
         {error ? <ToastError message={error} onClose={() => setError(null)} /> : ""}
-        <div className="w-1/3">
+
+        <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl">
           <h1 className="font-bold text-2xl text-center">Subscription</h1>
           <p className="text-gray-600 text-center">Talk to the Decision-Makers</p>
-          <div className="w-3/3 p-6 ml-4 bg-white rounded-lg shadow-sm border mt-10 border-gray-100">
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20 bg-[#FF9966] rounded-2xl overflow-hidden">
-                  <div className="absolute top-0 right-0 w-10 h-10 bg-[#FF6600] rounded-full -translate-x-[-25%] translate-y-[-25%]"></div>
-                  <div className="absolute bottom-0 left-0 w-10 h-10 bg-[#FF6600] rounded-tr-2xl"></div>
+          <div className="px-2 sm:px-35">
+            <div className="w-full p-6  bg-white rounded-lg shadow-sm border mt-10 border-gray-100">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
+                <div className="flex items-center gap-4">
+                  <div className="relative w-20 h-20 bg-[#FF9966] rounded-2xl overflow-hidden">
+                    <div className="absolute top-0 right-0 w-10 h-10 bg-[#FF6600] rounded-full -translate-x-[-25%] translate-y-[-25%]"></div>
+                    <div className="absolute bottom-0 left-0 w-10 h-10 bg-[#FF6600] rounded-tr-2xl"></div>
+                  </div>
+                  <div className="text-3xl font-bold">₹1,028 /</div>
                 </div>
-                <div className="text-3xl font-bold">₹1,028 /</div>
+                <div className="px-4 py-1.5 bg-orange-600 text-white rounded-full text-sm font-medium">
+                  Popular
+                </div>
               </div>
-              <div className="px-4 py-1.5 bg-orange-600 text-white rounded-full text-sm font-medium">
-                Popular
-              </div>
-            </div>
 
-            <div className="h-px bg-gray-200 my-6"></div>
+              <div className="h-px bg-gray-200 my-6"></div>
 
-            <div className="space-y-6 pl-10">
-              <div className="space-y-3">
-                <div className="text-gray-500 text-sm">User</div>
-                <div className="font-medium">Unlimited chat with company</div>
-                <div className="font-medium">Unlock AI features</div>
-         
-              </div>
-              {companyId && (
+              <div className="space-y-6 sm:pl-6">
                 <div className="space-y-3">
-                  <div className="text-gray-500 text-sm">Company</div>
-                  <div className="font-medium">Unlimited Job Posting</div>
-                  <div className="font-medium">Access to analytics</div>
+                  <div className="text-gray-500 text-sm">User</div>
+                  <div className="font-medium">Unlimited chat with company</div>
+                  <div className="font-medium">Unlock AI features</div>
                 </div>
-              )}
-            </div>
 
-            <button
-              onClick={handleSubscribe}
-              disabled={isProcessing || !userId}
-              className={`w-full mt-8 py-4 bg-orange-600 text-white rounded-lg font-medium text-lg cursor-pointer ${isProcessing || !userId ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-            >
-              {isProcessing ? "Processing..." : "Get Plan"}
-            </button>
+                {companyId && (
+                  <div className="space-y-3">
+                    <div className="text-gray-500 text-sm">Company</div>
+                    <div className="font-medium">Unlimited Job Posting</div>
+                    <div className="font-medium">Access to analytics</div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleSubscribe}
+                disabled={isProcessing || !userId}
+                className={`w-full mt-8 py-4 bg-orange-600 text-white rounded-lg font-medium text-lg ${isProcessing || !userId
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-orange-700 transition duration-200"
+                  }`}
+              >
+                {isProcessing ? "Processing..." : "Get Plan"}
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
+
   );
 };
 

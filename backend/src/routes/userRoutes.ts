@@ -107,7 +107,9 @@ router
 
 router
   .route("/users/:id/skills")
-  .post(profileController.addSkill);
+  .post(profileController.addSkill)
+  .patch()
+  
 
 router
   .route("/users/:id/subscription-history")

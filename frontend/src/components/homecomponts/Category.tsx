@@ -15,9 +15,9 @@ const Category = () => {
     const categoryRef = useRef<HTMLDivElement>(null)
 
     return (
-        <div ref={categoryRef} className=" md:-mt-36 h-full bg-[#F6F6F6] p-10" style={{ fontFamily: "DM Sans, sans-serif" }}>
+        <div ref={categoryRef} className=" sm:-mt-36 h-full bg-[#F6F6F6] p-10" style={{ fontFamily: "DM Sans, sans-serif" }}>
             {/* title */}
-            <h1 className=" sm:mt-20 text-3xl font-semibold text-center">Browse By Categories</h1>
+            <h1 className=" mt-1 sm:mt-20 text-3xl font-semibold text-center">Browse By Categories</h1>
             <p className="text-base text-center pt-3">
                 Find the job that’s perfect for you! Over 600+ new jobs every day.
             </p>

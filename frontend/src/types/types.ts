@@ -266,3 +266,6 @@ export interface ICompanyType {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+
