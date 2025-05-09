@@ -12,5 +12,5 @@ export default interface IAdminRepostry {
   findByIdAndUpdateStatus(companyId:string,status:string):Promise<CompanyDocument|null>
   findApprovedCompany({page,limit,searchQuery}:GetPaginationQuery): Promise< GetApprovedCompanyResponse>;
   findSubscriptions({page,limit,searchQuery}:GetPaginationQuery): Promise<  GetSubscriptionResponse>;
-  findSubscriptionById(subscriptionId: string): Promise<  ISubscription | null>;
+  findSubscriptionByIdAndUpdate(subscriptionId: string, status:string): Promise<  ISubscription | null>;
 }

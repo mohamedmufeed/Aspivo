@@ -114,8 +114,7 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {
         maximumSalary: Number(data.maximumSalary),
         slot: Number(data.slot),
       };
-      const response = await editJob( job._id||"", submitData); 
-      console.log("Job updated:", response);
+      await editJob( job._id||"", submitData); 
       onClose();
       window.location.reload(); 
     } catch (error) {

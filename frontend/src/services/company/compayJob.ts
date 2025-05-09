@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import  { AxiosError } from "axios";
 import { ApplicationStatus, JobData } from "../../types/types";
 import api from "../api";
 
@@ -46,7 +46,7 @@ export const fetchJob = async (companyId: string) => {
 
 export const editJob = async (jobId: string, data: JobData) => {
   try {
-    const respone = await axios.put(`company/jobs/${jobId}/edit`, data);
+    const respone = await api.put(`company/jobs/${jobId}/edit`, data);
     return respone.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -55,9 +55,9 @@ export const editJob = async (jobId: string, data: JobData) => {
   }
 };
 
-export const deleteJob = async (jobId: string) => {
+export const chageStatus = async (jobId: string) => {
   try {
-    const respone = await api.delete(`company/jobs/${jobId}/delete`);
+    const respone = await api.patch(`company/jobs/${jobId}/delete`);
     return respone.data;
   } catch (error) {
     if (error instanceof AxiosError) {

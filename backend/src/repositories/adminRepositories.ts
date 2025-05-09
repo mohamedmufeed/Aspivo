@@ -3,7 +3,7 @@ import Company, { CompanyDocument } from "../models/company";
 import Subscription from "../models/Subscription";
 import IAdminRepostry from "../interface/repositories/adminRepository";
 import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetSubscriptionResponse, GetUsersResponse } from "../types/userTypes";
-import { PipelineStage } from "mongoose";
+import { ObjectId, PipelineStage, Types } from "mongoose";
 
 
 export class AdminRepostry implements IAdminRepostry {
@@ -136,9 +136,23 @@ export class AdminRepostry implements IAdminRepostry {
   }
   
 
-  async findSubscriptionById(subscriptionId: string) {
-    return await this.subscriptionModel.findById(subscriptionId)
+  async findSubscriptionByIdAndUpdate(subscriptionId: string,status:string) {
+    return await this.subscriptionModel.findByIdAndUpdate(subscriptionId,{status},{new:true})
   }
+
+  async updateUserFeatures(userId:Types.ObjectId, features: { unlockAiFeatures: boolean, unlimitedChat: boolean }) {
+    return await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { features } }
+    );
+  }
+  async updateCompanyFeatures(userId:Types.ObjectId, features: { unlimitedJobPosting: boolean, accessToAnalytics: boolean }) {
+    return await this.companyModel.updateOne(
+      { _id: userId },
+      { $set: { features } }
+    );
+  }
+  
 
 }
 

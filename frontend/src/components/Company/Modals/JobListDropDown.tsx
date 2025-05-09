@@ -1,11 +1,12 @@
 import { GoPencil } from "react-icons/go";
-import { AiOutlineDelete } from "react-icons/ai";
+import { CgArrowsExchange } from "react-icons/cg";
+
 import React, { useState } from "react";
-import { deleteJob } from "../../../services/company/compayJob";
-import { JobData } from "../../../services/company/compayJob";
+import { chageStatus } from "../../../services/company/compayJob";
 import EditJobModal from "./EditJobModal";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { JobData } from "../../../types/types";
 
 interface JobListDropDownProp {
   jobId: string;
@@ -17,16 +18,14 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs, job })
   const items = [
     { icon: <HiOutlineUsers className="w-5 h-5" />, name: "Applicants", action: "Applicants" },
     { icon: <GoPencil className="w-5 h-5" />, name: "Edit", action: "Edit" },
-    { icon: <AiOutlineDelete className="w-5 h-5" />, name: "Delete", action: "Delete" },
+    { icon: <CgArrowsExchange className="w-5 h-5" />, name: "Chage stauts", action: "Change-status" },
   ];
   const [editModal, setEditModal] = useState(false)
   const navigate = useNavigate()
-  const handleDelete = async (jobId: string) => {
+  const handleStatus = async (jobId: string) => {
     try {
-      const response = await deleteJob(jobId)
-      // setJobs(response.job)
-      console.log(response.job)
-
+     await chageStatus(jobId)
+      window.location.reload(); 
     } catch (error) {
       console.log("Error in the deleting job ", error)
     }
@@ -35,8 +34,8 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs, job })
 
 
   const handleItemClick = (action: string, jobId: string) => {
-    if (action === "Delete") {
-      handleDelete(jobId)
+    if (action === "Change-status") {
+      handleStatus(jobId)
     } else if (action === "Edit") {
       setEditModal(true)
     } else if (action === "Applicants") {

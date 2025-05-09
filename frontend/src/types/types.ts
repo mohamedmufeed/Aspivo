@@ -97,6 +97,7 @@ export interface JobData {
   slot: number;
   requirements: string;
   jobDescription: string;
+  isActive:boolean;
   company: {
     _id: string;
     companyName: string;

@@ -42,7 +42,6 @@ const AdminCompanyRequests = () => {
                 setCompanyDetail(response.companies);
                 setTotalPages(response.totalPages);
                 setTotalCompanies(response.totalRequest);
-                console.log(totalCompanies)
             }
         } catch (error) {
             if (!(error instanceof DOMException && error.name === 'AbortError')) {

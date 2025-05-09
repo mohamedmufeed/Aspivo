@@ -126,7 +126,6 @@ const JobDetails = () => {
       if (response.application) {
         setHasApplied(true)
       }
-      console.log("the response", response)
     } catch (error) {
       console.log("Error in the apply for the job", error)
     } finally {
@@ -239,7 +238,8 @@ const JobDetails = () => {
                 </button>
                 <button
                   onClick={handleApplyJob}
-                  disabled={applying || hasApplied}
+                  disabled={applying || hasApplied || responseUserId === userId}
+  
                   className={`bg-orange-600 shadow-md rounded-lg py-2 px-5 font-semibold text-white transition cursor-pointer ${applying ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-700"
                     }`}
                 >

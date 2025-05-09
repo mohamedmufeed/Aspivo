@@ -23,7 +23,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     return () => {
       debouncedSearch.cancel();
     };
-  }, [query,debouncedSearch]);
+  }, [query]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

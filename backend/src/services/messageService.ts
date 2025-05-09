@@ -46,11 +46,13 @@ export class MessageService implements IMessageService {
     await redisClient.connect();
     try {
       const payload = JSON.stringify({
-        senderId,
-        message,
+        channel:channel,
+        senderId:senderId,
+        message:message,
         timeStamp: new Date().toISOString(),
       });
   
+      
       if (io) {
         io.to(channel).emit("receiveMessage", payload);
       } else {

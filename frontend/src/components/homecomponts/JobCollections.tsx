@@ -16,8 +16,6 @@ const JobCollections = () => {
       try {
         const response = await latestJobs()
         setJobs(response.jobs)
-        console.log("the job repsose", response.jobs)
-
       } catch (error) {
         console.error("Error on fetching latest jobs",error);
 

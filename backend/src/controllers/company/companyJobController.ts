@@ -82,6 +82,7 @@ export class CompanyJobController implements ICompanyJobController {
   };
 
   editJob = async (req: Request, res: Response) => {
+    console.log("hello")
     try {
       const jobId = req.params.id;
       const {
@@ -124,10 +125,10 @@ export class CompanyJobController implements ICompanyJobController {
     }
   };
 
-  deleteJob = async (req: Request, res: Response) => {
+  chageJobStatus = async (req: Request, res: Response) => {
     try {
       const jobId = req.params.id;
-      const response = await this._companyJobService.deleteJob(jobId);
+      const response = await this._companyJobService.chageJobStatus(jobId);
       res.status(HttpStatus.OK).json(response);
     } catch (error) {
       const err= error as Error

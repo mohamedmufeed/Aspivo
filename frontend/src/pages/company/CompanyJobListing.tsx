@@ -61,7 +61,7 @@ const CompanyJobListing = () => {
               <p className="text-center">Start date</p>
               <p className="text-center">Due date</p>
               <p className="text-center">Type</p>
-              <p className="text-center">Slot</p>
+              <p className="text-center">Status</p>
               <p className="text-center">More</p>
             </div>
             <hr className="border-gray-600 my-3" />
@@ -80,7 +80,7 @@ const CompanyJobListing = () => {
                     {job.endDate ? new Date(job.endDate).toLocaleDateString() : "N/A"}
                   </h1>
                   <h1 className="text-center">{job.typesOfEmployment || "N/A"}</h1>
-                  <h1 className="text-center">{job.slot || 0}</h1>
+                  <h1 className="text-center">{job.isActive ?"Active":"Inactive"}</h1>
                   <div className="flex justify-center relative">
                     <EllipsisVertical
                       className="cursor-pointer"

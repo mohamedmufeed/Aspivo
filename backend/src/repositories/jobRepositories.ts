@@ -9,8 +9,8 @@ export class JobRepositories extends BaseRepository<JobDocumnet>  implements IJo
   }
   async fetchJob(page: number, limit: number, query = {}) {
     const skip = (page - 1) * limit;
-    
-    return await Job.find(query)
+    const finalQuery = { ...query, isActive: true };
+    return await Job.find(finalQuery)
       .populate("company", "companyName logo location")
       .sort({ createdAt: -1 })
       .skip(skip)

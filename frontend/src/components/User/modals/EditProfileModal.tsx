@@ -7,6 +7,7 @@ import { VscClose } from "react-icons/vsc";
 import { editProfileSchema } from "../../../validation/zod";
 import { editProfile, getProfile } from "../../../services/profile";
 import axios from "axios";
+import ToastError from "../../Tost/ErrorToast";
 
 interface EditProfileForm {
   firstName: string;
@@ -27,7 +28,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
   const [loading, setLoading] = useState(false)
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [imageErorr, setImageErorr] = useState("")
+  const [imageErorr, setImageErorr] = useState<string| null>(null)
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<EditProfileForm>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
@@ -66,9 +67,15 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      const allowedTypes = ["image/png", "image/jpeg", "image/avif"];
+      if (!allowedTypes.includes(file.type)) {
+        setImageErorr("Only PNG, JPEG, or AVIF image formats are allowed.");
+        return
+      } else {
+        setImageErorr("");
+      }
+      
       setProfileImage(file);
-
-
       const uploadedImageUrl = await uploadToCloudinary(file);
       console.log(uploadedImageUrl);
       if (uploadedImageUrl) {
@@ -92,7 +99,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
     } catch (error) {
       console.error("Error uploading image:", error);
       setImageErorr("Failed to upload image");
-      console.log(imageErorr)
       return null;
     }
   };
@@ -126,7 +132,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="absolute inset-0 bg-black opacity-30 transition-opacity duration-300" onClick={onClose} />
+  
       <div className="fixed inset-0 flex items-center justify-center z-50" style={{ fontFamily: "DM Sans, sans-serif" }}>
+      {imageErorr ? <ToastError message={imageErorr} onClose={() => setImageErorr(null)} /> : ""}
         <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg">
           <div className="flex justify-between mt-2 px-5 p-5">
             <h1 className="text-2xl font-medium">Edit Profile</h1>

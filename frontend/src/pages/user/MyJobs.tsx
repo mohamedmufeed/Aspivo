@@ -79,8 +79,8 @@ const MyJobs = () => {
       }
     } catch (err) {
       const error= err as Error
-      console.log("Error in fetching applied jobs", error);
-      setError(error.message || "Failed to load applied jobs");
+      console.log("Error in fetching applied jobs", error.message);
+      setError("Failed to load applied jobs");
     } finally {
       setLoading(false);
     }
@@ -111,8 +111,8 @@ const MyJobs = () => {
       setSavedJob(mappedJobs);
     } catch (error) {
       const err= error as Error
-      console.log("Error in fetching saved jobs", error);
-      setError(err.message || "Failed to load saved jobs");
+      console.log("Error in fetching saved jobs", err.message);
+      setError( "Failed to load saved jobs");
     } finally {
       setLoading(false);
     }

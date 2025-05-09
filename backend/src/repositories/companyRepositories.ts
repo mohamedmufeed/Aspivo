@@ -86,14 +86,22 @@ export class CompanyRepostries implements CompanyRepostries {
       );
     }
   async findJobs(comapanyId: string) {
-    return await this.jobModel.find({company:comapanyId}).sort({createdAt:-1});
+    return await this.jobModel.find({company:comapanyId , isActive:true}).sort({createdAt:-1});
+  }
+  async findAllJobs(comapanyId:string){
+    return await this.jobModel.find({company:comapanyId}).sort({createdAt:-1})
   }
   async findJob(jobId:string){
   return await this.jobModel.findById(jobId)
   }
 
-  async deleteJob(jobId:string){
-    return await this.jobModel.findByIdAndDelete(jobId)
+  async chageStatus(jobId:string, status:boolean){
+
+    return  await this.jobModel.findByIdAndUpdate(
+    jobId,
+    { isActive:status },
+    { new: true } 
+  );
   }
   async findApplications(jobId:string):Promise<any>{
     return await this.jobApplication.find({jobId})

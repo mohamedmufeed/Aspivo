@@ -51,7 +51,7 @@ export class ComapnayJobService implements IJobService {
   
 
   async fetchJob(comapanyId: string) {
-    const jobs = await this._companyRepositories.findJobs(comapanyId);
+    const jobs = await this._companyRepositories.findAllJobs(comapanyId);
     if (!jobs) throw new Error("Jobs not found");
     return { jobs, message: "JOb fetched succsess fully" };
   }
@@ -78,9 +78,12 @@ export class ComapnayJobService implements IJobService {
     return { job, message: "Job edited sucsessfully" };
   }
 
-  async deleteJob(jobId: string): Promise<{ job: IJob, message: string }> {
+  async chageJobStatus(jobId: string): Promise<{ job: IJob, message: string }> {
     if (!jobId) throw new Error("Job id nor found");
-    const job = await this._companyRepositories.deleteJob(jobId);
+     const existingJob=await this._companyRepositories.findJob(jobId)
+    if(!existingJob) throw new Error("existing job not found")
+    const toggledStatus = !existingJob.isActive;
+    const job = await this._companyRepositories.chageStatus(jobId,toggledStatus);
     if (!job) throw new Error("Somthing went wrong in job deleting");
     return { job, message: "job deletion sucsess fully" };
   }

@@ -1,5 +1,5 @@
 import bannerImage from "../../assets/job-interview-concept-illustration.png"
-import { IoIosSearch } from "react-icons/io";
+import { CgDetailsMore } from "react-icons/cg";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaMeta } from "react-icons/fa6";
 import { FaGoogle } from "react-icons/fa";
@@ -106,9 +106,11 @@ const HeroSection = () => {
           <div ref={searchBoxRef} className="bg-white w-90 sm:w-96  ml-5 sm:ml-24 mt-8  h-16 rounded-lg shadow-lg">
             <form className=" " action="">
               <div className="flex ">
-                <label htmlFor="serach" className="text-[#837F7F] whitespace-nowrap   p-5  ml-auto  font-extralight" >Job title or Keyword | Location</label>
+                <label htmlFor="serach" className="text-[#837F7F] whitespace-nowrap   p-5  ml-auto  font-extralight" >Click here to explore more jobs</label>
+   
                 <button className="w-20 h-14  ml-auto mt-1  mr-1  flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white cursor-pointer " onClick={() => navigate("/jobs")}>
-                  <IoIosSearch className="w-6  h-12 " />
+                  <CgDetailsMore className="w-6  h-10 " />
+         
                 </button>
               </div>
             </form>

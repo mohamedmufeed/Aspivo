@@ -16,57 +16,7 @@ import { getProfile, textFormating } from "../../services/profile";
 import React from "react";
 import { FaWandMagicSparkles } from "react-icons/fa6";
 import ToastError from "../../components/Tost/ErrorToast";
-
-
-
-interface ChatMessage {
-  _id: string;
-  senderId: string;
-  message: string;
-  imageUrl?: string;
-  timestamp: string;
-}
-
-interface RawSocketMessage {
-  _id?: string;
-  senderId: string;
-  message: string;
-  imageUrl?: string;
-  timeStamp: string;
-  channel: string;
-}
-
-interface Conversation {
-  employeeId: string;
-  employeeName: string;
-  lastMessage: string;
-  timestamp: string;
-  employeeProfile: string;
-  unread?: boolean;
-  channel?: string;
-}
-interface FormattedConversation {
-  employeeProfile: string;
-  employeeId: string;
-  employeeName: string;
-  lastMessage: string;
-  timestamp: string  
-  unread: boolean;
-  channel: string;
-}
-
-interface RawConversation {
-  targetProfile?: string;
-  targetId?: string;
-  companyId?: string;
-  targetName?: string;
-  companyName?: string;
-  lastMessage?: string;
-  timestamp: string | number | Date;
-  unread?: boolean;
-  channel?: string;
-}
-
+import { ChatMessage, Conversation, FormattedConversation, RawConversation, RawSocketMessage } from "../../types/messageTypes";
 
 
 const Messages = () => {
@@ -116,7 +66,7 @@ const Messages = () => {
     const fetchData = async () => {
       try {
         const data = await getConversations(userId, "employee");
-        const formatted:FormattedConversation[] = data.map((conv:RawConversation) => ({
+        const formatted: FormattedConversation[] = data.map((conv: RawConversation) => ({
           employeeProfile: conv.targetProfile || "",
           employeeId: conv.targetId || conv.companyId,
           employeeName: conv.targetName || conv.companyName,
@@ -147,16 +97,14 @@ const Messages = () => {
           if (data) setMessages(data);
           if (conversation?.unread) {
             await markConversationAsRead(channel, userId);
-            
-            setConversations(prev => 
-              prev.map(conv => 
-                conv.employeeId === selectedEmployeeId 
-                  ? { ...conv, unread: false } 
+            setConversations(prev =>
+              prev.map(conv =>
+                conv.employeeId === selectedEmployeeId
+                  ? { ...conv, unread: false }
                   : conv
               )
             );
           }
-          
         } catch (error) {
           console.error("Error fetching message history:", error);
         }
@@ -164,6 +112,7 @@ const Messages = () => {
 
       fetchHistory();
       socket.emit("joinChannel", channel);
+
       const handleMessage = (message: RawSocketMessage) => {
         console.log("Received message:", message);
         const normalizedMessage: ChatMessage = {
@@ -173,20 +122,49 @@ const Messages = () => {
           imageUrl: message.imageUrl || undefined,
           timestamp: message.timeStamp || new Date().toISOString(),
         };
+        console.log("the message", message)
+        const messageChannel = message.channel;
 
-        if (message.channel !== channel) {
-          console.warn("Message does not belong to current channel, skipping:", message.channel);
+        if (!messageChannel) {
+          console.log("Message doesn't have channel info, using content directly");
+          if (normalizedMessage.message || normalizedMessage.imageUrl) {
+            setMessages((prev) => [...prev, normalizedMessage]);
+          }
           return;
         }
-        if (normalizedMessage.message || normalizedMessage.imageUrl) {
-    
+
+        if (message.senderId === selectedEmployeeId) {
           setMessages((prev) => [...prev, normalizedMessage]);
+        } else {
+          console.log(
+            `Message from ${message.senderId} does not match selected user ${selectedEmployeeId}`
+          );
         }
 
-        if (message.senderId !== userId && selectedEmployeeId !== conversation?.employeeId) {
-          console.warn("Message is not correct")
-        };
-    }
+        if (messageChannel !== channel) {
+          console.log(`Message is for different channel: ${messageChannel}, current: ${channel}`);
+
+          setConversations(prev =>
+            prev.map(conv => {
+              if (conv.channel === messageChannel) {
+                return {
+                  ...conv,
+                  lastMessage: normalizedMessage.message || (normalizedMessage.imageUrl ? "Image" : ""),
+                  timestamp: new Date().toISOString(),
+                  unread: conv.employeeId !== selectedEmployeeId
+                };
+              }
+              return conv;
+            })
+          );
+          return;
+        }
+
+        if (normalizedMessage.message || normalizedMessage.imageUrl) {
+          setMessages((prev) => [...prev, normalizedMessage]);
+        }
+      };
+
       socket.on("receiveMessage", handleMessage);
       return () => {
         socket.off("receiveMessage", handleMessage);
@@ -199,6 +177,7 @@ const Messages = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+
   const handleSendMessage = async () => {
     if (!socket) return;
     if ((newMessage.trim() || imageUrl) && selectedEmployeeId && userId && companyId) {
@@ -206,10 +185,11 @@ const Messages = () => {
       const channel = conversation?.channel || `chat:${selectedEmployeeId}:${userId}`;
       try {
         const messageData = {
-          channel,
-          message: newMessage || (imageUrl ? imageUrl : ""),
+          channel: channel,
+          message: newMessage.trim() || (imageUrl ? "" : ""),
           imageUrl: imageUrl || undefined,
           senderId: userId,
+          timeStamp: new Date().toISOString()
         };
 
         const response = await sendMessage(channel, messageData.message, userId, messageData.imageUrl);
@@ -227,7 +207,7 @@ const Messages = () => {
           setImageUrl(null);
         } else {
           setTimeLimitEnds(false);
-          socket.emit("sendMessage", { ...messageData, timeStamp: new Date().toISOString() });
+          socket.emit("sendMessage", messageData);
           setNewMessage("");
           setImageUrl(null);
           try {
@@ -250,10 +230,10 @@ const Messages = () => {
     if (conversation?.channel && userId) {
       markConversationAsRead(conversation.channel, userId)
         .then(() => {
-          setConversations(prevConversations => 
-            prevConversations.map(conv => 
-              conv.employeeId === employeeId 
-                ? { ...conv, unread: false } 
+          setConversations(prevConversations =>
+            prevConversations.map(conv =>
+              conv.employeeId === employeeId
+                ? { ...conv, unread: false }
                 : conv
             )
           );
@@ -303,6 +283,7 @@ const Messages = () => {
       }
     }
   };
+
   const uploadToCloudinary = async (file: File) => {
     setImageLoading(true)
     const formData = new FormData();
@@ -339,7 +320,7 @@ const Messages = () => {
       console.log("the response from ai text", response)
       setNewMessage(response.response)
     } catch (error) {
-      console.error("Error on text formating",error)
+      console.error("Error on text formating", error)
     } finally {
       setLoading(false)
     }
@@ -376,10 +357,10 @@ const Messages = () => {
       <Navbar />
       <div className="mx-4 sm:mx-8 md:mx-12 mt-6">
         <div className="flex justify-center">
-        {error?  <ToastError message={error||""} onClose={()=>setError(null)}/>:""}
+          {error ? <ToastError message={error || ""} onClose={() => setError(null)} /> : ""}
         </div>
 
-      
+
         <div className="bg-white p-3 sm:p-4 shadow-lg rounded-lg flex items-center justify-between">
           <div className="flex items-center">
             <IoChevronBackOutline
@@ -409,7 +390,7 @@ const Messages = () => {
                 >
                   <div className="flex items-center">
                     <div className="bg-gray-200 rounded-full mr-2 sm:mr-3">
-                      {conv.employeeProfile ?  <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${conv.employeeProfile}`} alt="" className="w-12 h-12 rounded-full" /> : <img src={avathar} alt="" className="w-12 h-12 rounded-full" />}
+                      {conv.employeeProfile ? <img src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${conv.employeeProfile}`} alt="" className="w-12 h-12 rounded-full" /> : <img src={avathar} alt="" className="w-12 h-12 rounded-full" />}
                     </div>
                     <div>
                       <h1 className="text-sm sm:text-base">{conv.employeeName}</h1>
@@ -429,7 +410,7 @@ const Messages = () => {
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-xs sm:text-sm text-gray-400">{format(new Date(conv.timestamp), "p")}</span>
-               {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />} 
+                    {conv.unread && <div className="bg-orange-600 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-1" />}
                   </div>
                 </div>
               ))
@@ -486,8 +467,8 @@ const Messages = () => {
                           ) :
 
                             msg.message && msg.message.includes("scheduled video call") ? (
-                              <>
-                                <p className="text-sm sm:text-base">
+                              < >
+                                <p className="text-sm sm:text-base p-2 ">
                                   You have a scheduled video call!<br />
                                   <span className="font-medium">
                                     Time: {msg.message.split("Time:")[1]?.split("🔗")[0]?.trim()}
@@ -496,9 +477,12 @@ const Messages = () => {
                                 <a
                                   href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
                                   rel="noopener noreferrer"
-                                  className="text-blue-400 underline break-all block mt-1 text-sm"
+                                  target="_blank"
+                                  className="p-4 px-20"
                                 >
-                                  🔗 Join: {msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0]}
+                                  <button className="mt-2 bg-orange-600 text-white rounded-lg text-sm px-4 py-2  hover:bg-orange-700 transition">
+                                    🔗 Click to join
+                                  </button>
                                 </a>
                               </>
                             ) :

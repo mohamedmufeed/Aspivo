@@ -132,79 +132,80 @@ const CompanyMessages = () => {
         fetchConversations();
     }, [companyId, location.state?.newConversation]);
 
-useEffect(() => {
-    if (!socket) return;
-  
-    if (selectedUserId && userId && conversations.length > 0) {
-      const conversation = conversations.find((c) => c.targetId === selectedUserId);
-      const channel = conversation?.channel || `chat:${selectedUserId}:${userId}`;
-  
-      const fetchHistory = async () => {
-        try {
-          const data = await getMessageHistory(channel);
-          if (data) setMessages(data);
-          if (conversation?.unread) {
-            await markConversationAsRead(channel, userId);
-            setConversations(prev => 
-                prev.map(conv => 
-                    conv.targetId === selectedUserId 
-                    ? { ...conv, unread: false } 
-                    : conv
-                )
-            );
-        }
-          
-        } catch (error) {
-          console.error("Error fetching message history:", error);
-        }
-      };
-  
-      fetchHistory();
-      socket.emit("joinChannel", channel);
-      const handleMessage = (message: RawSocketMessage) => {
-        console.log("Received message:", message);
-        const normalizedMessage: ChatMessage = {
-          _id: message._id || `${message.senderId}-${message.timeStamp}`,
-          senderId: message.senderId,
-          message: message.message || "",
-          imageUrl: message.imageUrl || undefined,
-          timestamp: message.timeStamp || new Date().toISOString(),
-        };
-  
-        
-        if (message.channel !== channel) {
-          console.warn("Message does not belong to current channel:", message.channel);
-          
-          setConversations(prev => 
-            prev.map(conv => {
-              const messageChannel = message.channel;
-              const convChannel = conv.channel;
-              
-              if (convChannel === messageChannel) {
-                return {
-                  ...conv,
-                  lastMessage: normalizedMessage.message || (normalizedMessage.imageUrl ? "Image" : ""),
-                  timestamp: new Date(normalizedMessage.timestamp).toISOString(),
-                  unread: true
-                };
-              }
-              return conv;
-            })
-          );
-          return;
-        }
-        if (normalizedMessage.message || normalizedMessage.imageUrl) {
-          setMessages((prev) => [...prev, normalizedMessage]);
-        }
-      };
+    useEffect(() => {
+        if (!socket) return;
+
+        if (selectedUserId && userId && conversations.length > 0) {
+            const conversation = conversations.find((c) => c.targetId === selectedUserId);
+            const channel = conversation?.channel || `chat:${selectedUserId}:${userId}`;
+
+            const fetchHistory = async () => {
+                try {
+                    const data = await getMessageHistory(channel);
+                    if (data) setMessages(data);
+                    if (conversation?.unread) {
+                        await markConversationAsRead(channel, userId);
+                        setConversations(prev =>
+                            prev.map(conv =>
+                                conv.targetId === selectedUserId
+                                    ? { ...conv, unread: false }
+                                    : conv
+                            )
+                        );
+                    }
+                } catch (error) {
+                    console.error("Error fetching message history:", error);
+                }
+            };
+
+            socket.emit("joinChannel", channel);
+            fetchHistory();
       
-      socket.on("receiveMessage", handleMessage);
-      return () => {
-        socket.off("receiveMessage", handleMessage);
-        socket.emit("leaveChannel", channel);
-      };
-    }
-  }, [selectedUserId, userId, conversations, socket]);
+
+            const handleReceiveMessage = (message: RawSocketMessage) => {
+                console.log("Received message:", message);
+                const normalizedMessage: ChatMessage = {
+                    _id: message._id || `${message.senderId}-${message.timeStamp}`,
+                    senderId: message.senderId,
+                    message: message.message || "",
+                    imageUrl: message.imageUrl,
+                    timestamp: message.timeStamp || new Date().toISOString(),
+                };
+
+                if (message.senderId === selectedUserId) {
+                    setMessages((prev) => [...prev, normalizedMessage]);
+                } else {
+                    console.log(
+                        `Message from ${message.senderId} does not match selected user ${selectedUserId}`
+                    );
+
+
+                    setConversations((prev) =>
+                        prev.map((conv) =>
+                            conv.targetId === message.senderId
+                                ? {
+                                    ...conv,
+                                    lastMessage: normalizedMessage.message,
+                                    timestamp: new Date(normalizedMessage.timestamp).toISOString(),
+                                    unread: true,
+                                }
+                                : conv
+                        )
+                    );
+                }
+            };
+
+
+            socket.on("receiveMessage", handleReceiveMessage);
+            return () => {
+                socket.emit("leaveChannel", channel);
+                socket.off("receiveMessage", handleReceiveMessage);
+            };
+        }
+    }, [selectedUserId, userId, conversations, socket]);
+
+
+
 
     useEffect(() => {
         return () => {
@@ -224,18 +225,22 @@ useEffect(() => {
     const handleSendMessage = async () => {
         if (!socket) return;
         if ((newMessage.trim() || imageUrl) && selectedUserId && companyId) {
-            const channel = conversations.find((c) => c.targetId === selectedUserId)?.channel;
+            const conversation = conversations.find((c) => c.targetId === selectedUserId);
+            const channel = conversation?.channel || `chat:${selectedUserId}:${companyId}`;
+            console.log(" helooo",channel)
             if (channel) {
                 try {
                     const messageData = {
-                        channel,
-                        message: newMessage || (imageUrl ? imageUrl : ""),
+                        channel:channel ,
+                        message: newMessage.trim() || (imageUrl ? imageUrl : ""),
                         imageUrl: imageUrl || undefined,
                         senderId: companyId,
                         timeStamp: new Date().toISOString(),
                     };
                     await sendMessage(channel, messageData.message, companyId, messageData.imageUrl);
+
                     socket.emit("sendMessage", messageData);
+
                     setNewMessage("");
                     setImageUrl(null);
                     const data = await getMessageHistory(channel);
@@ -247,6 +252,7 @@ useEffect(() => {
         }
     };
 
+
     const handleSelectConversation = (targetId: string) => {
         setSelectedUserId(targetId);
         setMessages([]);
@@ -254,6 +260,7 @@ useEffect(() => {
         if (conversation?.channel && userId) {
             markConversationAsRead(conversation.channel, userId)
                 .then(() => {
+
                     setConversations(prevConversations =>
                         prevConversations.map(conv =>
                             conv.targetId === selectedUserId
@@ -436,20 +443,22 @@ useEffect(() => {
 
                                                         msg.message && msg.message.includes("scheduled video call") ? (
                                                             <>
-                                                                <p className="text-sm sm:text-base">
+                                                                <p className="text-sm sm:text-base p-2">
                                                                     You have a scheduled video call!<br />
                                                                     <span className="font-medium">
                                                                         Time: {msg.message.split("Time:")[1]?.split("🔗")[0]?.trim()}
                                                                     </span>
                                                                 </p>
                                                                 <a
-                                                                    href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="text-blue-500 underline break-all block mt-1 text-sm"
-                                                                >
-                                                                    🔗 Join: {msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0]}
-                                                                </a>
+                                  href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
+                                  rel="noopener noreferrer"
+                                  target="_blank"
+                                  className="p-4 px-20"
+                                >
+                                  <button className="mt-2 bg-orange-600 text-white rounded-lg text-sm px-4 py-2  hover:bg-orange-700 transition">
+                                    🔗 Join Meeting
+                                  </button>
+                                </a>
                                                             </>
                                                         ) :
 

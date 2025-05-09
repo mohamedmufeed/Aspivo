@@ -83,7 +83,7 @@ router
 
 router
   .route("/jobs/:id/delete")
-  .delete(companyJobController.deleteJob);
+  .patch(companyJobController.chageJobStatus);
 
 router
   .route("/jobs/:id/applicants")

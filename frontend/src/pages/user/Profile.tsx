@@ -305,7 +305,7 @@ const Profile = () => {
                             <h1 className="font-medium text-2xl">Skills</h1>
                             <div className=" flex space-x-5 ">
                                 <GoPlus className="font-extralight cursor-pointer w-6 h-6" onClick={() => setAddSkill(true)} />
-                                <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditSkill(true)} />
+                                {/* <GoPencil className="font-extralight cursor-pointer w-5 h-5" onClick={() => setEditSkill(true)} /> */}
                             </div>
 
                         </div>

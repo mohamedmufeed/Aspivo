@@ -59,7 +59,7 @@ const CopmanyApplicants = () => {
     if (companyId) {
       fetchApplicants(companyId);
     }
-  }, [jobId, companyId,fetchApplicants]);
+  }, [jobId, companyId]);
 
   const handleViewApplication = (applicationId: string) => {
     navigate(`/company/applicants/${applicationId}`, { state: { companyId } });

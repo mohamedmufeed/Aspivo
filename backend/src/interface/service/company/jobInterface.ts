@@ -13,7 +13,7 @@ export default interface IJobService {
     fetchCompany(userId: string): Promise<CompanySerivceResponse>;
     postJob(data: JobData):Promise<{job:JobDocumnet, message:string}>;
     editJob(jobId: string, data: JobData):Promise< JobServiceResponse>;
-    deleteJob(jobId: string):Promise< JobServiceResponse>;
+    chageJobStatus(jobId: string):Promise< JobServiceResponse>;
     getApplicantsForJob(jobid: string, comapanyId: string): Promise<{applications:IJobApplication[], message:string}>;
     getApplicantDetials(applicantId: string):any;
     updateStatus(applicantId: string, status: ApplicationStatus): Promise<JobApplicationResponse>

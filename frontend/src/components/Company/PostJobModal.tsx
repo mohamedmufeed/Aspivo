@@ -99,7 +99,6 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
             };
         
             const response = await postJob(companyId || "", submitData)
-            console.log("the job repsosen",response)
             if(!response){
                 setError("You've reached your job posting limit. Upgrade your plan to post more jobs")
                 return

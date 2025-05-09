@@ -15,6 +15,7 @@ export interface IJob extends Document {
   requirements: string;
   jobDescription: string;
   company: mongoose.Types.ObjectId;
+  isActive?:boolean
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,7 +81,10 @@ const jobSchema = new Schema({
       required: true,
       trim: true,
     },
-    company: {
+    isActive:{
+      type:Boolean,
+      default:true
+    },company: {
       type: mongoose.Types.ObjectId,
       ref: "Company",
       required: true,
