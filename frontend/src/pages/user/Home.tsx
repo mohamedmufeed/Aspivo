@@ -1,5 +1,6 @@
 import bannerImage from "../../assets/job-interview-concept-illustration.png"
-import { CgDetailsMore } from "react-icons/cg";
+import { IoIosArrowForward } from "react-icons/io";
+
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaMeta } from "react-icons/fa6";
 import { FaGoogle } from "react-icons/fa";
@@ -45,31 +46,21 @@ const HeroSection = () => {
 
   const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.auth.user)
-  const userId = user?._id || ""
+  const isAdmin=useSelector((state:RootState)=>state.auth.isAdmin)
   useEffect(() => {
     if (user) {
       navigate("/");
     }
-  }, [navigate, userId,user]);
+  }, [navigate,user]);
 
-  useEffect(() => {
-    const handleUser = async () => {
-      try {
-        const response = await getProfile(userId);
-        if (response.user.user.isAdmin) {
+  
+  useEffect(()=>{
+    if(isAdmin){
           navigate("/admin-dashboard")
-        } 
-        else {
-          navigate("/")
-        }
-      } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-      }
-    };
-
-    if (userId) handleUser();
-  }, [navigate, userId]);
-
+    }else{
+       navigate("/")
+    }
+  },[user,navigate])
 
   const heroTextRef = useRef(null);
   const searchBoxRef = useRef(null);
@@ -109,7 +100,7 @@ const HeroSection = () => {
                 <label htmlFor="serach" className="text-[#837F7F] whitespace-nowrap   p-5  ml-auto  font-extralight" >Click here to explore more jobs</label>
    
                 <button className="w-20 h-14  ml-auto mt-1  mr-1  flex items-center justify-center rounded-lg bg-orange-600 hover:bg-orange-700 text-white cursor-pointer " onClick={() => navigate("/jobs")}>
-                  <CgDetailsMore className="w-6  h-10 " />
+                  <IoIosArrowForward className="w-6  h-10 " />
          
                 </button>
               </div>

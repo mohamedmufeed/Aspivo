@@ -49,11 +49,7 @@ const SubscriptionHIstory = () => {
         }
     }, [userId]);
 
-    useEffect(() => {
-        if (history.length === 0) {
-            navigate("/subscription")
-        }
-    })
+  
 
     const navigate = useNavigate();
     return (

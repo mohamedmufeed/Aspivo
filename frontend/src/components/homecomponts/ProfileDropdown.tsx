@@ -14,7 +14,6 @@ const ProfileDropdown = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const user = useSelector((state: RootState) => state.auth.user)
-    console.log(user)
     const handleLogout = async () => {
         try {
           const response = await logoutUser(user?._id || "");
@@ -65,8 +64,8 @@ const ProfileDropdown = () => {
                         <button className="flex items-center space-x-4 w-full p-2 rounded hover:bg-gray-100 cursor-pointer">
                         
                             <MdOutlineAttachMoney size={20} />
-                            <Link to={"/subscription-history"}>
-                            <span>Subscription History</span>
+                            <Link to={"/subscription"}>
+                            <span>Subscription</span>
                             </Link>
                        
                         </button>

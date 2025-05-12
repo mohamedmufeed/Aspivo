@@ -20,6 +20,8 @@ const SignupForm = () => {
   const [emailError, setEmailError] = useState("")
   const [password, setPassword] = useState<string>("")
   const [passwordError, setPasswordError] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState<string>("")
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>("")
   const [lodaing, setLoading] = useState(false)
 
 
@@ -28,13 +30,14 @@ const SignupForm = () => {
     setUserNameError("")
     setEmailError("");
     setPasswordError("");
+    setConfirmPassword("")
     setError("");
     if (!userName && !email && !password) {
       setError("All fields are required")
       return
     }
-    const usernameRegex = /^[a-zA-Z0-9]{3,20}$/;
-    if (!userName ||usernameRegex.test(userName)) {
+
+    if (userName.length <= 3) {
       setUserNameError("Username must be at least 3 characters long")
       return;
     }
@@ -46,6 +49,15 @@ const SignupForm = () => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!password || !passwordPattern.test(password)) {
       setPasswordError('Password must include uppercase, lowercase, number, special character, and 8+ characters.');
+      return;
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError("Please confirm your password.");
+      return;
+    }
+    if (confirmPassword !== password) {
+      setConfirmPasswordError("Passwords do not match.");
       return;
     }
 
@@ -72,16 +84,16 @@ const SignupForm = () => {
   }
 
   return (
-    <div className="  bg-[#F6F6F6] flex flex-col justify-center font-[Montserrat] h-full p-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2 mt-10">Create an account</h1>
+    <div className="  bg-[#F6F6F6] flex flex-col justify-center font-[Montserrat] h-full p-10">
+      <h1 className="text-3xl font-bold text-gray-800 mb-2 mt-5">Create an account</h1>
       <p className="text-gray-500 mb-6">Join us by filling in your details</p>
       {error ? <p className="text-red-600 font-light text-sm ">{error}</p> : ""}
       <form action="" onSubmit={handleSubmit}>
-        <div className="w-full flex flex-col space-y-3 ">
+        <div className="w-full flex flex-col space-y-2 ">
 
           <label htmlFor="userName" className="text-gray-700 font-medium">UserName</label>
           {userNameError ? <p className="text-red-600 font-light text-sm  ">{userNameError}</p> : ""}
-          <input onChange={(e) => setUserName(e.target.value)} type="text" name="userName" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${emailError ? "border-red-500" : ""}`} placeholder="Enter your UserName" />
+          <input onChange={(e) => setUserName(e.target.value)} type="text" name="userName" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${userNameError ? "border-red-500" : ""}`} placeholder="Enter your UserName" />
 
           <label htmlFor="email" className="text-gray-700 font-medium">Email</label>
           {emailError ? <p className="text-red-600 font-light text-sm  ">{emailError}</p> : ""}
@@ -89,9 +101,10 @@ const SignupForm = () => {
 
           <label htmlFor="password" className="text-gray-700 font-medium">Password</label>
           {passwordError ? <p className="text-red-600 font-light text-sm  ">{passwordError}</p> : ""}
-          <input onChange={(e) => setPassword(e.target.value)} type="password" name="password" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${emailError ? "border-red-500" : ""}`} placeholder="Enter your password" />
-
-
+          <input onChange={(e) => setPassword(e.target.value)} type="password" name="password" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${passwordError ? "border-red-500" : ""}`} placeholder="Enter your password" />
+          <label htmlFor="confirm-password" className="text-gray-700 font-medium">Confirm Password</label>
+          {confirmPasswordError ? <p className="text-red-600 font-light text-sm  ">{confirmPasswordError}</p> : ""}
+          <input onChange={(e) => setConfirmPassword(e.target.value)} type="password" name="confirm-password" className={`w-full p-3 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500  ${confirmPasswordError ? "border-red-500" : ""}`} placeholder="Enter your password" />
         </div>
 
 

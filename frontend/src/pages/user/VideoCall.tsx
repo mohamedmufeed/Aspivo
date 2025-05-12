@@ -253,11 +253,7 @@ const VideoCall = () => {
     });
   };
 
-  if(remoteVideoRef.current){
-    console.log("njan ivade ind",remoteVideoRef.current )
-  }else{
-    console.log("njan illa")
-  }
+
 
   return (
     <div
@@ -266,7 +262,7 @@ const VideoCall = () => {
     >
       <div className="relative w-2/3 p-4">
         <div className="flex items-center space-x-2 mb-4">
-          <p className="text-lg font-semibold">Meeting Ongoing</p>
+          {connectionStatus === "Call ended" ?   <p className="text-lg font-semibold">Meeting Ended</p>:     <p className="text-lg font-semibold">Meeting Ongoing</p>}
           <AiOutlineTeam className="bg-orange-200 p-2 rounded-full w-10 h-10" />
         </div>
 
@@ -359,7 +355,7 @@ const VideoCall = () => {
             <LuSend className="text-white w-5 h-5" />
           </div>
         </div>
-        <p className="text-sm mt-2 text-gray-500">Media Status: {connectionStatus}</p>
+        <p className="text-sm mt-2 text-gray-900">Media Status: {connectionStatus}</p>
       </div>
     </div>
   );

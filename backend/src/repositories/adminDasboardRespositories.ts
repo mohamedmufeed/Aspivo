@@ -61,7 +61,7 @@ export class DashboardRepositories implements IDashboardRepositories {
           _id: "$day",
           applications: { $sum: 1 },
           interviews: {
-            $sum: { $cond: [{ $eq: ["$status", "reviewed"] }, 1, 0] },
+            $sum: { $cond: [{ $eq: ["$status", "accepted"] }, 1, 0] },
           },
           pending: {
             $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] },
@@ -87,7 +87,6 @@ export class DashboardRepositories implements IDashboardRepositories {
         rejected: data?.rejected || 0,
       };
     });
-  
     return fullWeekData;
   }
   

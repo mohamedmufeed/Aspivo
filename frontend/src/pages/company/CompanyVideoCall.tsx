@@ -306,7 +306,7 @@ const CompanyVideoCall: React.FC = () => {
     <div className="flex h-screen bg-[#F6F6F6] px-10 pt-10 pb-10" style={{ fontFamily: "DM Sans, sans-serif" }}>
       <div className="relative w-2/3 p-4">
         <div className="flex items-center space-x-2 mb-4">
-          <p className="text-lg font-semibold">Meeting Ongoing</p>
+        {connectionStatus === "Call ended" ?   <p className="text-lg font-semibold">Meeting Ended</p>:     <p className="text-lg font-semibold">Meeting Ongoing</p>}
           <AiOutlineTeam className="bg-orange-200 p-2 rounded-full w-10 h-10" />
         </div>
         <div className="relative h-[70vh]">
@@ -396,7 +396,7 @@ const CompanyVideoCall: React.FC = () => {
             <LuSend className="text-white w-5 h-5" />
           </div>
         </div>
-        <p className="text-sm mt-2 text-gray-500">Connection Status: {connectionStatus}</p>
+        <p className="text-sm mt-2 text-gray-900">Connection Status: {connectionStatus}</p>
       </div>
     </div>
   );

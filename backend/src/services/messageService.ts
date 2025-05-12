@@ -129,4 +129,8 @@ export class MessageService implements IMessageService {
   async markConversationAsRead(channel: string, userId: string) {
     await this._messageRepositories.markConversationRead(channel, userId);
   }
+  async getUnreadMessageCount(userId:string){
+   const count= await this._messageRepositories.getUnreadMessageCount(userId)
+   return {count, message:"Unread message count get suscsess full"}
+  }
 }

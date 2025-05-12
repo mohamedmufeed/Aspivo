@@ -9,6 +9,7 @@ import profileAvathar from "../../assets/user.png";
 import AdminHeader from "../../components/Admin/AdminHeader";
 import SearchBar from "../../components/Admin/SearchBar";
 import _ from "lodash";
+import AdminApproveToast from "../../components/Admin/AdminApproveToast";
 
 type User = {
   _id: string;
@@ -27,18 +28,21 @@ const UserManageMent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [totalUsers, setTotalUsers] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [selecetdUserBlockStatus, setselecetdUserBlockStatus] = useState<boolean | undefined>(undefined)
+  const [adminApproveToast, setAdminAprroveToast] = useState(false)
   const userPerPage = 5;
   const prevRequestRef = useRef<AbortController | null>(null);
 
 
-
+  console.log(users)
   const fetchUsersData = async (page = 1, query = "") => {
     if (prevRequestRef.current) {
       prevRequestRef.current.abort();
     }
     const abortController = new AbortController();
     prevRequestRef.current = abortController;
-    
+
     setIsLoading(true);
     try {
       const response = await fetchUsers(page, userPerPage, query, abortController.signal);
@@ -72,7 +76,7 @@ const UserManageMent = () => {
     }
   }, [currentPage, location]);
 
-  
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (currentPage !== 1) setCurrentPage(1);
@@ -112,14 +116,30 @@ const UserManageMent = () => {
 
   return (
     <div className="flex">
-      <Sidebar  />
+      <Sidebar />
       <div
         className="bg-[#F6F6F6] w-full overflow-x-hidden relative"
         style={{ fontFamily: "DM Sans, sans-serif" }}
       >
+     
         <AdminHeader heading="Users" />
+   <div className="flex justify-center pb-5 transition-all w-full">
+          {adminApproveToast ? <AdminApproveToast
+            userId={selectedUserId || ""}
+            onClose={() => setAdminAprroveToast(false)}
+            onConfirmBlock={(userId) => {
+              const user = users.find(u => u._id === userId);
+              if (user) {
+                handleBlockUser(userId, user.isBlocked);
+              }
+            }}
+          />
+            : ""}
+        </div>
+
         <SearchBar placeholder="Search users..." onSearch={handleSearch} />
         <div className="w-full p-5">
+
           {/* Header Row */}
           <div className="grid grid-cols-6 items-center font-medium bg-gray-100 p-3 rounded-md">
             <p className="text-center">Profile Image</p>
@@ -139,7 +159,7 @@ const UserManageMent = () => {
             <div className="transition-opacity duration-300">
               {users.map((user, index) => (
                 <div
-                  key={user._id||index} 
+                  key={user._id || index}
                   className="grid grid-cols-6 items-center bg-white shadow-lg p-4 rounded-md my-2"
                 >
                   <div className="flex justify-center">
@@ -156,10 +176,15 @@ const UserManageMent = () => {
                   </h1>
                   <div className="flex justify-center space-x-4">
                     <button
-                      className={`p-2 px-4 text-white rounded-lg ${
-                        isLoading ? "bg-gray-400" : "bg-orange-600 hover:bg-orange-700"
-                      }`}
-                      onClick={() => handleBlockUser(user._id, user.isBlocked)}
+                      className={`p-2 px-4 text-white rounded-lg ${isLoading ? "bg-gray-400" : "bg-orange-600 hover:bg-orange-700"
+                        }`}
+
+                      // onClick={() => handleBlockUser(user._id, user.isBlocked)}
+                      onClick={() => {
+                        setAdminAprroveToast(true)
+                        setSelectedUserId(user._id)
+                        setselecetdUserBlockStatus(user.isBlocked)
+                      }}
                       disabled={isLoading}
                     >
                       {user.isBlocked ? "Unblock" : "Block"}
@@ -170,7 +195,7 @@ const UserManageMent = () => {
               ))}
             </div>
           )}
-          
+
           {isLoading && users.length > 0 && (
             <div className="flex justify-center items-center py-4">
               <div className="text-orange-600">Updating...</div>
@@ -187,7 +212,7 @@ const UserManageMent = () => {
             >
               <ChevronLeft size={18} />
             </button>
-            
+
             {_.range(1, totalPages + 1).map(page => {
               if (
                 totalPages <= 5 ||
@@ -198,11 +223,10 @@ const UserManageMent = () => {
                 return (
                   <button
                     key={page}
-                    className={`p-3 w-8 gap-x-6 h-8 rounded-sm flex items-center justify-center font-bold ${
-                      currentPage === page
-                        ? "bg-orange-600 text-white"
-                        : "bg-gray-200 hover:bg-gray-300"
-                    }`}
+                    className={`p-3 w-8 gap-x-6 h-8 rounded-sm flex items-center justify-center font-bold ${currentPage === page
+                      ? "bg-orange-600 text-white"
+                      : "bg-gray-200 hover:bg-gray-300"
+                      }`}
                     onClick={() => setCurrentPage(page)}
                     disabled={isLoading}
                   >
@@ -210,15 +234,15 @@ const UserManageMent = () => {
                   </button>
                 );
               }
-              
-      
+
+
               if ((page === 2 && currentPage > 3) || (page === totalPages - 1 && currentPage < totalPages - 2)) {
                 return <span key={`ellipsis-${page}`} className="px-2">...</span>;
               }
-              
+
               return null;
             })}
-            
+
             <button
               className="p-3 rounded-md 0 disabled:opacity-50"
               onClick={() =>

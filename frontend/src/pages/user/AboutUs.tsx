@@ -13,20 +13,26 @@ const AboutUs = () => {
     const navigate = useNavigate()
     const [review, setReview] = useState("")
     const [error, setError] = useState("")
+    const [successMessage,setSuccessMessage]=useState("")
     const user = useSelector((state: RootState) => state.auth.user)
     const userId = user?._id
     const handleSubmit = async () => {
         if (!userId) return
         if (!review) {
-            setError("Review is req")
+            setError("Please enter your review before submitting.");
             return
         }
         try {
-            await addReview(userId, review)
-            console.log(" the revew resoponse", review)
-        } catch (error) {
-            console.error("Error on adding Review",error);
+           const response= await addReview(userId, review)
+           if(response?.review){
+            setSuccessMessage("Review updated successfully. Thank you for your feedback!");
+            setReview("")
+           }
 
+            console.log(" the revew resoponse", response)
+        } catch (error) {
+            setError("Something went wrong. Please try again.");
+            console.error("Error on adding Review",error);
         }
 
     }
@@ -74,14 +80,16 @@ const AboutUs = () => {
                                 Your feedback helps us grow and serve you better.
                             </p>
                         </div>
-
+                        {successMessage && (<p className="text-green-600">{successMessage}</p>)}
                         {error && (<p className="text-red-600">{error}</p>)}
                         <div className="pt-10">
                             <textarea placeholder="Start writing here . . . " rows={10} className=" block w-full  rounded-t-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 placeholder:p-2  sm:text-sm/6"
-                                onChange={(e) => {
-                                    setReview(e.target.value)
-                                    if (review) { setError("") }
-                                }}>
+                              value={review} 
+                               onChange={(e) => {
+                                setReview(e.target.value);
+                                if (e.target.value.trim() !== "") setError("");
+                              }}
+                                >
 
                             </textarea>
                             <div className="border-r border-l border-b  border-gray-300 py-5 rounded-b-md flex justify-end px-6">

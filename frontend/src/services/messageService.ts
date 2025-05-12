@@ -65,3 +65,14 @@ export const markConversationAsRead = async (channel:string, userId:string) => {
       throw error;
     }
   };
+
+
+  export const getUnreadMessageCount=async(userId:string)=>{
+    try {
+        const response=await api.get(`message/chats/unreadcount/${userId}`)
+        return response.data
+    } catch (error) {
+           console.error('Error  Geting unread message count read:', error);
+      throw error;
+    }
+  }

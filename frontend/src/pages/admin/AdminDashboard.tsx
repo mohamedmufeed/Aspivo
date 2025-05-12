@@ -29,10 +29,11 @@ const AdminDashboard = () => {
   const [userData, setUserData] = useState<IState>()
   const [companyData, setCompanyData] = useState<IState>()
   const [jobData, setJobData] = useState<IState>()
-  const [dateRange, setDateRange] = useState("Feb 20 - Feb 26");
+
   const [applicationData, setApplicationData] = useState<IWeeklyApplicationDAta[]>()
   const [revenueData, setRevenueData] = useState<IMonthlyRevenueData[]>()
   const weekOptions = getLastNWeeks(7);
+    const [dateRange, setDateRange] = useState(weekOptions[0]);
 
   useEffect(() => {
     const fetchDashbordStats = async () => {

@@ -112,7 +112,7 @@ const Login = () => {
             {imageSlide[currentIndex].text}
           </motion.p>
 
-          <div className="flex space-x-2 mt-4">
+          <div className="flex space-x-2 mt-10">
             {imageSlide.map((_, index) => (
               <span
                 key={index}

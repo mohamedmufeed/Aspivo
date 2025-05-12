@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
 import Navbar from "../../components/homecomponts/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getConversations, getMessageHistory, sendMessage, InitializeChat, markConversationAsRead } from "../../services/messageService";
+import { getConversations, getMessageHistory, sendMessage, InitializeChat, markConversationAsRead, getUnreadMessageCount } from "../../services/messageService";
 import { IoIosLink, IoIosSearch } from "react-icons/io";
 import { LuSend } from "react-icons/lu";
 import { useSelector } from "react-redux";
@@ -173,9 +173,14 @@ const Messages = () => {
     }
   }, [selectedEmployeeId, userId, conversations, socket]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+useEffect(() => {
+  const timer = setTimeout(() => {
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+    }
+  }, 100);
+  return () => clearTimeout(timer);
+}, [messages]);
 
 
   const handleSendMessage = async () => {
@@ -352,6 +357,19 @@ const Messages = () => {
     }
   }
 
+
+useEffect(()=>{
+  const fetchUnreadMessageCount=async()=>{
+    try {
+      const response=await getUnreadMessageCount(authUserId)
+      console.log("thhhh",response)
+    } catch (error) {
+      
+    }
+  }
+  fetchUnreadMessageCount()
+},[])
+
   return (
     <div className="bg-[#F6F6F6] min-h-screen">
       <Navbar />
@@ -477,7 +495,7 @@ const Messages = () => {
                                 <a
                                   href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
                                   rel="noopener noreferrer"
-                                  target="_blank"
+                
                                   className="p-4 px-20"
                                 >
                                   <button className="mt-2 bg-orange-600 text-white rounded-lg text-sm px-4 py-2  hover:bg-orange-700 transition">

@@ -5,13 +5,34 @@ import { RootState } from "../../redux/store/store";
 import { useEffect, useState } from "react";
 import { fetchCompany } from "../../services/company/compayJob";
 import ToastError from "../../components/Tost/ErrorToast";
+import { getProfile } from "../../services/profile";
+
 
 const Subscription = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [companyId, setCompanyId] = useState<string | undefined>("");
   const user = useSelector((state: RootState) => state.auth.user);
+  const [alreadySubscribed,setAlreadySubscribed]=useState<boolean|undefined>(false)
   const userId = user?._id || "";
+
+  useEffect(()=>{
+    const fetchUser=async()=>{
+      try {
+        const  response = await getProfile(userId)
+        console.log("the user is ",response.user.user.subscription)
+        if(response.user.user.subscription){
+          setAlreadySubscribed(true)
+        }
+      } catch (error) {
+        console.error("Error on fetching the user");
+        
+      }
+    }
+    if(userId){
+      fetchUser()
+    }
+  })
 
   useEffect(() => {
     const fetchCompanyId = async () => {
@@ -21,14 +42,12 @@ const Subscription = () => {
       }
       try {
         const response = await fetchCompany(userId);
-        console.log("Fetch company response:", response);
-        if (response.company?.company) {
+        if (response?.company?.company) {
           setCompanyId(response.company.company._id);
         }
       } catch (err) {
         const error = err as Error
         console.error("Error fetching company:", error.message);
-        setError("Failed to fetch company details");
       }
     };
     fetchCompanyId();
@@ -49,12 +68,8 @@ const Subscription = () => {
         userId,
         companyId
       });
-
-
       if (response.url) {
-        console.log(" the url ", response.url)
-        window.location.href = response.url;
-
+        window.location.href = response.url
       } else {
         throw new Error("No checkout URL received");
       }
@@ -114,13 +129,14 @@ const Subscription = () => {
 
               <button
                 onClick={handleSubscribe}
-                disabled={isProcessing || !userId}
-                className={`w-full mt-8 py-4 bg-orange-600 text-white rounded-lg font-medium text-lg ${isProcessing || !userId
+                disabled={isProcessing || !userId || alreadySubscribed}
+                className={`w-full mt-8 py-4 bg-orange-600 text-white rounded-lg font-medium text-lg ${isProcessing || !userId || alreadySubscribed
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-orange-700 transition duration-200"
                   }`}
               >
-                {isProcessing ? "Processing..." : "Get Plan"}
+              {isProcessing ? "Processing..." : (alreadySubscribed ? "Already Purchased" : "Get Plan")}
+
               </button>
             </div>
           </div>

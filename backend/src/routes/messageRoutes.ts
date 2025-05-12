@@ -14,6 +14,7 @@ router.get("/chats/approved", protect, messageController.getApprovedConversation
 router.post("/chats/messages", protect, messageController.sendMessage);
 router.get("/chats/messages", protect, messageController.getChatHistoryController);
 router.post("/chats/markRead", protect, messageController.markConversationRead);
+router.get("/chats/unreadcount/:id",protect, messageController.getUnreadMessageCount)
 
 
 export default router;

@@ -24,7 +24,7 @@ const formatSalary = (amount: number): string => {
 
 const JobLists = () => {
     const navigate = useNavigate();
-    const categoryItems = ["All", "Developer", "UI Design", "Product Designer", "Finance", "Sales"];
+    const categoryItems = ["All", "Software Development", "UI Design", "Product Designer", "Finance", "Sales"];
     const [jobs, setJobs] = useState<JobData[]>([]);
     const [searchWord, setSearchWord] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

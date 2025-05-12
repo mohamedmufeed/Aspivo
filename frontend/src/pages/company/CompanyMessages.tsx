@@ -160,7 +160,7 @@ const CompanyMessages = () => {
 
             socket.emit("joinChannel", channel);
             fetchHistory();
-      
+
 
             const handleReceiveMessage = (message: RawSocketMessage) => {
                 console.log("Received message:", message);
@@ -227,11 +227,11 @@ const CompanyMessages = () => {
         if ((newMessage.trim() || imageUrl) && selectedUserId && companyId) {
             const conversation = conversations.find((c) => c.targetId === selectedUserId);
             const channel = conversation?.channel || `chat:${selectedUserId}:${companyId}`;
-            console.log(" helooo",channel)
+            console.log(" helooo", channel)
             if (channel) {
                 try {
                     const messageData = {
-                        channel:channel ,
+                        channel: channel,
                         message: newMessage.trim() || (imageUrl ? imageUrl : ""),
                         imageUrl: imageUrl || undefined,
                         senderId: companyId,
@@ -407,8 +407,9 @@ const CompanyMessages = () => {
                                             </h1>
                                         </div>
                                     </div>
-                                    <div onClick={TimesheduleMeeting} className="cursor-pointer">
-                                        <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+                                    <div onClick={TimesheduleMeeting} className="cursor-pointer" >
+                                        <IoVideocamOutline className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" title="Schedule Meeting"
+  />
                                     </div>
                                     {showTimeModal && (
                                         <TimePickerModal
@@ -450,15 +451,15 @@ const CompanyMessages = () => {
                                                                     </span>
                                                                 </p>
                                                                 <a
-                                  href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
-                                  rel="noopener noreferrer"
-                                  target="_blank"
-                                  className="p-4 px-20"
-                                >
-                                  <button className="mt-2 bg-orange-600 text-white rounded-lg text-sm px-4 py-2  hover:bg-orange-700 transition">
-                                    🔗 Join Meeting
-                                  </button>
-                                </a>
+                                                                    href={msg.message.match(/(http[s]?:\/\/[^\s]+)/)?.[0] || "#"}
+                                                                    rel="noopener noreferrer"
+                                                                    target="_blank"
+                                                                    className="p-4 px-20"
+                                                                >
+                                                                    <button className="mt-2 bg-orange-600 text-white rounded-lg text-sm px-4 py-2  hover:bg-orange-700 transition">
+                                                                        🔗 Join Meeting
+                                                                    </button>
+                                                                </a>
                                                             </>
                                                         ) :
 

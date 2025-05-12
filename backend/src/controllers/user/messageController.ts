@@ -116,4 +116,15 @@ export class MessageController  implements IMessageController{
       });
     }
   };
+
+
+  getUnreadMessageCount=async(req:Request,res:Response)=>{
+    try {
+      const userId=req.params.id
+      const response=await this._messageService.getUnreadMessageCount(userId)
+      res.status(HttpStatus.OK).json(response)
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:ERROR_MESSAGES.SERVER_ERROR})
+    }
+  }
 }
