@@ -8,7 +8,9 @@
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
     "peer-server": "ts-node src/peerServer.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build": "tsc"
+
   },
   "keywords": [],
   "author": "",

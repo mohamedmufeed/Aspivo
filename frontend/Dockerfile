@@ -1,4 +1,4 @@
-FROM node:alpine:3.20
+FROM node:23-slim
 
 WORKDIR /app
 
@@ -11,4 +11,4 @@ RUN npm run build
 
 EXPOSE 5173
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
