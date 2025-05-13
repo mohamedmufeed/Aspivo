@@ -1,6 +1,5 @@
 import bannerImage from "../../assets/job-interview-concept-illustration.png"
 import { IoIosArrowForward } from "react-icons/io";
-
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaMeta } from "react-icons/fa6";
 import { FaGoogle } from "react-icons/fa";
@@ -14,7 +13,6 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
-import { getProfile } from "../../services/profile";
 import Review from "../../components/homecomponts/Review";
 import Footer from "../../components/homecomponts/Footer";
 

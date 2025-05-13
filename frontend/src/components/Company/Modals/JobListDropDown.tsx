@@ -14,7 +14,7 @@ interface JobListDropDownProp {
   job: JobData;
 }
 
-const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs, job }) => {
+const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, job }) => {
   const items = [
     { icon: <HiOutlineUsers className="w-5 h-5" />, name: "Applicants", action: "Applicants" },
     { icon: <GoPencil className="w-5 h-5" />, name: "Edit", action: "Edit" },
@@ -24,8 +24,8 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs, job })
   const navigate = useNavigate()
   const handleStatus = async (jobId: string) => {
     try {
-     await chageStatus(jobId)
-      window.location.reload(); 
+      await chageStatus(jobId)
+      window.location.reload();
     } catch (error) {
       console.log("Error in the deleting job ", error)
     }
@@ -63,13 +63,21 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, setJobs, job })
           </div>
         ))}
       </div>
-      {editModal && (
-        <EditJobModal
-          onClose={() => setEditModal(false)}
-          job={job}
-          setJobs={setJobs}
-        />
-      )}
+   {editModal && (
+  <EditJobModal
+    onClose={() => setEditModal(false)}
+    job={{
+      ...job,
+      typesOfEmployment: job.typesOfEmployment.length
+        ? [job.typesOfEmployment[0], ...job.typesOfEmployment.slice(1)]
+        : ["Full-time"],
+      startDate: job.startDate instanceof Date ? job.startDate.toISOString() : job.startDate,
+      endDate: job.endDate instanceof Date ? job.endDate.toISOString() : job.endDate,
+    }}
+  />
+)}
+
+
     </div>
   );
 };

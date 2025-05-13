@@ -30,6 +30,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
 
 
     const [checked, setChecked] = useState(false);
+    setChecked(false)
     const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({

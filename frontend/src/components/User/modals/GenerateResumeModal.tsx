@@ -227,7 +227,7 @@ const GenerateResumeModal: React.FC<Props> = ({ onClose, setProfileData }) => {
                 ) : (
                   <>
                   
-                    <button className="bg-orange-600 text-white  font-bold rounded-lg p-3" onClick={handleSetAsProfile}>Set as My Profile Resume</button>
+                    <button className="bg-orange-600 text-white  font-bold rounded-lg p-3" disabled={uploading} onClick={handleSetAsProfile}>Set as My Profile Resume</button>
                   </>
                 )}
               </div>

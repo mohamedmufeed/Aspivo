@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import { fetchCompany } from "../../services/company/compayJob";
 import ToastError from "../../components/Tost/ErrorToast";
 import { getProfile } from "../../services/profile";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+
 
 
 const Subscription = () => {
@@ -13,23 +16,24 @@ const Subscription = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [companyId, setCompanyId] = useState<string | undefined>("");
   const user = useSelector((state: RootState) => state.auth.user);
-  const [alreadySubscribed,setAlreadySubscribed]=useState<boolean|undefined>(false)
+  const [alreadySubscribed, setAlreadySubscribed] = useState<boolean | undefined>(false)
+  const navigate=useNavigate()
   const userId = user?._id || "";
 
-  useEffect(()=>{
-    const fetchUser=async()=>{
+  useEffect(() => {
+    const fetchUser = async () => {
       try {
-        const  response = await getProfile(userId)
-        console.log("the user is ",response.user.user.subscription)
-        if(response.user.user.subscription){
+        const response = await getProfile(userId)
+        console.log("the user is ", response.user.user.subscription)
+        if (response.user.user.subscription) {
           setAlreadySubscribed(true)
         }
       } catch (error) {
         console.error("Error on fetching the user");
-        
+
       }
     }
-    if(userId){
+    if (userId) {
       fetchUser()
     }
   })
@@ -82,6 +86,7 @@ const Subscription = () => {
     }
   };
 
+
   return (
     <div>
       <Navbar />
@@ -92,6 +97,17 @@ const Subscription = () => {
         {error ? <ToastError message={error} onClose={() => setError(null)} /> : ""}
 
         <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl">
+
+          <div
+            className="flex justify-start items-center gap-2 px-4 py-2 border border-gray-400 rounded-lg w-fit cursor-pointer transition-colors hover:bg-gray-100 active:scale-95"
+            role="button"
+            aria-label="Go back"
+            onClick={()=>navigate(-1)}
+            >
+            <IoIosArrowRoundBack className="w-6 h-6 text-gray-700" />
+            <span className="text-gray-800 font-medium">Back</span>
+          </div>
+
           <h1 className="font-bold text-2xl text-center">Subscription</h1>
           <p className="text-gray-600 text-center">Talk to the Decision-Makers</p>
           <div className="px-2 sm:px-35">
@@ -135,7 +151,7 @@ const Subscription = () => {
                   : "hover:bg-orange-700 transition duration-200"
                   }`}
               >
-              {isProcessing ? "Processing..." : (alreadySubscribed ? "Already Purchased" : "Get Plan")}
+                {isProcessing ? "Processing..." : (alreadySubscribed ? "Already Purchased" : "Get Plan")}
 
               </button>
             </div>

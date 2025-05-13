@@ -96,7 +96,7 @@ const EditCompanyContact: React.FC<EditProfileModalProps> = ({ setCompanyData, i
     }
 
     try {
-      const response = await editContact(companyId, contacts);
+     const response = await editContact(companyId, { contact: contacts });
       if (response) {
         setCompanyData(response.company);
         onClose();

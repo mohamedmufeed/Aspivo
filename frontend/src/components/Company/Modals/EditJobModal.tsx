@@ -24,9 +24,11 @@ interface JobData {
   requirements: string;
 }
 
+
 interface EditJobModalProps {
   onClose: () => void
   job: JobData;
+
 }
 
 const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {

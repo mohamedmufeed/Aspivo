@@ -5,9 +5,10 @@ import { io } from "../server";
 import Conversation from "../models/conversations";
 import IMessageService from "../interface/service/user/messageServiceInterface";
 import logger from "../logger";
-
+import dotenv from "dotenv";
+dotenv.config();
 const redisClient = createClient({
-  url: "redis://localhost:6379",
+  url: process.env.REDIS_URL,
 });
 redisClient.on("error", (err) =>  logger.info("Redis client error", err));
 

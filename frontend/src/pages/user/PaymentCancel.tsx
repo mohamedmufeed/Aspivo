@@ -1,4 +1,4 @@
-import React from 'react'
+
 import failedGif from "../../assets/Bug fixing.gif"
 import { useNavigate } from 'react-router-dom'
 

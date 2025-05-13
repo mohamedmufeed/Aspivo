@@ -35,7 +35,7 @@ const UserManageMent = () => {
   const prevRequestRef = useRef<AbortController | null>(null);
 
 
-  console.log(users)
+  console.log(selecetdUserBlockStatus)
   const fetchUsersData = async (page = 1, query = "") => {
     if (prevRequestRef.current) {
       prevRequestRef.current.abort();
