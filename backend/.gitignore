@@ -138,3 +138,6 @@ dist
 
 # Logger file
 logs/
+
+# Docker environment file
+.env.docker
