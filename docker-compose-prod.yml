@@ -1,0 +1,53 @@
+services:
+  frontend:
+    image: mohamedmufeed/frontend
+    container_name: frontend
+    pull_policy: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      platforms:
+        - "linux/amd64"
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./frontend/.env.docker
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    image: mohamedmufeed/backend
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      platforms:
+        - "linux/amd64"
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./backend/.env.docker
+    networks:
+      - app-network
+
+  peer:
+    image: mohamedmufeed/peer
+    container_name: peer
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      platforms:
+        - "linux/amd64"
+    ports:
+      - "9000:9000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    command: ["npx", "ts-node", "src/peerServer.ts"]
+
+networks:
+  app-network:
+    driver: bridge
