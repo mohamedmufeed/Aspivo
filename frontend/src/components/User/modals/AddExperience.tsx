@@ -14,7 +14,7 @@ interface EditProfileModalProps {
     setProfileData: (prev: any) => void;
 }
 export interface Experience {
-    _id?:string;
+    _id?: string;
     title: string;
     employmentType: string;
     company: string;
@@ -27,12 +27,9 @@ export interface Experience {
 
 
 const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen, onClose, userId }) => {
+    const [checked, setChecked] = useState<boolean >(false);
 
-
-    const [checked, setChecked] = useState(false);
-    setChecked(false)
     const dispatch = useDispatch();
-
     const [formData, setFormData] = useState({
         title: "",
         employmentType: "",
@@ -76,7 +73,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                 }
             })
             setErrors(formattedErrors)
-        }else{
+        } else {
             setErrors({});
         }
 
@@ -207,7 +204,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
 
                                 <div className="grid grid-cols-2 mt-5 gap-4">
                                     <div className="flex flex-col">
-                                    {errors.startDate && <p className="text-red-500">{errors.startDate}</p>}
+                                        {errors.startDate && <p className="text-red-500">{errors.startDate}</p>}
                                         <label className="text-gray-600">Start date*</label>
                                         <input
                                             type="date"
@@ -221,7 +218,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                     </div>
                                     {!checked && (
                                         <div className="flex flex-col">
-                                               {errors.endDate && <p className="text-red-500">{errors.endDate}</p>}
+                                            {errors.endDate && <p className="text-red-500">{errors.endDate}</p>}
                                             <label className="text-gray-600">End date*</label>
                                             <input
                                                 type="date"
@@ -237,7 +234,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
                                 </div>
 
                                 <div className="mt-5">
-                                {errors.location && <p className="text-red-500">{errors.location}</p>}
+                                    {errors.location && <p className="text-red-500">{errors.location}</p>}
                                     <label className="text-gray-600">Location*</label>
                                     <input
                                         type="text"

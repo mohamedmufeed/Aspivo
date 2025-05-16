@@ -11,7 +11,7 @@ declare module "socket.io" {
 const setupSocket = (server: HttpServer) => {
     const io = new SocketServer(server, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: "http://13.204.5.195/",
             methods: ["GET", "POST"],
             credentials: true,
         }
