@@ -37,7 +37,6 @@ const LoginForm = () => {
     try {
 
       const data = await loginApi({ email, password })
-      console.log("the user , data", data.user.isAdmin)
       dispatch(login(data.user))
       registerUserSocket("user", data.user.id);
       setloading(true)
@@ -46,11 +45,7 @@ const LoginForm = () => {
       } else {
         navigate("/");
       }
-   
-
     } catch (error) {
-      console.log("the errorr", error)
-
       if (error instanceof Error) {
         setError(error.message)
       } else {

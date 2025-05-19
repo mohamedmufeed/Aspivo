@@ -318,11 +318,9 @@ useEffect(() => {
   const aiTextFormating = async () => {
     try {
       setLoading(true)
-      console.log("the new message", newMessage)
       if (!newMessage) return
       const propmt = "makeChat"
       const response = await textFormating(newMessage, propmt, userId || "")
-      console.log("the response from ai text", response)
       setNewMessage(response.response)
     } catch (error) {
       console.error("Error on text formating", error)
@@ -361,8 +359,7 @@ useEffect(() => {
 useEffect(()=>{
   const fetchUnreadMessageCount=async()=>{
     try {
-      const response=await getUnreadMessageCount(authUserId)
-      console.log("thhhh",response)
+    await getUnreadMessageCount(authUserId)
     } catch (error) {
       
     }

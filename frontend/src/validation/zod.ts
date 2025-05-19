@@ -1,12 +1,21 @@
-import { string, z } from "zod";
+import {  z } from "zod";
 
 export const editProfileSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  firstName: z
+    .string()
+    .min(2, "First name must be at least 2 characters")
+    .regex(/^[A-Za-z\s'-]+$/, "First name must contain only letters"),
+    
+  lastName: z
+    .string()
+    .min(2, "Last name must be at least 2 characters")
+    .regex(/^[A-Za-z\s'-]+$/, "Last name must contain only letters"),
+
   phoneNumber: z
     .string()
     .trim()
     .regex(/^\d{10}$/, "Phone number must be 10 digits"),
+
   position: z.string().min(2, "Position is required"),
   location: z.string().min(2, "Location is required"),
 });
@@ -21,44 +30,112 @@ export const editAboutSchema = z.object({
     }),
 });
 
-export const experinceSchema = z
+
+
+export const experienceSchema = z
   .object({
-    title: z.string().trim().min(3, "Title must be at least 3 characters"),
+    title: z
+      .string()
+      .trim()
+      .min(3, "Title must be at least 3 characters")
+      .regex(/^[A-Za-z\s'-]+$/, "Title must contain only letters"),
+
     employmentType: z.string().trim().nonempty("EmploymentType is required"),
-    company: z.string().trim().min(3, "Company must be at least 3 characters"),
+
+    company: z
+      .string()
+      .trim()
+      .min(3, "Company must be at least 3 characters"),
+
     startDate: z.string().nonempty("Start date is required"),
-    endDate: z.string().nonempty("End date is required").optional(),
+
+    endDate: z.string().optional(),
+
     location: z
       .string()
       .trim()
-      .min(3, "Loaction must be at least 3 characters"),
-    description: string()
+      .min(3, "Location must be at least 3 characters"),
+
+    description: z
+      .string()
       .trim()
       .min(20, "Description must be at least 20 characters"),
+
     currentlyWorking: z.boolean().optional(),
   })
-  .refine(
-    (data) => {
-      if (!data.currentlyWorking && !data.endDate) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "End date is required if not currently working",
-      path: ["endDate"],
+  .refine((data) => {
+    const start = new Date(data.startDate);
+    const now = new Date();
+    return start <= now;
+  }, {
+    message: "Start date cannot be in the future",
+    path: ["startDate"],
+  })
+  .refine((data) => {
+    if (!data.currentlyWorking && !data.endDate) {
+      return false;
     }
-  );
+    return true;
+  }, {
+    message: "End date is required if not currently working",
+    path: ["endDate"],
+  })
+  .refine((data) => {
+    if (!data.endDate) return true; 
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    return start <= end;
+  }, {
+    message: "Start date must be before end date",
+    path: ["startDate"],
+  });
 
 
-   export const educationSchema=z.object({
-    school:z.string().min(3,"School must be at least 3 characters"),
-    degree:z.string().min(3 , "Degree must be at least 3  characters"),
-    fieldOfStudy:z.string().min(3,"Filed of study must be at least 3  characters"),
-    startDate: z.string().nonempty("Start date is required"),
-    endDate: z.string().nonempty("End date is required"),
-    grade:z.string().nonempty()
-   })
+
+
+export const educationSchema = z
+  .object({
+    school: z
+      .string()
+      .min(3, "School must be at least 3 characters"),
+
+    degree: z
+      .string()
+      .min(3, "Degree must be at least 3 characters"),
+
+    fieldOfStudy: z
+      .string()
+      .min(3, "Field of study must be at least 3 characters"),
+
+    startDate: z
+      .string()
+      .nonempty("Start date is required"),
+
+    endDate: z
+      .string()
+      .nonempty("End date is required"),
+
+    grade: z
+      .string()
+      .nonempty("Grade is required"),
+  })
+  .refine((data) => {
+    const now = new Date();
+    const start = new Date(data.startDate);
+    return start <= now;
+  }, {
+    message: "Start date cannot be in the future",
+    path: ["startDate"],
+  })
+  .refine((data) => {
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    return start <= end;
+  }, {
+    message: "Start date must be before end date",
+    path: ["startDate"],
+  });
+
 
 
 
@@ -80,7 +157,23 @@ export const experinceSchema = z
     qualification: z.string().min(5, "Qualification is required"),
     jobResponsibilities: z.string().min(5, "Job responsibilities are required"),
     requirements: z.string().min(5, "Requirements are required"),
+  }).refine((data) => {
+    const now = new Date();
+    const start = new Date(data.startDate);
+    return start <= now;
+  }, {
+    message: "Start date cannot be in the future",
+    path: ["startDate"],
+  })
+  .refine((data) => {
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    return start <= end;
+  }, {
+    message: "Start date must be before end date",
+    path: ["startDate"],
   });
+  
 
 
   export const editCompanyProfileSchema = z.object({

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { VscClose } from "react-icons/vsc";
 import { editExperience, getProfile } from "../../../services/profile";
-import { experinceSchema } from "../../../validation/zod";
+import { experienceSchema } from "../../../validation/zod";
 
 
 interface EditProfileModalProps {
@@ -91,7 +91,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
     
 
     const validateForm = (data: Experience) => {
-        const result = experinceSchema.safeParse(data)
+        const result = experienceSchema.safeParse(data)
         if (!result.success) {
             const formattedErrors: Record<string, string> = {};
             result.error.errors.forEach((err) => {
@@ -119,7 +119,7 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const result = experinceSchema.safeParse(formData)
+        const result = experienceSchema.safeParse(formData)
         if (!result.success) {
             validateForm(formData)
             return

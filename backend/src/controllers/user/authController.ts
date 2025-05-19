@@ -166,7 +166,7 @@ export class AuthController  implements IAuthController{
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect("http://localhost:5173/");
+    res.redirect("/");
   };
 
   getGoogleUser = async (req: Request, res: Response): Promise<void> => {

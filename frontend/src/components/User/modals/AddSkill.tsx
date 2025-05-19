@@ -27,7 +27,6 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     onClose,
     userId,
     setProfileData,
-    existingSkill
 }) => {
     const [skills, setSkills] = useState<string[]>([]);
     const [skillInput, setSkillInput] = useState("");
@@ -37,8 +36,6 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     const [filteredSuggestions, setFilteredSuggestions] = useState<SkillType[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null)
-    console.log(existingSkill)
-
     const fetchSkills = async () => {
         try {
             const response = await getSkills();

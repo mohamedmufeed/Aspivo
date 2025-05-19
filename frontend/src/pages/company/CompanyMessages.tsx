@@ -227,7 +227,6 @@ const CompanyMessages = () => {
         if ((newMessage.trim() || imageUrl) && selectedUserId && companyId) {
             const conversation = conversations.find((c) => c.targetId === selectedUserId);
             const channel = conversation?.channel || `chat:${selectedUserId}:${companyId}`;
-            console.log(" helooo", channel)
             if (channel) {
                 try {
                     const messageData = {

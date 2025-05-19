@@ -29,7 +29,7 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
     const [about, setAbout] = useState<string>("")
     const [loading, setLoading] = useState(false)
     const [aiFetures, setAiFetures] = useState(false)
-    const [error,setError]=useState<string|null>(null)
+    const [error, setError] = useState<string | null>(null)
 
 
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
@@ -49,7 +49,6 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                     setAiFetures(true)
                 }
                 setValue("about", userData.about || "");
-
             } catch (error) {
                 console.error("Failed to fetch user profile", error);
             }
@@ -63,9 +62,7 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
     const onSubmit = async (data: FormData) => {
         try {
             const response = await editAbout(userId, data.about)
-            console.log("the response is ", response)
             setProfileData(response.user.user)
-
             onClose()
         } catch (error) {
             console.error("Profile update error:", error);
@@ -80,31 +77,33 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
             const propmt = "makeAbout"
             const response = await textFormating(about, propmt, userId)
             console.log(response)
-            setAbout(response.response)
+            if (response) {
+                setValue("about",response.response)
+            }
         } catch (error) {
-            console.error("Error on text formating",error)
+            console.error("Error on text formating", error)
         } finally {
             setLoading(false)
         }
     }
 
-    const handleAitextFormting=()=>{
-        if(!aiFetures){
+    const handleAitextFormting = () => {
+        if (!aiFetures) {
             setError("Please subscribe to unlock AI features.")
             return
-        }else{
-            aiTextFormating() 
+        } else {
+            aiTextFormating()
         }
     }
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-        
+
             <div
                 className="absolute inset-0 bg-black opacity-30 transition-opacity duration-300"
                 onClick={onClose}
             />
             <div className="fixed inset-0 flex items-center justify-center z-50" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                {error?<ToastError message={error||""} onClose={()=>setError(null)}/>:""}
+                {error ? <ToastError message={error || ""} onClose={() => setError(null)} /> : ""}
 
                 <div className="bg-white w-5/6 mx-auto rounded-lg shadow-lg">
                     <div className="flex justify-between mt-2 px-5 p-5">

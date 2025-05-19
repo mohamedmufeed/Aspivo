@@ -44,12 +44,13 @@ const CompanyVideoCall: React.FC = () => {
     }
 
     const peer = new Peer(myPeerId, {
-      host: "localhost",
-      port: 9000,
+      host: "aspivo.site",
+      port: 443,
       path: "/peerjs",
-      secure: false,
+      secure: true,
       debug: 3,
     });
+
 
     peerRef.current = peer;
 
@@ -306,7 +307,7 @@ const CompanyVideoCall: React.FC = () => {
     <div className="flex h-screen bg-[#F6F6F6] px-10 pt-10 pb-10" style={{ fontFamily: "DM Sans, sans-serif" }}>
       <div className="relative w-2/3 p-4">
         <div className="flex items-center space-x-2 mb-4">
-        {connectionStatus === "Call ended" ?   <p className="text-lg font-semibold">Meeting Ended</p>:     <p className="text-lg font-semibold">Meeting Ongoing</p>}
+          {connectionStatus === "Call ended" ? <p className="text-lg font-semibold">Meeting Ended</p> : <p className="text-lg font-semibold">Meeting Ongoing</p>}
           <AiOutlineTeam className="bg-orange-200 p-2 rounded-full w-10 h-10" />
         </div>
         <div className="relative h-[70vh]">
@@ -366,8 +367,8 @@ const CompanyVideoCall: React.FC = () => {
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${msg.sender === "local"
-                      ? "bg-orange-500 text-white"
-                      : "bg-gray-200 text-gray-800"
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-200 text-gray-800"
                     }`}
                 >
                   {msg.text}

@@ -19,16 +19,16 @@ const VideoCall = () => {
   const roomId = params.get("room");
   const peerId = params.get("peerId");
   const navigate = useNavigate();
-  console.log("Room ID:", roomId);  
+  console.log("Room ID:", roomId);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const peerRef = useRef<Peer | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const dataConnectionRef = useRef<DataConnection | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  
+
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState<Array<{sender: string, text: string, timestamp: number}>>([]);
+  const [messages, setMessages] = useState<Array<{ sender: string, text: string, timestamp: number }>>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("Waiting for media access...");
@@ -46,36 +46,35 @@ const VideoCall = () => {
       setConnectionStatus("Error: Missing peer ID");
       return;
     }
-
     const peer = new Peer(peerId, {
-      host: "localhost",
-      port: 9000,
+      host: "aspivo.site",
+      port: 443,
       path: "/peerjs",
-      secure: false,
+      secure: true,
     });
-    
+
     peerRef.current = peer;
 
     peer.on("open", (id) => {
       console.log("User peer connected with ID:", id);
       setConnectionStatus("Connected. Waiting for call...");
-    
+
       peer.on("connection", (dataConn) => {
         console.log("Received data connection from:", dataConn.peer);
         setRemotePeerId(dataConn.peer);
         dataConnectionRef.current = dataConn;
-        
+
         setupDataConnectionHandlers(dataConn);
       });
- 
+
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then((stream) => {
           localStreamRef.current = stream;
-          
+
           if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream;
           }
-          
+
           setConnectionStatus("Media access granted. Ready for call.");
         })
         .catch((err) => {
@@ -88,7 +87,7 @@ const VideoCall = () => {
       console.log("Received call from:", call.peer);
       setConnectionStatus("Incoming call...");
       setRemotePeerId(call.peer);
-    
+
       if (localStreamRef.current) {
         call.answer(localStreamRef.current);
         setConnectionStatus("Call connected");
@@ -107,23 +106,23 @@ const VideoCall = () => {
             setConnectionStatus("Error: Failed to access media during call");
           });
       }
-      
+
       call.on("stream", (remoteStream) => {
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = remoteStream;
         }
         setConnectionStatus("Call in progress");
-  
+
         if (call.peer && !dataConnectionRef.current) {
           connectForChat(call.peer);
         }
       });
-      
+
       call.on("error", (err) => {
         console.error("Call error:", err);
         setConnectionStatus("Call error: " + err.message);
       });
-      
+
       call.on("close", () => {
         setConnectionStatus("Call ended");
       });
@@ -146,12 +145,12 @@ const VideoCall = () => {
     };
   }, [peerId]);
 
-  const setupDataConnectionHandlers = (dataConn:DataConnection) => {
+  const setupDataConnectionHandlers = (dataConn: DataConnection) => {
     dataConn.on("open", () => {
       console.log("Data connection opened with:", dataConn.peer);
     });
 
-    dataConn.on("data", (data:unknown) => {
+    dataConn.on("data", (data: unknown) => {
       console.log("Received data:", data);
       if (isPeerData(data)) {
         setMessages(prev => [...prev, {
@@ -159,15 +158,15 @@ const VideoCall = () => {
           text: data.message,
           timestamp: Date.now()
         }]);
-      }else{
+      } else {
         console.warn("Received unknown data format:", data);
       }
     });
-    
-    dataConn.on("error", (err:Error) => {
+
+    dataConn.on("error", (err: Error) => {
       console.error("Data connection error:", err);
     });
-    
+
     dataConn.on("close", () => {
       console.log("Data connection closed");
       dataConnectionRef.current = null;
@@ -176,11 +175,11 @@ const VideoCall = () => {
 
   const connectForChat = (targetPeerId: string) => {
     if (!peerRef.current || dataConnectionRef.current) return;
-    
+
     console.log("Establishing data connection with:", targetPeerId);
     const dataConn = peerRef.current.connect(targetPeerId);
     dataConnectionRef.current = dataConn;
-    
+
     setupDataConnectionHandlers(dataConn);
   };
 
@@ -190,13 +189,13 @@ const VideoCall = () => {
         type: "chat",
         message: newMessage.trim()
       });
-      
+
       setMessages(prev => [...prev, {
         sender: "local",
         text: newMessage.trim(),
         timestamp: Date.now()
       }]);
-      
+
       setNewMessage("");
     } else if (newMessage.trim() && remotePeerId && peerRef.current) {
       connectForChat(remotePeerId);
@@ -206,13 +205,13 @@ const VideoCall = () => {
             type: "chat",
             message: newMessage.trim()
           });
-          
+
           setMessages(prev => [...prev, {
             sender: "local",
             text: newMessage.trim(),
             timestamp: Date.now()
           }]);
-          
+
           setNewMessage("");
         }
       }, 1000);
@@ -247,9 +246,9 @@ const VideoCall = () => {
   };
 
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -262,7 +261,7 @@ const VideoCall = () => {
     >
       <div className="relative w-2/3 p-4">
         <div className="flex items-center space-x-2 mb-4">
-          {connectionStatus === "Call ended" ?   <p className="text-lg font-semibold">Meeting Ended</p>:     <p className="text-lg font-semibold">Meeting Ongoing</p>}
+          {connectionStatus === "Call ended" ? <p className="text-lg font-semibold">Meeting Ended</p> : <p className="text-lg font-semibold">Meeting Ongoing</p>}
           <AiOutlineTeam className="bg-orange-200 p-2 rounded-full w-10 h-10" />
         </div>
 
@@ -288,14 +287,14 @@ const VideoCall = () => {
           <div className="bg-white flex justify-between items-center gap-10 px-10 py-4 shadow-lg w-[60%] max-w-xl rounded-2xl">
             <div className="flex flex-col items-center">
               <div onClick={toggleAudio} className={`bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
-                 {isMuted ?<AiOutlineAudioMuted className="w-6 h-6"/>:<IoMicOutline className="w-6 h-6" />}
-                
+                {isMuted ? <AiOutlineAudioMuted className="w-6 h-6" /> : <IoMicOutline className="w-6 h-6" />}
+
               </div>
               <p className="text-sm text-center pt-2">Mic</p>
             </div>
             <div className="flex flex-col items-center">
               <div onClick={toggleVideo} className={`bg-orange-600 text-white p-3 rounded-xl cursor-pointer hover:bg-orange-700 transition`}>
-                {isVideoOff ? <IoVideocamOffOutline className="w-6 h-6"/> :                <CiVideoOn className="w-6 h-7" />}
+                {isVideoOff ? <IoVideocamOffOutline className="w-6 h-6" /> : <CiVideoOn className="w-6 h-7" />}
 
               </div>
               <p className="text-sm text-center pt-2">Cam</p>
@@ -318,16 +317,15 @@ const VideoCall = () => {
             <p className="text-gray-400 text-center italic">No messages yet</p>
           ) : (
             messages.map((msg, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`flex ${msg.sender === "local" ? "justify-end" : "justify-start"}`}
               >
-                <div 
-                  className={`max-w-[80%] p-3 rounded-lg ${
-                    msg.sender === "local" 
-                      ? "bg-orange-500 text-white" 
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${msg.sender === "local"
+                      ? "bg-orange-500 text-white"
                       : "bg-gray-200 text-gray-800"
-                  }`}
+                    }`}
                 >
                   {msg.text}
                   <div className="text-xs mt-1 opacity-70">
@@ -348,8 +346,8 @@ const VideoCall = () => {
             className="w-full p-2 bg-white shadow-xl border border-gray-100 pl-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          <div 
-            onClick={handleSendMessage} 
+          <div
+            onClick={handleSendMessage}
             className={`rounded-lg p-5 cursor-pointer ${newMessage.trim() ? 'bg-orange-600' : 'bg-gray-300'}`}
           >
             <LuSend className="text-white w-5 h-5" />

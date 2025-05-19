@@ -70,7 +70,7 @@ const Profile = () => {
         endDate: "",
         grade: "",
     });
-    console.log(formData)
+console.log(formData)
     useEffect(() => {
         if (!currentEducationId || !profileData?.education) return;
         const education = profileData.education.find((edu: Education) => edu._id === currentEducationId);

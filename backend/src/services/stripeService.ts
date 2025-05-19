@@ -28,8 +28,8 @@ export class StripeService {
         },
       ],
       mode: "subscription",
-      success_url: "http://localhost:5173/payment-success",
-      cancel_url: "http://localhost:5173/payment-cancel",
+      success_url: "https://aspivo.site/payment-success",
+      cancel_url: "https://aspivo.site/payment-cancel",
       metadata: {
         userId: userId.toString(),
         companyId: companyId || "",

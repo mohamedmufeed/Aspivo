@@ -122,13 +122,13 @@ export const logoutUser = async (userId: string) => {
 
 export const googleLogin = () => {
   console.log("hello clicked ");
-  window.open(`http://localhost:5001/api/user/google`, "_self");
+  window.open(`https://www.aspivo.site/api/user/google`, "_self");
 };
 
 export const fetchGoogleUser = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:5001/api/user/google/success",
+      "https://www.aspivo.site/api/user/google/success",
       {
         withCredentials: true,
       }
