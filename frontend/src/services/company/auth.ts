@@ -1,6 +1,5 @@
-import axios, { AxiosError } from "axios";
-const COMPANY_URI = "http://localhost:5001/api/company";
-
+import  { AxiosError } from "axios";
+import api from "../api";
 export const signup = async (
   companyName: string,
   email: string,
@@ -9,8 +8,7 @@ export const signup = async (
 ) => {
   try {
     const data = { companyName, email, kyc };
-    const response = await axios.post(`${COMPANY_URI}/auth/signup/${userId}`, data);
-    
+    const response = await api.post(`company/auth/signup/${userId}`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

@@ -20,7 +20,6 @@ export class UserManagementController  implements IUserManagementController{
       };
   
       const result = await this._adminService.getAllUsers(query);
-  
       res.status(200).json({
         success: true,
         users: result.users,

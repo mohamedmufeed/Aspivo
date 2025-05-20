@@ -84,6 +84,12 @@ export interface GetUsersResponse {
   totalPages: number;
 }
 
+export interface GetUsersDtoResponse{
+    users: IMappedUserDto[];
+  totalUsers: number;
+  totalPages: number;
+}
+
 export interface GetCompanyResponse{
   companies:ICompany[]
   totalRequest: number;
@@ -103,4 +109,14 @@ export interface GetCompanyResponse{
   export interface IReviewData{
      userId:string;
      review:string
+ }
+
+
+ export interface IMappedUserDto{
+  _id:string;
+  profileImage:string;
+  email:string,
+  userName:string,
+  createdAt:string;
+  isBlocked:boolean
  }

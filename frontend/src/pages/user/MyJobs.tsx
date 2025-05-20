@@ -235,7 +235,7 @@ const MyJobs = () => {
                       className="bg-orange-600 text-white p-3 rounded-lg font-bold cursor-pointer hover:bg-orange-700"
                       onClick={() => handleConnect(job.id)}
                     >
-                      Connect
+                 More
                     </button>
                   </div>
                 </div>

@@ -61,6 +61,7 @@ const CompanyScheduledMeeting = () => {
     const fetchSheduledMeeting = async () => {
       try {
         const response = await getMeetings(companyId)
+        console.log("meetings", response)
         setMeetings(response.meeting)
         
    

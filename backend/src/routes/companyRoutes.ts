@@ -18,13 +18,14 @@ import { ComapnyMeetingController } from "../controllers/company/companyMeetingC
 import { CompanyDasboradController } from "../controllers/company/companyDasboardController";
 import { CompanyDasboradService } from "../services/compnyService/companyDasboardService";
 import { ComapnyDasboardRepositories } from "../repositories/companyDasboardRespostries";
+import User from "../models/user";
 
 
 
 const router= express.Router()
 
 
-const companyRepository = new CompanyRepostries(Job,Company,JobApplication);
+const companyRepository = new CompanyRepostries(Job,Company,JobApplication,User);
 const companyAuthService = new CompanyAuthService(companyRepository);
 const companyAuthController = new CompanyAuthController(companyAuthService);
 const notificationRepository= new NotificationRepository()

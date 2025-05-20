@@ -22,6 +22,7 @@ import { Bouncy } from 'ldrs/react'
 import 'ldrs/react/Bouncy.css'
 import Footer from "../../components/homecomponts/Footer";
 import { Experience, User } from "../../types/user";
+import { formatDateRange } from "../../utils/profileUtils";
 
 
 
@@ -227,7 +228,7 @@ console.log(formData)
                                             <div className="px-2 sm:px-10">
                                                 <h2 className="font-semibold text-lg">{experience.title}</h2>
                                                 <h3 className="text-md text-gray-700">{experience.company}</h3>
-                                                <p className="text-gray-600 text-sm">Jun 2024 - Present • 9 mos</p>
+                                                <p className="text-gray-600 text-sm">{formatDateRange(experience.startDate, experience.endDate||"")}</p>
                                                 <p className="text-gray-500 text-sm">{experience.location}</p>
                                             </div>
                                         </div>
@@ -274,7 +275,7 @@ console.log(formData)
                                             <div  className="px-2 sm:px-10">
                                                 <h2 className="font-semibold text-lg">{education.school}</h2>
                                                 <h3 className="text-md text-gray-700">{education.degree}, {education.fieldOfStudy}</h3>
-                                                <p className="text-gray-600 text-sm">Sep 2021 - Jun 2023</p>
+                                                <p className="text-gray-600 text-sm">{formatDateRange(education.startDate, education.endDate)}</p>
                                             </div>
                                         </div>
 

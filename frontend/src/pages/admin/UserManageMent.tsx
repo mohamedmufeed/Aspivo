@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Sidebar from "../../components/Admin/Sidebar";
-import { EllipsisVertical } from "lucide-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchUsers } from "../../services/adminService";
 import { useLocation } from "react-router-dom";
@@ -141,13 +140,13 @@ const UserManageMent = () => {
         <div className="w-full p-5">
 
           {/* Header Row */}
-          <div className="grid grid-cols-6 items-center font-medium bg-gray-100 p-3 rounded-md">
+          <div className="grid grid-cols-5 items-center font-medium bg-gray-100 p-3 rounded-md">
             <p className="text-center">Profile Image</p>
             <p className="text-center">Full Name</p>
             <p className="text-center">Email</p>
             <p className="text-center">Created At</p>
             <p className="text-center">Block/Unblock</p>
-            <p className="text-center">More</p>
+    
           </div>
           <hr className="border-gray-600 my-3" />
 
@@ -160,7 +159,7 @@ const UserManageMent = () => {
               {users.map((user, index) => (
                 <div
                   key={user._id || index}
-                  className="grid grid-cols-6 items-center bg-white shadow-lg p-4 rounded-md my-2"
+                  className="grid grid-cols-5 items-center bg-white shadow-lg p-4 rounded-md my-2"
                 >
                   <div className="flex justify-center">
                     <img
@@ -190,7 +189,7 @@ const UserManageMent = () => {
                       {user.isBlocked ? "Unblock" : "Block"}
                     </button>
                   </div>
-                  <EllipsisVertical className="cursor-pointer ml-20" />
+        
                 </div>
               ))}
             </div>

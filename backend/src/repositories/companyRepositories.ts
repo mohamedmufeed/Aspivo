@@ -3,9 +3,10 @@ import Company, { CompanyDocument } from "../models/company";
 import { JobData } from "../types/companyTypes";
 import Job from "../models/job";
 import JobApplication from "../models/jobApplication";
+import User from "../models/user";
 type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class CompanyRepostries implements CompanyRepostries {
-  constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication) {}
+  constructor(private jobModel: typeof Job , private companyModel: typeof Company, private jobApplication: typeof JobApplication , private _userModel :typeof User) {}
   async register(
     companyName: string,
     email: string,
@@ -115,6 +116,10 @@ export class CompanyRepostries implements CompanyRepostries {
 
    async findApplicationAndUpdate(applicantId:string,status:ApplicationStatus){
     return await this.jobApplication.findByIdAndUpdate(applicantId,{status},{new:true})
+   }
+
+   async findUser(userId:string){
+    return await this._userModel.findById(userId)
    }
    
 }

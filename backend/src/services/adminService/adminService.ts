@@ -4,9 +4,10 @@ import { sendNotification } from "../../server";
 import IAdminService from "../../interface/service/admin/adminInterface";
 import { NotificationRepository } from "../../repositories/notificationRepository";
 
-import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersResponse } from "../../types/userTypes";
+import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersDtoResponse, GetUsersResponse } from "../../types/userTypes";
 import { IUser } from "../../models/user";
 import { CompanyDocument } from "../../models/company";
+import { mappedUsers } from "../../utils/dto/adminDto";
 
 export class AdminService implements IAdminService {
   constructor(private _adminRepository: AdminRepostry, private _notificationRespository: NotificationRepository) { }
@@ -14,8 +15,14 @@ export class AdminService implements IAdminService {
   async getAllCompanies(query:GetPaginationQuery): Promise<GetCompanyResponse> {
     return await this._adminRepository.findAllCompany(query);
   }
-  async getAllUsers(query: GetPaginationQuery): Promise<GetUsersResponse> {
-    return await this._adminRepository.getAllUsers(query);
+  async getAllUsers(query: GetPaginationQuery): Promise<GetUsersDtoResponse> {
+    const response=await this._adminRepository.getAllUsers(query);
+    const mappedResponse={
+      totalUsers:response.totalUsers,
+      totalPages:response.totalPages,
+      users:response.users.map((user)=>mappedUsers(user))
+    }
+    return mappedResponse
   }
 
   async blockUser(id: string): Promise<{ user: IUser, message: string }> {

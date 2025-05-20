@@ -84,7 +84,7 @@ const Login = () => {
 
         <div className=" hidden md:flex w-1/2 flex-col items-center justify-center p-8">
 
-          <div className="text-[30px] ps-8 mb-10 font-bold flex items-center font-[Montserrat]">
+          <div className="text-[30px] ps-8 mb-10 font-bold flex items-center font-[Montserrat]" onClick={()=>naviagte("/")}>
             <span className="w-9 h-10 md:w-9 md:h-10 bg-orange-600 text-white rounded-lg font-extrabold flex items-center justify-center mr-1">A</span>
             spivo
           </div>

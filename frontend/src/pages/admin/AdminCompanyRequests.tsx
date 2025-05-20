@@ -1,6 +1,6 @@
 import Sidebar from "../../components/Admin/Sidebar";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EllipsisVertical, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import {  ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { getAllCompany, updateCompanyStatus } from "../../services/adminService";
 import AdminHeader from "../../components/Admin/AdminHeader";
 import SearchBar from "../../components/Admin/SearchBar";
@@ -114,7 +114,7 @@ console.log(totalCompanies)
                         <p className="text-center">Created At</p>
                         <p className="text-center">Change Status</p>
                         <p className="text-center">View KYC</p>
-                        <p className="text-center">Actions</p>
+                        {/* <p className="text-center">Actions</p> */}
                     </div>
                     <hr className="border-gray-600 my-3" />
 
@@ -172,9 +172,9 @@ console.log(totalCompanies)
                                     )}
                                 </div>
 
-                                <div className="flex justify-center">
+                                {/* <div className="flex justify-center">
                                     <EllipsisVertical className="cursor-pointer text-gray-600 hover:text-gray-800" />
-                                </div>
+                                </div> */}
                             </div>
                         ))
                     ) : (
