@@ -1,9 +1,10 @@
 import { AxiosError } from "axios";
 import api from "../api"
+import { COMPANY_BASE_ROUTE } from "../../constants/apiRoutes";
 
 export const getCompanyDashboardStats = async (comapnyId: string) => {
     try {
-        const response = await api.get(`company/dashboard-status/${comapnyId}`)
+        const response = await api.get(`${COMPANY_BASE_ROUTE}/dashboard-status/${comapnyId}`)
         return response.data
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -14,7 +15,7 @@ export const getCompanyDashboardStats = async (comapnyId: string) => {
 
 export const getCompanyApplicationByDate = async (comapnyId: string, startDate: string, endDate:string) => {
     try {
-    const response=await api.get(`company/dashboard/application-status/${comapnyId}`,{
+    const response=await api.get(`${COMPANY_BASE_ROUTE}/dashboard/application-status/${comapnyId}`,{
         params:{startDate,endDate}
     })
     return response.data
@@ -28,7 +29,7 @@ export const getCompanyApplicationByDate = async (comapnyId: string, startDate: 
 
  export const getMostAppliedJobs=async(companyId:string)=>{
 try {
-    const response=await api.get(`company/dashboard/most-appliedjobs/${companyId}`)
+    const response=await api.get(`${COMPANY_BASE_ROUTE}/dashboard/most-appliedjobs/${companyId}`)
     return response.data
 } catch (error) {
     if (error instanceof AxiosError) {

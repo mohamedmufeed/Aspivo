@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import api from "./api";
+import { USER_BASE_ROUTE } from "../constants/apiRoutes";
 
 export const fetchJob = async ({
   page,
@@ -29,7 +30,7 @@ export const fetchJob = async ({
       params.category = category;
     }
 
-    const response = await api.get("user/jobs", { params });
+    const response = await api.get(`${USER_BASE_ROUTE}/jobs`, { params });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -47,7 +48,7 @@ export const fetchJob = async ({
 
 export const getJobDetails = async (jobId: string,) => {
   try {
-    const response = await api.get(`user/jobs/${jobId}`);
+    const response = await api.get(`${USER_BASE_ROUTE}/jobs/${jobId}`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -59,7 +60,7 @@ export const getJobDetails = async (jobId: string,) => {
 export const applyForJob = async (jobId: string, userId: string) => {
   try {
     const data = { userId };
-    const response = await api.post(`user/jobs/${jobId}/apply`, data);
+    const response = await api.post(`${USER_BASE_ROUTE}/jobs/${jobId}/apply`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -70,7 +71,7 @@ export const applyForJob = async (jobId: string, userId: string) => {
 
 export const appliedJobs = async (userId: string) => {
   try {
-    const response = await api.get(`user/users/${userId}/applied-jobs`);
+    const response = await api.get(`${USER_BASE_ROUTE}/users/${userId}/applied-jobs`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -81,7 +82,7 @@ export const appliedJobs = async (userId: string) => {
 
 export const isApplied = async (userId: string, jobId: string) => {
   try {
-    const response = await api.get(`user/jobs/${userId}/is-applied/`, { params: { jobId } });
+    const response = await api.get(`${USER_BASE_ROUTE}/jobs/${userId}/is-applied/`, { params: { jobId } });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -93,7 +94,7 @@ export const isApplied = async (userId: string, jobId: string) => {
 
 export const saveJob = async (userId: string, jobId: string) => {
   try {
-    const response = await api.post(`user/users/${userId}/save-job`,{jobId})
+    const response = await api.post(`${USER_BASE_ROUTE}/users/${userId}/save-job`,{jobId})
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -106,7 +107,7 @@ export const saveJob = async (userId: string, jobId: string) => {
 
 export const savedJobs=async(userId:string)=>{
 try {
-  const response=await api.get(`user/users/${userId}/saved-jobs`)
+  const response=await api.get(`${USER_BASE_ROUTE}/users/${userId}/saved-jobs`)
   return response.data
 
 } catch (error) {
@@ -120,7 +121,7 @@ try {
 
 export const populatedJobs=async(userId:string)=>{
   try {
-    const response= await api.get(`user/users/${userId}/saved-jobsdata`)
+    const response= await api.get(`${USER_BASE_ROUTE}/users/${userId}/saved-jobsdata`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -133,7 +134,7 @@ export const populatedJobs=async(userId:string)=>{
 
  export const latestJobs= async()=>{
   try {
-    const response=await api.get("user/latest-jobs")
+    const response=await api.get(`${USER_BASE_ROUTE}/latest-jobs`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {

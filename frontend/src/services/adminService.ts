@@ -1,10 +1,11 @@
 import { AxiosError } from "axios";
 import api from "./api";
 import { parseWeekRange } from "../utils/dasboardUtils";
+import { ADMIN_BASE_ROUTE } from "../constants/apiRoutes";
 
 export const fetchUsers = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/users`, {
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/users`, {
       params: {
         page,
         limit,
@@ -30,7 +31,7 @@ export const fetchUsers = async (page = 1, limit = 5, searchQuery = "", signal?:
 };
 export const getAllCompany = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/companies`, {
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/companies`, {
       params: {
         page,
         limit,
@@ -57,7 +58,7 @@ export const getAllCompany = async (page = 1, limit = 5, searchQuery = "", signa
 
 export const blockUser = async (userId: string) => {
   try {
-    const response = await api.patch(`admin/users/${userId}/block`);
+    const response = await api.patch(`${ADMIN_BASE_ROUTE}/users/${userId}/block`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -79,7 +80,7 @@ export const updateCompanyStatus = async (
 ) => {
   try {
     const data = { comapnyId, action };
-    const response = await api.post(`admin/companies/requests`, data);
+    const response = await api.post(`${ADMIN_BASE_ROUTE}/companies/requests`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -90,7 +91,7 @@ export const updateCompanyStatus = async (
 
 export const approvedCompany = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/companies/approved`, {
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/companies/approved`, {
       params: {
         page,
         limit,
@@ -108,7 +109,7 @@ export const approvedCompany = async (page = 1, limit = 5, searchQuery = "", sig
 
 export const addSkill = async (skills: { skills: string[]; }) => {
   try {
-    const response = await api.post(`admin/skills`, skills);
+    const response = await api.post(`${ADMIN_BASE_ROUTE}/skills`, skills);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -119,7 +120,7 @@ export const addSkill = async (skills: { skills: string[]; }) => {
 
 export const getSkills = async () => {
   try {
-    const response = await api.get(`admin/skills`);
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/skills`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -130,7 +131,7 @@ export const getSkills = async () => {
 
 export const removeSkill = async (skillId: string) => {
   try {
-    const response = await api.delete(`admin/skills/${skillId}`);
+    const response = await api.delete(`${ADMIN_BASE_ROUTE}/skills/${skillId}`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -141,7 +142,7 @@ export const removeSkill = async (skillId: string) => {
 
 export const getSubcriptions = async (page = 1, limit = 5, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`admin/subscriptions`, {
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/subscriptions`, {
       params: {
         page,
         limit,
@@ -158,7 +159,7 @@ export const getSubcriptions = async (page = 1, limit = 5, searchQuery = "", sig
 }
 export const updateSubscriptionStatus = async (subscriptionId: string, { status }: { status: "active" | "inactive" | "cancelled" }) => {
   try {
-    const response = await api.patch(`admin/subscriptions/${subscriptionId}/status`, { status })
+    const response = await api.patch(`${ADMIN_BASE_ROUTE}/subscriptions/${subscriptionId}/status`, { status })
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -169,7 +170,7 @@ export const updateSubscriptionStatus = async (subscriptionId: string, { status 
 
 export const getDashboardStats = async () => {
   try {
-    const response = await api.get("admin/dashboard-stats")
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/dashboard-stats`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -181,7 +182,7 @@ export const getDashboardStats = async () => {
 export const getWeeklyApplicationData = async (date: string) => {
   const { startDate, endDate } = parseWeekRange(date)
   try {
-    const response = await api.get("admin/dashboard-application-status", { params: { startDate, endDate } })
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/dashboard-application-status`, { params: { startDate, endDate } })
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -192,7 +193,7 @@ export const getWeeklyApplicationData = async (date: string) => {
 
 export const getMonthlySubscriptionRevenue = async () => {
   try {
-    const response = await api.get("admin/dashboard-revenue-status")
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/dashboard-revenue-status`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -204,7 +205,7 @@ export const getMonthlySubscriptionRevenue = async () => {
 export const downloadExcel = async (date:string,type: "ApplicationData" | "RevenueData") => {
   const { startDate, endDate } = parseWeekRange(date)
   try {
-    const response = await api.get("/admin/dashboard/download-excel", {
+    const response = await api.get(`/${ADMIN_BASE_ROUTE}/dashboard/download-excel`, {
       params: { startDate, endDate, type },
       responseType: "blob", 
     });

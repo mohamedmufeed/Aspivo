@@ -4,6 +4,7 @@ import { IComapny } from "../../types/types";
 import { FormData } from "../../components/Company/Modals/EditCompanyDescriptionModal";
 import { TeamMember } from "../../components/Company/Modals/EditCompanyTeamModal";
 import { ContactUrl } from "../../components/Company/Modals/EditContactModal";
+import { COMPANY_BASE_ROUTE } from "../../constants/apiRoutes";
 export interface EditTeamPayload {
   members: TeamMember[];
 }
@@ -14,7 +15,7 @@ export interface EditContactPayload{
 
 export const getComapny = async (companyId: string) => {
   try {
-    const response = await api.get(`company/profile/${companyId}`);
+    const response = await api.get(`${COMPANY_BASE_ROUTE}/profile/${companyId}`);
     console.log("ptfilr respoe",response)
     return response.data;
   } catch (error) {
@@ -26,7 +27,7 @@ export const getComapny = async (companyId: string) => {
 
 export  const editCompanyProfile=async(companyId:string,data:IComapny)=>{
   try {
-    const response=await api.put(`company/profile/${companyId}`,data)
+    const response=await api.put(`${COMPANY_BASE_ROUTE}/profile/${companyId}`,data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -38,7 +39,7 @@ export  const editCompanyProfile=async(companyId:string,data:IComapny)=>{
 
 export const companyByuserId=async(userId:string)=>{
   try {
-    const response=await api.get(`company/${userId}`)
+    const response=await api.get(`${COMPANY_BASE_ROUTE}/${userId}`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -49,7 +50,7 @@ export const companyByuserId=async(userId:string)=>{
 
 export const editCompanyDescription=async(companyId:string,data:FormData)=>{
   try {
-    const response=await api.patch(`company/profile/${companyId}/description`,data)
+    const response=await api.patch(`${COMPANY_BASE_ROUTE}/profile/${companyId}/description`,data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -60,7 +61,7 @@ export const editCompanyDescription=async(companyId:string,data:FormData)=>{
 
 export const addTechStack=async(companyId:string,data:string[])=>{
 try {
-  const response=await api.put(`company/profile/${companyId}/techstack`,data)
+  const response=await api.put(`${COMPANY_BASE_ROUTE}/profile/${companyId}/techstack`,data)
   return response.data
 } catch (error) {
   if (error instanceof AxiosError) {
@@ -71,7 +72,7 @@ try {
 
 export const editTeam=async(companyId:string,data:TeamMember[])=>{
 try {
-  const response=await api.put(`company/profile/${companyId}/team`,data)
+  const response=await api.put(`${COMPANY_BASE_ROUTE}/profile/${companyId}/team`,data)
   return response.data
   
 } catch (error) {
@@ -82,7 +83,7 @@ try {
 }
 export const editContact=async(companyId:string,data:EditContactPayload)=>{
   try {
-    const response=await api.put(`company/profile/${companyId}/contact`,data)
+    const response=await api.put(`${COMPANY_BASE_ROUTE}/profile/${companyId}/contact`,data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {

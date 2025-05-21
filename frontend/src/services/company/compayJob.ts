@@ -1,11 +1,12 @@
 import  { AxiosError } from "axios";
 import { ApplicationStatus, JobData } from "../../types/types";
 import api from "../api";
+import { COMPANY_BASE_ROUTE } from "../../constants/apiRoutes";
 
 
 export const fetchCompany = async (userId: string) => {
   try {
-    const response = await api.get(`company`, {
+    const response = await api.get(`${COMPANY_BASE_ROUTE}`, {
       params: {
         id: userId
       }
@@ -22,7 +23,7 @@ export const fetchCompany = async (userId: string) => {
 export const postJob = async (companyId: string, data: JobData) => {
   try {
     const response = await api.post(
-      `company/jobs/${companyId}`,
+      `${COMPANY_BASE_ROUTE}/jobs/${companyId}`,
       data
     );
     return response.data;
@@ -35,7 +36,7 @@ export const postJob = async (companyId: string, data: JobData) => {
 
 export const fetchJob = async (companyId: string) => {
   try {
-    const response = await api.get(`company/jobs/${companyId}`)
+    const response = await api.get(`${COMPANY_BASE_ROUTE}/jobs/${companyId}`)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -46,7 +47,7 @@ export const fetchJob = async (companyId: string) => {
 
 export const editJob = async (jobId: string, data: JobData) => {
   try {
-    const respone = await api.put(`company/jobs/${jobId}/edit`, data);
+    const respone = await api.put(`${COMPANY_BASE_ROUTE}/jobs/${jobId}/edit`, data);
     return respone.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -57,7 +58,7 @@ export const editJob = async (jobId: string, data: JobData) => {
 
 export const chageStatus = async (jobId: string) => {
   try {
-    const respone = await api.patch(`company/jobs/${jobId}/delete`);
+    const respone = await api.patch(`${COMPANY_BASE_ROUTE}/jobs/${jobId}/delete`);
     return respone.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -68,7 +69,7 @@ export const chageStatus = async (jobId: string) => {
 
 export const getApplicants = async (jobId: string, companyId: string) => {
   try {
-    const respone = await api.get(`company/jobs/${jobId}/applicants`, {
+    const respone = await api.get(`${COMPANY_BASE_ROUTE}/jobs/${jobId}/applicants`, {
       params: { companyId },
     });
     return respone.data;
@@ -82,7 +83,7 @@ export const getApplicants = async (jobId: string, companyId: string) => {
 export const getApplicantDetials = async (applicantId: string) => {
   try {
     const respone = await api.get(
-      `company/jobs/applicants/${applicantId}/details`
+      `${COMPANY_BASE_ROUTE}/jobs/applicants/${applicantId}/details`
     );
     return respone.data;
   } catch (error) {
@@ -95,7 +96,7 @@ export const getApplicantDetials = async (applicantId: string) => {
 export const updateStatus = async ( applicantId: string,status: ApplicationStatus) => {
   try {
     const data={status}
-    const response=await api.patch(`company/jobs/applicants/${applicantId}/status`,data)
+    const response=await api.patch(`${COMPANY_BASE_ROUTE}/jobs/applicants/${applicantId}/status`,data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {

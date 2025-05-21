@@ -2,10 +2,11 @@ import api from "./api";
 import { AxiosError } from "axios";
 import { Experience } from "../components/User/modals/AddExperience";
 import { Education } from "../components/User/modals/AddEducation";
+import { USER_BASE_ROUTE } from "../constants/apiRoutes";
 
 export const editProfile = async (userId: string, formData: FormData) => {
   try {
-    const response = await api.put(`user/users/${userId}/profile`, formData);
+    const response = await api.put(`${USER_BASE_ROUTE}/users/${userId}/profile`, formData);
     console.log(response);
     return response.data;
   } catch (error) {
@@ -22,7 +23,7 @@ export const editProfile = async (userId: string, formData: FormData) => {
 
 export const getProfile = async (userId: string) => {
   try {
-    const response = await api.get(`user/users/${userId}/profile`);
+    const response = await api.get(`${USER_BASE_ROUTE}/users/${userId}/profile`);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -38,7 +39,7 @@ export const getProfile = async (userId: string) => {
 
 export const editAbout = async (userId: string, data: string) => {
   try {
-    const response = await api.put(`user/users/${userId}/about`, {
+    const response = await api.put(`${USER_BASE_ROUTE}/users/${userId}/about`, {
       about: data,
     });
     console.log(response.data);
@@ -57,7 +58,7 @@ export const editAbout = async (userId: string, data: string) => {
 
 export const addExprience = async (userId: string, data: Experience) => {
   try {
-    const response = await api.post(`user/users/${userId}/experience`, data);
+    const response = await api.post(`${USER_BASE_ROUTE}/users/${userId}/experience`, data);
     console.log(" the response data", response.data);
     return response.data;
   } catch (error) {
@@ -74,7 +75,7 @@ export const addExprience = async (userId: string, data: Experience) => {
 
 export const editExperience = async (userId: string, data: Experience) => {
   try {
-    const response = await api.put(`user/users/${userId}/experience`, data);
+    const response = await api.put(`${USER_BASE_ROUTE}/users/${userId}/experience`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -90,7 +91,7 @@ export const editExperience = async (userId: string, data: Experience) => {
 
 export const addEducation = async (userId: string, data: Education) => {
   try {
-    const response = await api.post(`user/users/${userId}/education`, data);
+    const response = await api.post(`${USER_BASE_ROUTE}/users/${userId}/education`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -106,7 +107,7 @@ export const addEducation = async (userId: string, data: Education) => {
 
 export const editEducation = async (userId: string, data: Education) => {
   try {
-    const response = await api.put(`user/users/${userId}/education`, data)
+    const response = await api.put(`${USER_BASE_ROUTE}/users/${userId}/education`, data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -122,7 +123,7 @@ export const editEducation = async (userId: string, data: Education) => {
 
 export const addSkill = async (userId: string, skills: string[]) => {
   try {
-    const response = await api.post(`user/users/${userId}/skills`, { skills });
+    const response = await api.post(`${USER_BASE_ROUTE}/users/${userId}/skills`, { skills });
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -138,7 +139,7 @@ export const addSkill = async (userId: string, skills: string[]) => {
 
 export const uploadResume = async (userid: string, data: string) => {
   try {
-    const response = await api.post(`user/users/${userid}/resume`, data)
+    const response = await api.post(`${USER_BASE_ROUTE}/users/${userid}/resume`, data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -154,7 +155,7 @@ export const uploadResume = async (userid: string, data: string) => {
 
 export const deleteResume = async (userId: string) => {
   try {
-    const response = await api.delete(`user/users/${userId}/resume`)
+    const response = await api.delete(`${USER_BASE_ROUTE}/users/${userId}/resume`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -171,7 +172,7 @@ export const deleteResume = async (userId: string) => {
 
 export const getSubscriptionHistory = async (userId: string) => {
   try {
-    const response = await api.get(`user/users/${userId}/subscription-history`)
+    const response = await api.get(`${USER_BASE_ROUTE}/users/${userId}/subscription-history`)
     return response.data
 
   } catch (error) {
@@ -183,7 +184,7 @@ export const getSubscriptionHistory = async (userId: string) => {
 
 export const generateResume = async (userId: string) => {
   try {
-    const response = await api.get(`user/users/${userId}/resume/auto-generate`)
+    const response = await api.get(`${USER_BASE_ROUTE}/users/${userId}/resume/auto-generate`)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -194,7 +195,7 @@ export const generateResume = async (userId: string) => {
 
 export  const textFormating=async(text: string, propmtKey: string, userId: string)=>{
     try {
-      const response=await api.post(`user/users/${userId}/text-format`,{text,propmtKey})
+      const response=await api.post(`${USER_BASE_ROUTE}/users/${userId}/text-format`,{text,propmtKey})
       return response.data
     } catch (error) {
       if(error instanceof AxiosError){

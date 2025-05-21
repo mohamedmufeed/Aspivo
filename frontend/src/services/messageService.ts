@@ -1,8 +1,9 @@
 import { AxiosError } from "axios";
 import api from "./api";
+import { MESSAGE_BASE_ROUTE } from "../constants/apiRoutes";
 export const getConversations = async (id: string, role: string) => {
     try {
-        const response = await api.get(`message/chats/approved`, {
+        const response = await api.get(`${MESSAGE_BASE_ROUTE}/chats/approved`, {
             params: { userId: id, role: role },
         });
         return response.data;
@@ -15,7 +16,7 @@ export const getConversations = async (id: string, role: string) => {
 
 export const getMessageHistory = async (channel: string) => {
     try {
-        const response = await api.get(`message/chats/messages`, {
+        const response = await api.get(`${MESSAGE_BASE_ROUTE}/chats/messages`, {
             params: { channel },
         });
         return response.data;
@@ -29,7 +30,7 @@ export const getMessageHistory = async (channel: string) => {
 
 export const sendMessage = async (channel: string, message: string, senderId: string,imageUrl?:string) => {
     try {
-        const response = await api.post(`message/chats/messages`, {
+        const response = await api.post(`${MESSAGE_BASE_ROUTE}/chats/messages`, {
             channel, message, senderId,
             imageUrl
         })
@@ -44,7 +45,7 @@ export const sendMessage = async (channel: string, message: string, senderId: st
 
 export const InitializeChat=async(initiatorId:string,targetId:string,role:string)=>{
     try {
-        const response=await api.post(`message/chats`,{
+        const response=await api.post(`${MESSAGE_BASE_ROUTE}/chats`,{
             initiatorId,targetId,role
         })
         return response.data
@@ -58,7 +59,7 @@ export const InitializeChat=async(initiatorId:string,targetId:string,role:string
 
 export const markConversationAsRead = async (channel:string, userId:string) => {
     try {
-      const response = await api.post('message/chats/markRead', { channel, userId });
+      const response = await api.post(`${MESSAGE_BASE_ROUTE}/chats/markRead`, { channel, userId });
       return response.data;
     } catch (error) {
       console.error('Error marking conversation as read:', error);
@@ -69,7 +70,7 @@ export const markConversationAsRead = async (channel:string, userId:string) => {
 
   export const getUnreadMessageCount=async(userId:string)=>{
     try {
-        const response=await api.get(`message/chats/unreadcount/${userId}`)
+        const response=await api.get(`${MESSAGE_BASE_ROUTE}/chats/unreadcount/${userId}`)
         return response.data
     } catch (error) {
            console.error('Error  Geting unread message count read:', error);

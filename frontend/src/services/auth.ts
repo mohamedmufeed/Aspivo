@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { registerUserSocket } from "./socket";
 
 import api from "./api";
+import { USER_BASE_ROUTE } from "../constants/apiRoutes";
 
 export const signup = async (data: {
   userName: string;
@@ -9,7 +10,7 @@ export const signup = async (data: {
   password: string;
 }) => {
   try {
-    const response = await api.post("user/auth/signup", data);
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/signup`, data);
     const user = response.data;
     registerUserSocket("User", user._id);
     return user;
@@ -27,7 +28,7 @@ export const signup = async (data: {
 
 export const login = async (data: { email: string; password: string }) => {
   try {
-    const response = await api.post("user/auth/login", data);
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/login`, data);
 
     return response.data;
   } catch (error) {
@@ -44,7 +45,7 @@ export const login = async (data: { email: string; password: string }) => {
 
 export const verifyOtp = async (data: { email: string; otp: string }) => {
   try {
-    const response = await api.post("user/auth/otp-verification", data);
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/otp-verification`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -60,7 +61,7 @@ export const verifyOtp = async (data: { email: string; otp: string }) => {
 
 export const resendotp = async (data: { email: string }) => {
   try {
-    const response = await api.post("user/auth/resend-otp", data);
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/resend-otp`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -76,7 +77,7 @@ export const resendotp = async (data: { email: string }) => {
 
 export const forgotPassword = async (data: { email: string }) => {
   try {
-    const response = await api.post("user/auth/forgot-password", data);
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/forgot-password`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -95,7 +96,7 @@ export const resetPassword = async (data: {
   newPassword: string;
 }) => {
   try {
-    const response = await api.post("user/auth/reset-password", data);
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/reset-password`, data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -111,7 +112,7 @@ export const resetPassword = async (data: {
 
 export const logoutUser = async (userId: string) => {
   try {
-    const response = await api.post(`user/auth/logout/${userId}`)
+    const response = await api.post(`${USER_BASE_ROUTE}/auth/logout/${userId}`)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
