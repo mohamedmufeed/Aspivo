@@ -164,6 +164,9 @@ export class AdminRepostry implements IAdminRepostry {
     );
   }
 
+  async findByIdAndUpdateCompanyBlockStatus(comapnyId: string, blockStatus: boolean) {
+    return await this.companyModel.findByIdAndUpdate(comapnyId, { isBlocked: blockStatus }, { new: true })
+  }
 
 }
 

@@ -23,8 +23,6 @@ const Navbar = () => {
         const handelGoogleUser = async () => {
             try {
                 const response = await fetchGoogleUser();
-
-                // Only dispatch if user is actually logged in via Google
                 if (response && response.token) {
                     dispatch(
                         login({

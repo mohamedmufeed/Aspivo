@@ -70,5 +70,13 @@ export class AdminService implements IAdminService {
     return mappedResponse
   }
 
+  async handleCompanyBlockStatus(comapnyId: string) {
+    const company = await this._adminRepository.findComapny(comapnyId)
+    if (!company) throw new Error("Comapny not found")
+    const blockStatus = !company.isBlocked
+    const updatedCompany = await this._adminRepository.findByIdAndUpdateCompanyBlockStatus(comapnyId, blockStatus)
+    if(!updatedCompany) throw new Error("Failed to update user status")
+    return { company: updatedCompany, message: "Comapny Block status handeled sucsess " }
+  }
 
 }

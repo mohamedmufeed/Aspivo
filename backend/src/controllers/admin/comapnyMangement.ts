@@ -24,8 +24,8 @@ export class AdminController implements IComapnyManagement {
         message: "Fetch company successful"
       });
     } catch (error) {
-      const err= error as Error
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR|| err.message });
+      const err = error as Error
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
 
@@ -38,10 +38,10 @@ export class AdminController implements IComapnyManagement {
       );
       res.status(HttpStatus.OK).json(company);
     } catch (error) {
-const err= error as Error
+      const err = error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
 
@@ -62,10 +62,21 @@ const err= error as Error
         message: "Fetch approved company sucsessful"
       });
     } catch (error) {
-      const err= error as Error
+      const err = error as Error
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message});
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR || err.message });
     }
   };
+
+
+  handleCompanyBlock = async (req: Request, res: Response) => {
+    try {
+      const comapnyId = req.params.id
+      const response = await this._adminService.handleCompanyBlockStatus(comapnyId)
+      res.status(HttpStatus.OK).json(response)
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR })
+    }
+  }
 }

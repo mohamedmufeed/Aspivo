@@ -1,4 +1,4 @@
-import  { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { ApplicationStatus, JobData } from "../../types/types";
 import api from "../api";
 import { COMPANY_BASE_ROUTE } from "../../constants/apiRoutes";
@@ -11,7 +11,7 @@ export const fetchCompany = async (userId: string) => {
         id: userId
       }
     });
-    console.log("response data",response.data)
+    console.log("response data", response.data)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -34,9 +34,16 @@ export const postJob = async (companyId: string, data: JobData) => {
   }
 };
 
-export const fetchJob = async (companyId: string) => {
+export const fetchJob = async (companyId: string, page = 1, limit = 10, searchQuery = "", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`${COMPANY_BASE_ROUTE}/jobs/${companyId}`)
+    const response = await api.get(`${COMPANY_BASE_ROUTE}/jobs/${companyId}`, {
+      params: {
+        page,
+        limit,
+        q: searchQuery
+      },
+      signal
+    })
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -93,10 +100,10 @@ export const getApplicantDetials = async (applicantId: string) => {
   }
 };
 
-export const updateStatus = async ( applicantId: string,status: ApplicationStatus) => {
+export const updateStatus = async (applicantId: string, status: ApplicationStatus) => {
   try {
-    const data={status}
-    const response=await api.patch(`${COMPANY_BASE_ROUTE}/jobs/applicants/${applicantId}/status`,data)
+    const data = { status }
+    const response = await api.patch(`${COMPANY_BASE_ROUTE}/jobs/applicants/${applicantId}/status`, data)
     return response.data
   } catch (error) {
     if (error instanceof AxiosError) {

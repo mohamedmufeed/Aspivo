@@ -118,9 +118,16 @@ export const addSkill = async (skills: { skills: string[]; }) => {
   }
 };
 
-export const getSkills = async () => {
+export const getSkills = async (page=1, limit=10, searchQuery="", signal?: AbortSignal) => {
   try {
-    const response = await api.get(`${ADMIN_BASE_ROUTE}/skills`);
+    const response = await api.get(`${ADMIN_BASE_ROUTE}/skills`,{
+        params: {
+        page,
+        limit,
+        q: searchQuery
+      },
+      signal
+    });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -202,12 +209,12 @@ export const getMonthlySubscriptionRevenue = async () => {
   }
 }
 
-export const downloadExcel = async (date:string,type: "ApplicationData" | "RevenueData") => {
+export const downloadExcel = async (date: string, type: "ApplicationData" | "RevenueData") => {
   const { startDate, endDate } = parseWeekRange(date)
   try {
     const response = await api.get(`/${ADMIN_BASE_ROUTE}/dashboard/download-excel`, {
       params: { startDate, endDate, type },
-      responseType: "blob", 
+      responseType: "blob",
     });
 
     const blob = new Blob([response.data], {
@@ -226,3 +233,15 @@ export const downloadExcel = async (date:string,type: "ApplicationData" | "Reven
     }
   }
 };
+
+
+export const handleCompanyBlockStatus = async (companyId: string) => {
+  try {
+    const response = await api.patch(`${ADMIN_BASE_ROUTE}/companies/${companyId}/block`)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      console.error("Error handling company blocking status Excel:", error.response?.data);
+    }
+  }
+}

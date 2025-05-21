@@ -8,13 +8,14 @@ export interface ICompany {
   email: string;
   location?: string;
   description?: string;
-  companyUrl?: string|undefined;
+  companyUrl?: string | undefined;
   logo: string;
   kyc: string;
   userId: ObjectId;
   status: "Pending" | "Approved" | "Declined";
   stack: string[];
   startDate?: Date;
+  isBlocked:boolean;
   industry?: string;
   contact: {
     name?: string;
@@ -31,7 +32,7 @@ export interface ICompany {
     unlimitedJobPosting: boolean;
     accessToAnalytics: boolean;
   };
-  jobLimit:number,
+  jobLimit: number,
   team: {
     position: string;
     name: string;
@@ -73,10 +74,14 @@ const companySchema = new Schema(
       type: String,
       required: true,
     },
+    isBlocked: {
+      type: Boolean,
+      default: false
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true, 
+      required: true,
     },
     status: { type: String, enum: ["Pending", "Approved", "Declined"], default: "Pending" },
     stack: [
@@ -96,15 +101,15 @@ const companySchema = new Schema(
     },
     contact: [
       {
-        name: { type: String, required: false , trim:true },
-        url: { type: String, required: false,trim:true  },
+        name: { type: String, required: false, trim: true },
+        url: { type: String, required: false, trim: true },
       },
     ],
     employees: {
       type: String,
       required: false,
     },
-    customerId: { type: String }, 
+    customerId: { type: String },
     subscription: {
       subscriptionId: { type: String },
       status: { type: String },
@@ -114,9 +119,9 @@ const companySchema = new Schema(
       unlimitedJobPosting: { type: Boolean, default: false },
       accessToAnalytics: { type: Boolean, default: false },
     },
-    jobLimit:{
-type:Number,
-default:5
+    jobLimit: {
+      type: Number,
+      default: 5
     },
     team: [
       {

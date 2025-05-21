@@ -8,4 +8,5 @@ export default interface IAdminService {
   blockUser(id: string):Promise<UserServiceResponse>;
   handleCompanyRequest(companyId: string, action: string):Promise<CompanySerivceResponse> ;
   approvedCompany(query:GetPaginationQuery):Promise<GetApprovedCompanyDtoResponse> ;
+  handleCompanyBlockStatus(comapnyId:string):Promise<CompanySerivceResponse>
 }

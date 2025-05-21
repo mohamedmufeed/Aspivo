@@ -42,7 +42,6 @@ const AdminDashboard = () => {
         setUserData(response.users)
         setCompanyData(response.companies)
         setJobData(response.jobs)
-        console.log(response)
       } catch (error) {
         console.error("Error fetching on dashbord stats", error);
 
@@ -55,7 +54,6 @@ const AdminDashboard = () => {
     const fetchWeeklyApplicationData = async () => {
       try {
         const response = await getWeeklyApplicationData(dateRange)
-        console.log("the response af", response)
         setApplicationData(response.response)
       } catch (error) {
         console.error("Error on fetching Weekly application data", error);

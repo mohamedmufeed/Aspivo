@@ -2,6 +2,7 @@ import { ISkillRepository } from "../../interface/repositories/skillRepositories
 import ISkillService from "../../interface/service/admin/skillInterface";
 import { ISkill } from "../../models/skills";
 import { SkillRepository } from "../../repositories/skillREpositories";
+import { GetPaginationQuery, GetSkillResponse } from "../../types/userTypes";
 import HttpStatus from "../../utils/httpStatusCode";
 
 export class SkillService implements ISkillService {
@@ -15,12 +16,12 @@ export class SkillService implements ISkillService {
     return { addeddSkill, message: "Skill addedd sucsessfully" };
   }
 
-  async getSkils():Promise<{response:ISkill[], message:string}> {
-    const response = await this._skillRepository.getSkills();
+  async getSkils(query:GetPaginationQuery):Promise<GetSkillResponse> {
+    const response = await this._skillRepository.getSkills(query);
     if (!response) {
       throw { status: HttpStatus.BAD_REQUEST, message: "Skils not found" };
     }
-    return { response, message: "Skills found sucessfuly" };
+    return  response ;
   }
 
   async removeSkill(skillId: string):Promise<{response:ISkill, message:string}> {

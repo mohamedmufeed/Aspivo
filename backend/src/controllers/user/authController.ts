@@ -1,12 +1,15 @@
-// controllers/authController.ts
-import { Request, Response } from "express";
-import { AuthService } from "../../services/authService";
+
+import { Request, Response } from "express"
 import { generateRefreshToken, generateToken } from "../../utils/jwt";
 import HttpStatus from "../../utils/httpStatusCode";
 import IAuthController from "../../interface/controller/user/authControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
 import IAuthService from "../../interface/service/user/authServiceInterface";
+import dotenv from "dotenv";
+dotenv.config();
+const accessTokenMaxAge = Number(process.env.ACCESS_TOKEN_MAX_AGE) || 6 * 60 * 60 * 1000;
+const refreshTokenMaxAge = Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000;
 
 export class AuthController  implements IAuthController{
   constructor(private _authService: IAuthService) {}
@@ -20,14 +23,14 @@ export class AuthController  implements IAuthController{
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 15 * 60 * 1000,
+        maxAge: accessTokenMaxAge,
       });
 
       res.cookie("refresh_token", refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: refreshTokenMaxAge,
       });
 
       res.status(HttpStatus.OK).json(user);
@@ -48,14 +51,14 @@ export class AuthController  implements IAuthController{
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 6 * 60 * 60 * 1000,
+        maxAge: accessTokenMaxAge,
       });
 
       res.cookie("refresh_token", refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: refreshTokenMaxAge,
       });
 
       res.json({ user });
@@ -133,7 +136,7 @@ export class AuthController  implements IAuthController{
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 15 * 60 * 1000,
+        maxAge: accessTokenMaxAge,
       });
 
       res.status(HttpStatus.OK).json({ accessToken: newToken });
@@ -157,14 +160,14 @@ export class AuthController  implements IAuthController{
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: accessTokenMaxAge,
     });
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: refreshTokenMaxAge,
     });
 
     res.redirect("/");

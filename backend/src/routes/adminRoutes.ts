@@ -48,6 +48,8 @@ router
   .get("/companies/approved",protect , adminOnly, adminController.approvedCompanies) 
   .post("/companies/requests", adminController.handleCompanyRequest);
 
+router
+.patch("/companies/:id/block",protect,adminOnly,adminController.handleCompanyBlock)
 
 router
   .post("/skills", skillController.addSkill)           

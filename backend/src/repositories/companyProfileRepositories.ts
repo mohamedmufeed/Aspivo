@@ -2,6 +2,6 @@ import { ICompanyProfileRepositories } from "../interface/repositories/companyPr
 import Company from "../models/company";
 export class CompanyProfileRepositiories implements ICompanyProfileRepositories {
     async findCompanyById(companyId: string) {
-        return await Company.findById(companyId)
+        return await Company.findById(companyId,{isBlocked:false})
     }
 }

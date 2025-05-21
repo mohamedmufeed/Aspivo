@@ -3,6 +3,7 @@ import { Experience, IUser } from "../models/user";
 import {  ICompany } from "../models/company";
 import { ISubscription as ISubscriptionType } from "../models/Subscription";
 import { IJob } from "../models/job";
+import { ISkill } from "../models/skills";
 export interface ProfileTypes {
   profileImage: string;
   firstName: string;
@@ -79,9 +80,15 @@ export interface GetPaginationQuery {
   searchQuery: string;
 }
 
+
 export interface GetUsersResponse {
   users: IUser[];
   totalUsers: number;
+  totalPages: number;
+}
+export interface GetSkillResponse {
+  skills: ISkill[];
+  totalSkills: number;
   totalPages: number;
 }
 
@@ -139,7 +146,8 @@ export interface GetCompanyDtoResponse{
     email:string;
     status:string;
     createdAt:string;
-    kyc:string
+    kyc:string,
+    isBlocked:boolean
   }
   export interface IMappedSubscription{
      _id: string;

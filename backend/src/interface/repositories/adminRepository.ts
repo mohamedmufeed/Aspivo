@@ -18,4 +18,5 @@ export default interface IAdminRepostry {
   findSubscriptionByIdAndUpdate(subscriptionId: string, status:string): Promise<  ISubscription | null>;
   updateUserFeatures(userId: Types.ObjectId, features: { unlockAiFeatures: boolean, unlimitedChat: boolean }):Promise<IUser|null>
   updateCompanyFeatures(userId: Types.ObjectId, features: { unlimitedJobPosting: boolean, accessToAnalytics: boolean }):Promise<ICompany|null>
+  findByIdAndUpdateCompanyBlockStatus(comapnyId: string, blockStatus: boolean):Promise<CompanyDocument|null>
 }

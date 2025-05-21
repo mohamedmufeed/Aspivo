@@ -21,7 +21,9 @@ export const mappedCompanies= (company:ICompany):IMppaedCompany=>{
         email:company.email,
         status:company.status,
         createdAt:company.createdAt.toISOString(),
-        kyc:company.kyc
+        kyc:company.kyc,
+        isBlocked:company.isBlocked
+
     }
 }
 

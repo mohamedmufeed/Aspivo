@@ -1,7 +1,7 @@
 import Sidebar from "../../components/Admin/Sidebar";
 import { useCallback, useEffect, useRef, useState } from "react"
-import { EllipsisVertical, ChevronLeft, ChevronRight } from "lucide-react";
-import { approvedCompany } from "../../services/adminService";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { approvedCompany, handleCompanyBlockStatus } from "../../services/adminService";
 import AdminHeader from "../../components/Admin/AdminHeader";
 import _ from "lodash";
 import { useLocation } from "react-router-dom";
@@ -14,6 +14,7 @@ interface Company {
     status: string;
     createdAt: string;
     kyc?: string;
+    isBlocked: boolean
 }
 
 const AdminCompanyRequests = () => {
@@ -24,10 +25,9 @@ const AdminCompanyRequests = () => {
     const companiesPerPage = 6
     const [totalPages, setTotalPages] = useState(1)
     const [searchQuery, setSearchQuery] = useState("")
-    const [totalCompanies, setTotalCompanies] = useState(0)
+    const [, setTotalCompanies] = useState(0)
     const [loading, setLoading] = useState(false)
     const prevRequestRef = useRef<AbortController | null>(null)
-console.log(totalCompanies)
     const fetchCompany = async (page = 1, query = "") => {
         if (prevRequestRef.current) {
             prevRequestRef.current.abort()
@@ -37,7 +37,7 @@ console.log(totalCompanies)
         setLoading(true)
         try {
             const response = await approvedCompany(page, companiesPerPage, query, abortController.signal);
-            console.log("the response",response)
+            console.log("the response", response)
             if (prevRequestRef.current === abortController) {
                 setCompanyDetail(response.company);
                 setTotalCompanies(response.totalCompanies)
@@ -77,11 +77,35 @@ console.log(totalCompanies)
         debouncedFetch(1, query)
     }
 
-   
+
+    const handleBlockClick = async (companyId: string) => {
+        try {
+            const response = await handleCompanyBlockStatus(companyId);
+            console.log("response", response);
+            if (response) {
+                setCompanyDetail((prevCompanies: Company[]) =>
+                    prevCompanies.map((company) =>
+                        company._id === companyId
+                            ? { ...company, isBlocked: !company.isBlocked }
+                            : company
+                    )
+                );
+            } else {
+                console.error("Failed to block/unblock company:", response.message);
+                fetchCompany(currentPage, searchQuery)
+            }
+        } catch (error) {
+            fetchCompany(currentPage, searchQuery)
+            console.error("Error handling block status:", error);
+        }
+    };
+
+
+
 
     return (
         <div className="flex">
-            <Sidebar  />
+            <Sidebar />
             <div className="bg-[#F6F6F6] w-full overflow-x-hidden relative" style={{ fontFamily: "DM Sans, sans-serif" }}>
                 <AdminHeader heading="Companies" />
                 <SearchBar placeholder="Serach Company..." onSearch={handleSeach} />
@@ -124,7 +148,7 @@ console.log(totalCompanies)
                                 </div>
 
                                 <div className="flex justify-center">
-                                    <EllipsisVertical className="cursor-pointer text-gray-600 hover:text-gray-800" />
+                                    <button className="p-2 px-4 text-white rounded-lg  bg-orange-600 hover:bg-orange-700" onClick={() => handleBlockClick(company._id)}>{company.isBlocked ? "Unblock" : "Block"}</button>
                                 </div>
                             </div>
                         ))
@@ -146,9 +170,8 @@ console.log(totalCompanies)
                     {Array.from({ length: totalPages }, (_, page) => (
                         <button
                             key={page}
-                            className={`p-3 w-8 h-8 rounded-sm flex items-center justify-center font-bold ${
-                                currentPage === page + 1 ? "bg-orange-600 text-white" : "bg-gray-200"
-                            }`}
+                            className={`p-3 w-8 h-8 rounded-sm flex items-center justify-center font-bold ${currentPage === page + 1 ? "bg-orange-600 text-white" : "bg-gray-200"
+                                }`}
                             onClick={() => setCurrentPage(page + 1)}
                         >
                             {page + 1}
