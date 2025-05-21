@@ -124,7 +124,7 @@ export class JobService implements IJobService {
     const user = await this._authRepositories.findByIdAndPopulate(userId)
     if (!user) throw new Error("User not found")
     const savedJobs = user.savedJobs
-    return { savedJobs, messsage: "User saved job  populated sucsess fully" }
+    return { savedJobs, message: "User saved job  populated sucsess fully" }
   }
 
    async latestJobs(){

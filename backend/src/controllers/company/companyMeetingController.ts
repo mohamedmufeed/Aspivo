@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import ICompanyMeetingController from "../../interface/controller/company/comapnyMeetingController";
-import { CompanyMeetingService } from "../../services/compnyService/companyMeetingService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { ERROR_MESSAGES } from "../../constants/error";
+import IComapnyMeetingService from "../../interface/service/company/meetingInterface";
 
 export class ComapnyMeetingController implements ICompanyMeetingController {
-    constructor(private _companyMeetingService: CompanyMeetingService) { }
+    constructor(private _companyMeetingService: IComapnyMeetingService) { }
 
     sheduleMeeting = async (req: Request, res: Response) => {
         try {

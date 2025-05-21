@@ -4,9 +4,10 @@ import HttpStatus from "../../utils/httpStatusCode";
 import ICompanyJobController from "../../interface/controller/company/companyJobInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
+import IJobServiceInterface from "../../interface/service/company/jobInterface";
 
 export class CompanyJobController implements ICompanyJobController {
-  constructor(private _companyJobService: ComapnayJobService) { }
+  constructor(private _companyJobService: IJobServiceInterface) { }
 
   fetchCompany = async (req: Request, res: Response) => {
     try {

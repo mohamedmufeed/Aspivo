@@ -1,8 +1,8 @@
-import ICompanySerive from "../../interface/service/company/authInterface";
+import ICompanyService from "../../interface/service/company/authInterface";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
 
 
-export class CompanyAuthService implements ICompanySerive {
+export class CompanyAuthService implements ICompanyService {
   constructor(private _companyRepositories: CompanyRepostries) { }
   async register(
     companyName: string,

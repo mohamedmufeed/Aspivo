@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { SubscriptionService } from "../../services/adminService/subscriptionService";
 import HttpStatus from "../../utils/httpStatusCode";
 import ISubscriptionController from "../../interface/controller/admin/subscriptionControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import { GetPaginationQuery } from "../../types/userTypes";
 import logger from "../../logger";
+import ISubscriptionSerice from "../../interface/service/admin/subscriptionInterface";
 
 export class SubscriptionController implements ISubscriptionController {
-  constructor(private _subscriptionService: SubscriptionService) { }
+  constructor(private _subscriptionService: ISubscriptionSerice) { }
 
   getSubscriptions = async (req: Request, res: Response) => {
     try {

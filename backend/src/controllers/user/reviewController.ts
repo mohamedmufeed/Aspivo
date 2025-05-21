@@ -3,9 +3,10 @@ import { IReviewController } from "../../interface/controller/user/reviewControl
 import HttpStatus from "../../utils/httpStatusCode";
 import { ERROR_MESSAGES } from "../../constants/error";
 import { ReviewService } from "../../services/reviewService";
+import IReviewService from "../../interface/service/user/reviewServiceInterface";
 
 export class ReviewController implements IReviewController {
-    constructor(private _reviewService: ReviewService) { }
+    constructor(private _reviewService: IReviewService) { }
 
     public addReview = async (req: Request, res: Response): Promise<void> => {
         try {

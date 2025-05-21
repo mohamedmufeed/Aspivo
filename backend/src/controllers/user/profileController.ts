@@ -4,10 +4,11 @@ import HttpStatus from "../../utils/httpStatusCode";
 import { IProfileController } from "../../interface/controller/user/profileControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
+import IProfileService from "../../interface/service/user/profileServiceInterface";
 
 export class ProfileController implements IProfileController {
 
-  constructor(private _profileService: ProfileService) { }
+  constructor(private _profileService: IProfileService) { }
 
   public editProfile = async (req: Request, res: Response): Promise<void> => {
     try {

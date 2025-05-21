@@ -9,4 +9,5 @@ export default interface IAuthService {
   resendOtp(email: string): Promise<UserServiceResponse>;
   forgotPassword(email: string): Promise<UserServiceResponse>;
   resetPassword(email: string, password: string): Promise<UserServiceResponse>;
+  refreshToken(refreshToken:string):Promise<unknown>
 }

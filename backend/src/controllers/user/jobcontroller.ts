@@ -4,11 +4,12 @@ import HttpStatus from "../../utils/httpStatusCode";
 import { IJobController } from "../../interface/controller/user/jobControlerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
+import IJobService from "../../interface/service/user/jobServiceInterface";
 
 
 export class JobController implements IJobController {
-  private _jobService: JobService;
-  constructor(jobService: JobService) {
+  private _jobService: IJobService;
+  constructor(jobService: IJobService) {
     this._jobService = jobService;
   }
 

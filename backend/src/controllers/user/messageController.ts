@@ -1,5 +1,4 @@
 import {  Request, Response } from "express";
-import { MessageService } from "../../services/messageService";
 import HttpStatus from "../../utils/httpStatusCode";
 import User from "../../models/user";
 import { ConversationResponse } from "../../repositories/messageRepostries";
@@ -7,9 +6,10 @@ import Company from "../../models/company";
 import { IMessageController } from "../../interface/controller/user/messageControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
+import IMessageService from "../../interface/service/user/messageServiceInterface";
 
 export class MessageController  implements IMessageController{
-    constructor(private _messageService: MessageService) {}
+    constructor(private _messageService: IMessageService) {}
 
   initializeChatController = async (req: Request, res: Response ): Promise<void> => {
     try {

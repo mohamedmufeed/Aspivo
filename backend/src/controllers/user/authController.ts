@@ -6,9 +6,10 @@ import HttpStatus from "../../utils/httpStatusCode";
 import IAuthController from "../../interface/controller/user/authControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
+import IAuthService from "../../interface/service/user/authServiceInterface";
 
 export class AuthController  implements IAuthController{
-  constructor(private _authService: AuthService) {}
+  constructor(private _authService: IAuthService) {}
 
   register = async (req: Request, res: Response): Promise<void> => {
     try {

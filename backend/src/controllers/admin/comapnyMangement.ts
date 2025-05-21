@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { AdminService } from "../../services/adminService/adminService";
 import HttpStatus from "../../utils/httpStatusCode";
 import IComapnyManagement from "../../interface/controller/admin/companyManagemntInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import { GetPaginationQuery } from "../../types/userTypes";
+import IAdminService from "../../interface/service/admin/adminInterface";
 export class AdminController implements IComapnyManagement {
-  constructor(private _adminService: AdminService) { }
+  constructor(private _adminService: IAdminService) { }
 
   getCompanies = async (req: Request, res: Response) => {
     try {

@@ -4,9 +4,11 @@ import HttpStatus from "../../utils/httpStatusCode";
 import ICompanyProfileController from "../../interface/controller/company/comapnyProfileInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import logger from "../../logger";
+import IProfileService from "../../interface/service/company/profileInterface";
+
 
 export class CompanyProfileController implements ICompanyProfileController {
-  constructor(private _companyProfileService: CompanyProfileService) {}
+  constructor(private _companyProfileService: IProfileService) {}
 
   getProfile = async (req: Request, res: Response) => {
     try {

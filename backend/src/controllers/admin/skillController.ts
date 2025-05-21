@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { SkillService } from "../../services/adminService/skillService";
 import HttpStatus from "../../utils/httpStatusCode";
 import ISkillController from "../../interface/controller/admin/skillControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import ISkillService from "../../interface/service/admin/skillInterface";
 
 export class SkillController implements ISkillController {
-  constructor(private _skillService: SkillService) {}
+  constructor(private _skillService: ISkillService) {}
 
   addSkill = async (req: Request, res: Response) => {
     try {

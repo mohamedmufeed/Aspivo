@@ -3,9 +3,10 @@ import { CompanyAuthService } from "../../services/compnyService/comanyauthservi
 import HttpStatus from "../../utils/httpStatusCode";
 import ICompanyAuthController from "../../interface/controller/company/companyAuthInterface";
 import logger from "../../logger";
+import ICompanyService from "../../interface/service/company/authInterface";
 
 export class CompanyAuthController  implements ICompanyAuthController{
-  constructor(private _companyService: CompanyAuthService) {}
+  constructor(private _companyService: ICompanyService) {}
 
   register = async (req: Request, res: Response): Promise<void> => {
     try {

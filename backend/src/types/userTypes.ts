@@ -166,3 +166,8 @@ export interface UserWithPopulatedJobs extends User {
     };
   }[];
 }
+
+
+export interface PopulatedSavedJob {
+  jobId: IJob & { company: ICompany };
+}

@@ -3,15 +3,10 @@ import { NotificationService } from "../../services/notificationService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { INotificationController } from "../../interface/controller/user/notificationControllerInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
+import INotificationService from "../../interface/service/user/notificationService";
 
 export class NotificationController implements INotificationController {
-  // private notificationService: NotificationService;
-
-  // constructor() {
-  //   this.notificationService = new NotificationService();
-  // }
-
-  constructor(private _notificationService:NotificationService) {}
+  constructor(private _notificationService:INotificationService) {}
 
   public createNotification = async (req: Request, res: Response): Promise<void> => {
     try {

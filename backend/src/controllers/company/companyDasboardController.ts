@@ -3,12 +3,13 @@ import { ICompanyDashboardController } from "../../interface/controller/company/
 import { CompanyDasboradService } from "../../services/compnyService/companyDasboardService";
 import HttpStatus from "../../utils/httpStatusCode";
 import { ERROR_MESSAGES } from "../../constants/error";
+import { ICompanyDashboardService } from "../../interface/service/company/dasboardInterface";
 
 
 
 
 export class CompanyDasboradController implements ICompanyDashboardController {
-    constructor(private _companyDashboardService: CompanyDasboradService) { }
+    constructor(private _companyDashboardService: ICompanyDashboardService) { }
     async getDashboardStatus(req: Request, res: Response) {
         try {
             const companyId = req.params.id

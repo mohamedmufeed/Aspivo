@@ -120,6 +120,7 @@ export class MessageService implements IMessageService {
       timestamp: msg.timestamp.toISOString(),
     }));
   }
+  
   async getConversations(userId: string, role: string): Promise<ConversationResponse[]> {
     const conversations = await this._messageRepositories.getConversations(
       userId,
