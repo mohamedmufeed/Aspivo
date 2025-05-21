@@ -1,10 +1,11 @@
+import { ISkillRepository } from "../../interface/repositories/skillRepositories";
 import ISkillService from "../../interface/service/admin/skillInterface";
 import { ISkill } from "../../models/skills";
 import { SkillRepository } from "../../repositories/skillREpositories";
 import HttpStatus from "../../utils/httpStatusCode";
 
 export class SkillService implements ISkillService {
-  constructor(private _skillRepository: SkillRepository) {}
+  constructor(private _skillRepository: ISkillRepository) {}
 
   async addSkill(skillNames: string[]):Promise<{addeddSkill:ISkill[], message:string}> {
     if (!Array.isArray(skillNames) || skillNames.length === 0) {

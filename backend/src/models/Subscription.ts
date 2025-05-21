@@ -1,6 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export interface ISubscription  {
+  _id: ObjectId;
   userId: mongoose.Types.ObjectId;
   companyId?: mongoose.Types.ObjectId;
   subscriptionId: string;

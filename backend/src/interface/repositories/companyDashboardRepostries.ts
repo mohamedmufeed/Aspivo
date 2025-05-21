@@ -9,7 +9,7 @@ export interface ICompanyDashboardRepositories{
     getApplicationCountByDateRange(startDate:Date, endDate:Date, companyId:string):Promise<number>
     getTotalNumberOfHirings(companyId:string):Promise<number>
     getNumberOfHiringsCountByDateRange(startDate:Date, endDate:Date, companyId:string):Promise<number>
-    getApplicationStatsByCompanyAndDate(companyId: string, startDate: Date, endDate: Date):Promise<ApplicationStatusStats[]>
+    getApplicationStatsByCompanyAndDate(companyId: string, startDate?: Date, endDate?: Date):Promise<ApplicationStatusStats[]>
     getMostAppliedJobs(companyId:string):Promise<IMostAppliedJobs[]>
 
 }

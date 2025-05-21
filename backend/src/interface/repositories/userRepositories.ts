@@ -2,8 +2,8 @@
 import { HydratedDocument } from "mongoose";
 import {IUser, UserDocument} from "../../models/user"
 import {SubscriptionDocument} from "../../models/Subscription"
-import { IReviewData } from "../../types/userTypes";
-import { ReviewDocumnet } from "../../models/review";
+import { IReviewData, UserWithPopulatedJobs } from "../../types/userTypes";
+import { IReview, ReviewDocumnet } from "../../models/review";
 export interface IAuthRepository {
   register(
     userName: string,
@@ -22,4 +22,6 @@ export interface IAuthRepository {
   findSubscriptions(userId: string): Promise<HydratedDocument<SubscriptionDocument>[]>;
   findbyIdAndUpdate(id: string, data: Partial<IUser>): Promise<HydratedDocument<UserDocument> | null>;
   addReview(reviewData:IReviewData):Promise <ReviewDocumnet>
+  findByIdAndPopulate(userId:string):Promise<UserWithPopulatedJobs|null>
+getReview(): Promise<(IReview & { userId: IUser })[]>;
 }

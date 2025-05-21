@@ -5,11 +5,15 @@ import IJobService from "../interface/service/user/jobServiceInterface";
 import { IJobApplication } from "../models/jobApplication";
 import { AuthRepostry } from "../repositories/userRepositories";
 import mongoose from "mongoose";
+import HttpStatus from "../utils/httpStatusCode";
+import { IAuthRepository } from "../interface/repositories/userRepositories";
+import { IJobRepositories } from "../interface/repositories/jobRespositoires";
+import { AppliedJobWithPopulatedData } from "../types/companyTypes";
 
 
 export class JobService implements IJobService {
-  private _jobRepositories: JobRepositories;
-  private _authRepositories: AuthRepostry
+  private _jobRepositories: IJobRepositories;
+  private _authRepositories: IAuthRepository
 
   constructor(jobRepositories: JobRepositories, authRepostry: AuthRepostry) {
     this._jobRepositories = jobRepositories;
@@ -70,9 +74,9 @@ export class JobService implements IJobService {
     return { application: application.toObject(), message: "JOb application sucsess" };
   }
 
-  async appliedjobs(userId: string): Promise<{ applications: IJobApplication[], message: string }> {
+  async appliedjobs(userId: string): Promise<{ applications: AppliedJobWithPopulatedData[], message: string }> {
     const applications = await this._jobRepositories.findAppliedJobs(userId);
-    if (!applications) throw { status: 404, message: "application not found" };
+    if (!applications) throw { status: HttpStatus.NOT_FOUND, message: "application not found" };
     return { applications, message: "saved job fethced sucsess fully" };
   }
 

@@ -5,8 +5,8 @@ import { generateToken } from "../utils/jwt";
 import mongoose from "mongoose";
 import { BaseRepository } from "./baseRepository";
 import { IAuthRepository } from "../interface/repositories/userRepositories";
-import Review from "../models/review";
-import { IReviewData } from "../types/userTypes";
+import Review, { IReview } from "../models/review";
+import { IReviewData, UserWithPopulatedJobs } from "../types/userTypes";
 
 
 export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuthRepository{
@@ -57,16 +57,18 @@ export class AuthRepostry extends BaseRepository<UserDocument>  implements IAuth
           path: "company", 
           select: "companyName logo location", 
         },
-      })
+      }) .lean<UserWithPopulatedJobs | null>();
   }
   
   async addReview(reviewData:IReviewData){
     return await Review.create(reviewData)
   }
 
-   async getReview(){
-    return await Review.find().populate("userId" , "profileImage firstName lastName position")
-   }
+ async getReview(): Promise<(IReview & { userId: IUser })[]> {
+  return await Review.find()
+    .populate("userId", "profileImage firstName lastName position")
+    .lean<(IReview & { userId: IUser })[]>();
+}
 
   
 }

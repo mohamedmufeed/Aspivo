@@ -1,9 +1,9 @@
-import User from "../models/user";
+import User, { UserDocument } from "../models/user";
 import Company, { CompanyDocument } from "../models/company";
 import Subscription from "../models/Subscription";
 import IAdminRepostry from "../interface/repositories/adminRepository";
 import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetSubscriptionResponse, GetUsersResponse } from "../types/userTypes";
-import { ObjectId, PipelineStage, Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
 
 
 export class AdminRepostry implements IAdminRepostry {
@@ -27,8 +27,17 @@ export class AdminRepostry implements IAdminRepostry {
     return { users, totalUsers, totalPages };
   }
 
-  async findById(id: string) {
-    return await this.userModel.findById(id)
+  async findById(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id);
+  }
+
+
+  async findByIdAndUpdateBlockStatus(id: string, blockStatus: boolean) {
+    return this.userModel.findByIdAndUpdate(
+      id,
+      { isBlocked: !blockStatus },
+      { new: true }
+    );
   }
 
   async findAllCompany({ page, limit, searchQuery }: GetPaginationQuery): Promise<GetCompanyResponse> {
@@ -41,7 +50,7 @@ export class AdminRepostry implements IAdminRepostry {
         ]
       }
       : {}
-    const companies = await this.companyModel.find(searchFilter).skip(skip).limit(limit).sort({createdAt:-1})
+    const companies = await this.companyModel.find(searchFilter).skip(skip).limit(limit).sort({ createdAt: -1 })
     const totalRequest = await this.companyModel.countDocuments(searchFilter)
     const totalPages = Math.ceil(totalRequest / limit)
     return { companies, totalRequest, totalPages }
@@ -57,7 +66,7 @@ export class AdminRepostry implements IAdminRepostry {
   async findApprovedCompany({ page, limit, searchQuery }: GetPaginationQuery): Promise<GetApprovedCompanyResponse> {
     const skip = (page - 1) * limit
     const searchFilter = {
-      status: "Approved", 
+      status: "Approved",
       ...(searchQuery && {
         $or: [
           { companyName: { $regex: searchQuery, $options: "i" } },
@@ -74,19 +83,19 @@ export class AdminRepostry implements IAdminRepostry {
 
   async findSubscriptions({ page, limit, searchQuery }: GetPaginationQuery): Promise<GetSubscriptionResponse> {
     const skip = (page - 1) * limit;
-  
+
     const matchStage: PipelineStage.Match = searchQuery
       ? {
-          $match: {
-            $or: [
-              { "user.firstName": { $regex: searchQuery, $options: "i" } },
-              { "user.lastName": { $regex: searchQuery, $options: "i" } },
-              { "user.email": { $regex: searchQuery, $options: "i" } },
-            ],
-          },
-        }
+        $match: {
+          $or: [
+            { "user.firstName": { $regex: searchQuery, $options: "i" } },
+            { "user.lastName": { $regex: searchQuery, $options: "i" } },
+            { "user.email": { $regex: searchQuery, $options: "i" } },
+          ],
+        },
+      }
       : { $match: {} };
-  
+
     const pipeline: PipelineStage[] = [
       {
         $lookup: {
@@ -120,39 +129,41 @@ export class AdminRepostry implements IAdminRepostry {
         },
       },
     ];
-  
+
     const data = await this.subscriptionModel.aggregate(pipeline);
-  
+
     const totalResult = await this.subscriptionModel.aggregate([
       pipeline[0],
       pipeline[1],
       matchStage,
       { $count: "total" },
     ]);
-  
+
     const totalSubscription = totalResult[0]?.total || 0;
     const totalPages = Math.ceil(totalSubscription / limit);
     return { subscription: data, totalSubscription, totalPages };
   }
-  
 
-  async findSubscriptionByIdAndUpdate(subscriptionId: string,status:string) {
-    return await this.subscriptionModel.findByIdAndUpdate(subscriptionId,{status},{new:true})
+
+  async findSubscriptionByIdAndUpdate(subscriptionId: string, status: string) {
+    return await this.subscriptionModel.findByIdAndUpdate(subscriptionId, { status }, { new: true })
   }
 
-  async updateUserFeatures(userId:Types.ObjectId, features: { unlockAiFeatures: boolean, unlimitedChat: boolean }) {
-    return await this.userModel.updateOne(
-      { _id: userId },
-      { $set: { features } }
+  async updateUserFeatures(userId: Types.ObjectId, features: { unlockAiFeatures: boolean, unlimitedChat: boolean }) {
+    return await this.userModel.findByIdAndUpdate(
+      userId,
+      { $set: { features } },
+      { new: true }
     );
   }
-  async updateCompanyFeatures(userId:Types.ObjectId, features: { unlimitedJobPosting: boolean, accessToAnalytics: boolean }) {
-    return await this.companyModel.updateOne(
-      { _id: userId },
-      { $set: { features } }
+  async updateCompanyFeatures(userId: Types.ObjectId, features: { unlimitedJobPosting: boolean, accessToAnalytics: boolean }) {
+    return await this.companyModel.findByIdAndUpdate(
+      userId,
+      { $set: { features } },
+      { new: true }
     );
   }
-  
+
 
 }
 

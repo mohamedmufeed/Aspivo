@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import { Experience, IUser } from "../models/user";
 import {  ICompany } from "../models/company";
 import { ISubscription as ISubscriptionType } from "../models/Subscription";
+import { IJob } from "../models/job";
 export interface ProfileTypes {
   profileImage: string;
   firstName: string;
@@ -95,8 +96,18 @@ export interface GetCompanyResponse{
   totalRequest: number;
   totalPages: number;
 }
+export interface GetCompanyDtoResponse{
+  companies:IMppaedCompany[]
+  totalRequest: number;
+  totalPages: number;
+}
  export interface GetApprovedCompanyResponse{
   company:ICompany[]
+  totalCompany:number
+  totalPages:number
+ }
+ export interface GetApprovedCompanyDtoResponse{
+  company:IMppaedCompany[]
   totalCompany:number
   totalPages:number
  }
@@ -120,3 +131,38 @@ export interface GetCompanyResponse{
   createdAt:string;
   isBlocked:boolean
  }
+
+
+  export interface IMppaedCompany{
+     _id:string;
+    companyName:string;
+    email:string;
+    status:string;
+    createdAt:string;
+    kyc:string
+  }
+  export interface IMappedSubscription{
+     _id: string;
+    user: {
+        _id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+    };
+    companyId: string;
+    subscriptionId: string;
+    plan: string;
+    amount: number;
+    status: "active" | "inactive" | "cancelled";
+    createdAt: string;
+    updatedAt: string;
+  }
+
+
+export interface UserWithPopulatedJobs extends User {
+  savedJobs: {
+    jobId: IJob & {
+      company: ICompany;
+    };
+  }[];
+}

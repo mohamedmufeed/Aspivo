@@ -5,7 +5,7 @@ export interface IDashboardRepositories{
     getTotalUserCount():Promise<number>
     getTotalJobCount():Promise<number>
     getTotalCompanyCount():Promise<number>
-    getWeeklyApplicationData():Promise<{ name:string,applications:number ,interviews:number,pending:number,rejected:number}[]>
+    getWeeklyApplicationData(startDate?:string,endDate?:string):Promise<{ name:string,applications:number ,interviews:number,pending:number,rejected:number}[]>
     getMonthlySubscriptionRevenue():Promise<{_id:number, totalRevenue:number}[]>
 
 }

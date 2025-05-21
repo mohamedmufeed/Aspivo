@@ -9,12 +9,16 @@ import IProfileService from "../interface/service/user/profileServiceInterface";
 
 import { SubscriptionHistoryResponse } from "../types/interfaceTypes";
 import { generateResumePrompt } from "../utils/resumePrompt";
+import { http } from "winston";
+import HttpStatus from "../utils/httpStatusCode";
+import { IAuthRepository } from "../interface/repositories/userRepositories";
+import { ISkillRepository } from "../interface/repositories/skillRepositories";
 
 
 export class ProfileService implements IProfileService {
   constructor(
-    private readonly _authRepository: AuthRepostry,
-    private readonly _skillRepository: SkillRepository
+    private readonly _authRepository: IAuthRepository,
+    private readonly _skillRepository: ISkillRepository
   ) { }
 
   async editProfile(id: string, data: ProfileTypes) {
@@ -148,14 +152,14 @@ export class ProfileService implements IProfileService {
     );
   
     if (skillIndex === -1) {
-      throw { status: 404, message: "Skill not found in user profile" };
+      throw { status: HttpStatus.NOT_FOUND, message: "Skill not found in user profile" };
     }
     const newSkillExists = user.skills.some(
       (skill) => skill.toLowerCase() === newSkillName.toLowerCase()
     );
   
     if (newSkillExists) {
-      throw { status: 400, message: "New skill name already exists in your profile" };
+      throw { status: HttpStatus.BAD_REQUEST, message: "New skill name already exists in your profile" };
     }
     user.skills[skillIndex] = newSkillName;
     await user.save();

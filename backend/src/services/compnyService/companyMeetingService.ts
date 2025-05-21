@@ -1,15 +1,15 @@
 
+import { ICompanyMeetingRepositories } from "../../interface/repositories/companyMeetingRepositories";
 import IComapnyMeetingService from "../../interface/service/company/meetingInterface";
-import { CompanyMeetingRepositories } from "../../repositories/coampanyMeetingRepositories";
+import INotificationService from "../../interface/service/user/notificationService";
 import { sendNotification } from "../../server";
 import { IMeetingData } from "../../types/companyTypes";
 import { MeetinngRespose } from "../../types/interfaceTypes";
-import { NotificationService } from "../notificationService";
 
 export class CompanyMeetingService implements IComapnyMeetingService {
   constructor(
-    private _meetingRepositories: CompanyMeetingRepositories,
-    private _notificationService: NotificationService
+    private _meetingRepositories: ICompanyMeetingRepositories,
+    private _notificationService: INotificationService
   ) { }
 
   async scheduleMeeting(meetingData: IMeetingData): Promise<MeetinngRespose> {

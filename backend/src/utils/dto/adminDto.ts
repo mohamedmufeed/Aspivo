@@ -1,5 +1,7 @@
+import { ICompany } from "../../models/company";
+import { ISubscription } from "../../models/Subscription";
 import { IUser } from "../../models/user";
-import { IMappedUserDto } from "../../types/userTypes";
+import { IMappedUserDto, IMppaedCompany } from "../../types/userTypes";
 
 export const mappedUsers = (user: IUser):IMappedUserDto => {
     return {
@@ -11,3 +13,21 @@ export const mappedUsers = (user: IUser):IMappedUserDto => {
         isBlocked: user.isBlocked
     }
 }
+
+export const mappedCompanies= (company:ICompany):IMppaedCompany=>{
+    return {
+        _id:company._id.toString(),
+        companyName:company.companyName,
+        email:company.email,
+        status:company.status,
+        createdAt:company.createdAt.toISOString(),
+        kyc:company.kyc
+    }
+}
+
+ export  const  mapppedSubscription=(susbcription:ISubscription)=>{
+    return{
+        _id:susbcription._id,
+        firstName:susbcription.userId
+    }
+ }

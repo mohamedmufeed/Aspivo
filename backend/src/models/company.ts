@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { HydratedDocument, model, Model, Schema } from "mongoose";
 import { Company } from "../types/companyTypes";
 import { ObjectId } from "mongodb";
 
@@ -8,7 +8,7 @@ export interface ICompany {
   email: string;
   location?: string;
   description?: string;
-  companyUrl?: string;
+  companyUrl?: string|undefined;
   logo: string;
   kyc: string;
   userId: ObjectId;
@@ -40,7 +40,7 @@ export interface ICompany {
   updatedAt: Date;
 }
 
-
+export type CompanyDocument = HydratedDocument<ICompany>;
 const companySchema = new Schema(
   {
     companyName: {
@@ -138,6 +138,5 @@ default:5
   }
 );
 
-export type CompanyDocument = ICompany & Document;
-const Company = mongoose.model<ICompany>("Company", companySchema);
+const Company = model<ICompany, mongoose.Model<CompanyDocument>>("Company", companySchema);
 export default Company;

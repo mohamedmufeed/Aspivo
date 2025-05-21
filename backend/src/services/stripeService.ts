@@ -1,13 +1,16 @@
 import Stripe from "stripe";
 import { StripeRepositories } from "../repositories/stripeRepositories";
 import logger from "../logger";
+import { http } from "winston";
+import HttpStatus from "../utils/httpStatusCode";
+import { IStripeService } from "../interface/service/user/stripeServiceInterface";
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2025-02-24.acacia",
 });
 
-export class StripeService {
+export class StripeService implements IStripeService {
   private _stripeRepositories: StripeRepositories;
 
   constructor() {
@@ -15,7 +18,7 @@ export class StripeService {
   }
 
   async setupStripe(userId: string, companyId: string) {
-    if (!userId) throw { status: 404, message: "User id is required" };
+    if (!userId) throw { status: HttpStatus.NOT_FOUND, message: "User id is required" };
     if (companyId) {
       await this._stripeRepositories.verifyCompany(userId, companyId);
     }
@@ -34,7 +37,6 @@ export class StripeService {
         userId: userId.toString(),
         companyId: companyId || "",
       },
-      // Add metadata to the invoice as a fallback
       subscription_data: {
         metadata: {
           userId: userId.toString(),
@@ -45,7 +47,7 @@ export class StripeService {
     return { url: session.url };
   }
 
-  async handleWebhookEvent(event: any) {
+  async handleWebhookEvent(event: Stripe.Event) {
     try {
       switch (event.type) {
         case "checkout.session.completed":
@@ -59,41 +61,52 @@ export class StripeService {
           }
           if (session.subscription) {
             try {
-              await stripe.subscriptions.update(session.subscription, {
-                metadata: {
-                  userId: userIdSession,
-                  companyId: companyIdSession || "",
-                },
-              });
-          
+              if (session.subscription && typeof session.subscription === "string") {
+                await stripe.subscriptions.update(session.subscription, {
+                  metadata: {
+                    userId: userIdSession,
+                    companyId: companyIdSession || "",
+                  },
+                });
+              }
             } catch (error) {
               logger.error(`Failed to update subscription metadata for ${session.subscription}:`, error)
               throw new Error(`Failed to update subscription metadata: ${error}`);
             }
           }
+          const amount = session.amount_total !== null ? session.amount_total / 100 : 0;
+          const subscriptionId =
+            typeof session.subscription === "string"
+              ? session.subscription
+              : session.subscription?.id || "";
+
+          if (!subscriptionId) {
+            throw new Error("Missing subscription ID");
+          }
 
           await this._stripeRepositories.storeSubscription({
-            subscriptionId: session.subscription,
+            subscriptionId: subscriptionId,
             userId: userIdSession,
             companyId: companyIdSession || null,
             status: "active",
-            amount: session.amount_total / 100,
+            amount: amount,
             plan: process.env.STRIPE_PRICE_ID || "",
           });
 
           await this._stripeRepositories.updateUserSubscription(userIdSession, {
-            subscriptionId: session.subscription,
+            subscriptionId: subscriptionId,
             status: "active",
-            amount: session.amount_total / 100,
+            amount: amount
           });
 
           if (companyIdSession) {
+
             await this._stripeRepositories.updateCompanySubscription(
               companyIdSession,
               {
-                subscriptionId: session.subscription,
+                subscriptionId: subscriptionId,
                 status: "active",
-                amount: session.amount_total / 100,
+                amount: amount
               }
             );
           }
@@ -169,7 +182,7 @@ export class StripeService {
 
             if (!userIdPayment) {
               logger.error("Metadata missing, retrying after 2 seconds...")
-              await new Promise((resolve) => setTimeout(resolve, 2000)); 
+              await new Promise((resolve) => setTimeout(resolve, 2000));
               const retrySubscription = await stripe.subscriptions.retrieve(invoice.subscription);
               userIdPayment = retrySubscription.metadata?.userId;
               companyIdPayment = retrySubscription.metadata?.companyId;
@@ -200,50 +213,7 @@ export class StripeService {
           }
           break;
 
-        // case "payment_method.attached":
-        //   console.log("Payment method attached:", event.data.object.id);
-        //   break;
-
-        // case "customer.created":
-        //   console.log("Customer created:", event.data.object.id);
-        //   break;
-
-        // case "customer.updated":
-        //   console.log("Customer updated:", event.data.object.id);
-        //   break;
-
-        // case "customer.subscription.created":
-        //   console.log("Customer subscription created:", event.data.object.id);
-        //   break;
-
-        // case "payment_intent.succeeded":
-        //   console.log("Payment intent succeeded:", event.data.object.id);
-        //   break;
-
-        // case "payment_intent.created":
-        //   console.log("Payment intent created:", event.data.object.id);
-        //   break;
-
-        // case "invoice.created":
-        //   console.log("Invoice created:", event.data.object.id);
-        //   break;
-
-        // case "invoice.finalized":
-        //   console.log("Invoice finalized:", event.data.object.id);
-        //   break;
-
-        // case "invoice.updated":
-        //   console.log("Invoice updated:", event.data.object.id);
-        //   break;
-
-        // case "invoice.paid":
-        //   console.log("Invoice paid:", event.data.object.id);
-        //   break;
-
-        // case "invoice.payment_failed":
-        //   console.log("Payment failed for invoice:", event.data.object.id);
-        //   break;
-
+      
         default:
           logger.info(`Unhandled event type ${event.type}`)
       }

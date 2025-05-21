@@ -1,15 +1,15 @@
+import { INotificationRepository } from "../../interface/repositories/NotifictatonRepository";
 import IJobService from "../../interface/service/company/jobInterface";
 import { ICompany } from "../../models/company";
 import { IJob, JobDocumnet } from "../../models/job";
 import { IJobApplication } from "../../models/jobApplication";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
-import { NotificationRepository } from "../../repositories/notificationRepository";
 import { sendNotification } from "../../server";
 import { JobData } from "../../types/companyTypes";
 
 export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class ComapnayJobService implements IJobService {
-  constructor(private _companyRepositories: CompanyRepostries, private _notificationRepositories: NotificationRepository) { }
+  constructor(private _companyRepositories: CompanyRepostries, private _notificationRepositories: INotificationRepository) { }
 
   async fetchCompany(userId: string): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepositories.findByUserId(userId);

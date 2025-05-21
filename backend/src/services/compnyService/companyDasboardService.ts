@@ -1,9 +1,10 @@
 import { endOfWeek, startOfWeek, subWeeks } from "date-fns";
 import { ICompanyDashboardService } from "../../interface/service/company/dasboardInterface";
 import { ComapnyDasboardRepositories } from "../../repositories/companyDasboardRespostries";
+import { ICompanyDashboardRepositories } from "../../interface/repositories/companyDashboardRepostries";
 
 export class CompanyDasboradService implements ICompanyDashboardService {
-    constructor(private _comapnyDasboardRepostries: ComapnyDasboardRepositories) { }
+    constructor(private _comapnyDasboardRepostries: ICompanyDashboardRepositories) { }
     calculateStats(total: number, lastWeek: number) {
         const diff = total - lastWeek;
         const direction = diff > 0 ? "↑" : diff < 0 ? "↓" : "→";

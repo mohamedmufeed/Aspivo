@@ -1,5 +1,19 @@
 import mongoose, { Schema } from "mongoose";
 
+import { Document, Types } from "mongoose";
+
+export interface IMeeting extends Document {
+  roomId: string;
+  peerId: string;
+  startTime: string;
+  initiatorId: Types.ObjectId;
+  targetId: Types.ObjectId;
+  link: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
 const meetingSchema = new Schema(
   {
     roomId: { type: String, required: true },

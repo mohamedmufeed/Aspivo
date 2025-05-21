@@ -1,4 +1,5 @@
 import { MONTHS, USD_TO_INR } from "../../constants/commen";
+import { IDashboardRepositories } from "../../interface/repositories/dashboardInterface";
 import { IDashboardService } from "../../interface/service/admin/dashboardServiceInterface";
 import { DashboardRepositories } from "../../repositories/adminDasboardRespositories";
 import { startOfWeek, endOfWeek, subWeeks } from "date-fns";
@@ -7,7 +8,7 @@ import ExcelJS from 'exceljs';
 
 
 export class DashboardService implements IDashboardService {
-  constructor(private _dashboardReposrtories: DashboardRepositories) { }
+  constructor(private _dashboardReposrtories: IDashboardRepositories) { }
 
 
   calculateStats(total: number, lastWeek: number) {

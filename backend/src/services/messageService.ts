@@ -6,6 +6,7 @@ import Conversation from "../models/conversations";
 import IMessageService from "../interface/service/user/messageServiceInterface";
 import logger from "../logger";
 import dotenv from "dotenv";
+import HttpStatus from "../utils/httpStatusCode";
 dotenv.config();
 const redisClient = createClient({
   url: process.env.REDIS_URL,
@@ -63,7 +64,7 @@ export class MessageService implements IMessageService {
       const senderInfo = await this._messageRepositories.findSender(senderId);
 
       if (!senderInfo) {
-        throw { status: 404, message: "Sender not found" };
+        throw { status: HttpStatus.NOT_FOUND, message: "Sender not found" };
       }
       const { type, data: sender } = senderInfo;
       await this._messageRepositories.markConversationUnread(channel, senderId);
@@ -74,7 +75,7 @@ export class MessageService implements IMessageService {
           await this._messageRepositories.decrementChatLimit(senderId);
           await this._messageRepositories.createChat(channel, senderId, message);
         } else {
-          throw { status: 404, message: "Message Limit ends" };
+          throw { status: HttpStatus.NOT_FOUND, message: "Message Limit ends" };
         }
       }else if( type === "company"){
         await this._messageRepositories.createChat(channel, senderId, message);

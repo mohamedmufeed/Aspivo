@@ -6,8 +6,9 @@ import { IComapny, TeamMember } from "../../types/companyTypes";
 import { Contact } from "../../types/companyTypes";
 import IProfileService from "../../interface/service/company/profileInterface";
 import { ICompany } from "../../models/company";
+import { ICompanyProfileRepositories } from "../../interface/repositories/companyProfileRepostries";
 export class CompanyProfileService  implements IProfileService{
-  constructor(private _companyRepo: CompanyProfileRepositiories) {}
+  constructor(private _companyRepo: ICompanyProfileRepositories) {}
 
   async getProfile(companyId: string):Promise<{company:ICompany, message:string}> {
     const company = await this._companyRepo.findCompanyById(

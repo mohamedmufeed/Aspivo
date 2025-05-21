@@ -1,10 +1,11 @@
+import { IAuthRepository } from "../interface/repositories/userRepositories";
 import IReviewService from "../interface/service/user/reviewServiceInterface";
 import { IReview } from "../models/review";
 import { AuthRepostry } from "../repositories/userRepositories";
 
 
 export class ReviewService implements IReviewService {
-    constructor(private readonly _authRepository: AuthRepostry) { }
+    constructor(private readonly _authRepository: IAuthRepository) { }
 
     async addReview(userId: string, review: string): Promise<{ review: IReview, message: string }> {
         const user = await this._authRepository.findById(userId)

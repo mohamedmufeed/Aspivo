@@ -107,7 +107,7 @@ console.log(totalCompanies)
                 <SearchBar placeholder="Search Requests..." onSearch={handleSearch} />
                 <div className="w-full p-5">
                     {/* Header Row */}
-                    <div className="grid grid-cols-7 items-center font-semibold bg-gray-100 p-3 rounded-md">
+                    <div className="grid grid-cols-6 items-center font-semibold bg-gray-100 p-3 rounded-md">
                         <p className="text-center">Company Name</p>
                         <p className="text-center">Email</p>
                         <p className="text-center">Status</p>
@@ -122,7 +122,7 @@ console.log(totalCompanies)
                         <p className="text-center text-gray-500 mt-5">Loading...</p>
                     ) : companyDetail && companyDetail.length > 0 ? (
                         companyDetail.map((company) => (
-                            <div key={company._id} className="grid grid-cols-7 items-center bg-white shadow-md p-4 rounded-lg my-2">
+                            <div key={company._id} className="grid grid-cols-6 items-center bg-white shadow-md p-4 rounded-lg my-2">
                                 <h1 className="text-center font-medium">{company.companyName}</h1>
                                 <h1 className="text-center text-sm text-gray-600">{company.email}</h1>
                                 <h1 className="text-center font-medium">{company.status}</h1>

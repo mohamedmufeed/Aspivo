@@ -1,9 +1,10 @@
 import { BaseRepository } from "./baseRepository";
 import { IMeetingData } from "../types/companyTypes";
 import Meeting from "../models/meeting";
+import { ICompanyMeetingRepositories } from "../interface/repositories/companyMeetingRepositories";
 
 
-export class CompanyMeetingRepositories extends BaseRepository<IMeetingData> {
+export class CompanyMeetingRepositories extends BaseRepository<IMeetingData> implements ICompanyMeetingRepositories {
   constructor() {
     super(Meeting);
   }
@@ -14,6 +15,5 @@ export class CompanyMeetingRepositories extends BaseRepository<IMeetingData> {
 
   async findAllMeetings(companyId:string){
     return Meeting.find({initiatorId:companyId}).populate("targetId", " firstName lastName email profileImage").sort({createdAt:-1})
-    // return this.findAll({ initiatorId: new Types.ObjectId(companyId) })
   }
 }

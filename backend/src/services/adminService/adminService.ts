@@ -1,26 +1,31 @@
-import { AdminRepostry } from "../../repositories/adminRepositories";
 
 import { sendNotification } from "../../server";
 import IAdminService from "../../interface/service/admin/adminInterface";
-import { NotificationRepository } from "../../repositories/notificationRepository";
-
-import { GetApprovedCompanyResponse, GetCompanyResponse, GetPaginationQuery, GetUsersDtoResponse, GetUsersResponse } from "../../types/userTypes";
+import { GetApprovedCompanyDtoResponse, GetCompanyDtoResponse, GetPaginationQuery, GetUsersDtoResponse } from "../../types/userTypes";
 import { IUser } from "../../models/user";
 import { CompanyDocument } from "../../models/company";
-import { mappedUsers } from "../../utils/dto/adminDto";
+import { mappedCompanies, mappedUsers } from "../../utils/dto/adminDto";
+import IAdminRepostry from "../../interface/repositories/adminRepository";
+import { INotificationRepository } from "../../interface/repositories/NotifictatonRepository";
 
 export class AdminService implements IAdminService {
-  constructor(private _adminRepository: AdminRepostry, private _notificationRespository: NotificationRepository) { }
+  constructor(private _adminRepository: IAdminRepostry, private _notificationRespository: INotificationRepository) { }
 
-  async getAllCompanies(query:GetPaginationQuery): Promise<GetCompanyResponse> {
-    return await this._adminRepository.findAllCompany(query);
+  async getAllCompanies(query: GetPaginationQuery): Promise<GetCompanyDtoResponse> {
+    const response = await this._adminRepository.findAllCompany(query);
+    const mappedResponse = {
+      companies: response.companies.map((company) => mappedCompanies(company)),
+      totalPages: response.totalPages,
+      totalRequest: response.totalRequest
+    }
+    return mappedResponse
   }
   async getAllUsers(query: GetPaginationQuery): Promise<GetUsersDtoResponse> {
-    const response=await this._adminRepository.getAllUsers(query);
-    const mappedResponse={
-      totalUsers:response.totalUsers,
-      totalPages:response.totalPages,
-      users:response.users.map((user)=>mappedUsers(user))
+    const response = await this._adminRepository.getAllUsers(query);
+    const mappedResponse = {
+      totalUsers: response.totalUsers,
+      totalPages: response.totalPages,
+      users: response.users.map((user) => mappedUsers(user))
     }
     return mappedResponse
   }
@@ -28,9 +33,9 @@ export class AdminService implements IAdminService {
   async blockUser(id: string): Promise<{ user: IUser, message: string }> {
     const user = await this._adminRepository.findById(id);
     if (!user) throw new Error("User not found");
-    user.isBlocked = !user.isBlocked;
-    await user.save();
-    return { user, message: "User status changed successfully" };
+    const updatedUser = await this._adminRepository.findByIdAndUpdateBlockStatus(id, user.isBlocked)
+    if (!updatedUser) throw new Error("Failed to update user status");
+    return { user: updatedUser, message: "User status changed successfully" };
   }
 
   async handleCompanyRequest(companyId: string, action: string): Promise<{ company: CompanyDocument, message: string }> {
@@ -44,8 +49,8 @@ export class AdminService implements IAdminService {
     } else {
       status = "Pending";
     }
-    const company= await this._adminRepository.findByIdAndUpdateStatus(companyId, status)
-    if(!company) throw new Error("Comapny Not found or Eror in updaing status")
+    const company = await this._adminRepository.findByIdAndUpdateStatus(companyId, status)
+    if (!company) throw new Error("Comapny Not found or Eror in updaing status")
     const message = `Your company '${company.companyName}' has been ${action}!`;
     await this._notificationRespository.createNotification(
       company.userId.toString(),
@@ -55,9 +60,14 @@ export class AdminService implements IAdminService {
     return { company, message: "Company status changed successfully" };
   }
 
-  async approvedCompany(query:GetPaginationQuery): Promise<GetApprovedCompanyResponse> {
-     return  await this._adminRepository.findApprovedCompany(query);
-  
+  async approvedCompany(query: GetPaginationQuery): Promise<GetApprovedCompanyDtoResponse> {
+    const response = await this._adminRepository.findApprovedCompany(query);
+    const mappedResponse = {
+      company: response.company.map((company) => mappedCompanies(company)),
+      totalPages: response.totalPages,
+      totalCompany: response.totalCompany
+    }
+    return mappedResponse
   }
 
 

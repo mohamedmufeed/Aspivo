@@ -6,15 +6,18 @@ import crypto from "crypto";
 import { resendOtpMail, sendOtpEmail } from "../utils/sendOtp";
 import jwt from "jsonwebtoken";
 import IAuthService from "../interface/service/user/authServiceInterface";
+import HttpStatus from "../utils/httpStatusCode";
+import { http } from "winston";
+import { IAuthRepository } from "../interface/repositories/userRepositories";
 
 
 
 export class AuthService implements IAuthService {
-  constructor(private _authRepostry: AuthRepostry) {}
+  constructor(private _authRepostry: IAuthRepository) {}
   async regitser(userName: string, email: string, password: string) {
     const existUser = await this._authRepostry.findByEmail(email);
     if (existUser) {
-      throw { status: 404, message: "User alredy exists" };
+      throw { status: HttpStatus.NOT_FOUND, message: "User alredy exists" };
     }
 
     const hashePassword = await bcrypt.hash(password, 10);
@@ -38,25 +41,25 @@ export class AuthService implements IAuthService {
   async login(email: string, password: string) {
     const user = await this._authRepostry.findByEmail(email);
     if (!user) {
-      throw { status: 404, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
     }
 
     if (!user.verified) {
       throw {
-        status: 403,
+        status: HttpStatus.FORBIDDEN,
         message: "Email not verified. Please verify your OTP.",
       };
     }
     if(!user.password){
       throw{
-        status:403,
+        status:HttpStatus.FORBIDDEN,
         message:"Password is required for this action."
       }
     }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw { status: 401, message: "Invalid credentials" };
+      throw { status: HttpStatus.UNAUTHORIZED, message: "Invalid credentials" };
     }
 
     const token = generateToken(user.id, user.isAdmin);
@@ -68,21 +71,21 @@ export class AuthService implements IAuthService {
     const user = await this._authRepostry.findByEmail(email);
 
     if (!user) {
-      throw { status: 404, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
     }
 
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     if (!user.otpExpires || !(user.otpExpires instanceof Date)) {
-      throw { status: 400, message: "OTP expiration time is invalid" };
+      throw { status: HttpStatus.BAD_REQUEST, message: "OTP expiration time is invalid" };
     }
 
     if (user.otp !== hashedOtp) {
-      throw { status: 401, message: "Invalid OTP" };
+      throw { status: HttpStatus.BAD_REQUEST, message: "Invalid OTP" };
     }
 
     if (new Date() > new Date(user.otpExpires)) {
-      throw { status: 403, message: "OTP has expired" };
+      throw { status: HttpStatus.FORBIDDEN, message: "OTP has expired" };
     }
 
     user.verified = true;
@@ -97,7 +100,7 @@ export class AuthService implements IAuthService {
   async resendOtp(email: string) {
     const user = await this._authRepostry.findByEmail(email);
     if (!user) {
-      throw { status: 404, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
     }
 
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -119,7 +122,7 @@ export class AuthService implements IAuthService {
   async forgotPassword(email: string) {
     const user = await this._authRepostry.findByEmail(email);
     if (!user) {
-      throw { status: 404, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
