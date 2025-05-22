@@ -4,6 +4,7 @@ import {  ICompany } from "../models/company";
 import { ISubscription as ISubscriptionType } from "../models/Subscription";
 import { IJob } from "../models/job";
 import { ISkill } from "../models/skills";
+import { IJobApplication } from "../models/jobApplication";
 export interface ProfileTypes {
   profileImage: string;
   firstName: string;
@@ -89,6 +90,16 @@ export interface GetUsersResponse {
 export interface GetSkillResponse {
   skills: ISkill[];
   totalSkills: number;
+  totalPages: number;
+}
+export interface GetJobResponse {
+  jobs: IJob[];
+  totalJobs: number;
+  totalPages: number;
+}
+export interface GetJobApplicationResponse {
+  applications: IJobApplication[];
+  totalApplications: number;
   totalPages: number;
 }
 

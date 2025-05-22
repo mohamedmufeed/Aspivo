@@ -127,3 +127,12 @@ export interface IMostAppliedJobs{
   jobTitle:string;
   startDate:string
 }
+
+  export interface IComapnyRequest{
+    _id:string,
+    status:"Pending"| "Approved"| "Declined"
+  }
+  export interface IcomapnyBlock{
+    _id:string,
+    isBlocked:boolean
+  }

@@ -33,3 +33,17 @@ export const mappedCompanies= (company:ICompany):IMppaedCompany=>{
         firstName:susbcription.userId
     }
  }
+
+  export const handleCompanyReqDto=(company:ICompany)=>{
+    return {
+        _id:company._id.toString(),
+        status:company.status
+    }
+  }
+
+  export const handleCompanyBlockStatusDto=(company:ICompany)=>{
+return {
+    _id:company._id.toString(),
+    isBlocked:company.isBlocked
+}
+  }

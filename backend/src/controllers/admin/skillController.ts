@@ -35,7 +35,7 @@ export class SkillController implements ISkillController {
         skills: response.skills,
         totalSkills: response.totalSkills,
         totalPages: response.totalPages,
-        message: "Fetch company successful"
+        message: "Fetch skill successful"
       });
     } catch (error) {
       const err = error as Error

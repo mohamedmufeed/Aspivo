@@ -37,7 +37,6 @@ const AdminCompanyRequests = () => {
         setLoading(true)
         try {
             const response = await approvedCompany(page, companiesPerPage, query, abortController.signal);
-            console.log("the response", response)
             if (prevRequestRef.current === abortController) {
                 setCompanyDetail(response.company);
                 setTotalCompanies(response.totalCompanies)

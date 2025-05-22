@@ -42,7 +42,6 @@ const CompanyJobListing = () => {
   const fetchJobsWithPagination = async (page = 1, query = "") => {
     if (!companyId) return;
     
-    // Cancel previous request if it exists
     if (prevRequestRef.current) {
       prevRequestRef.current.abort();
     }

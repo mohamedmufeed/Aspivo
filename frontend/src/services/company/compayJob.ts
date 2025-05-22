@@ -74,10 +74,16 @@ export const chageStatus = async (jobId: string) => {
   }
 };
 
-export const getApplicants = async (jobId: string, companyId: string) => {
+export const getApplicants = async (jobId: string, companyId: string , page = 1, applicantsPerPage :number, searchQuery = "", signal?: AbortSignal) => {
   try {
     const respone = await api.get(`${COMPANY_BASE_ROUTE}/jobs/${jobId}/applicants`, {
-      params: { companyId },
+        params: {
+        page,
+        applicantsPerPage,
+        companyId,
+        q: searchQuery
+      },
+      signal
     });
     return respone.data;
   } catch (error) {

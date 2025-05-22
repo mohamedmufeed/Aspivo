@@ -6,6 +6,7 @@ import { IJobApplication } from "../../models/jobApplication";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
 import { sendNotification } from "../../server";
 import { JobData } from "../../types/companyTypes";
+import { GetPaginationQuery } from "../../types/userTypes";
 
 export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class ComapnayJobService implements IJobServiceInterface {
@@ -50,10 +51,10 @@ export class ComapnayJobService implements IJobServiceInterface {
   }
   
 
-  async fetchJob(comapanyId: string) {
-    const jobs = await this._companyRepositories.findAllJobs(comapanyId);
+  async fetchJob(comapanyId: string, query:GetPaginationQuery) {
+    const jobs = await this._companyRepositories.findAllJobs(comapanyId,query);
     if (!jobs) throw new Error("Jobs not found");
-    return { jobs, message: "JOb fetched succsess fully" };
+    return  jobs;
   }
 
   async editJob(jobId: string, data: JobData): Promise<{ job: IJob, message: string }> {
@@ -88,7 +89,7 @@ export class ComapnayJobService implements IJobServiceInterface {
     return { job, message: "job deletion sucsess fully" };
   }
 
-  async getApplicantsForJob(jobId: string, companyId: string): Promise<{ applications: IJobApplication[], message: string }> {
+  async getApplicantsForJob(jobId: string, companyId: string, query:GetPaginationQuery) {
     if (!companyId) throw { status: 404, message: "Company id is required" };
     const job = await this._companyRepositories.findJob(jobId);
     if (!job) throw { status: 404, message: "JOb not found" };
@@ -99,8 +100,8 @@ export class ComapnayJobService implements IJobServiceInterface {
       };
     }
 
-    const applications = await this._companyRepositories.findApplications(jobId);
-    return { applications, message: "Job application fetched sucsess" };
+    const applications = await this._companyRepositories.findApplications(jobId, query);
+    return  applications;
   }
 
   async getApplicantDetials(applicantId: string) {

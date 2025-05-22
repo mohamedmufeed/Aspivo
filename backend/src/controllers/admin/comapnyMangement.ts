@@ -29,6 +29,7 @@ export class AdminController implements IComapnyManagement {
     }
   };
 
+
   handleCompanyRequest = async (req: Request, res: Response) => {
     try {
       const { comapnyId, action } = req.body;
@@ -45,6 +46,7 @@ export class AdminController implements IComapnyManagement {
     }
   };
 
+  
   approvedCompanies = async (req: Request, res: Response) => {
     try {
       const { page = 1, limit = 10, q = "" } = req.query

@@ -4,9 +4,10 @@ import IAdminService from "../../interface/service/admin/adminInterface";
 import { GetApprovedCompanyDtoResponse, GetCompanyDtoResponse, GetPaginationQuery, GetUsersDtoResponse } from "../../types/userTypes";
 import { IUser } from "../../models/user";
 import { CompanyDocument } from "../../models/company";
-import { mappedCompanies, mappedUsers } from "../../utils/dto/adminDto";
+import { handleCompanyBlockStatusDto, handleCompanyReqDto, mappedCompanies, mappedUsers } from "../../utils/dto/adminDto";
 import IAdminRepostry from "../../interface/repositories/adminRepository";
 import { INotificationRepository } from "../../interface/repositories/NotifictatonRepository";
+import { IComapnyRequest } from "../../types/companyTypes";
 
 export class AdminService implements IAdminService {
   constructor(private _adminRepository: IAdminRepostry, private _notificationRespository: INotificationRepository) { }
@@ -38,7 +39,7 @@ export class AdminService implements IAdminService {
     return { user: updatedUser, message: "User status changed successfully" };
   }
 
-  async handleCompanyRequest(companyId: string, action: string): Promise<{ company: CompanyDocument, message: string }> {
+  async handleCompanyRequest(companyId: string, action: string): Promise<{ company: IComapnyRequest, message: string }> {
     const existingcompany = await this._adminRepository.findComapny(companyId);
     if (!existingcompany) throw new Error("Company not found");
     let status = ""
@@ -57,7 +58,8 @@ export class AdminService implements IAdminService {
       message
     );
     sendNotification("user", company.userId.toString(), message);
-    return { company, message: "Company status changed successfully" };
+    const comapanyDto=handleCompanyReqDto(company)
+    return { company:comapanyDto, message: "Company status changed successfully" };
   }
 
   async approvedCompany(query: GetPaginationQuery): Promise<GetApprovedCompanyDtoResponse> {
@@ -76,7 +78,8 @@ export class AdminService implements IAdminService {
     const blockStatus = !company.isBlocked
     const updatedCompany = await this._adminRepository.findByIdAndUpdateCompanyBlockStatus(comapnyId, blockStatus)
     if(!updatedCompany) throw new Error("Failed to update user status")
-    return { company: updatedCompany, message: "Comapny Block status handeled sucsess " }
+      const comapanyDto=handleCompanyBlockStatusDto(updatedCompany)
+    return { company: comapanyDto, message: "Comapny Block status handeled sucsess " }
   }
 
 }

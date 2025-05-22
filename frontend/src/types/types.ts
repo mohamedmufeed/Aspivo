@@ -17,8 +17,10 @@ interface PopulatedJob {
 
 export interface Application {
   _id: string;
-  userId: PopulatedUser;
-  jobId: PopulatedJob;
+  userId: string;
+  user:PopulatedUser
+  jobId: string;
+  job:PopulatedJob;
   status: string;
   appliedAt: string;
 }
