@@ -142,7 +142,6 @@ const GenerateResumeModal: React.FC<Props> = ({ onClose, setProfileData }) => {
       const pdfFile = new File([pdfBlob], "resume.pdf", { type: "application/pdf" });
       const resumeUrl = await uploadToCloudinary(pdfFile);
       const response = await uploadResume(userId, resumeUrl)
-      console.log("respo", response)
       setProfileData(response.response?.user)
       setUploading(false);
       onClose();

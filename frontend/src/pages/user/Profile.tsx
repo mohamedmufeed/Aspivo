@@ -63,7 +63,7 @@ const Profile = () => {
         setEditExperience(true);
     }
 
-    const [formData, setFormData] = useState({
+    const [, setFormData] = useState({
         school: "",
         degree: "",
         fieldOfStudy: "",
@@ -71,7 +71,7 @@ const Profile = () => {
         endDate: "",
         grade: "",
     });
-console.log(formData)
+
     useEffect(() => {
         if (!currentEducationId || !profileData?.education) return;
         const education = profileData.education.find((edu: Education) => edu._id === currentEducationId);

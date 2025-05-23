@@ -32,13 +32,12 @@ const SubscriptionHIstory = () => {
             try {
                 setLoading(true);
                 const response = await getSubscriptionHistory(userId);
-                console.log("the response", response)
                 const subscriptions = Array.isArray(response.subscription)
                     ? response.subscription
                     : [response.subscription];
                 setHistory(subscriptions);
             } catch (error) {
-                console.log("Error fetching the history:", error);
+                console.error("Error fetching the history:", error);
                 setError("Failed to load subscription history. Please try again.");
             } finally {
                 setLoading(false);

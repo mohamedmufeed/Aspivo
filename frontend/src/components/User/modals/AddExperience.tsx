@@ -114,7 +114,7 @@ const AddExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
 
 
         } catch (error) {
-            console.log("Error in the adding ", error)
+            console.error("Error in the adding ", error)
         }
 
     };

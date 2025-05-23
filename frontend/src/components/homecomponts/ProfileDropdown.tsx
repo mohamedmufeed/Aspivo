@@ -29,7 +29,7 @@ const ProfileDropdown:React.FC<IProfileProps> = ({setDropDown}) => {
             navigate("/login");
           }
         } catch (error) {
-          console.log("Error logout user", error);
+          console.error("Error logout user", error);
         }
       };
       

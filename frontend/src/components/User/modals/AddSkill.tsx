@@ -39,10 +39,9 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     const fetchSkills = async () => {
         try {
             const response = await getSkills();
-            console.log("the skill resposen", response)
             setSugesstionSkill(response.skills);
         } catch (error) {
-            console.log("Error in fetching skills",error);
+            console.error("Error in fetching skills",error);
         }
     };
 
@@ -112,10 +111,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
         setIsSaving(true);
         try {
             const response = await addSkill(userId, skills);
-            console.log("the response",response)
-            console.log(response.status)
             if (response.status === 400) {
-                console.log("hlo")
                 setError("Skill alredy exits")
                 return
             }else{
@@ -128,7 +124,7 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
      
       
         } catch (error) {
-            console.log("Error adding skill:", error);
+            console.error("Error adding skill:", error);
             setErrors({ skills: "Failed to save skills. Please try again." });
         } finally {
             setIsSaving(false);

@@ -74,7 +74,7 @@ const CopmanyApplicants = () => {
     } catch (err) {
       if (!(err instanceof DOMException && (err as DOMException).name === 'AbortError')) {
         const error = err as Error;
-        console.log("Error in fetching applicants:", error);
+        console.error("Error in fetching applicants:", error);
         if (prevRequestRef.current === abortController) {
           setError(error.message || "Failed to load applicants");
         }
@@ -157,7 +157,7 @@ const CopmanyApplicants = () => {
     );
   }
 
-  console.log("the details", details);
+
   
   return (
     <div className="flex">

@@ -48,7 +48,7 @@ const CompanyScheduledMeeting = () => {
         const response = await fetchCompany(userId || "")
         setCompanyId(response?.company?.company?._id)
       } catch (error) {
-        console.log("Error fetching the company details. Please try again later", error)
+        console.error("Error fetching the company details. Please try again later", error)
         setError("Error fetching the company details. Please try again later")
       }
     }
@@ -61,7 +61,6 @@ const CompanyScheduledMeeting = () => {
     const fetchSheduledMeeting = async () => {
       try {
         const response = await getMeetings(companyId)
-        console.log("meetings", response)
         setMeetings(response.meeting)
         
    
@@ -69,7 +68,7 @@ const CompanyScheduledMeeting = () => {
           setTotalPages(Math.ceil(response.meeting.length / itemsPerPage));
         }
       } catch (error) {
-        console.log("Error fetching the scheduled meeting. Please try again later", error)
+        console.error("Error fetching the scheduled meeting. Please try again later", error)
         setError("Error fetching the scheduled meeting. Please try again later")
       }
     }

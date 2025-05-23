@@ -51,7 +51,7 @@ const Messages = () => {
           const response = await fetchCompany(authUserId);
           setCompanyId(response.company.company._id || authUserId);
         } catch (error) {
-          console.log("Error fetching company ID:", error);
+          console.error("Error fetching company ID:", error);
           setCompanyId(authUserId);
         }
         setLoading(false);
@@ -114,7 +114,6 @@ const Messages = () => {
       socket.emit("joinChannel", channel);
 
       const handleMessage = (message: RawSocketMessage) => {
-        console.log("Received message:", message);
         const normalizedMessage: ChatMessage = {
           _id: message._id || `${message.senderId}-${message.timeStamp}`,
           senderId: message.senderId,
@@ -122,11 +121,9 @@ const Messages = () => {
           imageUrl: message.imageUrl || undefined,
           timestamp: message.timeStamp || new Date().toISOString(),
         };
-        console.log("the message", message)
         const messageChannel = message.channel;
 
         if (!messageChannel) {
-          console.log("Message doesn't have channel info, using content directly");
           if (normalizedMessage.message || normalizedMessage.imageUrl) {
             setMessages((prev) => [...prev, normalizedMessage]);
           }
@@ -136,13 +133,12 @@ const Messages = () => {
         if (message.senderId === selectedEmployeeId) {
           setMessages((prev) => [...prev, normalizedMessage]);
         } else {
-          console.log(
+          console.error(
             `Message from ${message.senderId} does not match selected user ${selectedEmployeeId}`
           );
         }
 
         if (messageChannel !== channel) {
-          console.log(`Message is for different channel: ${messageChannel}, current: ${channel}`);
 
           setConversations(prev =>
             prev.map(conv => {
@@ -297,13 +293,12 @@ useEffect(() => {
 
     try {
       const { data } = await axios.post(`https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`, formData);
-      console.log("Image uploaded successfully:", data.secure_url);
 
       return data.secure_url;
     } catch (error) {
       console.error("Error uploading image:", error);
       setImageError("Failed to upload image. Please try again.");
-      console.log(imageError)
+      console.error(imageError)
       return null;
     } finally {
       setImageLoading(false)

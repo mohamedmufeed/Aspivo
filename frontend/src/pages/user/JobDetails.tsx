@@ -61,7 +61,7 @@ const JobDetails = () => {
           setUserDetails(userResponse.user.user)
         }
       } catch (error) {
-        console.log("error in feching job details", error)
+        console.error("error in feching job details", error)
       } finally {
         setLoading(false)
       }
@@ -81,7 +81,7 @@ const JobDetails = () => {
         }
       } catch (error) {
         setHasApplied(false)
-        console.log("error in feching job applied status", error)
+        console.error("error in feching job applied status", error)
       }
       finally {
         setLoading(false)
@@ -127,7 +127,7 @@ const JobDetails = () => {
         setHasApplied(true)
       }
     } catch (error) {
-      console.log("Error in the apply for the job", error)
+      console.error("Error in the apply for the job", error)
     } finally {
       setApplying(false)
     }

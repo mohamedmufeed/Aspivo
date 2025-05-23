@@ -28,8 +28,6 @@ const AboutUs = () => {
             setSuccessMessage("Review updated successfully. Thank you for your feedback!");
             setReview("")
            }
-
-            console.log(" the revew resoponse", response)
         } catch (error) {
             setError("Something went wrong. Please try again.");
             console.error("Error on adding Review",error);

@@ -28,9 +28,8 @@ const CompanyProfile = () => {
     try {
       const response = await fetchCompany(userId)
       setCompanyData(response.company.company)
-      console.log("the rs", response.company.company)
     } catch (error) {
-      console.log("Error on fetching company", error)
+      console.error("Error on fetching company", error)
     }
   }, [userId]);  
   

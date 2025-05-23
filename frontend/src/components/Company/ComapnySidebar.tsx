@@ -23,7 +23,7 @@ const CompanySidebar = () => {
     const [selected, setLocalSelected] = useState<string | undefined>("Dashboard");
     const navigate = useNavigate()
     const location = useLocation()
-
+  const [comingSoonLabel, setComingSoonLabel] = useState<string | null>(null);
     useEffect(() => {
         const currentItem = menuItems.find((item) => item.path === location.pathname)
         if (currentItem) {
@@ -31,12 +31,15 @@ const CompanySidebar = () => {
         }
     }, [location])
     const handleSelect = (label?: string, path?: string) => {
-        if (label && path) {
-            setLocalSelected(label);
-            navigate(path);
+      if (!label || !path) return;
+
+        if (label === "Settings" || label === "Help") {
+            setComingSoonLabel(label);
+            setTimeout(() => setComingSoonLabel(null), 2000); 
+            return;
         }
-
-
+        setLocalSelected(label);
+        navigate(path);
     };
     return (
         <div className='bg-[#eb5a0023] w-1/6 h-screen px-3' style={{ fontFamily: "DM Sans, sans-serif" }}>
@@ -56,6 +59,11 @@ const CompanySidebar = () => {
                             {selected === item.label && <span className="absolute right-44 top-0 h-full w-2 bg-orange-600 rounded"></span>}
                             {item.icon}
                             <h4 className="text-lg pl-3 ">{item.label}</h4>
+                              {comingSoonLabel === item.label && (
+                                <span className="absolute top-1/2 right-[-50px] transform -translate-y-1/2 bg-orange-600 text-white text-sm px-2 py-1 rounded-md shadow-md whitespace-nowrap">
+                                    Coming Soon
+                                </span>
+                            )}
                         </div>
                     )
                 ))}

@@ -11,8 +11,7 @@ const CompanyVideoCall: React.FC = () => {
   const location = useLocation();
   const { roomId, myPeerId, targetPeerId } = location.state || {};
   console.log("Room ID:", roomId);
-  console.log("My Peer ID:", myPeerId);
-  console.log("Target Peer ID:", targetPeerId);
+
 
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -59,7 +58,6 @@ const CompanyVideoCall: React.FC = () => {
       setConnectionStatus("Connected to signaling server. Accessing media...");
 
       peer.on("connection", (dataConn) => {
-        console.log("Received data connection from:", dataConn.peer);
         dataConnectionRef.current = dataConn;
 
         setupDataConnectionHandlers(dataConn);
@@ -158,11 +156,9 @@ const CompanyVideoCall: React.FC = () => {
 
   const setupDataConnectionHandlers = (dataConn: DataConnection) => {
     dataConn.on("open", () => {
-      console.log("Data connection opened with:", dataConn.peer);
     });
 
     dataConn.on("data", (data: any) => {
-      console.log("Received data:", data);
       if (typeof data === "object" && data?.type === "chat") {
         setMessages(prev => [...prev, {
           sender: "remote",
@@ -184,8 +180,6 @@ const CompanyVideoCall: React.FC = () => {
 
   const connectForChat = (remotePeerId: string) => {
     if (!peerRef.current || dataConnectionRef.current) return;
-
-    console.log("Establishing data connection with:", remotePeerId);
     const dataConn = peerRef.current.connect(remotePeerId);
     dataConnectionRef.current = dataConn;
 
@@ -193,7 +187,6 @@ const CompanyVideoCall: React.FC = () => {
   };
 
   const tryCallUser = (peer: Peer, targetId: string, stream: MediaStream) => {
-    console.log("Attempting to call user:", targetId);
     setConnectionStatus("Calling user...");
 
     try {

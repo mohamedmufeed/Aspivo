@@ -120,7 +120,7 @@ const EditEducation: React.FC<EditProfileModalProps> = ({ setProfileData, isOpen
             onClose();
 
         } catch (error) {
-            console.log("Error in the adding ", error)
+            console.error("Error in the adding ", error)
         }
 
     };

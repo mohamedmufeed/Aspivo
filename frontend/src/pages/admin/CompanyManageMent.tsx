@@ -80,7 +80,6 @@ const AdminCompanyRequests = () => {
     const handleBlockClick = async (companyId: string) => {
         try {
             const response = await handleCompanyBlockStatus(companyId);
-            console.log("response", response);
             if (response) {
                 setCompanyDetail((prevCompanies: Company[]) =>
                     prevCompanies.map((company) =>

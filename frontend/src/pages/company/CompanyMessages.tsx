@@ -75,7 +75,7 @@ const CompanyMessages = () => {
     useEffect(() => {
         const fetchConversations = async () => {
             if (!companyId) {
-                console.log(companyId, "companyId is not set");
+                console.error(companyId, "companyId is not set");
                 return;
             }
 
@@ -121,7 +121,7 @@ const CompanyMessages = () => {
                 if (firstUserId) {
                     setSelectedUserId(firstUserId);
                 } else {
-                    console.log("No firstUserId found");
+                    console.error("No firstUserId found");
                 }
                 window.history.replaceState({}, document.title);
             } catch (error) {
@@ -163,7 +163,6 @@ const CompanyMessages = () => {
 
 
             const handleReceiveMessage = (message: RawSocketMessage) => {
-                console.log("Received message:", message);
                 const normalizedMessage: ChatMessage = {
                     _id: message._id || `${message.senderId}-${message.timeStamp}`,
                     senderId: message.senderId,
@@ -175,10 +174,7 @@ const CompanyMessages = () => {
                 if (message.senderId === selectedUserId) {
                     setMessages((prev) => [...prev, normalizedMessage]);
                 } else {
-                    console.log(
-                        `Message from ${message.senderId} does not match selected user ${selectedUserId}`
-                    );
-
+                  
 
                     setConversations((prev) =>
                         prev.map((conv) =>
@@ -270,7 +266,7 @@ const CompanyMessages = () => {
                 })
                 .catch(err => console.error("Failed to mark conversation as read:", err));
         }
-        console.log("Selected conversation:", targetId);
+ 
     };
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -291,14 +287,14 @@ const CompanyMessages = () => {
 
         try {
             const { data } = await axios.post(`https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`, formData);
-            console.log("Image uploaded successfully:", data.secure_url);
+
 
             return data.secure_url;
 
         } catch (error) {
             console.error("Error uploading image:", error);
             setImageError("Failed to upload image. Please try again.");
-            console.log(imageError)
+            console.error(imageError)
             return null;
         } finally {
             setLoading(false)

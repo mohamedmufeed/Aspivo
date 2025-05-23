@@ -77,7 +77,7 @@ const EditSkill: React.FC<EditProfileModalProps> = ({
 
             onClose();
         } catch (error) {
-            console.log("Error adding skill:", error);
+            console.error("Error adding skill:", error);
         }
     };
 

@@ -88,26 +88,26 @@ router
 
 router
   .route("/users/:id/about")
-  .put(profileController.editAbout);
+  .put(protect,profileController.editAbout);
 
 router
   .route("/users/:id/resume")
-  .post(profileController.uploadResume)
+  .post(protect,profileController.uploadResume)
   .delete(protect, profileController.deleteResume);
 
 router
   .route("/users/:id/experience")
-  .post(profileController.addExperience)
-  .put(profileController.editExperience);
+  .post(protect,profileController.addExperience)
+  .put(protect,profileController.editExperience);
 
 router
   .route("/users/:id/education")
-  .post(profileController.addEducation)
-  .put(profileController.editEducation);
+  .post(protect,profileController.addEducation)
+  .put(protect,profileController.editEducation);
 
 router
   .route("/users/:id/skills")
-  .post(profileController.addSkill)
+  .post(protect,profileController.addSkill)
   .patch()
   
 
@@ -117,11 +117,11 @@ router
 
   router
   .route("/users/:id/resume/auto-generate")
-  .get(profileController.generateResumeFromProfile)
+  .get(protect,profileController.generateResumeFromProfile)
 
   router
   .route("/users/:id/text-format")
-  .post(profileController.textFormating)
+  .post(protect,profileController.textFormating)
 router
   .route("/users/:id/notifications")
   .get(protect, notificationController.getNotifications)
@@ -136,7 +136,7 @@ router
 
 router
   .route("/jobs/:id")
-  .get(jobController.getJobDetails);
+  .get(protect,jobController.getJobDetails);
 
 router
   .route("/jobs/:id/apply")

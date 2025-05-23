@@ -63,7 +63,6 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                 const user=response.user.user
                 if (user && user.experiences) {
                     const experience = user.experiences.find((exp: Experience) => exp._id === experienceId);
-                    console.log("the experince is,",experience)
                     if (experience) {
                         setFormData({
                             title: experience.title,
@@ -136,12 +135,12 @@ const EditExperience: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
                 setProfileData(response.user)
                 onClose();
             } else {
-                console.log("No response received");
+                console.error("No response received");
             }
 
 
         } catch (error) {
-            console.log("Error in the adding ", error)
+            console.error("Error in the adding ", error)
         }
 
     };

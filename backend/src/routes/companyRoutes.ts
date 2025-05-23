@@ -1,7 +1,7 @@
-import express  from "express";
+import express from "express";
 import { CompanyAuthController } from "../controllers/company/companyauthcontroller";
-import {  CompanyJobController} from "../controllers/company/companyJobController";
-import {  CompanyProfileController } from "../controllers/company/companyProfileConstroller";
+import { CompanyJobController } from "../controllers/company/companyJobController";
+import { CompanyProfileController } from "../controllers/company/companyProfileConstroller";
 import { CompanyRepostries } from "../repositories/companyRepositories";
 import Job from "../models/job";
 import Company from "../models/company";
@@ -23,14 +23,14 @@ import protect from "../middleware/authMiddlwware";
 
 
 
-const router= express.Router()
+const router = express.Router()
 
 
-const companyRepository = new CompanyRepostries(Job,Company,JobApplication,User);
+const companyRepository = new CompanyRepostries(Job, Company, JobApplication, User);
 const companyAuthService = new CompanyAuthService(companyRepository);
 const companyAuthController = new CompanyAuthController(companyAuthService);
-const notificationRepository= new NotificationRepository()
-const companyJobService = new ComapnayJobService(companyRepository,notificationRepository);
+const notificationRepository = new NotificationRepository()
+const companyJobService = new ComapnayJobService(companyRepository, notificationRepository);
 const companyJobController = new CompanyJobController(companyJobService);
 
 const companyRepo = new CompanyProfileRepositiories();
@@ -38,14 +38,14 @@ const companyService = new CompanyProfileService(companyRepo);
 const companyProfileController = new CompanyProfileController(companyService);
 
 
-const notificationService= new NotificationService(notificationRepository)
-const meetingRepository= new CompanyMeetingRepositories()
-const meetingService= new CompanyMeetingService(meetingRepository,notificationService)
-const meetingController= new ComapnyMeetingController(meetingService)
+const notificationService = new NotificationService(notificationRepository)
+const meetingRepository = new CompanyMeetingRepositories()
+const meetingService = new CompanyMeetingService(meetingRepository, notificationService)
+const meetingController = new ComapnyMeetingController(meetingService)
 
-const companyDasboardRepository= new ComapnyDasboardRepositories()
-const companyDasboardService= new CompanyDasboradService(companyDasboardRepository)
-const companyDashboardController= new CompanyDasboradController(companyDasboardService)
+const companyDasboardRepository = new ComapnyDasboardRepositories()
+const companyDasboardService = new CompanyDasboradService(companyDasboardRepository)
+const companyDashboardController = new CompanyDasboradController(companyDasboardService)
 
 router.route("/auth/signup/:id").post(companyAuthController.register);
 
@@ -58,24 +58,28 @@ router
 
 router
   .route("/profile/:id/description")
+  .all(protect)
   .patch(companyProfileController.editCompanyDescription);
 
 router
   .route("/profile/:id/techstack")
+  .all(protect)
   .put(companyProfileController.addTechStack);
 
 router
   .route("/profile/:id/team")
+  .all(protect)
   .put(companyProfileController.editTeam);
 
 router
   .route("/profile/:id/contact")
+  .all(protect)
   .put(companyProfileController.editContact);
 
 
 router.route("/")
-.all(protect)
-.get(companyJobController.fetchCompany);
+  .all(protect)
+  .get(companyJobController.fetchCompany);
 
 router
   .route("/jobs/:id")
@@ -85,10 +89,12 @@ router
 
 router
   .route("/jobs/:id/edit")
+  .all(protect)
   .put(companyJobController.editJob);
 
 router
   .route("/jobs/:id/delete")
+  .all(protect)
   .patch(companyJobController.chageJobStatus);
 
 router
@@ -103,28 +109,33 @@ router
 
 router
   .route("/jobs/applicants/:id/status")
+  .all(protect)
   .patch(companyJobController.updateStatus);
 
-  router
+router
   .route("/meetings")
+  .all(protect)
   .post(meetingController.sheduleMeeting)
 
-  router.route("/meetings/:id")
+router.route("/meetings/:id")
   .all(protect)
   .get(meetingController.getMeetings)
 
 
 
-  router
+router
   .route("/dashboard-status/:id")
+  .all(protect)
   .get(companyDashboardController.getDashboardStatus.bind(companyDashboardController))
 
-  router
+router
   .route("/dashboard/application-status/:id")
+  .all(protect)
   .get(companyDashboardController.getApplicationStatusByDate.bind(companyDashboardController))
-  
-  router
+
+router
   .route("/dashboard/most-appliedjobs/:id")
+  .all(protect)
   .get(companyDashboardController.getMostAppliedJobs.bind(companyDashboardController))
 
 export default router

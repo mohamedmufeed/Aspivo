@@ -61,9 +61,7 @@ const MyJobs = () => {
 
     try {
       setLoading(true);
-      const response = await appliedJobs(userId);
-      console.log("the applies",response)
-      
+      const response = await appliedJobs(userId);  
       if (response) {
         const mappedJobs = response?.applications.map((app:Application) => ({
           id: app.jobId._id,
@@ -75,11 +73,10 @@ const MyJobs = () => {
           logo: app.jobId.company.logo,
         }));
         setAppliedJob(mappedJobs);
-        console.log(mappedJobs)
       }
     } catch (err) {
       const error= err as Error
-      console.log("Error in fetching applied jobs", error.message);
+      console.error("Error in fetching applied jobs", error.message);
       setError("Failed to load applied jobs");
     } finally {
       setLoading(false);
@@ -96,7 +93,6 @@ const MyJobs = () => {
     try {
       setLoading(true);
        const response = await populatedJobs(userId);
-       console.log("the rep",response)
       const mappedJobs = response.savedJobs
 
       .map((saved: Application) => ({
@@ -111,7 +107,7 @@ const MyJobs = () => {
       setSavedJob(mappedJobs);
     } catch (error) {
       const err= error as Error
-      console.log("Error in fetching saved jobs", err.message);
+      console.error("Error in fetching saved jobs", err.message);
       setError( "Failed to load saved jobs");
     } finally {
       setLoading(false);

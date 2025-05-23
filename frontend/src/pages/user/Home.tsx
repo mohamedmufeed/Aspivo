@@ -9,7 +9,7 @@ import Navbar from "../../components/homecomponts/Navbar";
 import JobCollections from "../../components/homecomponts/JobCollections";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
@@ -45,8 +45,6 @@ const HeroSection = () => {
   const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.auth.user)
   const isAdmin=useSelector((state:RootState)=>state.auth.isAdmin)
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   useEffect(() => {
     if (user) {
       navigate("/");
@@ -85,8 +83,8 @@ const HeroSection = () => {
   }, [])
 
   return (
-    <div onClick={()=>setIsDropdownOpen(false)}>
-      <Navbar isDropdownOpen={isDropdownOpen} setIsDropdownOpen={setIsDropdownOpen} />
+    <>
+      <Navbar />
       <section className="flex h-screen  bg-[#F6F6F6]" style={{ fontFamily: "DM Sans, sans-serif" }}>
         {/*content Sction */}
         <div className=" mt-2 sm:mt-5">
@@ -144,7 +142,7 @@ const HeroSection = () => {
       <JobCollections />
       <Review />
       <Footer/>
-    </div>
+    </>
 
 
   )

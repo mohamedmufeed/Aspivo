@@ -24,7 +24,6 @@ const Subscription = () => {
     const fetchUser = async () => {
       try {
         const response = await getProfile(userId)
-        console.log("the user is ", response.user.user.subscription)
         if (response.user.user.subscription) {
           setAlreadySubscribed(true)
         }
@@ -67,7 +66,6 @@ const Subscription = () => {
     setError(null);
 
     try {
-      console.log("Initiating subscription with:", { userId, companyId });
       const response = await subscriptions({
         userId,
         companyId
@@ -80,7 +78,7 @@ const Subscription = () => {
     } catch (err) {
       const error = err as Error
       setError(error.message || "Failed to create subscription");
-      console.log("Error on subscription:", err);
+      console.error("Error on subscription:", err);
     } finally {
       setIsProcessing(false);
     }

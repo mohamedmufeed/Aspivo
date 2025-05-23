@@ -60,7 +60,6 @@ const VideoCall = () => {
       setConnectionStatus("Connected. Waiting for call...");
 
       peer.on("connection", (dataConn) => {
-        console.log("Received data connection from:", dataConn.peer);
         setRemotePeerId(dataConn.peer);
         dataConnectionRef.current = dataConn;
 
@@ -84,7 +83,6 @@ const VideoCall = () => {
     });
 
     peer.on("call", (call) => {
-      console.log("Received call from:", call.peer);
       setConnectionStatus("Incoming call...");
       setRemotePeerId(call.peer);
 
@@ -147,11 +145,11 @@ const VideoCall = () => {
 
   const setupDataConnectionHandlers = (dataConn: DataConnection) => {
     dataConn.on("open", () => {
-      console.log("Data connection opened with:", dataConn.peer);
+
     });
 
     dataConn.on("data", (data: unknown) => {
-      console.log("Received data:", data);
+  
       if (isPeerData(data)) {
         setMessages(prev => [...prev, {
           sender: "remote",
@@ -168,7 +166,7 @@ const VideoCall = () => {
     });
 
     dataConn.on("close", () => {
-      console.log("Data connection closed");
+
       dataConnectionRef.current = null;
     });
   };
@@ -176,7 +174,7 @@ const VideoCall = () => {
   const connectForChat = (targetPeerId: string) => {
     if (!peerRef.current || dataConnectionRef.current) return;
 
-    console.log("Establishing data connection with:", targetPeerId);
+
     const dataConn = peerRef.current.connect(targetPeerId);
     dataConnectionRef.current = dataConn;
 

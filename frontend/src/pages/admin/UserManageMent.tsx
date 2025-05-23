@@ -28,13 +28,13 @@ const UserManageMent = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
-  const [selecetdUserBlockStatus, setselecetdUserBlockStatus] = useState<boolean | undefined>(undefined)
+  const [, setselecetdUserBlockStatus] = useState<boolean | undefined>(undefined)
   const [adminApproveToast, setAdminAprroveToast] = useState(false)
   const userPerPage = 5;
   const prevRequestRef = useRef<AbortController | null>(null);
 
 
-  console.log(selecetdUserBlockStatus)
+
   const fetchUsersData = async (page = 1, query = "") => {
     if (prevRequestRef.current) {
       prevRequestRef.current.abort();

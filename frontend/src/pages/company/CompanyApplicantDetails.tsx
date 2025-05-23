@@ -26,14 +26,13 @@ const CompanyApplicantDetails = () => {
     const handleDetails = async () => {
         try {
             const response = await getApplicantDetials(applicationId || "");
-            console.log("the pplication respoes", response.applicant.status)
             setDetails(response.applicant);
             if(response.applicant.status){
                 setStatus(response.applicant.status)
             }
    
         } catch (error) {
-            console.log("Error in fetching the applicant details ", error);
+            console.error("Error in fetching the applicant details ", error);
         }
     };
 
@@ -41,8 +40,7 @@ const CompanyApplicantDetails = () => {
         try {
             const newStatus = e.target.value as ApplicationStatus;
             setStatus(newStatus);
-            const response = await updateStatus(applicationId || "", newStatus);
-            console.log(response);
+      await updateStatus(applicationId || "", newStatus);
         } catch (error) {
             console.error("Error updating status:", error);
         }

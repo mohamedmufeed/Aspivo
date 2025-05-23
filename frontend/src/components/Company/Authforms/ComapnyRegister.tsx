@@ -40,7 +40,6 @@ const dispatch=useDispatch<AppDispatch>()
     try {
       setUploading(true);
       const { data } = await axios.post("https://api.cloudinary.com/v1_1/do4wdvbcy/upload", formData)
-      console.log(data.secure_url)
       setUploading(false)
       return data.secure_url
     } catch (error) {
@@ -55,7 +54,6 @@ const dispatch=useDispatch<AppDispatch>()
       const uploadedkycUrl = await uploadToCloudinary(file)
       const afterUpload = uploadedkycUrl.slice(uploadedkycUrl.indexOf("upload/") + 7);
       setKyc(file)
-      console.log("the uploded url", uploadedkycUrl)
       if (uploadedkycUrl) {
         setKycUrl(afterUpload)
       }
@@ -89,7 +87,6 @@ const dispatch=useDispatch<AppDispatch>()
 
     try {
       const response = await signup(companyName,email,   kycUrl, userId)
-      console.log(response)
       dispatch(register({
         company: {
           _id: response._id,
@@ -104,7 +101,6 @@ const dispatch=useDispatch<AppDispatch>()
     } else {
         setError("Signup failed, please try again.");
     }
-      console.log("the response form company signupn", response)
       return response
     } catch (error) {
       setError("Somthing Went wrong Please try later")

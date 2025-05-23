@@ -76,7 +76,6 @@ const EditAboutModal: React.FC<EditProfileModalProps> = ({ setProfileData, isOpe
             if (!about) return
             const propmt = "makeAbout"
             const response = await textFormating(about, propmt, userId)
-            console.log(response)
             if (response) {
                 setValue("about",response.response)
             }

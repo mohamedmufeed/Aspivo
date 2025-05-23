@@ -31,7 +31,6 @@ const [successMessage, setSuccessMessage]=useState("")
         formData.append("upload_preset", "Aspivo");
         try {
             const { data } = await axios.post(`https://api.cloudinary.com/v1_1/do4wdvbcy/upload`, formData)
-            console.log(data.secure_url)
             setFileUrl(data.secure_url)
             setUploading(false)
 
@@ -82,7 +81,6 @@ const [successMessage, setSuccessMessage]=useState("")
         const fetchProfile = async () => {
             try {
                 const response = await getProfile(userId);
-                console.log("the user resposen", response.user.user.features)
                 setResumeUrl(response.user.user.resume)
                 if (response.user.user.features.unlockAiFeatures) {
                     setAiFeatures(true)

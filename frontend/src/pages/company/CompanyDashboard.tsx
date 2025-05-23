@@ -112,7 +112,6 @@ const CompanyDashboard = () => {
         ];
 
         setApplicationChartData(chartData);
-        console.log(" the response", response)
       } catch (error) {
         console.error("Erro on fetching company application by date ", error);
       }

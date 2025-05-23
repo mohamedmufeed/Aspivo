@@ -49,7 +49,7 @@ const SkillManagement = () => {
       }
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) {
-        console.log("Error fetching skills", error);
+        console.error("Error fetching skills", error);
         setError("Failed to fetch skills");
       }
     } finally {
@@ -114,7 +114,7 @@ const SkillManagement = () => {
       }
     } catch (err) {
       const error = err as Error;
-      console.log("Error removing skill", error.message);
+      console.error("Error removing skill", error.message);
       setError("Error on removing skill");
     }
   };
@@ -140,7 +140,7 @@ const SkillManagement = () => {
         fetchSkills(currentPage, searchQuery);
       }
     } catch (error) {
-      console.log("Error in adding skill:", error);
+      console.error("Error in adding skill:", error);
       setError("Error adding skill");
     } finally {
       setLoading(false);

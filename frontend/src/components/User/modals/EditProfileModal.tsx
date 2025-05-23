@@ -77,7 +77,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
       
       setProfileImage(file);
       const uploadedImageUrl = await uploadToCloudinary(file);
-      console.log(uploadedImageUrl);
       if (uploadedImageUrl) {
         setImageUrl(uploadedImageUrl);
       }
@@ -94,7 +93,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
         `https://api.cloudinary.com/v1_1/do4wdvbcy/image/upload`,
         formData
       );
-      console.log("Image uploaded successfully:", data.secure_url);
       return data.secure_url;
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -116,7 +114,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, us
       setLoading(true)
       const response = await editProfile(userId, formData);
       setLoading(false)
-      console.log("Profile updated successfully:", response.updatedProfile.user);
       setProfileData(response.updatedProfile.user);
 
       onClose();

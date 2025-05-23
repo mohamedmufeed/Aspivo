@@ -29,7 +29,7 @@ const Notifications = () => {
                 const response = await getNotifications(userId || "")
                 setNotifications(response)
             } catch (error) {
-                console.log("the error ", error)
+                console.error("the error ", error)
             }
         }
         handleNotifications()
@@ -41,7 +41,7 @@ const Notifications = () => {
             const response = await updateNotification(userId, notificationId)
             setNotifications(response.updatedNotification)
         } catch (error) {
-            console.log("Error updating notification", error)
+            console.error("Error updating notification", error)
         }
     }
 

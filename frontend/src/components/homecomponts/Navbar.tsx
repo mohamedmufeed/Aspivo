@@ -11,14 +11,11 @@ import { login } from "../../redux/slice/authSlice";
 import { getNotifications } from "../../services/notificationService";
 
 
-type NavbarProps = {
-  isDropdownOpen: boolean;
-  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
 
 
-const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
+const Navbar = () => {
     const naviagte = useNavigate()
+    const [dropdown, setDropDown] = useState(false)
     const dispatch = useDispatch<AppDispatch>()
     const [notifications, setNotifications] = useState<any[]>([]);
 
@@ -59,7 +56,7 @@ const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
                 const notification = await getNotifications(userId)
                 setNotifications(notification)
             } catch (error) {
-                console.log("Error inn fetching ", error)
+                console.error("Error inn fetching ", error)
             }
         }
         fetchNotification()
@@ -126,7 +123,7 @@ const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
                             )}
                         </div>
                     </Link>
-                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full"     onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={() => dropdown ? setDropDown(false) : setDropDown(true)}>
                         <img className="w-12 h-12  p-1  bg-white rounded-full" src={user?.profileImage ? user.profileImage : profileAvathar} alt="" />
 
                     </div> :
@@ -135,7 +132,7 @@ const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
                         </button>
                     }
                     <div className="max-w-full relative z-30 ">
-{isDropdownOpen ? <ProfileDropdown setDropDown={() => setIsDropdownOpen(false)} /> : ""}
+                        {dropdown ? <ProfileDropdown  setDropDown={()=>setDropDown}  /> : ""}
                     </div>
 
                 </div>
@@ -162,7 +159,7 @@ const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
                             </svg>
                         </div></Link>
 
-                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={() => dropdown ? setDropDown(false) : setDropDown(true)}>
                         <img className="w-12 h-12  p-1  bg-white rounded-full" src={user?.profileImage ? user.profileImage : profileAvathar} alt="" />
 
                     </div> :
@@ -171,7 +168,7 @@ const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
                         </button>
                     }
                     <div className="max-w-full relative z-30 ">
-                {isDropdownOpen ? <ProfileDropdown setDropDown={() => setIsDropdownOpen(false)} /> : ""}
+                        {dropdown ? <ProfileDropdown setDropDown={()=>setDropDown} /> : ""}
                     </div>
                 </div>
             )}
