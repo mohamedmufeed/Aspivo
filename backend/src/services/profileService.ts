@@ -13,6 +13,7 @@ import { http } from "winston";
 import HttpStatus from "../utils/httpStatusCode";
 import { IAuthRepository } from "../interface/repositories/userRepositories";
 import { ISkillRepository } from "../interface/repositories/skillRepositories";
+import { userProfileDto } from "../utils/dto/userDto";
 
 
 export class ProfileService implements IProfileService {
@@ -34,13 +35,15 @@ export class ProfileService implements IProfileService {
     user.position = data.position || user.position;
     user.location = data.location || user.location;
     await (user).save();
-    return { user, message: "Profile updated successfully" };
+    const userDto = userProfileDto(user)
+    return { user: userDto, message: "Profile updated successfully" };
   }
 
   async getProfile(id: string) {
     const user = await this._authRepository.findById(id);
     if (!user) throw new Error("User not found");
-    return { user, message: "User found successfully" };
+    const userDto = userProfileDto(user)
+    return { user: userDto, message: "User found successfully" };
   }
 
   async editAbout(id: string, about: string) {
@@ -48,7 +51,8 @@ export class ProfileService implements IProfileService {
     if (!user) throw new Error("User not found");
     user.about = about || user.about;
     await user.save();
-    return { user, message: "User about section updated successfully" };
+    const userDto = userProfileDto(user)
+    return { user: userDto, message: "User about section updated successfully" };
   }
 
   async addExperience(id: string, data: Experience) {
@@ -62,7 +66,8 @@ export class ProfileService implements IProfileService {
     });
 
     await user.save();
-    return { user, message: "Experience added successfully" };
+    const userDto = userProfileDto(user)
+    return { user: userDto, message: "Experience added successfully" };
   }
 
   async editExperience(id: string, data: Experience) {
@@ -79,7 +84,8 @@ export class ProfileService implements IProfileService {
     };
     user.markModified("experiences");
     const updatedUser = await user.save();
-    return { user: updatedUser, message: "Experience edited successfully" };
+    const userDto = userProfileDto(updatedUser)
+    return { user: userDto, message: "Experience edited successfully" };
   }
 
   async addEducation(id: string, data: Education) {
@@ -88,7 +94,8 @@ export class ProfileService implements IProfileService {
 
     user.education.push(data);
     await user.save();
-    return { user, message: "Education added successfully" };
+    const userDto = userProfileDto(user)
+    return { user: userDto, message: "Education added successfully" };
   }
 
   async editEducation(id: string, data: Education,) {
@@ -104,7 +111,8 @@ export class ProfileService implements IProfileService {
     };
     (user).markModified("education");
     const updatedUser = await user.save();
-    return { user: updatedUser, message: "Education edited successfully" };
+    const userDto = userProfileDto(updatedUser)
+    return { user: userDto, message: "Education edited successfully" };
   }
 
   async addSkill(id: string, skills: string[]) {
@@ -139,8 +147,8 @@ export class ProfileService implements IProfileService {
 
       }
     }
-
-    return { user, message: "Skills added successfully" };
+      const userDto=userProfileDto(user)
+    return { user:userDto, message: "Skills added successfully" };
   }
 
   async editSkill(userId: string, oldSkillName: string, newSkillName: string) {
@@ -150,14 +158,14 @@ export class ProfileService implements IProfileService {
     const skillIndex = user.skills.findIndex(
       (skill) => skill.toLowerCase() === oldSkillName.toLowerCase()
     );
-  
+
     if (skillIndex === -1) {
       throw { status: HttpStatus.NOT_FOUND, message: "Skill not found in user profile" };
     }
     const newSkillExists = user.skills.some(
       (skill) => skill.toLowerCase() === newSkillName.toLowerCase()
     );
-  
+
     if (newSkillExists) {
       throw { status: HttpStatus.BAD_REQUEST, message: "New skill name already exists in your profile" };
     }
@@ -172,8 +180,8 @@ export class ProfileService implements IProfileService {
       const error = err as Error;
       throw new Error(`Error saving skill "${newSkillName}" to suggestions: ${error.message}`);
     }
-  
-    return { user, message: "Skill updated successfully" };
+      const userDto=userProfileDto(user)
+    return { user:userDto, message: "Skill updated successfully" };
   }
 
   async uploadResume(id: string, url: string) {
@@ -184,8 +192,8 @@ export class ProfileService implements IProfileService {
       user.resume = url;
       await user.save();
     }
-
-    return { user, message: "Resume uploaded successfully" };
+      const userDto=userProfileDto(user)
+    return { user:userDto, message: "Resume uploaded successfully" };
   }
 
   async deleteResume(id: string) {
@@ -203,10 +211,11 @@ export class ProfileService implements IProfileService {
         }
       }
       user.resume = "";
+      
       await user.save();
     }
-
-    return { user, message: "Resume deleted successfully" };
+      const userDto=userProfileDto(user)
+    return { user:userDto, message: "Resume deleted successfully" };
   }
 
   async subscriptionHistory(userId: string): Promise<SubscriptionHistoryResponse> {

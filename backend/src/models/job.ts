@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IJob extends Document {
+  _id:string
   jobTitle: string;
   category: string;
   typesOfEmployment: string[];

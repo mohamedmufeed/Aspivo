@@ -19,6 +19,7 @@ import { CompanyDasboradController } from "../controllers/company/companyDasboar
 import { CompanyDasboradService } from "../services/compnyService/companyDasboardService";
 import { ComapnyDasboardRepositories } from "../repositories/companyDasboardRespostries";
 import User from "../models/user";
+import protect from "../middleware/authMiddlwware";
 
 
 
@@ -51,6 +52,7 @@ router.route("/auth/signup/:id").post(companyAuthController.register);
 
 router
   .route("/profile/:id")
+  .all(protect)
   .get(companyProfileController.getProfile)
   .put(companyProfileController.editCompanyProfile);
 
@@ -71,10 +73,13 @@ router
   .put(companyProfileController.editContact);
 
 
-router.route("/").get(companyJobController.fetchCompany);
+router.route("/")
+.all(protect)
+.get(companyJobController.fetchCompany);
 
 router
   .route("/jobs/:id")
+  .all(protect)
   .get(companyJobController.fetchJob)
   .post(companyJobController.postJob);
 
@@ -88,10 +93,12 @@ router
 
 router
   .route("/jobs/:id/applicants")
+  .all(protect)
   .get(companyJobController.getApplicantsForJob);
 
 router
   .route("/jobs/applicants/:id/details")
+  .all(protect)
   .get(companyJobController.getApplicantDetails);
 
 router
@@ -103,6 +110,7 @@ router
   .post(meetingController.sheduleMeeting)
 
   router.route("/meetings/:id")
+  .all(protect)
   .get(meetingController.getMeetings)
 
 

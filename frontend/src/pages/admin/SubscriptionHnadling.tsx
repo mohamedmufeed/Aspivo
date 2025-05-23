@@ -31,7 +31,7 @@ const SubscriptionHandling = () => {
     const subscriptionPerPage=6
     const [totalPages,setTotalPages]=useState(1)
     const [searchQuery,setSearchQuery]=useState("")
-    const [totalSubscription,setTotalSubscription]=useState(0)
+    const [,setTotalSubscription]=useState(0)
     const prevRequestRef = useRef<AbortController | null>(null)
     const [dropdownOpen, setDropdownOpen] = useState<string | null>(null); 
     const dropdownRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -45,12 +45,10 @@ const SubscriptionHandling = () => {
         setLoading(true)
         try {
             const response = await getSubcriptions(page, subscriptionPerPage, query, abortController.signal);
-            console.log("the response",response)
             if (prevRequestRef.current === abortController) {
                 setSubscriptions(response.subscription);
                 setTotalSubscription(response.totalSubscription
                 )
-                console.log(totalSubscription)
                 setTotalPages(response.totalPages)
             }
         } catch (error) {

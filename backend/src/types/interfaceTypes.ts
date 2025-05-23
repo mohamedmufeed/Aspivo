@@ -6,8 +6,9 @@ import { ISkill } from "../models/skills";
 import { ISubscription } from "../models/Subscription";
 import { IJob } from "../models/job";
 import { IJobApplication } from "../models/jobApplication";
+import { IUserDto } from "./userTypes";
 export interface UserServiceResponse {
-  user: IUser;
+  user: IUserDto;
   message: string;
 }
 

@@ -68,7 +68,7 @@ const CopmanyApplicants = () => {
         setTotalApplicants(response.totalApplicants || 0);
         setTotalPages(response.totalPages || 1);
         if (response.applications && response.applications.length > 0) {
-          setHeading(`Applicants for ${response.applications[0]?.jobId.jobTitle || "Job"}`);
+          setHeading(`Applicants for ${response.applications[0]?.job.jobTitle || "Job"}`);
         }
       }
     } catch (err) {

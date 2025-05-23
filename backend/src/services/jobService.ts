@@ -9,6 +9,8 @@ import HttpStatus from "../utils/httpStatusCode";
 import { IAuthRepository } from "../interface/repositories/userRepositories";
 import { IJobRepositories } from "../interface/repositories/jobRespositoires";
 import { AppliedJobWithPopulatedData } from "../types/companyTypes";
+import { mappedHomeJobsDto } from "../utils/dto/userDto";
+import { IJobDto } from "../types/userTypes";
 
 
 export class JobService implements IJobService {
@@ -19,14 +21,14 @@ export class JobService implements IJobService {
     this._jobRepositories = jobRepositories;
     this._authRepositories = authRepostry
   }
-  async fetchJob(page: number, limit: number, searchWord?: string, category?: string): Promise<{ job: IJob[], total: number, page: number, totalPages: number, message: string }> {
+  async fetchJob(page: number, limit: number, searchWord?: string, category?: string): Promise<{ job: IJobDto[], total: number, page: number, totalPages: number, message: string }> {
     const query = this.buildSearchQuery(searchWord, category);
 
     const job = await this._jobRepositories.fetchJob(page, limit, query);
     const total = await this._jobRepositories.countJobs(query);
-
+    const mappedJobs = job.map(mappedHomeJobsDto);
     return {
-      job: job,
+      job: mappedJobs,
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -127,8 +129,8 @@ export class JobService implements IJobService {
     return { savedJobs, message: "User saved job  populated sucsess fully" }
   }
 
-   async latestJobs(){
-    const jobs=await this._jobRepositories.latestJob()
-    return {jobs , message:"latest job fetched sucsessfully"}
-   }
+  async latestJobs() {
+    const jobs = await this._jobRepositories.latestJob()
+    return { jobs, message: "latest job fetched sucsessfully" }
+  }
 }

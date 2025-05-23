@@ -39,7 +39,8 @@ const AddSkill: React.FC<EditProfileModalProps> = ({
     const fetchSkills = async () => {
         try {
             const response = await getSkills();
-            setSugesstionSkill(response.response);
+            console.log("the skill resposen", response)
+            setSugesstionSkill(response.skills);
         } catch (error) {
             console.log("Error in fetching skills",error);
         }

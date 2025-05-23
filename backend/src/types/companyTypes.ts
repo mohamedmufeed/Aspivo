@@ -2,8 +2,9 @@
 import { User } from "./userTypes";
 import { Types } from "mongoose";
 import { ObjectId } from "mongodb";
-import { IUser } from "../models/user";
+import { Education, Experience, IUser } from "../models/user";
 import { ICompany } from "../models/company";
+import { IJobApplication } from "../models/jobApplication";
 export interface JobData {
   jobTitle: string;
   category: string;
@@ -48,11 +49,11 @@ export interface Company {
   userId: ObjectId;
   verified: boolean;
   stack: string[];
-  logo:string;
+  logo: string;
   contact: string[];
   createdAt: Date;
   updatedAt: Date;
-  status: "Pending"| "Approved"| "Declined";
+  status: "Pending" | "Approved" | "Declined";
   features: {
     accessToAnalytics: boolean;
     unlimitedJobPosting: boolean;
@@ -60,14 +61,14 @@ export interface Company {
 }
 
 
-export interface IComapny{
-  logo?:string;
+export interface IComapny {
+  logo?: string;
   companyName: string;
   companyUrl: string;
   industry: string;
-  startDate:Date;
-  employees:string;
-  location: string;  
+  startDate: Date;
+  employees: string;
+  location: string;
   stack?: string[];
 }
 
@@ -79,20 +80,20 @@ export interface TeamMember {
 export interface Contact {
   _id?: string;
   name: string;
-     url: string;
+  url: string;
 }
 export interface IMeetingData {
   roomId: string;
   peerId: string;
-  startTime: string; 
+  startTime: string;
   initiatorId: Types.ObjectId;
   targetId: Types.ObjectId;
-  link: string; 
-  createdAt: Date; 
+  link: string;
+  createdAt: Date;
   updatedAt: Date;
 }
 
- export type AppliedJobWithPopulatedData = {
+export type AppliedJobWithPopulatedData = {
   _id: string;
   userId: string;
   jobId: {
@@ -115,24 +116,100 @@ export interface IMeetingData {
 
 
 
- export type SenderInfo =
+export type SenderInfo =
   | { type: "user"; data: IUser }
   | { type: "company"; data: ICompany }
   | null;
 
 
-export interface IMostAppliedJobs{
-  _id:string;
-  count:number;
-  jobTitle:string;
-  startDate:string
+export interface IMostAppliedJobs {
+  _id: string;
+  count: number;
+  jobTitle: string;
+  startDate: string
 }
 
-  export interface IComapnyRequest{
-    _id:string,
-    status:"Pending"| "Approved"| "Declined"
-  }
-  export interface IcomapnyBlock{
-    _id:string,
-    isBlocked:boolean
+export interface IComapnyRequest {
+  _id: string,
+  status: "Pending" | "Approved" | "Declined"
+}
+export interface IcomapnyBlock {
+  _id: string,
+  isBlocked: boolean
+}
+export interface IUserBlockDto {
+  _id: string,
+  isBlocked: boolean
+}
+
+
+export interface ISubscriptionStatusDto {
+  _id: string,
+  status: string
+} 
+export interface JobDto {
+  _id: string;
+  jobTitle: string
+  isActive: boolean,
+  startDate: Date;
+  endDate: Date;
+  typesOfEmployment: string[]
+}
+export interface GetJobResponse {
+  jobs: JobDto[];
+  totalJobs: number;
+  totalPages: number;
+}
+
+
+export interface IJobStatusDto{
+_id:string,
+status:boolean| undefined
+}
+
+
+interface IApplicationUserDto{
+    profileImage:string;
+    firstName:string;
+    lastName:string;
+}
+interface IApplicationJobDto{
+    jobTitle:string
+}
+
+ export interface IJobApplicationDto{
+    _id:string;
+    status:string;
+    appliedAt:Date;
+    user:IApplicationUserDto
+    job:IApplicationJobDto
+
+ }
+
+export interface IApplicationJObDto{
+
+}
+
+
+  export interface IJobApplicationDetailsDto{
+    _id:string;
+    appliedAt:Date,
+    status:string
+    jobId:{
+      jobTitle:string,
+      typesOfEmployment:string[],
+      company:string
+    },
+    userId:{
+      _id:string
+      email:string;
+      profileImage:string
+      experiences:Experience[],
+      firstName:string,
+      lastName:string;
+      education:Education[];
+      phoneNumber:string;
+      resume:string;
+      skills:string[]
+    }
   }

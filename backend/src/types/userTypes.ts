@@ -92,11 +92,9 @@ export interface GetSkillResponse {
   totalSkills: number;
   totalPages: number;
 }
-export interface GetJobResponse {
-  jobs: IJob[];
-  totalJobs: number;
-  totalPages: number;
-}
+
+
+
 export interface GetJobApplicationResponse {
   applications: IJobApplication[];
   totalApplications: number;
@@ -189,4 +187,36 @@ export interface UserWithPopulatedJobs extends User {
 
 export interface PopulatedSavedJob {
   jobId: IJob & { company: ICompany };
+}
+
+
+export interface IJobDto{
+_id:string,
+jobTitle:string;
+maximumSalary:number;
+minimumSalary:number;
+isActive:boolean
+company:{
+    _id:string;
+    companyName:string;
+    location:string|undefined;
+    logo:string
+}
+}
+
+ export interface IUserDto{
+_id:string;
+email:string;
+skills:string[];
+profileImage:string;
+resume:string;
+experiences:Experience[]
+education:Education[]
+firstName?:string;
+lastName?:string;
+location?:string;
+phoneNumber?:string;
+position?:string;
+about?:string
+
 }

@@ -117,7 +117,6 @@ export class CompanyRepostries implements CompanyRepostries {
   }
 
   async chageStatus(jobId: string, status: boolean) {
-
     return await this.jobModel.findByIdAndUpdate(
       jobId,
       { isActive: status },
@@ -193,6 +192,7 @@ async findApplications(
   async findApplicationDetail(applicantId: string) {
     return await this.jobApplication.findById(applicantId).populate("userId")
       .populate("jobId", "jobTitle typesOfEmployment company")
+ 
   }
 
   async findApplicationAndUpdate(applicantId: string, status: ApplicationStatus) {

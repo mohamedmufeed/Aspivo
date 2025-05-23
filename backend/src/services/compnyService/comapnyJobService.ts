@@ -5,8 +5,9 @@ import { IJob, JobDocumnet } from "../../models/job";
 import { IJobApplication } from "../../models/jobApplication";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
 import { sendNotification } from "../../server";
-import { JobData } from "../../types/companyTypes";
+import { IJobApplicationDto, JobData } from "../../types/companyTypes";
 import { GetPaginationQuery } from "../../types/userTypes";
+import { jobApplicationDto, jobStatusDto, mappedJobApplication, mappedJobsDto } from "../../utils/dto/companyDto";
 
 export type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
 export class ComapnayJobService implements IJobServiceInterface {
@@ -25,36 +26,42 @@ export class ComapnayJobService implements IJobServiceInterface {
     if (!data) {
       throw { message: "Data not found" };
     }
-  
+
     const { company } = data;
     const currentCompany = await this._companyRepositories.findById(company || "");
-    
+
     if (!currentCompany) {
       throw { message: "Company not found" };
     }
-  
+
     if (currentCompany.features.unlimitedJobPosting || currentCompany.jobLimit > 0) {
       const { job } = await this._companyRepositories.createJob(data);
-      
+
       if (!job) {
         throw new Error("Job creation failed");
       }
       if (!currentCompany.features.unlimitedJobPosting && currentCompany.jobLimit > 0) {
-        const companyId :string=String(currentCompany.id)
+        const companyId: string = String(currentCompany.id)
         await this._companyRepositories.decreaseJobLimit(companyId);
       }
-  
+
       return { job: job.toObject(), message: "Job created successfully" };
     } else {
       throw { message: "Job posting limit reached" };
     }
   }
-  
 
-  async fetchJob(comapanyId: string, query:GetPaginationQuery) {
-    const jobs = await this._companyRepositories.findAllJobs(comapanyId,query);
-    if (!jobs) throw new Error("Jobs not found");
-    return  jobs;
+
+  async fetchJob(comapanyId: string, query: GetPaginationQuery) {
+    const response = await this._companyRepositories.findAllJobs(comapanyId, query);
+    if (!response) throw new Error("Jobs not found");
+    const mappedResponse = {
+      jobs: response.jobs.map((job) => mappedJobsDto(job)),
+      totalJobs: response.totalJobs,
+      totalPages: response.totalPages
+
+    }
+    return mappedResponse;
   }
 
   async editJob(jobId: string, data: JobData): Promise<{ job: IJob, message: string }> {
@@ -79,17 +86,18 @@ export class ComapnayJobService implements IJobServiceInterface {
     return { job, message: "Job edited sucsessfully" };
   }
 
-  async chageJobStatus(jobId: string): Promise<{ job: IJob, message: string }> {
+  async chageJobStatus(jobId: string) {
     if (!jobId) throw new Error("Job id nor found");
-     const existingJob=await this._companyRepositories.findJob(jobId)
-    if(!existingJob) throw new Error("existing job not found")
+    const existingJob = await this._companyRepositories.findJob(jobId)
+    if (!existingJob) throw new Error("existing job not found")
     const toggledStatus = !existingJob.isActive;
-    const job = await this._companyRepositories.chageStatus(jobId,toggledStatus);
+    const job = await this._companyRepositories.chageStatus(jobId, toggledStatus);
     if (!job) throw new Error("Somthing went wrong in job deleting");
-    return { job, message: "job deletion sucsess fully" };
+    const jobDto = jobStatusDto(job)
+    return { job: jobDto, message: "job deletion sucsess fully" };
   }
 
-  async getApplicantsForJob(jobId: string, companyId: string, query:GetPaginationQuery) {
+  async getApplicantsForJob(jobId: string, companyId: string, query: GetPaginationQuery) {
     if (!companyId) throw { status: 404, message: "Company id is required" };
     const job = await this._companyRepositories.findJob(jobId);
     if (!job) throw { status: 404, message: "JOb not found" };
@@ -99,9 +107,13 @@ export class ComapnayJobService implements IJobServiceInterface {
         message: "You are not authorized to view applicants for this job",
       };
     }
-
-    const applications = await this._companyRepositories.findApplications(jobId, query);
-    return  applications;
+    const response = await this._companyRepositories.findApplications(jobId, query);
+    const mappedResponse = {
+      applications: response.applications.map((application:IJobApplicationDto) => mappedJobApplication(application)),
+      totalApplications: response.totalApplications,
+      totalPages: response.totalPages
+    }
+    return mappedResponse
   }
 
   async getApplicantDetials(applicantId: string) {
@@ -112,7 +124,8 @@ export class ComapnayJobService implements IJobServiceInterface {
     if (!applicant) {
       throw new Error("Applicant detail not found");
     }
-    return { applicant, message: "Applicant found" };
+     const applicantDto=jobApplicationDto(applicant)
+    return { applicant:applicantDto, message: "Applicant found" };
   }
 
   async updateStatus(applicantId: string, status: ApplicationStatus): Promise<{ application: IJobApplication, message: string }> {

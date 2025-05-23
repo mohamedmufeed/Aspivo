@@ -9,7 +9,6 @@ const api =axios.create({
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-      console.error("Interceptor Error Triggered:", error);
       const originalRequest = error.config;
       if (
         error.response?.status === 403 &&

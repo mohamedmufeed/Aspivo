@@ -11,11 +11,14 @@ import { login } from "../../redux/slice/authSlice";
 import { getNotifications } from "../../services/notificationService";
 
 
+type NavbarProps = {
+  isDropdownOpen: boolean;
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 
-const Navbar = () => {
+const Navbar = ({ isDropdownOpen, setIsDropdownOpen }: NavbarProps) => {
     const naviagte = useNavigate()
-    const [dropdown, setDropDown] = useState(false)
     const dispatch = useDispatch<AppDispatch>()
     const [notifications, setNotifications] = useState<any[]>([]);
 
@@ -123,7 +126,7 @@ const Navbar = () => {
                             )}
                         </div>
                     </Link>
-                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={() => dropdown ? setDropDown(false) : setDropDown(true)}>
+                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full"     onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                         <img className="w-12 h-12  p-1  bg-white rounded-full" src={user?.profileImage ? user.profileImage : profileAvathar} alt="" />
 
                     </div> :
@@ -132,7 +135,7 @@ const Navbar = () => {
                         </button>
                     }
                     <div className="max-w-full relative z-30 ">
-                        {dropdown ? <ProfileDropdown /> : ""}
+{isDropdownOpen ? <ProfileDropdown setDropDown={() => setIsDropdownOpen(false)} /> : ""}
                     </div>
 
                 </div>
@@ -159,7 +162,7 @@ const Navbar = () => {
                             </svg>
                         </div></Link>
 
-                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={() => dropdown ? setDropDown(false) : setDropDown(true)}>
+                    {user ? <div className="bg-orange-600 border-orange-600 border-3 rounded-full" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                         <img className="w-12 h-12  p-1  bg-white rounded-full" src={user?.profileImage ? user.profileImage : profileAvathar} alt="" />
 
                     </div> :
@@ -168,7 +171,7 @@ const Navbar = () => {
                         </button>
                     }
                     <div className="max-w-full relative z-30 ">
-                        {dropdown ? <ProfileDropdown /> : ""}
+                {isDropdownOpen ? <ProfileDropdown setDropDown={() => setIsDropdownOpen(false)} /> : ""}
                     </div>
                 </div>
             )}

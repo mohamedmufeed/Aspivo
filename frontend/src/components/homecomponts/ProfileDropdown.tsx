@@ -9,7 +9,11 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slice/authSlice";
 import { logoutUser } from "../../services/auth";
 import { MdOutlineAttachMoney } from "react-icons/md";
-const ProfileDropdown = () => {
+import React from "react";
+export interface IProfileProps{
+    setDropDown(value:boolean):void
+}
+const ProfileDropdown:React.FC<IProfileProps> = ({setDropDown}) => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -19,6 +23,7 @@ const ProfileDropdown = () => {
           const response = await logoutUser(user?._id || "");
           if (response) {
             dispatch(logout());
+            setDropDown(false)
             localStorage.clear(); 
             sessionStorage.clear(); 
             navigate("/login");
