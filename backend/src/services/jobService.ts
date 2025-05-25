@@ -47,10 +47,9 @@ export class JobService implements IJobService {
       ];
     }
 
-    if (category) {
+    if (category && category.trim() !== '') {
       query.category = { $regex: category, $options: 'i' };
     }
-
     return query;
   }
   async getJobDetails(jobId: string,): Promise<{ job: IJob, message: string }> {
@@ -133,4 +132,5 @@ export class JobService implements IJobService {
     const jobs = await this._jobRepositories.latestJob()
     return { jobs, message: "latest job fetched sucsessfully" }
   }
+
 }

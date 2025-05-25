@@ -1,4 +1,5 @@
-import { signup as signupApi } from "../../services/auth";
+
+import { googleLogin, signup as signupApi } from "../../services/auth";
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
@@ -110,7 +111,7 @@ const SignupForm = () => {
 
         <div className="w-full  flex felx-col md:flex-row justify-center gap-7  sm:gap-4 space-y-4 sm:space-y-0 mt-6">
 
-          <button className=" w-full sm:w-35 h-12 py-3  bg-white border rounded-lg flex items-center justify-center space-x-2">
+          <button className=" w-full sm:w-35 h-12 py-3  bg-white border rounded-lg flex items-center justify-center space-x-2" onClick={()=>googleLogin()} >
             <FcGoogle className="w-7 h-7" />
 
             <span className="font-bold">Google</span>

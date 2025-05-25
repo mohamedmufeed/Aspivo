@@ -236,7 +236,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="text-gray-600">Required Skills</label>
+                                    <label className="text-gray-600">Required Skills*</label>
                                     {skills.map((skill, index) => (
                                         <div key={index} className="flex items-center mt-2">
                                             <input
@@ -257,7 +257,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-gray-600">Job description</label>
+                                    <label className="block text-gray-600">Job description*</label>
                                     <textarea
                                         {...register("jobDescription")}
                                         placeholder="Enter job description"
@@ -268,7 +268,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-gray-600">Qualification</label>
+                                    <label className="block text-gray-600">Qualification*</label>
                                     <textarea
                                         {...register("qualification")}
                                         placeholder="Enter the qualification"
@@ -279,7 +279,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-gray-600">Job responsibilities</label>
+                                    <label className="block text-gray-600">Job responsibilities*</label>
                                     <textarea
                                         {...register("jobResponsibilities")}
                                         placeholder="Enter the job responsibilities"
@@ -290,7 +290,7 @@ const PostJobModal: React.FC<PostModalProps> = ({ onClose }) => {
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-gray-600">Requirements</label>
+                                    <label className="block text-gray-600">Requirements*</label>
                                     <textarea
                                         {...register("requirements")}
                                         placeholder="Enter Job requirements"

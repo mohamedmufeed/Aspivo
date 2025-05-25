@@ -19,5 +19,6 @@ export default interface IJobServiceInterface {
     getApplicantDetials(applicantId: string):any;
     updateStatus(applicantId: string, status: ApplicationStatus): Promise<JobApplicationResponse>
     fetchJob(comapanyId:string,query:GetPaginationQuery):Promise<GetJobResponse>
+getEditJobDetails(jobId:string):Promise<{job:IJob, message:string}>
 
 }

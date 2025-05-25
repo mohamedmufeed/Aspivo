@@ -9,4 +9,5 @@ export default interface ICompanyJobController {
   getApplicantsForJob(req: Request, res: Response): Promise<void>;
   getApplicantDetails(req: Request, res: Response): Promise<void>;
   updateStatus(req: Request, res: Response): Promise<void>;
+  getJobDetails(req:Request,res:Response):Promise<void>
 }

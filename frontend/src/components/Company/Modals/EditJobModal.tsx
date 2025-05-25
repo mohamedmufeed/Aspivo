@@ -49,9 +49,6 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {
   ];
 
   const [skills, setSkills] = useState<string[]>(job.requiredSkills || [""]);
-
-
-
   const {
     register,
     handleSubmit,
@@ -123,6 +120,8 @@ const EditJobModal: React.FC<EditJobModalProps> = ({ onClose, job }) => {
       console.error("Error updating job:", error);
     }
   };
+
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">

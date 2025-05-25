@@ -1,10 +1,26 @@
 import successGif from "../../assets/Successful purchase.gif";
 import { useNavigate } from "react-router-dom";
+import { fetchCompany } from "../../services/company/compayJob";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
+import { useEffect } from "react";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
-
   const handleNavigate = () => navigate("/");
+  const user = useSelector((state: RootState) => state.auth.user)
+  const userId = user?._id
+  useEffect(() => {
+    const handlefetchCompany = async () => {
+      if (!userId) return;
+      const response = await fetchCompany(userId);
+      const company = response?.company?.company;
+      if (company) {
+        navigate("/company-dashboard")
+      }
+    }
+    handlefetchCompany()
+  }, [userId])
 
   return (
     <div className="bg-[#F6F6F6] h-screen flex justify-center items-center font-dm-sans">

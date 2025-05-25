@@ -27,7 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setQuery(value);
+    setQuery(value.trim());
   };
 
   return (

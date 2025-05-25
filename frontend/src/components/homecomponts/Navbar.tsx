@@ -50,7 +50,7 @@ const Navbar = () => {
     const userId = user?._id || ""
 
     useEffect(() => {
-
+if(userId) return
         const fetchNotification = async () => {
             try {
                 const notification = await getNotifications(userId)

@@ -98,8 +98,8 @@ const dispatch=useDispatch<AppDispatch>()
       }));
       if (response) {
         navigate("/company-dashboard");
-    } else {
-        setError("Signup failed, please try again.");
+    } else if (response.error.message) {
+        setError(response.error.message||"Signup failed, please try again.");
     }
       return response
     } catch (error) {

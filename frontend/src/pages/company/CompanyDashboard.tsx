@@ -307,7 +307,7 @@ const CompanyDashboard = () => {
               )
               :
               (
-                <p>No jobs found</p>
+                <p className="flex justify-center items-center">No jobs found</p>
               )
             }
             {!isSubscribed && (

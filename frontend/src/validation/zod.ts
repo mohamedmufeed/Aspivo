@@ -93,6 +93,7 @@ export const experienceSchema = z
 
 
 
+
 export const educationSchema = z
   .object({
     school: z
@@ -117,7 +118,11 @@ export const educationSchema = z
 
     grade: z
       .string()
-      .nonempty("Grade is required"),
+      .nonempty("Grade is required")
+      .refine(val => !isNaN(Number(val)), { message: "Grade must be a number" })
+      .refine(val => Number(val) >= 0 && Number(val) <= 100, {
+        message: "Grade must be between 0 and 100",
+      }),
   })
   .refine((data) => {
     const now = new Date();
@@ -139,41 +144,61 @@ export const educationSchema = z
 
 
 
-   export   const jobSchema = z.object({
-    jobTitle: z.string().min(3, "Job title must be at least 3 characters"),
-    category: z.string().nonempty("Category is required"),
-    typesOfEmployment: z.array(z.string()).nonempty("Select at least one employment type"),
-    minimumSalary: z.string().nonempty("Minimum salary is required"),
-    maximumSalary: z.string().nonempty("Maximum salary is required"),
-    startDate: z.string().nonempty("Start date is required"),
-    endDate: z.string().nonempty("End date is required"),
-    slot: z
-    .string()
-    .nonempty("Slot is required") 
-    .refine((val) => /^\d+$/.test(val), { message: "Slot must be a number" }) 
+
+
+export const jobSchema = z.object({
+  jobTitle: z.string().min(3, "Job title must be at least 3 characters"),
+  category: z.string().nonempty("Category is required"),
+  typesOfEmployment: z.array(z.string()).nonempty("Select at least one employment type"),
+
+  minimumSalary: z.string()
+    .nonempty("Minimum salary is required")
+    .refine(val => !isNaN(Number(val)), { message: "Minimum salary must be a number" })
+    .refine(val => Number(val) > 0, { message: "Minimum salary must be greater than 0" }),
+
+  maximumSalary: z.string()
+    .nonempty("Maximum salary is required")
+    .refine(val => !isNaN(Number(val)), { message: "Maximum salary must be a number" })
+    .refine(val => Number(val) > 0, { message: "Maximum salary must be greater than 0" }),
+
+  startDate: z.string().nonempty("Start date is required"),
+  endDate: z.string().nonempty("End date is required"),
+
+  slot: z.string()
+    .nonempty("Slot is required")
+    .refine((val) => /^\d+$/.test(val), { message: "Slot must be a number" })
     .refine((val) => parseInt(val, 10) >= 0, { message: "Slot cannot be negative" }),
-    requiredSkills: z.array(z.string().min(1, "Skill cannot be empty")),
-    jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
-    qualification: z.string().min(5, "Qualification is required"),
-    jobResponsibilities: z.string().min(5, "Job responsibilities are required"),
-    requirements: z.string().min(5, "Requirements are required"),
-  }).refine((data) => {
-    const now = new Date();
-    const start = new Date(data.startDate);
-    return start <= now;
-  }, {
-    message: "Start date cannot be in the future",
-    path: ["startDate"],
-  })
-  .refine((data) => {
-    const start = new Date(data.startDate);
-    const end = new Date(data.endDate);
-    return start <= end;
-  }, {
-    message: "Start date must be before end date",
-    path: ["startDate"],
-  });
-  
+
+  requiredSkills: z.array(z.string().min(1, "Skill cannot be empty")),
+
+  jobDescription: z.string().min(10, "Job description must be at least 10 characters"),
+  qualification: z.string().min(5, "Qualification is required"),
+  jobResponsibilities: z.string().min(5, "Job responsibilities are required"),
+  requirements: z.string().min(5, "Requirements are required"),
+})
+.refine((data) => {
+  const now = new Date();
+  const start = new Date(data.startDate);
+  return start >= now;
+}, {
+  message: "Start date cannot be in the past",
+  path: ["startDate"],
+})
+.refine((data) => {
+  const start = new Date(data.startDate);
+  const end = new Date(data.endDate);
+  return start <= end;
+}, {
+  message: "Start date must be before end date",
+  path: ["startDate"],
+})
+.refine((data) => {
+  return Number(data.minimumSalary) <= Number(data.maximumSalary);
+}, {
+  message: "Minimum salary must be less than or equal to maximum salary",
+  path: ["minimumSalary"],
+});
+
 
 
   export const editCompanyProfileSchema = z.object({

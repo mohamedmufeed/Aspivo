@@ -24,7 +24,7 @@ const Subscription = () => {
     const fetchUser = async () => {
       try {
         const response = await getProfile(userId)
-        if (response.user.user.subscription) {
+        if (response.user.user.subscription.status ==="active") {
           setAlreadySubscribed(true)
         }
       } catch (error) {

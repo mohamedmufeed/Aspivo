@@ -36,7 +36,6 @@ const OtpVerification = () => {
         e.preventDefault()
         try {
             const data = await verifyOtp({ email, otp })
-            console.log(" the data  from verify otp", data.user.user)
             if (data.user.user) {
                 dispatch(login({
                     _id: data.user.user._id,
@@ -49,7 +48,7 @@ const OtpVerification = () => {
                 throw new Error("Invalid OTP ");
             }
         } catch (error) {
-            console.log("error on sending otp",error)
+            console.error("error on sending otp",error)
             setError("Invalid  Otp")
         }
     }

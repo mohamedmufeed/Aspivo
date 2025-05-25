@@ -11,7 +11,6 @@ export const fetchCompany = async (userId: string) => {
         id: userId
       }
     });
-    console.log("response data", response.data)
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -74,10 +73,10 @@ export const chageStatus = async (jobId: string) => {
   }
 };
 
-export const getApplicants = async (jobId: string, companyId: string , page = 1, applicantsPerPage :number, searchQuery = "", signal?: AbortSignal) => {
+export const getApplicants = async (jobId: string, companyId: string, page = 1, applicantsPerPage: number, searchQuery = "", signal?: AbortSignal) => {
   try {
     const respone = await api.get(`${COMPANY_BASE_ROUTE}/jobs/${jobId}/applicants`, {
-        params: {
+      params: {
         page,
         applicantsPerPage,
         companyId,
@@ -117,3 +116,14 @@ export const updateStatus = async (applicantId: string, status: ApplicationStatu
     }
   }
 };
+
+export const getJobDetails = async (jobId: string) => {
+  try {
+    const respone = await api.get(`${COMPANY_BASE_ROUTE}/job-details/${jobId}`)
+    return respone.data
+  } catch (error) {
+ if (error instanceof AxiosError) {
+      console.error("Get job details  error", error.response?.data);
+    }
+  }
+}

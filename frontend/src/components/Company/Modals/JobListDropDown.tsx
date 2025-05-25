@@ -63,19 +63,19 @@ const JobListDropDown: React.FC<JobListDropDownProp> = ({ jobId, job }) => {
           </div>
         ))}
       </div>
-   {editModal && (
-  <EditJobModal
-    onClose={() => setEditModal(false)}
-    job={{
-      ...job,
-      typesOfEmployment: job.typesOfEmployment.length
-        ? [job.typesOfEmployment[0], ...job.typesOfEmployment.slice(1)]
-        : ["Full-time"],
-      startDate: job.startDate instanceof Date ? job.startDate.toISOString() : job.startDate,
-      endDate: job.endDate instanceof Date ? job.endDate.toISOString() : job.endDate,
-    }}
-  />
-)}
+      {editModal && (
+        <EditJobModal
+          onClose={() => setEditModal(false)}
+          job={{
+            ...job,
+            typesOfEmployment: job.typesOfEmployment.length
+              ? [job.typesOfEmployment[0], ...job.typesOfEmployment.slice(1)]
+              : ["Full-time"],
+            startDate: job.startDate instanceof Date ? job.startDate.toISOString() : job.startDate,
+            endDate: job.endDate instanceof Date ? job.endDate.toISOString() : job.endDate,
+          }}
+        />
+      )}
 
 
     </div>

@@ -1,4 +1,4 @@
-import { IJob } from "../../../models/job";
+import { IJob, JobDocumnet } from "../../../models/job";
 import { IJobApplication } from "../../../models/jobApplication";
 import { ISavedJobs, IUser } from "../../../models/user";
 import { AppliedJobWithPopulatedData, IComapny } from "../../../types/companyTypes";
