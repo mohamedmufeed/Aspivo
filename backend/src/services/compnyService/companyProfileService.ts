@@ -7,10 +7,10 @@ import { Contact } from "../../types/companyTypes";
 import IProfileService from "../../interface/service/company/profileInterface";
 import { ICompany } from "../../models/company";
 import { ICompanyProfileRepositories } from "../../interface/repositories/companyProfileRepostries";
-export class CompanyProfileService  implements IProfileService{
-  constructor(private _companyRepo: ICompanyProfileRepositories) {}
+export class CompanyProfileService implements IProfileService {
+  constructor(private _companyRepo: ICompanyProfileRepositories) { }
 
-  async getProfile(companyId: string):Promise<{company:ICompany, message:string}> {
+  async getProfile(companyId: string): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
@@ -19,7 +19,7 @@ export class CompanyProfileService  implements IProfileService{
   }
 
 
-  async editCompanyProfile(companyId: string, data: IComapny):Promise<{company:ICompany, message:string}> {
+  async editCompanyProfile(companyId: string, data: IComapny): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
@@ -45,7 +45,7 @@ export class CompanyProfileService  implements IProfileService{
     return { company, message: "Comapny Profile updated sucsess fully" };
   }
 
-  async editCompanyDescription(companyId: string, data: string):Promise<{company:ICompany, message:string}> {
+  async editCompanyDescription(companyId: string, data: string): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
@@ -58,7 +58,7 @@ export class CompanyProfileService  implements IProfileService{
     return { company, message: "Comapny description updated sucess fully" };
   }
 
-  async addTechStack(comapnyId: string, stack: string[]):Promise<{company:ICompany, message:string}> {
+  async addTechStack(comapnyId: string, stack: string[]): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(
       comapnyId
     );
@@ -79,7 +79,7 @@ export class CompanyProfileService  implements IProfileService{
     return { company, message: "Comapny stack addedd sucsessfilly" };
   }
 
-  async editTeam(companyId: string, members: TeamMember[]):Promise<{company:ICompany, message:string}> {
+  async editTeam(companyId: string, members: TeamMember[]): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(companyId);
     if (!company) throw new Error("Company not found");
 
@@ -92,7 +92,7 @@ export class CompanyProfileService  implements IProfileService{
     const membersToAdd = trimmedNewMembers.filter(
       (newMember) =>
         !existingTeam.some(
-          (existing:any) =>
+          (existing: any) =>
             existing.position === newMember.position && existing.name === newMember.name
         )
     );
@@ -105,25 +105,28 @@ export class CompanyProfileService  implements IProfileService{
     };
   }
 
-  async editContact(comapnyId: string, contact: Contact[]):Promise<{company:ICompany, message:string}> {
+  async editContact(comapnyId: string, contact: Contact[]): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(comapnyId)
     if (!company) throw new Error("Comapny not found")
     const existingContact = company.contact || []
-    const trimmedNewContacts = contact.map((contact) => ({
+    console.log("Received contact:", contact);
+    console.log("Type of contact:", typeof contact);
+
+    const contactsArray = Array.isArray(contact) ? contact : [contact];
+    const trimmedNewContacts = contactsArray.map((contact) => ({
       name: contact.name.trim(),
       url: contact.url.trim()
-    }))
-
-    const contactToAdd=trimmedNewContacts.filter(
-      (newContact)=>
+    }));
+    const contactToAdd = trimmedNewContacts.filter(
+      (newContact) =>
         !existingContact.some(
-          (existing:any)=>
-            existing.name=== newContact.name && existing.url=== newContact.url
+          (existing: any) =>
+            existing.name === newContact.name && existing.url === newContact.url
         )
     )
 
     company.contact.push(...contactToAdd)
     await company.save()
-    return {company , message:"Company contact updated successfully"}
+    return { company, message: "Company contact updated successfully" }
   }
 }

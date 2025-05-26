@@ -1,5 +1,5 @@
 import { IJob } from "../../models/job";
-import { IJobApplicationDetailsDto, IJobApplicationDto } from "../../types/companyTypes";
+import {  IJobApplicationDto } from "../../types/companyTypes";
 
 export const mappedJobsDto = (job: IJob) => {
     return {
@@ -7,6 +7,15 @@ export const mappedJobsDto = (job: IJob) => {
         jobTitle: job.jobTitle,
         isActive: job.isActive ?? true,
         startDate: job.startDate,
+        maximumSalary:job.maximumSalary,
+        minimumSalary:job.minimumSalary,
+        category:job.category,
+        slot:job.slot,
+        requiredSkills:job.requiredSkills,
+        jobDescription:job.jobDescription,
+        jobResponsibilities:job.jobResponsibilities,
+        qualification:job.qualification,
+        requirements:job.requirements,
         endDate: job.endDate,
         typesOfEmployment: job.typesOfEmployment,
     }

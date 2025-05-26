@@ -9,10 +9,9 @@ import { ICompanyType } from "../../../types/types";
 
 const techStackSchema = z.object({
   stack: z.array(
-    z
+       z
       .string()
       .min(1, "Tech stack item cannot be empty")
-      .regex(/^[A-Za-z]+$/, "Tech stack item must contain only letters")
   ),
 })
 

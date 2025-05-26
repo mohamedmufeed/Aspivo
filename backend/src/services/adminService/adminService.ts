@@ -8,6 +8,7 @@ import { handleCompanyBlockStatusDto, handleCompanyReqDto, mappedCompanies, mapp
 import IAdminRepostry from "../../interface/repositories/adminRepository";
 import { INotificationRepository } from "../../interface/repositories/NotifictatonRepository";
 import { IComapnyRequest } from "../../types/companyTypes";
+import { MESSAGES } from "../../constants/message";
 
 export class AdminService implements IAdminService {
   constructor(private _adminRepository: IAdminRepostry, private _notificationRespository: INotificationRepository) { }
@@ -33,7 +34,7 @@ export class AdminService implements IAdminService {
 
   async blockUser(id: string) {
     const user = await this._adminRepository.findById(id);
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error(MESSAGES.USER.NOT_FOUND);
     const updatedUser = await this._adminRepository.findByIdAndUpdateBlockStatus(id, user.isBlocked)
     if (!updatedUser) throw new Error("Failed to update user status");
     const userDto=userBlockDto(updatedUser)

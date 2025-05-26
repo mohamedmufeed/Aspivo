@@ -87,10 +87,7 @@ router
   .get(companyJobController.fetchJob)
   .post(companyJobController.postJob);
 
-  router
-  .route("/job-details/:id")
-  .all(protect)
-  .get(companyJobController.getJobDetails)
+ 
 
 router
   .route("/jobs/:id/edit")

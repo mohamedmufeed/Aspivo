@@ -145,9 +145,4 @@ export class ComapnayJobService implements IJobServiceInterface {
     sendNotification("user", application.userId.toString(), message);
     return { application, message: "Application updated successfully" };
   }
-    async getEditJobDetails(jobId: string) {
-    const job = await this._companyRepositories.findJob(jobId)
-    if (!job) throw new Error("Job not foubd")
-    return { job, message: "Job fetch sucsess full" }
-  }
 }

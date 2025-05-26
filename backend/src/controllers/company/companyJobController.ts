@@ -202,14 +202,4 @@ export class CompanyJobController implements ICompanyJobController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err.message || ERROR_MESSAGES.SERVER_ERROR });
     }
   };
-  getJobDetails=async(req:Request,res:Response)=>{
-    try {
-      const jobId=req.params.id
-      const response= await this._companyJobService.getEditJobDetails(jobId)
-      res.status(HttpStatus.OK).json(response)
-    } catch (error) {
-      const err=error as Error
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message:err.message||ERROR_MESSAGES.SERVER_ERROR})
-    }
-  }
 }
