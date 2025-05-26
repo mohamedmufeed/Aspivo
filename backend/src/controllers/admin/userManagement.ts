@@ -3,7 +3,6 @@ import HttpStatus from "../../utils/httpStatusCode";
 import IUserManagementController from "../../interface/controller/admin/userManagementInterface";
 import { ERROR_MESSAGES } from "../../constants/error";
 import { GetPaginationQuery } from "../../types/userTypes";
-import logger from "../../logger";
 import IAdminService from "../../interface/service/admin/adminInterface";
 
 export class UserManagementController  implements IUserManagementController{
@@ -28,10 +27,9 @@ export class UserManagementController  implements IUserManagementController{
         message: "User fetching successful",
       });
     } catch (error) {
-      logger.error("Error fetching users:", error);
       res.status(500).json({
         success: false,
-        message: "Internal Server Error",
+        message:ERROR_MESSAGES.SERVER_ERROR,
       });
     }
   };
@@ -46,7 +44,6 @@ export class UserManagementController  implements IUserManagementController{
         message: "User status changed successfully",
       });
     } catch (error) {
-    logger.error("Error blocking user:", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: ERROR_MESSAGES.SERVER_ERROR,

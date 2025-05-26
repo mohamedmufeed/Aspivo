@@ -1,3 +1,4 @@
+import { COMPANY_ALREADY_EXISTS, COMPANY_REGISTERED_SUCCESSFULLY } from "../../constants/message";
 import ICompanyService from "../../interface/service/company/authInterface";
 import { CompanyRepostries } from "../../repositories/companyRepositories";
 
@@ -12,7 +13,7 @@ export class CompanyAuthService implements ICompanyService {
   ) {
     const existCompany = await this._companyRepositories.findByEmail(email);
     if (existCompany) {
-      throw { status: 404, message: "Company alredy exists" };
+      throw { status: 404, message: COMPANY_ALREADY_EXISTS };
     }
 
     const { company } = await this._companyRepositories.register(
@@ -34,6 +35,6 @@ export class CompanyAuthService implements ICompanyService {
       }
     }
     await company.save();
-    return { company, message: "Comapny refited sucesssfully" };
+    return { company, message: COMPANY_REGISTERED_SUCCESSFULLY };
   }
 }

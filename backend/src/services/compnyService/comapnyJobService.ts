@@ -1,3 +1,4 @@
+import { APPLICANT_ID_REQUIRED, APPLICATION_NOT_FOUND, APPLICATION_UPDATED_SUCCESSFULLY, COMPANY_FETCHED_SUCCESSFULLY, COMPANY_ID_REQUIRED, COMPANY_NOT_FOUND, DATA_NOT_FOUND, EXISTING_JOB_NOT_FOUND, JOB_CREATED_SUCCESSFULLY, JOB_CREATION_FAILED, JOB_DELETED_SUCCESSFULLY, JOB_EDITED_SUCCESSFULLY, JOB_ID_NOT_FOUND, JOB_NOT_FOUND, JOB_POSTING_LIMIT_REACHED, STATUS_NOT_FOUND, UNAUTHORIZED_TO_VIEW_APPLICANTS } from "../../constants/message";
 import { INotificationRepository } from "../../interface/repositories/NotifictatonRepository";
 import IJobServiceInterface from "../../interface/service/company/jobInterface";
 import { ICompany } from "../../models/company";
@@ -17,44 +18,44 @@ export class ComapnayJobService implements IJobServiceInterface {
     const company = await this._companyRepositories.findByUserId(userId);
 
     if (!company) {
-      throw { status: 404, message: "Comapny not found" }
+      throw { status: 404, message: COMPANY_NOT_FOUND}
     }
-    return { company, message: "comapany fetched sucsess fully" };
+    return { company, message: COMPANY_FETCHED_SUCCESSFULLY };
   }
 
   async postJob(data: JobData): Promise<{ job: JobDocumnet, message: string }> {
     if (!data) {
-      throw { message: "Data not found" };
+      throw { message: DATA_NOT_FOUND };
     }
 
     const { company } = data;
     const currentCompany = await this._companyRepositories.findById(company || "");
 
     if (!currentCompany) {
-      throw { message: "Company not found" };
+      throw { message: COMPANY_NOT_FOUND };
     }
 
     if (currentCompany.features.unlimitedJobPosting || currentCompany.jobLimit > 0) {
       const { job } = await this._companyRepositories.createJob(data);
 
       if (!job) {
-        throw new Error("Job creation failed");
+        throw new Error(JOB_CREATION_FAILED);
       }
       if (!currentCompany.features.unlimitedJobPosting && currentCompany.jobLimit > 0) {
         const companyId: string = String(currentCompany.id)
         await this._companyRepositories.decreaseJobLimit(companyId);
       }
 
-      return { job: job.toObject(), message: "Job created successfully" };
+      return { job: job.toObject(), message: JOB_CREATED_SUCCESSFULLY };
     } else {
-      throw { message: "Job posting limit reached" };
+      throw { message: JOB_POSTING_LIMIT_REACHED };
     }
   }
 
 
   async fetchJob(comapanyId: string, query: GetPaginationQuery) {
     const response = await this._companyRepositories.findAllJobs(comapanyId, query);
-    if (!response) throw new Error("Jobs not found");
+    if (!response) throw new Error(JOB_NOT_FOUND);
     const mappedResponse = {
       jobs: response.jobs.map((job) => mappedJobsDto(job)),
       totalJobs: response.totalJobs,
@@ -66,7 +67,7 @@ export class ComapnayJobService implements IJobServiceInterface {
 
   async editJob(jobId: string, data: JobData): Promise<{ job: IJob, message: string }> {
     const job = await this._companyRepositories.findJob(jobId);
-    if (!job) throw new Error("JOb not found");
+    if (!job) throw new Error(JOB_NOT_FOUND);
     job.jobTitle = data.jobTitle || job.jobTitle;
     job.category = data.category || job.category;
     job.typesOfEmployment = data.typesOfEmployment || job.typesOfEmployment;
@@ -83,28 +84,28 @@ export class ComapnayJobService implements IJobServiceInterface {
     job.jobDescription = data.jobDescription || job.jobDescription;
 
     await job.save();
-    return { job, message: "Job edited sucsessfully" };
+    return { job, message: JOB_EDITED_SUCCESSFULLY };
   }
 
   async chageJobStatus(jobId: string) {
-    if (!jobId) throw new Error("Job id nor found");
+    if (!jobId) throw new Error(JOB_ID_NOT_FOUND);
     const existingJob = await this._companyRepositories.findJob(jobId)
-    if (!existingJob) throw new Error("existing job not found")
+    if (!existingJob) throw new Error(EXISTING_JOB_NOT_FOUND)
     const toggledStatus = !existingJob.isActive;
     const job = await this._companyRepositories.chageStatus(jobId, toggledStatus);
-    if (!job) throw new Error("Somthing went wrong in job deleting");
+    if (!job) throw new Error(JOB_NOT_FOUND);
     const jobDto = jobStatusDto(job)
-    return { job: jobDto, message: "job deletion sucsess fully" };
+    return { job: jobDto, message: JOB_DELETED_SUCCESSFULLY };
   }
 
   async getApplicantsForJob(jobId: string, companyId: string, query: GetPaginationQuery) {
-    if (!companyId) throw { status: 404, message: "Company id is required" };
+    if (!companyId) throw { status: 404, message: COMPANY_ID_REQUIRED };
     const job = await this._companyRepositories.findJob(jobId);
-    if (!job) throw { status: 404, message: "JOb not found" };
+    if (!job) throw { status: 404, message: JOB_NOT_FOUND };
     if (job.company.toString() != companyId) {
       throw {
         status: 404,
-        message: "You are not authorized to view applicants for this job",
+        message: UNAUTHORIZED_TO_VIEW_APPLICANTS,
       };
     }
     const response = await this._companyRepositories.findApplications(jobId, query);
@@ -122,17 +123,17 @@ export class ComapnayJobService implements IJobServiceInterface {
     );
 
     if (!applicant) {
-      throw new Error("Applicant detail not found");
+      throw new Error(APPLICATION_NOT_FOUND);
     }
      const applicantDto=jobApplicationDto(applicant)
-    return { applicant:applicantDto, message: "Applicant found" };
+    return { applicant:applicantDto, message:APPLICATION_NOT_FOUND };
   }
 
   async updateStatus(applicantId: string, status: ApplicationStatus): Promise<{ application: IJobApplication, message: string }> {
-    if (!applicantId) throw { status: 404, message: "Applicant ID required" };
-    if (!status) throw { status: 404, message: "Status not found" };
+    if (!applicantId) throw { status: 404, message: APPLICANT_ID_REQUIRED };
+    if (!status) throw { status: 404, message: STATUS_NOT_FOUND };
     const application = await this._companyRepositories.findApplicationAndUpdate(applicantId, status);
-    if (!application) throw { status: 404, message: "Application not found" };
+    if (!application) throw { status: 404, message: APPLICATION_NOT_FOUND };
     const job = await this._companyRepositories.findJob(application?.jobId.toString());
     const jobTitle = job?.jobTitle || "the job position";
     const message = status === "accepted"
@@ -143,6 +144,6 @@ export class ComapnayJobService implements IJobServiceInterface {
       message
     );
     sendNotification("user", application.userId.toString(), message);
-    return { application, message: "Application updated successfully" };
+    return { application, message: APPLICATION_UPDATED_SUCCESSFULLY };
   }
 }

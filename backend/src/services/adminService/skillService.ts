@@ -1,3 +1,4 @@
+import { INVALID_SKILL_DATA, SKILL_ADDED_SUCCESSFULLY, SKILL_REMOVED_SUCCESSFULLY, SKILLS_NOT_FOUND } from "../../constants/message";
 import { ISkillRepository } from "../../interface/repositories/skillRepositories";
 import ISkillService from "../../interface/service/admin/skillInterface";
 import { ISkill } from "../../models/skills";
@@ -10,16 +11,16 @@ export class SkillService implements ISkillService {
 
   async addSkill(skillNames: string[]):Promise<{addeddSkill:ISkill[], message:string}> {
     if (!Array.isArray(skillNames) || skillNames.length === 0) {
-      throw new Error("Invalid skills data");
+      throw new Error(INVALID_SKILL_DATA);
     }
     const addeddSkill = await this._skillRepository.createSkills(skillNames);
-    return { addeddSkill, message: "Skill addedd sucsessfully" };
+    return { addeddSkill, message: SKILL_ADDED_SUCCESSFULLY };
   }
 
   async getSkils(query:GetPaginationQuery):Promise<GetSkillResponse> {
     const response = await this._skillRepository.getSkills(query);
     if (!response) {
-      throw { status: HttpStatus.BAD_REQUEST, message: "Skils not found" };
+      throw { status: HttpStatus.BAD_REQUEST, message: SKILLS_NOT_FOUND };
     }
     return  response ;
   }
@@ -27,8 +28,8 @@ export class SkillService implements ISkillService {
   async removeSkill(skillId: string):Promise<{response:ISkill, message:string}> {
     const response = await this._skillRepository.removeSkill(skillId);
     if(!response){
-      throw {status:HttpStatus.BAD_REQUEST, message:"Skill not found"}
+      throw {status:HttpStatus.BAD_REQUEST, message:SKILLS_NOT_FOUND}
     }
-    return{response, message:"Skill removed sucessfull"}
+    return{response, message:SKILL_REMOVED_SUCCESSFULLY}
   }
 }

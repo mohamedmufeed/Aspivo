@@ -1,3 +1,4 @@
+import { STATUS_NOT_FOUND, SUBSCRIPTION_NOT_FOUND, SUBSCRIPTION_STATUS_UPDATED_SUCCESSFULLY } from "../../constants/message";
 import IAdminRepostry from "../../interface/repositories/adminRepository";
 import ISubscriptionSerice from "../../interface/service/admin/subscriptionInterface";
 import { GetPaginationQuery, GetSubscriptionResponse } from "../../types/userTypes";
@@ -10,9 +11,9 @@ export class SubscriptionService implements ISubscriptionSerice {
   }
 
   async updateSubscriptionStatus(subscriptionId: string, status: string) {
-    if (!status) throw new Error("Status not found");
+    if (!status) throw new Error(STATUS_NOT_FOUND);
     const subscription = await this._subscriptionRepository.findSubscriptionByIdAndUpdate(subscriptionId, status);
-    if (!subscription) throw new Error("Subscription not found");
+    if (!subscription) throw new Error(SUBSCRIPTION_NOT_FOUND);
     if (status === "inactive") {
       await this._subscriptionRepository.updateUserFeatures(subscription.userId, {
         unlockAiFeatures: false,
@@ -39,6 +40,6 @@ export class SubscriptionService implements ISubscriptionSerice {
 
     }
     const subscriptionDto=subscriptionStatusDto(subscription)
-    return { subscription:subscriptionDto, message: "Subscription status updated sucess fully" }
+    return { subscription:subscriptionDto, message:SUBSCRIPTION_STATUS_UPDATED_SUCCESSFULLY }
   }
 }

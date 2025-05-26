@@ -9,6 +9,7 @@ import IAuthService from "../interface/service/user/authServiceInterface";
 import HttpStatus from "../utils/httpStatusCode";
 import { http } from "winston";
 import { IAuthRepository } from "../interface/repositories/userRepositories";
+import { EMAIL_NOT_VERIFIED, FORGOT_PASSWORD_EMAIL_SENT, INVALID_CREDENTIALS, INVALID_OTP, INVALID_TOKEN, NO_REFRESH_TOKEN_FOUND, OTP_EXPIRED, OTP_RESENT_SUCCESSFULLY, OTP_VERIFIED_SUCCESSFULLY, PASSWORD_REQUIRED, PASSWORD_RESET_SUCCESSFULLY, USER_ALREADY_EXISTS, USER_NOT_FOUND } from "../constants/message";
 
 
 
@@ -17,7 +18,7 @@ export class AuthService implements IAuthService {
   async regitser(userName: string, email: string, password: string) {
     const existUser = await this._authRepostry.findByEmail(email);
     if (existUser) {
-      throw { status: HttpStatus.NOT_FOUND, message: "User alredy exists" };
+      throw { status: HttpStatus.NOT_FOUND, message: USER_ALREADY_EXISTS };
     }
 
     const hashePassword = await bcrypt.hash(password, 10);
@@ -41,25 +42,25 @@ export class AuthService implements IAuthService {
   async login(email: string, password: string) {
     const user = await this._authRepostry.findByEmail(email);
     if (!user) {
-      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: USER_NOT_FOUND };
     }
 
     if (!user.verified) {
       throw {
         status: HttpStatus.FORBIDDEN,
-        message: "Email not verified. Please verify your OTP.",
+        message: EMAIL_NOT_VERIFIED,
       };
     }
     if(!user.password){
       throw{
         status:HttpStatus.FORBIDDEN,
-        message:"Password is required for this action."
+        message:PASSWORD_REQUIRED
       }
     }
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw { status: HttpStatus.UNAUTHORIZED, message: "Invalid credentials" };
+      throw { status: HttpStatus.UNAUTHORIZED, message: INVALID_CREDENTIALS};
     }
 
     const token = generateToken(user.id, user.isAdmin);
@@ -71,21 +72,21 @@ export class AuthService implements IAuthService {
     const user = await this._authRepostry.findByEmail(email);
 
     if (!user) {
-      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: USER_NOT_FOUND };
     }
 
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     if (!user.otpExpires || !(user.otpExpires instanceof Date)) {
-      throw { status: HttpStatus.BAD_REQUEST, message: "OTP expiration time is invalid" };
+      throw { status: HttpStatus.BAD_REQUEST, message: OTP_EXPIRED };
     }
 
     if (user.otp !== hashedOtp) {
-      throw { status: HttpStatus.BAD_REQUEST, message: "Invalid OTP" };
+      throw { status: HttpStatus.BAD_REQUEST, message: INVALID_OTP };
     }
 
     if (new Date() > new Date(user.otpExpires)) {
-      throw { status: HttpStatus.FORBIDDEN, message: "OTP has expired" };
+      throw { status: HttpStatus.FORBIDDEN, message: OTP_EXPIRED };
     }
 
     user.verified = true;
@@ -94,13 +95,13 @@ export class AuthService implements IAuthService {
 
     await user.save();
 
-    return { user, message: "OTP verified successfully" };
+    return { user, message: OTP_VERIFIED_SUCCESSFULLY };
   }
 
   async resendOtp(email: string) {
     const user = await this._authRepostry.findByEmail(email);
     if (!user) {
-      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: USER_NOT_FOUND };
     }
 
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -116,13 +117,13 @@ export class AuthService implements IAuthService {
 
     await resendOtpMail(email, newOtp);
 
-    return { user, message:"User otp resnsed sucsess fully" };
+    return { user, message:OTP_RESENT_SUCCESSFULLY };
   }
 
   async forgotPassword(email: string) {
     const user = await this._authRepostry.findByEmail(email);
     if (!user) {
-      throw { status: HttpStatus.NOT_FOUND, message: "User does not exist" };
+      throw { status: HttpStatus.NOT_FOUND, message: USER_NOT_FOUND };
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -134,21 +135,21 @@ export class AuthService implements IAuthService {
 
     await user.save();
     await sendOtpEmail(email, otp);
-    return { user, message: " Email send suncessfully for Forgot password" };
+    return { user, message: FORGOT_PASSWORD_EMAIL_SENT };
   }
 
   async resetPassword(email: string, newPassword: string) {
     const user = await this._authRepostry.findByEmail(email);
-    if (!user) throw new Error("User not foud");
+    if (!user) throw new Error(USER_NOT_FOUND);
 
     const hashePassword = await bcrypt.hash(newPassword, 10);
     user.password = hashePassword;
     await user.save();
-    return { user, message: " Password reset sucesess" };
+    return { user, message: PASSWORD_RESET_SUCCESSFULLY };
   }
 
   async refreshToken(refreshToken: string) {
-    if (!refreshToken) throw new Error("No refresh token found");
+    if (!refreshToken) throw new Error(NO_REFRESH_TOKEN_FOUND);
 
     return new Promise((resolve, reject) => {
         jwt.verify(
@@ -156,7 +157,7 @@ export class AuthService implements IAuthService {
             process.env.REFRESH_JWT_SECRET as string,
             (err, decoded: any) => {
                 if (err) {
-                    reject(new Error("Invalid Token"));
+                    reject(new Error(INVALID_TOKEN));
                     return;
                 }
                 const newAcessToken = generateToken(decoded.id, decoded.isAdmin);

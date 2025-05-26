@@ -1,4 +1,5 @@
 import { MONTHS, USD_TO_INR } from "../../constants/commen";
+import {  APPLICATION_FETCHED_SUCCESSFULLY, MONTHLY_REVENUE_DATA_NOT_FOUND } from "../../constants/message";
 import { IDashboardRepositories } from "../../interface/repositories/dashboardInterface";
 import { IDashboardService } from "../../interface/service/admin/dashboardServiceInterface";
 import { DashboardRepositories } from "../../repositories/adminDasboardRespositories";
@@ -52,17 +53,17 @@ export class DashboardService implements IDashboardService {
     if (startDate && endDate) {
       const response = await this._dashboardReposrtories.getWeeklyApplicationData(startDate, endDate)
       if (!response) throw new Error("No Response found")
-      return { response, message: "Application Feched sucsessfull" }
+      return { response, message:APPLICATION_FETCHED_SUCCESSFULLY }
     } else {
       const response = await this._dashboardReposrtories.getWeeklyApplicationData()
       if (!response) throw new Error("No Response found")
-      return { response, message: "Application Feched sucsessfull" }
+      return { response, message: APPLICATION_FETCHED_SUCCESSFULLY }
     }
   }
 
   async getMonthlySubscriptionRevenue() {
     const rawRevenue = await this._dashboardReposrtories.getMonthlySubscriptionRevenue()
-    if (!rawRevenue) throw new Error("Monthly Revenue data not found")
+    if (!rawRevenue) throw new Error(MONTHLY_REVENUE_DATA_NOT_FOUND)
     const mergedRevenue = MONTHS.map((month) => {
       const found = rawRevenue.find((r) => r._id === month.month);
       return {

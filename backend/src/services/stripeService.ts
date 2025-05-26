@@ -1,9 +1,9 @@
 import Stripe from "stripe";
 import { StripeRepositories } from "../repositories/stripeRepositories";
 import logger from "../logger";
-import { http } from "winston";
 import HttpStatus from "../utils/httpStatusCode";
 import { IStripeService } from "../interface/service/user/stripeServiceInterface";
+import { METADATA_MISSING_RETRYING, MISSING_USER_ID_IN_CHECKOUT_SESSION_METADATA, USER_ID_REQUIRED } from "../constants/message";
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
@@ -18,7 +18,7 @@ export class StripeService implements IStripeService {
   }
 
   async setupStripe(userId: string, companyId: string) {
-    if (!userId) throw { status: HttpStatus.NOT_FOUND, message: "User id is required" };
+    if (!userId) throw { status: HttpStatus.NOT_FOUND, message: USER_ID_REQUIRED };
     if (companyId) {
       await this._stripeRepositories.verifyCompany(userId, companyId);
     }
@@ -56,7 +56,7 @@ export class StripeService implements IStripeService {
           const companyIdSession = session.metadata?.companyId;
 
           if (!userIdSession) {
-            logger.error("Missing userId in checkout session metadata")
+            logger.error(USER_ID_REQUIRED)
             return;
           }
           if (session.subscription) {
@@ -118,7 +118,7 @@ export class StripeService implements IStripeService {
           const companyIdUpdated = updatedSubscription.metadata?.companyId;
 
           if (!userIdUpdated) {
-            logger.error("Missing userId in subscription metadata during update")
+            logger.error(MISSING_USER_ID_IN_CHECKOUT_SESSION_METADATA)
             return;
           }
 
@@ -151,7 +151,7 @@ export class StripeService implements IStripeService {
           const companyIdDeleted = deletedSubscription.metadata?.companyId;
 
           if (!userIdDeleted) {
-            logger.error("Missing userId in subscription metadata during deletion")
+            logger.error(MISSING_USER_ID_IN_CHECKOUT_SESSION_METADATA)
             return;
           }
 
@@ -181,7 +181,7 @@ export class StripeService implements IStripeService {
             }
 
             if (!userIdPayment) {
-              logger.error("Metadata missing, retrying after 2 seconds...")
+              logger.error(METADATA_MISSING_RETRYING)
               await new Promise((resolve) => setTimeout(resolve, 2000));
               const retrySubscription = await stripe.subscriptions.retrieve(invoice.subscription);
               userIdPayment = retrySubscription.metadata?.userId;
@@ -190,7 +190,7 @@ export class StripeService implements IStripeService {
           }
 
           if (!userIdPayment) {
-            logger.error("Missing userId in both subscription and invoice metadata")
+            logger.error(MISSING_USER_ID_IN_CHECKOUT_SESSION_METADATA)
             return;
           }
 

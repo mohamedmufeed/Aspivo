@@ -1,4 +1,5 @@
 
+import { NO_NOTIFICATION_FOUND_TO_UPDATE, NOTIFICATION_UPDATED_SUCCESSFULLY } from "../constants/message";
 import { INotificationRepository } from "../interface/repositories/NotifictatonRepository";
 import INotificationService from "../interface/service/user/notificationService";
 import { INotification } from "../models/notification";
@@ -27,10 +28,10 @@ export class NotificationService  implements INotificationService{
     );
 
     if (!notificationToUpdate) {
-      throw new Error("No notification foudn to update");
+      throw new Error(NO_NOTIFICATION_FOUND_TO_UPDATE);
     }
     await this._notificationRepositories.updateNotification(notificationId,{isRead:true})
     const updatedNotification=  await this._notificationRepositories.getNotifications(userId)
-    return { updatedNotification ,message:"Notification updated sucsess fully"};
+    return { updatedNotification ,message:NOTIFICATION_UPDATED_SUCCESSFULLY};
   }
 }

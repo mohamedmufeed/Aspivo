@@ -11,6 +11,8 @@ import { IJobRepositories } from "../interface/repositories/jobRespositoires";
 import { AppliedJobWithPopulatedData } from "../types/companyTypes";
 import { mappedHomeJobsDto } from "../utils/dto/userDto";
 import { IJobDto } from "../types/userTypes";
+import { ALREADY_APPLIED, APPLICATION_FOUND_SUCCESSFULLY, APPLICATION_NOT_FOUND, APPLICATION_SUBMITTED_SUCCESSFULLY, JOB_DETAILS_FETCHED_SUCCESSFULLY, JOB_FETCHED_SUCCESSFULLY, JOB_NOT_FOUND, JOB_REMOVED_FROM_SAVED, JOB_SAVED_SUCCESSFULLY, LATEST_JOBS_FETCHED_SUCCESSFULLY, SAVED_JOBS_FETCHED_SUCCESSFULLY, USER_NOT_FOUND, USER_SAVED_JOBS_POPULATED_SUCCESSFULLY } from "../constants/message";
+import { ALL } from "node:dns";
 
 
 export class JobService implements IJobService {
@@ -32,7 +34,7 @@ export class JobService implements IJobService {
       total,
       page,
       totalPages: Math.ceil(total / limit),
-      message: "Job fetched successfully",
+      message: JOB_FETCHED_SUCCESSFULLY,
     };
   }
 
@@ -55,30 +57,30 @@ export class JobService implements IJobService {
   async getJobDetails(jobId: string,): Promise<{ job: IJob, message: string }> {
     const job = await this._jobRepositories.JobDetails(jobId);
     // const application = await this._jobRepositories.findApplication(jobId, userId);
-    if (!job) throw new Error("Job not found");
+    if (!job) throw new Error(JOB_NOT_FOUND);
     // if (!application) throw new Error("Application not found")
-    return { job, message: "Job details fetched successfully" };
+    return { job, message: JOB_DETAILS_FETCHED_SUCCESSFULLY };
   }
 
   async applyForJOb(jobId: string, userId: string): Promise<{ application: IJobApplication & Document, message: string }> {
-    if (!userId) throw new Error("User not found");
+    if (!userId) throw new Error(USER_NOT_FOUND);
     const job = await this._jobRepositories.findJob(jobId);
-    if (!job) throw new Error("Job not found");
+    if (!job) throw new Error(JOB_NOT_FOUND);
     const existApplication = await this._jobRepositories.findApplication(
       jobId,
       userId
     );
     if (existApplication)
-      throw { error: "You have already applied for this job." };
+      throw { error: ALREADY_APPLIED };
     const { application } = await this._jobRepositories.createApplication(jobId, userId);
-    if (!application) throw new Error("Appliation not found")
-    return { application: application.toObject(), message: "JOb application sucsess" };
+    if (!application) throw new Error(APPLICATION_NOT_FOUND)
+    return { application: application.toObject(), message: APPLICATION_SUBMITTED_SUCCESSFULLY };
   }
 
   async appliedjobs(userId: string): Promise<{ applications: AppliedJobWithPopulatedData[], message: string }> {
     const applications = await this._jobRepositories.findAppliedJobs(userId);
-    if (!applications) throw { status: HttpStatus.NOT_FOUND, message: "application not found" };
-    return { applications, message: "saved job fethced sucsess fully" };
+    if (!applications) throw { status: HttpStatus.NOT_FOUND, message: APPLICATION_NOT_FOUND };
+    return { applications, message: SAVED_JOBS_FETCHED_SUCCESSFULLY };
   }
 
   async isApplied(userId: string, jobId: string): Promise<{ application: IJobApplication | undefined, message: string }> {
@@ -87,14 +89,14 @@ export class JobService implements IJobService {
     if (response) {
       application = response
     }
-    return { application, message: "Application found sucsess fully" }
+    return { application, message: APPLICATION_FOUND_SUCCESSFULLY }
   }
 
   async saveJob(userId: string, jobId: string) {
     const user = await this._authRepositories.findById(userId)
-    if (!user) throw new Error("User not found")
+    if (!user) throw new Error(USER_NOT_FOUND)
     const job = await this._jobRepositories.findJob(jobId)
-    if (!job) throw new Error("Job not found")
+    if (!job) throw new Error(JOB_NOT_FOUND)
 
     const jobIndex = user.savedJobs.findIndex(
       (saved) => saved.jobId.toString() === jobId
@@ -103,7 +105,7 @@ export class JobService implements IJobService {
     if (jobIndex !== -1) {
       user.savedJobs.splice(jobIndex, 1)
       await user.save()
-      return { user, message: "Job removed from saved jobs" };
+      return { user, message: JOB_REMOVED_FROM_SAVED };
     } else {
       const obj = new mongoose.Types.ObjectId(jobId)
       user.savedJobs.push({
@@ -111,26 +113,26 @@ export class JobService implements IJobService {
         savedAt: new Date()
       })
       await user.save()
-      return { user, message: "User job saved sucess fully" }
+      return { user, message: JOB_SAVED_SUCCESSFULLY }
     }
   }
   async savedJobs(userId: string) {
     const user = await this._authRepositories.findById(userId)
-    if (!user) throw new Error("User not found")
+    if (!user) throw new Error(USER_NOT_FOUND)
     const savedJobs = user.savedJobs
-    return { savedJobs, message: "User saved jobs found sucessfully" }
+    return { savedJobs, message: SAVED_JOBS_FETCHED_SUCCESSFULLY }
   }
 
   async populatedSavedJobs(userId: string) {
     const user = await this._authRepositories.findByIdAndPopulate(userId)
-    if (!user) throw new Error("User not found")
+    if (!user) throw new Error(USER_NOT_FOUND)
     const savedJobs = user.savedJobs
-    return { savedJobs, message: "User saved job  populated sucsess fully" }
+    return { savedJobs, message: USER_SAVED_JOBS_POPULATED_SUCCESSFULLY }
   }
 
   async latestJobs() {
     const jobs = await this._jobRepositories.latestJob()
-    return { jobs, message: "latest job fetched sucsessfully" }
+    return { jobs, message: LATEST_JOBS_FETCHED_SUCCESSFULLY }
   }
 
 }

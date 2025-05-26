@@ -1,4 +1,5 @@
 
+import { MEETING_SCHEDULED_SUCCESSFULLY, MEETINGS_FETCHED_SUCCESSFULLY } from "../../constants/message";
 import { ICompanyMeetingRepositories } from "../../interface/repositories/companyMeetingRepositories";
 import IComapnyMeetingService from "../../interface/service/company/meetingInterface";
 import INotificationService from "../../interface/service/user/notificationService";
@@ -18,7 +19,7 @@ export class CompanyMeetingService implements IComapnyMeetingService {
       this.scheduleNotification(meeting);
       return {
         meeting,
-        message: "Meeting scheduled successfully",
+        message:MEETING_SCHEDULED_SUCCESSFULLY,
       };
     } catch (error) {
       const err=error as Error
@@ -53,7 +54,7 @@ export class CompanyMeetingService implements IComapnyMeetingService {
   async getMeetings(companyId: string) {
     try {
       const meeting = await this._meetingRepositories.findAllMeetings(companyId)
-      return { meeting, message: "Meetings fetched successfully" }
+      return { meeting, message: MEETINGS_FETCHED_SUCCESSFULLY }
     } catch (error) {
       const err=error as Error
       throw new Error(`Failed to fetching meetings${err.message}`);

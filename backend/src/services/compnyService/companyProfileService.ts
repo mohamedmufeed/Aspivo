@@ -7,6 +7,7 @@ import { Contact } from "../../types/companyTypes";
 import IProfileService from "../../interface/service/company/profileInterface";
 import { ICompany } from "../../models/company";
 import { ICompanyProfileRepositories } from "../../interface/repositories/companyProfileRepostries";
+import { COMPANY_CONTACT_UPDATED_SUCCESSFULLY, COMPANY_DESCRIPTION_UPDATED_SUCCESSFULLY, COMPANY_NOT_FOUND, COMPANY_PROFILE_UPDATED_SUCCESSFULLY, COMPANY_STACK_ADDED_SUCCESSFULLY, COMPANY_TEAM_UPDATED_SUCCESSFULLY, INVALID_DATE, STACK_ALREADY_EXISTS } from "../../constants/message";
 export class CompanyProfileService implements IProfileService {
   constructor(private _companyRepo: ICompanyProfileRepositories) { }
 
@@ -14,8 +15,8 @@ export class CompanyProfileService implements IProfileService {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
-    if (!company) throw new Error("Company Not found");
-    return { company, message: "Company Profile updated successfully" };
+    if (!company) throw new Error(COMPANY_NOT_FOUND);
+    return { company, message: COMPANY_PROFILE_UPDATED_SUCCESSFULLY };
   }
 
 
@@ -23,7 +24,7 @@ export class CompanyProfileService implements IProfileService {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
-    if (!company) throw new Error("Comapny not found");
+    if (!company) throw new Error(COMPANY_NOT_FOUND);
     if (data.logo) {
       company.logo = data.logo;
     }
@@ -32,7 +33,7 @@ export class CompanyProfileService implements IProfileService {
       if (!isNaN(startDate.getDate())) {
         company.startDate = startDate;
       } else {
-        throw { status: HttpStatus.BAD_REQUEST, message: "Invalid date" };
+        throw { status: HttpStatus.BAD_REQUEST, message: INVALID_DATE };
       }
     }
 
@@ -42,27 +43,27 @@ export class CompanyProfileService implements IProfileService {
     company.location = data.location || company.location;
     company.industry = data.industry || company.industry;
     await company.save();
-    return { company, message: "Comapny Profile updated sucsess fully" };
+    return { company, message: COMPANY_PROFILE_UPDATED_SUCCESSFULLY };
   }
 
   async editCompanyDescription(companyId: string, data: string): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(
       companyId
     );
-    if (!company) throw new Error("Company not found");
+    if (!company) throw new Error(COMPANY_NOT_FOUND);
 
     if (data) {
       company.description = data || company.description;
     }
     await company.save();
-    return { company, message: "Comapny description updated sucess fully" };
+    return { company, message: COMPANY_DESCRIPTION_UPDATED_SUCCESSFULLY };
   }
 
   async addTechStack(comapnyId: string, stack: string[]): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(
       comapnyId
     );
-    if (!company) throw new Error("Comapny not found");
+    if (!company) throw new Error(COMPANY_NOT_FOUND);
     company.stack = Array.isArray(company.stack) ? company.stack : [];
     const newStack = stack.filter(
       (stack) =>
@@ -72,16 +73,16 @@ export class CompanyProfileService implements IProfileService {
     );
 
     if (newStack.length === 0) {
-      throw { status: HttpStatus.BAD_REQUEST, message: "Stack alredy exists" };
+      throw { status: HttpStatus.BAD_REQUEST, message: STACK_ALREADY_EXISTS };
     }
     company.stack.push(...newStack);
     await company.save();
-    return { company, message: "Comapny stack addedd sucsessfilly" };
+    return { company, message: COMPANY_STACK_ADDED_SUCCESSFULLY };
   }
 
   async editTeam(companyId: string, members: TeamMember[]): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(companyId);
-    if (!company) throw new Error("Company not found");
+    if (!company) throw new Error(COMPANY_NOT_FOUND);
 
     const existingTeam = company.team || [];
 
@@ -101,13 +102,13 @@ export class CompanyProfileService implements IProfileService {
     await company.save();
     return {
       company,
-      message: "Company team updated successfully"
+      message: COMPANY_TEAM_UPDATED_SUCCESSFULLY
     };
   }
 
   async editContact(comapnyId: string, contact: Contact[]): Promise<{ company: ICompany, message: string }> {
     const company = await this._companyRepo.findCompanyById(comapnyId)
-    if (!company) throw new Error("Comapny not found")
+    if (!company) throw new Error(COMPANY_NOT_FOUND)
     const existingContact = company.contact || []
     console.log("Received contact:", contact);
     console.log("Type of contact:", typeof contact);
@@ -127,6 +128,6 @@ export class CompanyProfileService implements IProfileService {
 
     company.contact.push(...contactToAdd)
     await company.save()
-    return { company, message: "Company contact updated successfully" }
+    return { company, message: COMPANY_CONTACT_UPDATED_SUCCESSFULLY }
   }
 }

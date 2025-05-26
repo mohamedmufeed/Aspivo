@@ -2,6 +2,7 @@ import { endOfWeek, startOfWeek, subWeeks } from "date-fns";
 import { ICompanyDashboardService } from "../../interface/service/company/dasboardInterface";
 import { ComapnyDasboardRepositories } from "../../repositories/companyDasboardRespostries";
 import { ICompanyDashboardRepositories } from "../../interface/repositories/companyDashboardRepostries";
+import { COMPANY_ID_REQUIRED, MOST_APPLIED_JOBS_FETCHED_SUCCESSFULLY } from "../../constants/message";
 
 export class CompanyDasboradService implements ICompanyDashboardService {
     constructor(private _comapnyDasboardRepostries: ICompanyDashboardRepositories) { }
@@ -66,8 +67,8 @@ export class CompanyDasboradService implements ICompanyDashboardService {
     }
 
     async getMostAppliedJobs(companyId: string) {
-        if (!companyId) throw new Error("Company id is requierd")
+        if (!companyId) throw new Error(COMPANY_ID_REQUIRED)
         const response = await this._comapnyDasboardRepostries.getMostAppliedJobs(companyId)
-        return { response, message: "Most applied jobs found sucsessfull" }
+        return { response, message: MOST_APPLIED_JOBS_FETCHED_SUCCESSFULLY }
     }
 }

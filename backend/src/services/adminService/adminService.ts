@@ -8,7 +8,8 @@ import { handleCompanyBlockStatusDto, handleCompanyReqDto, mappedCompanies, mapp
 import IAdminRepostry from "../../interface/repositories/adminRepository";
 import { INotificationRepository } from "../../interface/repositories/NotifictatonRepository";
 import { IComapnyRequest } from "../../types/companyTypes";
-import { MESSAGES } from "../../constants/message";
+import { COMPANY_BLOCK_STATUS_CHANGED, COMPANY_NOT_FOUND, COMPANY_STATUS_CHANGED, COMPANY_STATUS_UPDATE_FAILED, USER_NOT_FOUND, USER_STATUS_CHANGED, USER_STATUS_UPDATE_FAILED } from "../../constants/message";
+
 
 export class AdminService implements IAdminService {
   constructor(private _adminRepository: IAdminRepostry, private _notificationRespository: INotificationRepository) { }
@@ -34,16 +35,16 @@ export class AdminService implements IAdminService {
 
   async blockUser(id: string) {
     const user = await this._adminRepository.findById(id);
-    if (!user) throw new Error(MESSAGES.USER.NOT_FOUND);
+    if (!user) throw new Error(USER_NOT_FOUND);
     const updatedUser = await this._adminRepository.findByIdAndUpdateBlockStatus(id, user.isBlocked)
-    if (!updatedUser) throw new Error("Failed to update user status");
+    if (!updatedUser) throw new Error(USER_STATUS_UPDATE_FAILED);
     const userDto=userBlockDto(updatedUser)
-    return { user: userDto, message: "User status changed successfully" };
+    return { user: userDto, message: USER_STATUS_CHANGED};
   }
 
   async handleCompanyRequest(companyId: string, action: string): Promise<{ company: IComapnyRequest, message: string }> {
     const existingcompany = await this._adminRepository.findComapny(companyId);
-    if (!existingcompany) throw new Error("Company not found");
+    if (!existingcompany) throw new Error(COMPANY_NOT_FOUND);
     let status = ""
     if (action === "Approved") {
       status = action || "Approved";
@@ -53,7 +54,7 @@ export class AdminService implements IAdminService {
       status = "Pending";
     }
     const company = await this._adminRepository.findByIdAndUpdateStatus(companyId, status)
-    if (!company) throw new Error("Comapny Not found or Eror in updaing status")
+    if (!company) throw new Error(COMPANY_STATUS_UPDATE_FAILED)
     const message = `Your company '${company.companyName}' has been ${action}!`;
     await this._notificationRespository.createNotification(
       company.userId.toString(),
@@ -61,7 +62,7 @@ export class AdminService implements IAdminService {
     );
     sendNotification("user", company.userId.toString(), message);
     const comapanyDto=handleCompanyReqDto(company)
-    return { company:comapanyDto, message: "Company status changed successfully" };
+    return { company:comapanyDto, message: COMPANY_STATUS_CHANGED };
   }
 
   async approvedCompany(query: GetPaginationQuery): Promise<GetApprovedCompanyDtoResponse> {
@@ -76,12 +77,12 @@ export class AdminService implements IAdminService {
 
   async handleCompanyBlockStatus(comapnyId: string) {
     const company = await this._adminRepository.findComapny(comapnyId)
-    if (!company) throw new Error("Comapny not found")
+    if (!company) throw new Error(COMPANY_NOT_FOUND)
     const blockStatus = !company.isBlocked
     const updatedCompany = await this._adminRepository.findByIdAndUpdateCompanyBlockStatus(comapnyId, blockStatus)
-    if(!updatedCompany) throw new Error("Failed to update user status")
+    if(!updatedCompany) throw new Error(USER_NOT_FOUND)
       const comapanyDto=handleCompanyBlockStatusDto(updatedCompany)
-    return { company: comapanyDto, message: "Comapny Block status handeled sucsess " }
+    return { company: comapanyDto, message: COMPANY_BLOCK_STATUS_CHANGED }
   }
 
 }

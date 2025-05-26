@@ -7,6 +7,7 @@ import IMessageService from "../interface/service/user/messageServiceInterface";
 import logger from "../logger";
 import dotenv from "dotenv";
 import HttpStatus from "../utils/httpStatusCode";
+import { MESSAGE_LIMIT_ENDED, SENDER_NOT_FOUND, UNREAD_MESSAGE_COUNT_FETCHED_SUCCESSFULLY } from "../constants/message";
 dotenv.config();
 const redisClient = createClient({
   url: process.env.REDIS_URL,
@@ -64,7 +65,7 @@ export class MessageService implements IMessageService {
       const senderInfo = await this._messageRepositories.findSender(senderId);
 
       if (!senderInfo) {
-        throw { status: HttpStatus.NOT_FOUND, message: "Sender not found" };
+        throw { status: HttpStatus.NOT_FOUND, message: SENDER_NOT_FOUND };
       }
       const { type, data: sender } = senderInfo;
       await this._messageRepositories.markConversationUnread(channel, senderId);
@@ -75,7 +76,7 @@ export class MessageService implements IMessageService {
           await this._messageRepositories.decrementChatLimit(senderId);
           await this._messageRepositories.createChat(channel, senderId, message);
         } else {
-          throw { status: HttpStatus.NOT_FOUND, message: "Message Limit ends" };
+          throw { status: HttpStatus.NOT_FOUND, message: MESSAGE_LIMIT_ENDED };
         }
       }else if( type === "company"){
         await this._messageRepositories.createChat(channel, senderId, message);
@@ -134,6 +135,6 @@ export class MessageService implements IMessageService {
   }
   async getUnreadMessageCount(userId:string){
    const count= await this._messageRepositories.getUnreadMessageCount(userId)
-   return {count, message:"Unread message count get suscsess full"}
+   return {count, message:UNREAD_MESSAGE_COUNT_FETCHED_SUCCESSFULLY}
   }
 }
