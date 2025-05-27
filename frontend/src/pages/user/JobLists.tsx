@@ -24,7 +24,20 @@ const formatSalary = (amount: number): string => {
 
 const JobLists = () => {
     const navigate = useNavigate();
-    const categoryItems = ["All", "Software Development", "Design", "Marketing", "Finance", "Sales"];
+    const categoryItems = ["All", 
+        "Software Development",
+        "Design",
+        "Marketing",
+        "Sales",
+        "Human Resources",
+        "Customer Support",
+        "Finance",
+        "Healthcare",
+        "Education",
+        "Construction",
+        "Logistics",
+        "Legal",
+        "Administrative"];
     const [jobs, setJobs] = useState<JobData[]>([]);
     const [searchWord, setSearchWord] = useState("");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -168,27 +181,30 @@ console.log(newSearch)
                 </div>
 
 
-                <div className="flex justify-center  gap-2 sm:gap-6 mt-9 overflow-x-auto scrollbar-hide">
-                    {categoryItems.map((item, index) => (
-                        <div key={index}>
-                            <button
-                                className={`bg-orange-600 shadow-lg rounded-xl text-sm sm:text-base p-2 sm:p-3 px-5 font-medium cursor-pointer hover:bg-orange-500 hover:text-white 
-                                    ${(item === "All" && selectedCategory === null) || selectedCategory === item
-                                        ? "bg-orange-600 text-white"
-                                        : "bg-white"
-                                    }`}
-                                onClick={() => handleCategoryClick(item)}
-                            >
-                                {item}
-                            </button>
-
-                        </div>
-                    ))}
-                </div> 
-
-
-
-
+<div className="mt-6 px-20 hide-scrollbar">
+  <div
+    className="flex gap-3 sm:gap-4 px-4"
+    style={{
+      width: 'fit-content',
+      maxWidth: '100%',
+    }}
+  >
+    {categoryItems.map((item, index) => (
+      <button
+        key={index}
+        onClick={() => handleCategoryClick(item)}
+        className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium shadow transition-all
+          ${
+            (item === "All" && selectedCategory === null) || selectedCategory === item
+              ? "bg-orange-600 text-white"
+              : "bg-white text-gray-800 hover:bg-orange-100"
+          }`}
+      >
+        {item}
+      </button>
+    ))}
+  </div>
+</div>
 
                 <div className="px-8 sm:px-20 mt-10 space-y-6">
                     {loading && initialLoad ? (

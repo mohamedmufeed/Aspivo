@@ -57,7 +57,6 @@ const EditCompanyContact: React.FC<EditProfileModalProps> = ({ setCompanyData, i
         seen.add(key);
       }
     });
-    console.log("Validation errors:", newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -67,7 +66,6 @@ const EditCompanyContact: React.FC<EditProfileModalProps> = ({ setCompanyData, i
     const fetchCompanyProfile = async () => {
       try {
         const response = await getComapny(companyId);
-        console.log("the resposense", response.company.contact)
         const company = response.company
         if (company && company.contact) {
           setContacts(
@@ -91,7 +89,7 @@ const EditCompanyContact: React.FC<EditProfileModalProps> = ({ setCompanyData, i
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
-      console.log("Validation failed");
+      console.error("Validation failed");
       return;
     }
 

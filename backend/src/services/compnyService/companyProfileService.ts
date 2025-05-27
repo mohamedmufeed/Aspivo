@@ -1,6 +1,3 @@
-
-import { CompanyProfileRepositiories } from "../../repositories/companyProfileRepositories";
-
 import HttpStatus from "../../utils/httpStatusCode";
 import { IComapny, TeamMember } from "../../types/companyTypes";
 import { Contact } from "../../types/companyTypes";
@@ -106,28 +103,34 @@ export class CompanyProfileService implements IProfileService {
     };
   }
 
-  async editContact(comapnyId: string, contact: Contact[]): Promise<{ company: ICompany, message: string }> {
-    const company = await this._companyRepo.findCompanyById(comapnyId)
-    if (!company) throw new Error(COMPANY_NOT_FOUND)
-    const existingContact = company.contact || []
-    console.log("Received contact:", contact);
-    console.log("Type of contact:", typeof contact);
+ async editContact(companyId: string, body: { contact: Contact[] }): Promise<{ company: ICompany, message: string }> {
+  const { contact } = body;
 
-    const contactsArray = Array.isArray(contact) ? contact : [contact];
-    const trimmedNewContacts = contactsArray.map((contact) => ({
-      name: contact.name.trim(),
-      url: contact.url.trim()
-    }));
-    const contactToAdd = trimmedNewContacts.filter(
-      (newContact) =>
-        !existingContact.some(
-          (existing: any) =>
-            existing.name === newContact.name && existing.url === newContact.url
-        )
-    )
+  const company = await this._companyRepo.findCompanyById(companyId);
+  if (!company) throw new Error(COMPANY_NOT_FOUND);
 
-    company.contact.push(...contactToAdd)
-    await company.save()
-    return { company, message: COMPANY_CONTACT_UPDATED_SUCCESSFULLY }
-  }
+  const contactArray = Array.isArray(contact) ? contact : [];
+  const existingContact = company.contact || [];
+
+
+  const trimmedNewContacts = contactArray.map((contact) => ({
+    name: contact.name.trim(),
+    url: contact.url.trim()
+  }));
+
+  const contactToAdd = trimmedNewContacts.filter(
+    (newContact) =>
+      !existingContact.some(
+        (existing: any) =>
+          existing.name === newContact.name && existing.url === newContact.url 
+      )
+  );
+
+  company.contact.push(...contactToAdd);
+  await company.save();
+
+  return { company, message: COMPANY_CONTACT_UPDATED_SUCCESSFULLY };
+}
+
+
 }

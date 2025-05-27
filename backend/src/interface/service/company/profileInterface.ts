@@ -8,5 +8,5 @@ export default interface IProfileService{
     editCompanyDescription(comapnyId:string,data:string):Promise<CompanySerivceResponse>
     addTechStack(comapnyId:string,stack:string[]):Promise<CompanySerivceResponse>
     editTeam(comapnyId:string,members:TeamMember[]):Promise<CompanySerivceResponse>
-    editContact(companyId:string,contact:Contact[]):Promise<CompanySerivceResponse>
+    editContact(companyId:string, body: { contact: Contact[]; }):Promise<CompanySerivceResponse>
 }
