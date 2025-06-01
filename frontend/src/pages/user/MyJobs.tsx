@@ -62,6 +62,7 @@ const MyJobs = () => {
     try {
       setLoading(true);
       const response = await appliedJobs(userId);  
+      console.log("applied josb", response)
       if (response) {
         const mappedJobs = response?.applications.map((app:Application) => ({
           id: app.jobId._id,
@@ -93,6 +94,7 @@ const MyJobs = () => {
     try {
       setLoading(true);
        const response = await populatedJobs(userId);
+       console.log("response daved", response)
       const mappedJobs = response.savedJobs
 
       .map((saved: Application) => ({
@@ -121,6 +123,8 @@ const MyJobs = () => {
        handleSavedJobs();
     }
   }, [activeTab, userId ,handleAppliedJobs,handleSavedJobs]);
+
+
 
   if (loading) {
     return (

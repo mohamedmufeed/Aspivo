@@ -24,7 +24,7 @@ const formatSalary = (amount: number): string => {
 
 const JobLists = () => {
     const navigate = useNavigate();
-    const categoryItems = ["All", 
+    const categoryItems = ["All",
         "Software Development",
         "Design",
         "Marketing",
@@ -54,8 +54,8 @@ const JobLists = () => {
         if (isLoadingRef.current) return;
         isLoadingRef.current = true;
         setLoading(true);
-console.log(newCategory)
-console.log(newSearch)
+        console.log(newCategory)
+        console.log(newSearch)
         try {
             const currentPage = resetPage ? 1 : page;
             if (resetPage) {
@@ -125,15 +125,15 @@ console.log(newSearch)
         return () => {
             debouncedSearch.cancel();
         };
-    }, [loadJobs,debouncedSearch]);
+    }, [loadJobs, debouncedSearch]);
     const user = useSelector((state: RootState) => state.auth.user)
     const userId = user?._id || ""
 
     const handleSavingJob = async (jobId: string | undefined) => {
         if (!jobId) return
         try {
-           await saveJob(userId, jobId)
-            setUserSavedJobs(prevSaved  => {
+            await saveJob(userId, jobId)
+            setUserSavedJobs(prevSaved => {
                 const alredySaved = prevSaved.find(saved => saved.jobId === jobId)
                 if (alredySaved) {
                     return prevSaved.filter(saved => saved.jobId != jobId)
@@ -142,7 +142,7 @@ console.log(newSearch)
                 }
             })
         } catch (error) {
-            console.error("Error on saving Job",error)
+            console.error("Error on saving Job", error)
         }
     }
 
@@ -153,7 +153,7 @@ console.log(newSearch)
                 const response = await savedJobs(userId)
                 setUserSavedJobs(response.savedJobs)
             } catch (error) {
-                console.error("Error on fethicing the saved jobs",error)
+                console.error("Error on fethicing the saved jobs", error)
             }
         }
         if (userId) {
@@ -161,7 +161,7 @@ console.log(newSearch)
         }
     }, [userId])
     return (
-        <div className="bg-[#F6F6F6] min-h-screen sm:pb-20" style={{ fontFamily: "DM Sans, sans-serif" }}>
+        <div className="bg-[#F6F6F6] min-h-screen sm:pb-20 overflow-x-hidden" style={{ fontFamily: "DM Sans, sans-serif" }}>
             <Navbar />
             <div>
                 <div className="flex justify-center mt-10">
@@ -181,30 +181,30 @@ console.log(newSearch)
                 </div>
 
 
-<div className="mt-6 px-20 hide-scrollbar">
-  <div
-    className="flex gap-3 sm:gap-4 px-4"
-    style={{
-      width: 'fit-content',
-      maxWidth: '100%',
-    }}
-  >
-    {categoryItems.map((item, index) => (
-      <button
-        key={index}
-        onClick={() => handleCategoryClick(item)}
-        className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium shadow transition-all
-          ${
-            (item === "All" && selectedCategory === null) || selectedCategory === item
-              ? "bg-orange-600 text-white"
-              : "bg-white text-gray-800 hover:bg-orange-100"
-          }`}
-      >
-        {item}
-      </button>
-    ))}
-  </div>
-</div>
+                <div className="mt-6 px-4 sm:px-20">
+                    <div
+                        className="flex gap-3 sm:gap-4 px-4 overflow-x-auto hide-scrollbar"
+                        style={{
+                            maxWidth: '100%',
+                            whiteSpace: 'nowrap',
+                        }}
+                    >
+                        {categoryItems.map((item, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleCategoryClick(item)}
+                                className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium shadow transition-all
+          ${(item === "All" && selectedCategory === null) || selectedCategory === item
+                                        ? "bg-orange-600 text-white"
+                                        : "bg-white text-gray-800 hover:bg-orange-100"
+                                    }`}
+                            >
+                                {item}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
 
                 <div className="px-8 sm:px-20 mt-10 space-y-6">
                     {loading && initialLoad ? (
@@ -215,12 +215,12 @@ console.log(newSearch)
                     ) : jobs.length > 0 ? (
                         <>
                             {jobs.map((job) => (
-                             <div
-                             key={job._id}
-                             className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 sm:p-4 p-3 items-center hover:bg-gray-50"
-                         >
-                         
-                         <div className="col-span-2 flex justify-center">
+                                <div
+                                    key={job._id}
+                                    className="bg-white shadow-lg rounded-lg grid grid-cols-12 gap-4 sm:p-4 p-3 items-center hover:bg-gray-50"
+                                >
+
+                                    <div className="col-span-2 flex justify-center">
                                         {job.company?.logo ? (
                                             <img
                                                 src={`https://res.cloudinary.com/do4wdvbcy/image/upload/${job.company.logo}`}
@@ -242,7 +242,7 @@ console.log(newSearch)
                                         <p className="text-sm text-gray-700">Location</p>
                                     </div>
 
-                           <div className="hidden sm:block col-span-2">
+                                    <div className="hidden sm:block col-span-2">
                                         <h1 className="font-semibold text-xl">
                                             {job.minimumSalary && job.maximumSalary
                                                 ? `${formatSalary(job.minimumSalary)} - ${formatSalary(job.maximumSalary)}`
