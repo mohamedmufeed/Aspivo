@@ -7,7 +7,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [socket, setSocket] = useState<Socket | null>(null);
 
     useEffect(() => {
-        const newSocket = io('/api/'); 
+        const newSocket = io('https://www.aspivo.site/api/'); 
         setSocket(newSocket);
 
         return () => {

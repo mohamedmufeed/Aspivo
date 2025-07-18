@@ -202,8 +202,7 @@ const CompanyVideoCall: React.FC = () => {
         if (callAttemptRef.current !== null) {
           window.clearInterval(callAttemptRef.current);
         }
-
-        // Establish data connection for chat if we haven't already
+        
         if (!dataConnectionRef.current) {
           connectForChat(targetId);
         }

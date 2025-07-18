@@ -1,10 +1,9 @@
 import axios from "axios";
-
-const api =axios.create({
-    // baseURL:"http://localhost:5001/api/",
-    baseURL:"/api/",
-    withCredentials:true
-})
+const isProduction = window.location.hostname !== "localhost";
+const api = axios.create({
+  baseURL: isProduction ? "/api/" : "http://localhost:5001/api/",
+  withCredentials: true,
+});
 
 api.interceptors.response.use(
     (response) => response,

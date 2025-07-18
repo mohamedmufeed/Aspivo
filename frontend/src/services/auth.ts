@@ -3,6 +3,8 @@ import { registerUserSocket } from "./socket";
 
 import api from "./api";
 import { USER_BASE_ROUTE } from "../constants/apiRoutes";
+const isProduction = window.location.hostname !== "localhost";
+const  GOOGLE_URL= isProduction ? "https://www.aspivo.site/api/user/google" :"http://localhost:5001/api/user/google"
 
 export const signup = async (data: {
   userName: string;
@@ -123,13 +125,13 @@ export const logoutUser = async (userId: string) => {
 
 export const googleLogin = () => {
   console.log("hello clicked ");
-  window.open(`https://www.aspivo.site/api/user/google`, "_self");
+  window.open(`${GOOGLE_URL}`, "_self");
 };
 
 export const fetchGoogleUser = async () => {
   try {
     const response = await axios.get(
-      "https://www.aspivo.site/api/user/google/success",
+      `${GOOGLE_URL}/success`,
       {
         withCredentials: true,
       }

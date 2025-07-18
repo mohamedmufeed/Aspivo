@@ -172,7 +172,7 @@ export class ComapnyDasboardRepositories implements ICompanyDashboardRepositorie
         }
       },
       {$sort:{count:-1}},
-      {$limit:4}
+      {$limit:3}
     ])
     return mostAppliedJobs
   }
